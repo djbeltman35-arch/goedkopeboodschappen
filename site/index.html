@@ -158,7 +158,9 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 .site-foot a:hover{text-decoration:underline}
 .printbtn{width:100%;margin-top:14px}
 #printsheet{display:none}
-#results,#detail{scroll-margin-top:12px}
+#results,#detail,#lijst{scroll-margin-top:12px}
+.toast{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;width:min(560px,calc(100% - 32px));display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--ink);color:var(--bg);padding:10px 10px 10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px}
+.toast b{font-weight:700}.toast span{min-width:0;overflow-wrap:anywhere}.toast .btn{flex:none;padding:8px 12px}
 @media print{
   body{background:#fff;color:#000}
   body>*:not(#printsheet){display:none!important}
@@ -199,7 +201,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
   </section>
 
   <div class="cols">
-    <section class="step" aria-labelledby="h2s">
+    <section class="step" id="lijst" aria-labelledby="h2s">
       <div class="stephead"><span class="num">2</span><h2 id="h2s">Mijn boodschappenlijst</h2><span class="side" id="savedinfo"></span></div>
       <div id="banner"></div>
       <ul class="lines" id="items"></ul>
@@ -222,6 +224,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
   <p class="note" id="srcnote">Prijzen van AH, Jumbo, Lidl, PLUS, Dirk, DekaMarkt, Hoogvliet, SPAR, Poiesz en Vomar: reguliere webshopprijzen uit de open dataset van Checkjebon (MIT-licentie). De prijs aan de kassa is altijd leidend. Je lijst wordt alleen in deze browser bewaard.</p>
 </main>
 
+<div class="toast" id="toast" role="status" hidden></div>
 <div id="printsheet" aria-hidden="true"></div>
 <footer class="wrap site-foot"><p><a href="mailto:erik@beltman.email" title="Mail naar erik@beltman.email">Made by Erik</a></p></footer>
 <script>
@@ -265,12 +268,18 @@ const inList=p=>S.list.some(x=>x.si===p[0]&&x.link===link(p));
 function addOffer(o){
   if(S.list.some(x=>x.link===o.u)) return;
   S.list.push({term:o.n,si:o.si,name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offer:o.t||true});
-  S.sel=null; renderAll();
+  S.sel=null; renderAll(); toast(o.n);
+}
+// Korte melding onderin na toevoegen, met een knop naar de lijst.
+function toast(name){
+  const sum=S.list.reduce((a,x)=>a+(currentPrice(x)??x.price),0);
+  $("toast").innerHTML=`<span>✓ <b>${esc(name)}</b> staat op je lijst · ${S.list.length} artikelen, ${eur(sum)}</span><button type="button" class="btn" data-golist>Bekijk lijst</button>`;
+  $("toast").hidden=false; clearTimeout(S.tt); S.tt=setTimeout(()=>$("toast").hidden=true,5000);
 }
 function addProduct(p,term){
   if(inList(p)) return;
   S.list.push({term:term||S.lastQ,si:p[0],name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:p[3]});
-  S.sel=null; renderAll();
+  S.sel=null; renderAll(); toast(p[1]);
 }
 
 /* Stap 1 */
@@ -412,6 +421,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}
   const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);S.sel=null;renderAll();return}
   if(e.target.closest("[data-print]")){printList();return}
+  if(e.target.closest("[data-golist]")){$("toast").hidden=true;jump("lijst");return}
   const t=e.target.closest(".shopcard"); if(t){S.sel=+t.dataset.si;renderTotals();jump("detail");return}
   const tr=e.target.closest("[data-try]"); if(tr){$("q").value=tr.dataset.try;search();jump("results");return}
 });
@@ -444,6 +454,14 @@ Promise.all([fetch("producten.json").then(r=>r.json()),extra("aldi.json"),extra(
     const old=store.get("lijst-bewaard")?.items||SAMPLE;
     for(const t of old){const b=[...pick(t).values()].sort((a,b)=>a[3]-b[3])[0]; if(b) S.list.push({term:t,si:b[0],name:b[1]+(b[4]?" "+b[4]:""),link:link(b),price:b[3]})}
   }
+  // Aanbiedingen die op de aanbiedingenpagina's zijn gekozen, nu aan de lijst toevoegen.
+  const erbij=store.get("lijst-erbij"); let nErbij=0;
+  if(Array.isArray(erbij)){
+    const idx=new Map(S.stores.map((s,i)=>[s.id,i]));
+    for(const o of erbij) if(idx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.n,si:idx.get(o.s),name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offer:o.t||true});nErbij++}
+    try{localStorage.removeItem("lijst-erbij")}catch(e){}
+  }
   savedInfo(); $("q").value=new URLSearchParams(location.search).get("q")||"halfvolle melk"; search(); renderList(); renderTotals(); recompare();
+  if(nErbij){$("banner").innerHTML=`<div class="banner"><b>${nErbij} ${nErbij===1?"aanbieding":"aanbiedingen"}</b> van de aanbiedingenpagina op je lijst gezet.</div>`; jump("lijst")}
 }).catch(()=>{$("results").innerHTML='<p class="meta">De prijzen konden niet worden geladen. Herlaad de pagina.</p>'});
 </script>

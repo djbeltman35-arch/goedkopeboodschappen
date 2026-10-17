@@ -13,6 +13,8 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const slaap = ms => new Promise(r => setTimeout(r, ms));
 const r2 = n => (n == null || !isFinite(n) ? null : Math.round(n * 100) / 100);
 const getal = s => parseFloat(String(s).replace(',', '.'));
+// Productnaam als stukje url: "Milka Reep 100 g" -> "milka-reep-100-g". Jumbo en Dirk vinden het product op het id.
+const slug = s => String(s || 'product').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'product';
 const vandaag = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date());
 const dagVan = v => {
   if (v == null || v === '') return null;
@@ -186,7 +188,7 @@ async function jumbo() {
       const tags = (promo?.tags || []).map(t => t.text).filter(t => t && !/^alleen online$/i.test(t));
       const prijs = p.price?.promoPrice != null ? p.price.promoPrice / 100 : tags.map(t => actiePrijs(t, normaal)).find(x => x != null) ?? normaal;
       if (!(prijs > 0)) continue;
-      uit.push({ s: 'jumbo', n: p.title, sz: p.subtitle || p.packSizeDisplay || '', p: r2(prijs), was: normaal > prijs + .004 ? r2(normaal) : null, lbl: tags.join(', ') || null, u: `https://www.jumbo.com/zoeken/?searchTerms=${encodeURIComponent(p.title)}`, t: dagVan(promo?.end?.iso) });
+      uit.push({ s: 'jumbo', n: p.title, sz: p.subtitle || p.packSizeDisplay || '', p: r2(prijs), was: normaal > prijs + .004 ? r2(normaal) : null, lbl: tags.join(', ') || null, u: `https://www.jumbo.com/producten/${slug(p.title)}-${p.id}`, t: dagVan(promo?.end?.iso) });
     }
     if (!(d.products || []).length) break;
     await slaap(400);
@@ -229,7 +231,7 @@ async function dirk() {
         const was = p.normalPrice > 0 ? p.normalPrice : o.normalPrice;
         if (!(prijs > 0)) continue;
         const naam = p.productInformation?.headerText || o.headerText;
-        uit.set(o.offerId + ':' + p.productId, { s: 'dirk', n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: null, u: 'https://www.dirk.nl/aanbiedingen', t: dagVan(o.endDate) });
+        uit.set(o.offerId + ':' + p.productId, { s: 'dirk', n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: null, u: p.productId ? `https://www.dirk.nl/boodschappen/x/x/${slug(naam)}/${p.productId}` : 'https://www.dirk.nl/aanbiedingen', t: dagVan(o.endDate) });
       }
     }
     await slaap(300);
