@@ -193,7 +193,7 @@ document.addEventListener("change",e=>{if(e.target.id==="fcat")applyCat()});</sc
         corder=[c[0] for c in CATS if c[0] in cnt]+(['Overig'] if 'Overig' in cnt else [])
         icon={c[0]:c[1] for c in CATS}
         sel=f'<label class="fsel"><span class="sr">Categorie</span><select id="fcat"><option value="">Alle categorieën ({len(lst)})</option>'+''.join(f'<option value="{html.escape(c)}">{icon.get(c,"🛒")} {html.escape(c)} ({cnt[c]})</option>' for c in corder)+'</select></label>' if len(corder)>1 else ''
-        main=chips(cur)+sel+f'<ul class="grid" id="grid">{"".join(card(o) for o in lst[:300])}</ul><a class="cta" href="/">Zet aanbiedingen op je boodschappenlijst</a><p class="note">Actieprijzen zoals de supermarkt ze online toont. Bij acties als 1+1 gratis staat de prijs per stuk bij afname van de actie. De prijs aan de kassa is leidend.</p>'+JS.replace('document.currentScript.dataset.s',json.dumps(cur or ''))
+        main=chips(cur)+sel+f'<ul class="grid" id="grid">{"".join(card(o) for o in lst[:300])}</ul><a class="cta" href="/">Zet aanbiedingen op je boodschappenlijst</a><p class="note">Nettorama zet zijn aanbiedingen alleen in een bladerfolder, zonder losse prijzen. <a href="https://www.nettorama.nl/actiefolder" target="_blank" rel="noopener">Bekijk de Nettorama-folder van deze week</a>.</p><p class="note">Actieprijzen zoals de supermarkt ze online toont. Bij acties als 1+1 gratis staat de prijs per stuk bij afname van de actie. De prijs aan de kassa is leidend.</p>'+JS.replace('document.currentScript.dataset.s',json.dumps(cur or ''))
         pg=page(title,desc,path,(h,main),ld).replace('</style>',OCSS+'</style>',1)
         os.makedirs(out+path,exist_ok=True); open(out+path+'index.html','w').write(pg)
         return path
