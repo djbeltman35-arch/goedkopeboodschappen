@@ -183,6 +183,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
   #printsheet tfoot td{font-weight:700;border-bottom:none;border-top:2pt solid #000}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.searchbox{padding:12px;border:3px solid var(--red,#c8281e);border-radius:16px}.searchbox .stephead{margin-top:0}
 .catbar.top1{margin:0 0 24px;padding:12px;border:3px solid var(--red,#c8281e);border-radius:16px}
 </style>
 
@@ -201,12 +202,14 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 <main class="wrap">
   <section class="step" aria-labelledby="h1s">
     <div class="catbar top1" id="catbar"></div>
+    <div class="searchbox">
     <div class="stephead"><span class="num">1</span><h2 id="h1s">Zoek een product</h2></div>
     <form class="addrow" id="f" role="search">
       <input type="search" id="q" placeholder="Zoek bijv. halfvolle melk, pindakaas of koffiebonen" autocomplete="off" aria-label="Zoek een product">
       <button type="submit" class="btn">Zoeken</button>
     </form>
     <div id="results"></div>
+    </div>
   </section>
 
   <div class="cols">
