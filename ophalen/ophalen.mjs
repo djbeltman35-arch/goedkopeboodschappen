@@ -20,9 +20,9 @@ const dagVan = v => {
   return isNaN(d) ? null : new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(d);
 };
 
-async function haal(url, opts = {}, soort = 'json') {
+async function haal(url, opts = {}, soort = 'json', pogingen = 3) {
   let fout;
-  for (let poging = 1; poging <= 3; poging++) {
+  for (let poging = 1; poging <= pogingen; poging++) {
     try {
       const r = await fetch(url, { ...opts, headers: { 'User-Agent': UA, 'Accept-Language': 'nl-NL', ...(opts.headers || {}) }, signal: AbortSignal.timeout(30_000) });
       if (r.status === 429 || r.status >= 500) throw new Error(`HTTP ${r.status}`);
@@ -31,7 +31,7 @@ async function haal(url, opts = {}, soort = 'json') {
     } catch (e) {
       fout = e;
       if (e.stop) break;
-      await slaap(2000 * poging);
+      await slaap(3000 * poging);
     }
   }
   throw fout;
@@ -108,6 +108,16 @@ async function aldi() {
     } catch (e) { console.warn('aldi pagina mislukt', u, e.message); }
     await slaap(400);
   }
+  // Productpagina's uit de sitemap die nog niet gezien zijn ook bekijken (Aldi laat online vooral actieartikelen zien).
+  const gezien = new Set([...alle.values()].map(p => String(p.objectID || '').replace(/\D/g, '')));
+  let extra = 0;
+  for (const [id, u] of linkVan) {
+    if (gezien.has(id) || extra >= 1500) continue;
+    extra++;
+    try { const nd = nextData(await haal(u, {}, 'text')); if (nd) aldiProducten(nd.api ?? nd.d, alle); } catch (e) { if (extra < 5) console.warn('aldi product mislukt', u, e.message); }
+    await slaap(250);
+  }
+  console.log(`aldi: ${paginas.length} categoriepagina's, ${extra} productpagina's, ${alle.size} producten gevonden`);
   const vd = vandaag();
   const producten = [], aanbod = [];
   for (const [id, p] of alle) {
@@ -126,6 +136,8 @@ async function aldi() {
       const tweeVoor = /^2\s*voor$/i.test(label.trim());
       const p1 = r2(per.priceValue / (tweeVoor ? 2 : 1));
       const strike = (per.strikePrice || cp.strikePrice)?.strikePriceValue;
+      // Ook in het assortiment, zodat Aldi meedoet in zoeken en totalen.
+      producten.push([naam, link, p1, sz, ...perEenheid(p1, sz)]);
       aanbod.push({ s: 'aldi', n: naam, sz, p: p1, was: strike > p1 ? r2(strike / (tweeVoor ? 2 : 1)) : null, lbl: tweeVoor ? `2 voor ${String(per.priceValue.toFixed(2)).replace('.', ',')}` : label || null, u: link, t: per.validUntilLocalDate || null });
     } else {
       producten.push([naam, link, r2(prijs), sz, ppe, eh]);
@@ -138,7 +150,7 @@ async function aldi() {
 /* ---------- Albert Heijn: app-zoekdienst met anonieme token, filter bonus ---------- */
 async function ah() {
   const H = { 'User-Agent': 'Appie/8.22.3', 'X-Application': 'AHWEBSHOP' };
-  const tok = (await haal('https://api.ah.nl/mobile-auth/v1/auth/token/anonymous', { method: 'POST', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: 'appie' }) })).access_token;
+  const tok = (await haal('https://api.ah.nl/mobile-auth/v1/auth/token/anonymous', { method: 'POST', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: 'appie' }) }, 'json', 5)).access_token;
   if (!tok) throw new Error('geen AH-token');
   const uit = new Map();
   for (let page = 0; page < 3; page++) {
@@ -212,6 +224,7 @@ async function dirk() {
     for (const o of j?.data?.listOffers?.currentOffers || []) {
       const ps = o.products?.length ? o.products : [{ productId: o.offerId, offerPrice: o.offerPrice, normalPrice: o.normalPrice, productInformation: { headerText: o.headerText, packaging: o.packaging } }];
       for (const p of ps) {
+        if (!p) continue;
         const prijs = p.offerPrice > 0 ? p.offerPrice : o.offerPrice;
         const was = p.normalPrice > 0 ? p.normalPrice : o.normalPrice;
         if (!(prijs > 0)) continue;

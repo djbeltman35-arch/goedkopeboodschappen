@@ -221,7 +221,7 @@ const eur=v=>"€ "+v.toFixed(2).replace(".",",");
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9,.]+/g," ").replace(/(\d)[,.](\d)/g,"$1,$2").trim();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dag=t=>new Date(t).toLocaleDateString("nl-NL",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"});
-const link=p=>S.stores[p[0]].base+p[2];
+const link=p=>/^https?:/.test(p[2])?p[2]:S.stores[p[0]].base+p[2];
 const sname=si=>S.stores[si].name;
 const unitTxt=p=>p[5]!=null?eur(p[5])+" / "+p[6]:"";
 // Een product past als elk zoekwoord als heel woord voorkomt; het laatste woord mag ook het begin van een woord zijn.
