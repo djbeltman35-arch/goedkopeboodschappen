@@ -15,7 +15,7 @@ for c in CATS:
 EXCL={'choco','chocolade','gekookte','spinazie','roasted','americanos','krieltjes','salade','saus','smaak','snack','reep','koek','koekjes','chips','drink','mix'}
 def slug(t): return re.sub(r'[^a-z0-9]+','-',t).strip('-')
 CSS='''*,*::before,*::after{box-sizing:border-box}body{margin:0;font-family:"Public Sans",system-ui,sans-serif;background:#fbfaf5;color:#221f17;line-height:1.5}
-.bar{background:#c8281e}.bar .wrap{padding-block:10px}.top{background:#ffcf1f;border-bottom:4px solid #c8281e}.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{background:#c8281e}.bar .wrap{padding-block:10px}.nav{display:flex;align-items:center;gap:14px}.nav .nl{color:#fff;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}.nav .brand{margin-right:auto}@media (max-width:520px){.brand{font-size:16px!important}.nav .nl{font-size:13px}.nav{gap:10px}}.top{background:#ffcf1f;border-bottom:4px solid #c8281e}.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .top .wrap{padding-block:16px 20px}.brand{font:700 19px "Familjen Grotesk",system-ui,sans-serif;color:#fff;text-decoration:none}
 h1{font:700 clamp(26px,4vw,36px)/1.15 "Familjen Grotesk",system-ui,sans-serif;margin:10px 0 6px}
 .lead{margin:0;max-width:65ch}main{padding-block:20px 32px}
@@ -27,14 +27,14 @@ a{color:inherit}.cta{display:inline-block;margin:18px 0;background:#c8281e;color
 footer{text-align:center;color:#6b6455;font-size:14px;padding:8px 16px 32px}footer a{color:#c8281e;font-weight:600;text-decoration:none}
 @media (prefers-color-scheme:dark){body{background:#16140f;color:#f1ecdf}.tbl{background:#1f1c15;border-color:#363126}th,td{border-color:#363126}th,.note,footer{color:#aba28c}tr.best td{background:#3a3214}}'''
 FONT='<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@700&family=Public+Sans:wght@400;700&family=JetBrains+Mono:wght@700&display=swap">'
-FAV='<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 32 32\'%3E%3Crect width=\'32\' height=\'32\' rx=\'8\' fill=\'%23ffcf1f\'/%3E%3Cpath d=\'M7 10h3l2.5 10h10l2-7H12\' fill=\'none\' stroke=\'%23221f17\' stroke-width=\'2.4\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3Ccircle cx=\'14\' cy=\'24\' r=\'1.8\' fill=\'%23221f17\'/%3E%3Ccircle cx=\'21\' cy=\'24\' r=\'1.8\' fill=\'%23c8281e\'/%3E%3C/svg%3E">'
+FAV='<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">'
 FOOT='<footer><a href="/">Goedkope Boodschappen</a> · <a href="/vergelijk/">Alle producten</a><br><a href="mailto:erik@beltman.email" title="Mail naar erik@beltman.email">Made by Erik</a></footer>'
 def page(title,desc,path,body,ld):
     return f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{BASE}{path}">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}"><meta name="theme-color" content="#ffcf1f">
 {FAV}{FONT}<style>{CSS}</style><script type="application/ld+json">{json.dumps(ld,ensure_ascii=False)}</script></head><body>
-<div class="bar"><div class="wrap"><a class="brand" href="/">Goedkope Boodschappen</a></div></div><header class="top"><div class="wrap">{body[0]}</div></header><main class="wrap">{body[1]}</main>{FOOT}</body></html>'''
+<div class="bar"><div class="wrap nav"><a class="brand" href="/">Goedkope Boodschappen</a><a class="nl" href="/aanbiedingen/">Aanbiedingen</a><a class="nl" href="/vergelijk/">Alle producten</a></div></div><header class="top"><div class="wrap">{body[0]}</div></header><main class="wrap">{body[1]}</main>{FOOT}</body></html>'''
 eur=lambda v:("€ %.2f"%v).replace('.',',')
 made=[]
 import os
@@ -86,3 +86,65 @@ urls=['/','/vergelijk/']+[p for _,p in cats]+[p for _,p in made]
 open(f'{out}/sitemap.xml','w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+''.join(f'  <url><loc>{BASE}{u}</loc><lastmod>{today}</lastmod></url>\n' for u in urls)+'</urlset>\n')
 open(f'{out}/robots.txt','w').write(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n")
 print(len(made),'paginas')
+
+# ---------- Aanbiedingenpagina's (optioneel 4e argument: data/aanbiedingen.json) ----------
+# Statische HTML met de aanbiedingen van het moment (voor Google), die in de browser wordt ververst met de dagelijkse data.
+if len(sys.argv)>4 and os.path.exists(sys.argv[4]):
+    off=json.load(open(sys.argv[4]))
+    today=datetime.date.today().isoformat()
+    O=[o for o in off['offers'] if o.get('p') and (not o.get('t') or o['t']>=today)]
+    NAMES={'ah':'Albert Heijn','jumbo':'Jumbo','lidl':'Lidl','aldi':'Aldi','dirk':'Dirk','plus':'PLUS','dekamarkt':'DekaMarkt','hoogvliet':'Hoogvliet','vomar':'Vomar','spar':'SPAR','poiesz':'Poiesz'}
+    SHORT={'ah':'AH'}
+    pct=lambda o:(o['was']-o['p'])/o['was'] if o.get('was') and o['was']>o['p'] else 0
+    O.sort(key=lambda o:(-pct(o),o['p']))
+    per={}
+    for o in O: per.setdefault(o['s'],[]).append(o)
+    stores_o=[s for s in NAMES if s in per]
+    DAG=['ma','di','wo','do','vr','za','zo'];MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec']
+    def tot(t):
+        d=datetime.date.fromisoformat(t); return f'{DAG[d.weekday()]} {d.day} {MND[d.month-1]}'
+    OCSS='''.grid{list-style:none;padding:0;margin:16px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.o{background:#fff;border:2px solid #ebe5d3;border-radius:12px;padding:12px;display:grid;gap:6px;align-content:start}
+.s{display:inline-block;font:700 11px "Public Sans",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:#c8281e;padding:2px 7px;border-radius:4px}
+.l{display:inline-block;margin-left:6px;font:700 11px "Public Sans",system-ui,sans-serif;text-transform:uppercase;background:#ffcf1f;color:#221f17;padding:2px 7px;border-radius:4px}
+.o b{font-weight:700;overflow-wrap:anywhere}.o .z{color:#6b6455;font-size:13px}
+.pr{font:700 16px "JetBrains Mono",ui-monospace,monospace;background:#ffcf1f;color:#221f17;padding:3px 8px;border-radius:4px}.o s{color:#6b6455;font-size:13px;margin-left:6px}.o .t{font-size:12px;color:#6b6455}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}.chips a{background:#fff;border:1px solid #ebe5d3;border-radius:999px;padding:5px 12px;font-weight:700;font-size:14px;text-decoration:none}.chips a.on{background:#c8281e;border-color:#c8281e;color:#fff}
+@media (prefers-color-scheme:dark){.o,.chips a{background:#1f1c15;border-color:#363126}}'''
+    def card(o):
+        lbl=f'<span class="l">{html.escape(o["lbl"])}</span>' if o.get('lbl') else ''
+        was=f'<s>{eur(o["was"])}</s>' if o.get('was') and o['was']>o['p'] else ''
+        t=f'<span class="t">t/m {tot(o["t"])}</span>' if o.get('t') else ''
+        return f'<li class="o"><span><span class="s">{html.escape(SHORT.get(o["s"],NAMES[o["s"]]))}</span>{lbl}</span><a href="{html.escape(o["u"])}" rel="nofollow noopener" target="_blank"><b>{html.escape(o["n"])}</b></a><span class="z">{html.escape(o.get("sz") or "")}</span><span><span class="pr">{eur(o["p"])}</span>{was}</span>{t}</li>'
+    JS='''<script>(()=>{const S=document.currentScript.dataset.s,N=%s,SH={ah:"AH"},e=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),eur=v=>"€ "+v.toFixed(2).replace(".",","),d=new Date().toISOString().slice(0,10),
+t=x=>new Date(x+"T12:00:00").toLocaleDateString("nl-NL",{weekday:"short",day:"numeric",month:"short"}).replace(".","");
+fetch("https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/aanbiedingen.json",{cache:"no-cache"}).then(r=>r.json()).then(j=>{
+let o=j.offers.filter(x=>N[x.s]&&x.p>0&&(!x.t||x.t>=d)&&(!S||x.s===S));const p=x=>x.was>x.p?(x.was-x.p)/x.was:0;o.sort((a,b)=>p(b)-p(a)||a.p-b.p);if(!o.length)return;
+document.getElementById("cnt").textContent=o.length;
+document.getElementById("grid").innerHTML=o.slice(0,300).map(x=>`<li class="o"><span><span class="s">${e(SH[x.s]||N[x.s])}</span>${x.lbl?`<span class="l">${e(x.lbl)}</span>`:""}</span><a href="${e(x.u)}" rel="nofollow noopener" target="_blank"><b>${e(x.n)}</b></a><span class="z">${e(x.sz||"")}</span><span><span class="pr">${eur(x.p)}</span>${x.was>x.p?`<s>${eur(x.was)}</s>`:""}</span>${x.t?`<span class="t">t/m ${t(x.t)}</span>`:""}</li>`).join("")}).catch(()=>{})})()</script>''' % json.dumps(NAMES)
+    def chips(cur):
+        return '<nav class="chips" aria-label="Supermarkten">'+f'<a href="/aanbiedingen/"{" class=on" if not cur else ""}>Alle</a>'+''.join(f'<a href="/aanbiedingen/{s}/"{" class=on" if cur==s else ""}>{html.escape(NAMES[s])}</a>' for s in stores_o)+'</nav>'
+    def opage(cur,lst):
+        nm=NAMES.get(cur,'')
+        path=f'/aanbiedingen/{cur}/' if cur else '/aanbiedingen/'
+        if cur:
+            title=f'{nm} aanbiedingen deze week: alle acties op een rij | Goedkope Boodschappen'
+            desc=f'Alle {len(lst)} aanbiedingen van {nm} deze week, met de grootste korting eerst. Elke dag bijgewerkt, met directe links naar het product.'
+            h=f'<h1>{html.escape(nm)} aanbiedingen deze week</h1><p class="lead"><span id="cnt">{len(lst)}</span> acties van {html.escape(nm)}, de grootste korting eerst. Elke dag automatisch bijgewerkt.</p>'
+        else:
+            title='Aanbiedingen deze week bij alle supermarkten | Goedkope Boodschappen'
+            desc=f'Alle supermarktaanbiedingen van deze week op een rij: {", ".join(NAMES[s] for s in stores_o)}. Grootste korting eerst, elke dag bijgewerkt.'
+            h=f'<h1>Aanbiedingen deze week bij alle supermarkten</h1><p class="lead"><span id="cnt">{len(lst)}</span> acties van {", ".join(html.escape(NAMES[s]) for s in stores_o)}, de grootste korting eerst. Elke dag automatisch bijgewerkt.</p>'
+        crumbs=[{"@type":"ListItem","position":1,"name":"Goedkope Boodschappen","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Aanbiedingen","item":BASE+"/aanbiedingen/"}]
+        if cur: crumbs.append({"@type":"ListItem","position":3,"name":nm,"item":BASE+path})
+        ld=[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":crumbs},{"@context":"https://schema.org","@type":"CollectionPage","name":title.split(' | ')[0],"url":BASE+path}]
+        main=chips(cur)+f'<ul class="grid" id="grid">{"".join(card(o) for o in lst[:300])}</ul><a class="cta" href="/">Zet aanbiedingen op je boodschappenlijst</a><p class="note">Actieprijzen zoals de supermarkt ze online toont. Bij acties als 1+1 gratis staat de prijs per stuk bij afname van de actie. De prijs aan de kassa is leidend.</p>'+JS.replace('document.currentScript.dataset.s',json.dumps(cur or ''))
+        pg=page(title,desc,path,(h,main),ld).replace('</style>',OCSS+'</style>',1)
+        os.makedirs(out+path,exist_ok=True); open(out+path+'index.html','w').write(pg)
+        return path
+    opaths=[opage(None,O)]+[opage(s,per[s]) for s in stores_o]
+    sm=open(f'{out}/sitemap.xml').read()
+    sm=sm.replace('</urlset>',''.join(f'  <url><loc>{BASE}{u}</loc><lastmod>{today}</lastmod><changefreq>daily</changefreq></url>\n' for u in opaths)+'</urlset>')
+    open(f'{out}/sitemap.xml','w').write(sm)
+    open(f'{out}/aanbiedingen.txt','w').write('\n'.join(f'{NAMES[s]}\t/aanbiedingen/{s}/' for s in stores_o))
+    print(len(opaths),'aanbiedingenpaginas')

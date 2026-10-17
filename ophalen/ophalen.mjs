@@ -115,7 +115,7 @@ async function aldi() {
     if (gezien.has(id) || extra >= 1500) continue;
     extra++;
     try { const nd = nextData(await haal(u, {}, 'text')); if (nd) aldiProducten(nd.api ?? nd.d, alle); } catch (e) { if (extra < 5) console.warn('aldi product mislukt', u, e.message); }
-    await slaap(250);
+    await slaap(150);
   }
   console.log(`aldi: ${paginas.length} categoriepagina's, ${extra} productpagina's, ${alle.size} producten gevonden`);
   const vd = vandaag();
