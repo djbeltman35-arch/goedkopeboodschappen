@@ -53,9 +53,6 @@ main{padding-block:22px 28px;display:grid;gap:22px}
 .stephead .side{margin-left:auto;font-size:13px;color:var(--muted);text-align:right}
 .hint{color:var(--muted);font-size:14px;margin:0 0 12px}
 .addrow{display:flex;gap:8px;flex-wrap:wrap}
-.tryrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:13px;color:var(--muted)}
-.try{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font:500 13px var(--body);color:var(--ink)}
-.try:hover{border-color:var(--red)}
 
 /* Stap 1: top 3 resultaten */
 .meta{color:var(--muted);font-size:14px;margin:14px 0 8px}
@@ -161,6 +158,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 .site-foot a:hover{text-decoration:underline}
 .printbtn{width:100%;margin-top:14px}
 #printsheet{display:none}
+#results,#detail{scroll-margin-top:12px}
 @media print{
   body{background:#fff;color:#000}
   body>*:not(#printsheet){display:none!important}
@@ -193,10 +191,9 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
   <section class="step" aria-labelledby="h1s">
     <div class="stephead"><span class="num">1</span><h2 id="h1s">Zoek een product</h2></div>
     <form class="addrow" id="f" role="search">
-      <input type="search" id="q" placeholder="Bijv. halfvolle melk, pindakaas, koffiebonen" autocomplete="off" aria-label="Zoek een product">
+      <input type="search" id="q" placeholder="Zoek bijv. halfvolle melk, pindakaas of koffiebonen" autocomplete="off" aria-label="Zoek een product">
       <button type="submit" class="btn">Zoeken</button>
     </form>
-    <div class="tryrow" id="tryrow"></div>
     <div class="catbar" id="catbar"></div>
     <div id="results"></div>
   </section>
@@ -231,7 +228,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 const CATS=[["Zuivel en eieren", "🥛", ["halfvolle melk", "volle melk", "karnemelk", "yoghurt", "kwark", "vla", "slagroom", "roomboter", "margarine", "eieren"]], ["Kaas en vleeswaren", "🧀", ["jonge kaas", "belegen kaas", "oude kaas", "geraspte kaas", "ham", "salami", "rookworst", "smeerkaas"]], ["Brood en ontbijt", "🍞", ["volkoren brood", "wit brood", "beschuit", "crackers", "ontbijtkoek", "cornflakes", "havermout", "muesli"]], ["Broodbeleg", "🥜", ["pindakaas", "hagelslag", "jam", "appelstroop", "chocoladepasta", "honing"]], ["Groente en fruit", "🍎", ["bananen", "appels", "sinaasappels", "aardappelen", "uien", "tomaten", "komkommer", "paprika", "wortels", "broccoli", "sla", "champignons"]], ["Vlees en vis", "🍗", ["kipfilet", "gehakt", "kipdijfilet", "speklapjes", "zalm", "tonijn", "vissticks"]], ["Pasta, rijst en koken", "🍝", ["rijst", "spaghetti", "macaroni", "penne", "tomatenpuree", "pastasaus", "olijfolie", "zonnebloemolie", "bloem", "suiker"]], ["Sauzen", "🥫", ["mayonaise", "ketchup", "mosterd", "appelmoes", "satesaus"]], ["Koffie en thee", "☕", ["koffiebonen", "koffiepads", "filterkoffie", "thee"]], ["Dranken", "🥤", ["coca cola", "cola", "sinaasappelsap", "appelsap", "spa", "bier", "ice tea"]], ["Snoep en chips", "🍫", ["chips", "pinda", "chocolade", "drop", "eierkoeken", "stroopwafels"]], ["Huishouden", "🧻", ["toiletpapier", "keukenrol", "wasmiddel", "afwasmiddel", "vaatwastabletten"]], ["Verzorging en baby", "🧴", ["tandpasta", "shampoo", "douchegel", "deodorant", "luiers"]], ["Huisdieren", "🐾", ["kattenvoer", "hondenvoer", "kattenbakvulling"]]];//EINDE CATS
 const DATA="https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/";
 const EXCL=new Set(["choco","chocolade","gekookte","spinazie","roasted","americanos","krieltjes","salade","saus","smaak","snack","snacks","reep","koek","koekjes","chips","drink","mix","aardbei","vanille","banaan"]);
-const TRY=["halfvolle melk","eieren","pindakaas","koffiebonen","bananen","jonge kaas"];
+
 const SAMPLE=["halfvolle melk 1 l","coca cola zero 1,5","pindakaas calve","pasta penne 500"];
 const S={stores:[],prods:[],list:[],sel:null,saved:null,lastQ:"",offers:null,view:null,ofs:"alle",ofn:60};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
@@ -277,7 +274,6 @@ function addProduct(p,term){
 }
 
 /* Stap 1 */
-function tryRow(){$("tryrow").innerHTML="<span>Probeer:</span>"+TRY.map(t=>`<button type="button" class="try" data-try="${esc(t)}">${esc(t)}</button>`).join("")}
 function search(){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; catBar();
   if(!q){$("results").innerHTML="";return}
@@ -404,23 +400,24 @@ function recompare(){
   const msg=(up||down)?`${down} goedkoper, ${up} duurder. Totaal ${diff<=0?eur(-diff)+" minder":eur(diff)+" meer"} dan toen.`:"Er is niets veranderd sinds die keer.";
   $("banner").innerHTML=`<div class="banner"><b>Welkom terug.</b> Je lijst van ${dag(S.saved.at)} is opnieuw vergeleken. ${msg}</div>`;
 }
+// Na een klik naar de plek springen waar het resultaat staat.
+function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
 function renderAll(){renderList();renderTotals();if(S.view) renderView(); else if(S.lastQ) search()}
 
 document.addEventListener("click",e=>{
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers.offers[+of.dataset.offer]);return}
-  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView()} else {catBar();$("results").innerHTML=""} return}
-  const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();return}
+  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();jump("results")} else {catBar();$("results").innerHTML=""} return}
+  const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();jump("results");return}
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}
   const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);S.sel=null;renderAll();return}
   if(e.target.closest("[data-print]")){printList();return}
-  const t=e.target.closest(".shopcard"); if(t){S.sel=+t.dataset.si;renderTotals();return}
-  const tr=e.target.closest("[data-try]"); if(tr){$("q").value=tr.dataset.try;search();if(tr.classList.contains("artname"))$("f").scrollIntoView({behavior:"smooth",block:"start"});return}
+  const t=e.target.closest(".shopcard"); if(t){S.sel=+t.dataset.si;renderTotals();jump("detail");return}
+  const tr=e.target.closest("[data-try]"); if(tr){$("q").value=tr.dataset.try;search();jump("results");return}
 });
-$("f").addEventListener("submit",e=>{e.preventDefault();search()});
+$("f").addEventListener("submit",e=>{e.preventDefault();search();$("q").blur();jump("results")});
 $("save").addEventListener("click",save);
 $("clear").addEventListener("click",()=>{S.list=[];S.sel=null;$("banner").innerHTML="";renderAll()});
-tryRow();
 // Extra data die elke dag via GitHub wordt bijgewerkt: Aldi-assortiment en aanbiedingen. Mag ontbreken.
 const extra=f=>fetch(DATA+f,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
 Promise.all([fetch("producten.json").then(r=>r.json()),extra("aldi.json"),extra("aanbiedingen.json")]).then(([d,aldi,offers])=>{
