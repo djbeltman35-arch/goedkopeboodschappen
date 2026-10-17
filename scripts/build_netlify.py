@@ -15,7 +15,7 @@ head='''<!doctype html>
 <meta property="og:url" content="https://goedkopeboodschappen.netlify.app/">
 <meta name="theme-color" content="#ffcf1f">
 <meta property="og:type" content="website">
-<meta name="google-site-verification" content="A7YLnMM23y16A-WSlNAJXJ_tnVpGrncvf_dhjl522pM"><meta name="google-site-verification" content="qW08s7N_6THUJ-zVfpa8KrDFVk6qh4AaJBKK_nKP26c"><meta property="og:locale" content="nl_NL"><meta property="og:image" content="https://goedkopeboodschappen.netlify.app/icons/icon-512.png"><meta property="og:site_name" content="Goedkope Boodschappen"><meta name="twitter:card" content="summary">
+<meta name="google-site-verification" content="qW08s7N_6THUJ-zVfpa8KrDFVk6qh4AaJBKK_nKP26c"><meta property="og:locale" content="nl_NL"><meta property="og:image" content="https://goedkopeboodschappen.netlify.app/icons/icon-512.png"><meta property="og:site_name" content="Goedkope Boodschappen"><meta name="twitter:card" content="summary">
 <meta property="og:title" content="Goedkope Boodschappen: waar zijn je boodschappen het goedkoopst?">
 <meta property="og:description" content="Maak je boodschappenlijst en zie per artikel de goedkoopste supermarkt, plus de top 3 winkels voor je hele lijst.">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
