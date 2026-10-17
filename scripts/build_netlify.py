@@ -49,4 +49,8 @@ if os.path.exists(at):
     os.remove(at)
 seo=seo.replace('{LINKS}',links)
 body=s[i:].replace('<footer class="wrap site-foot">',seo+'<footer class="wrap site-foot">',1)
+# Versie onderaan, zodat je kunt zien welke zip er online staat.
+import datetime,zoneinfo
+ver=datetime.datetime.now(zoneinfo.ZoneInfo('Europe/Amsterdam')).strftime('%d-%m-%Y %H:%M')
+body=body.replace('Made by Erik</a></p></footer>',f'Made by Erik</a></p><p style="font-size:12px;opacity:.6;margin:4px 0 0">Versie {ver}</p></footer>',1)
 open(dst,'w').write(head+s[:i]+'</head>\n<body>\n'+body+'\n</body>\n</html>\n')
