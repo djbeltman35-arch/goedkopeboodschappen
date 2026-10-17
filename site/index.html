@@ -180,6 +180,7 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
   #printsheet tfoot td{font-weight:700;border-bottom:none;border-top:2pt solid #000}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.catbar.top1{margin:0 0 16px}
 </style>
 
 <div class="bar"><div class="wrap">
@@ -196,12 +197,12 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 
 <main class="wrap">
   <section class="step" aria-labelledby="h1s">
+    <div class="catbar top1" id="catbar"></div>
     <div class="stephead"><span class="num">1</span><h2 id="h1s">Zoek een product</h2></div>
     <form class="addrow" id="f" role="search">
       <input type="search" id="q" placeholder="Zoek bijv. halfvolle melk, pindakaas of koffiebonen" autocomplete="off" aria-label="Zoek een product">
       <button type="submit" class="btn">Zoeken</button>
     </form>
-    <div class="catbar" id="catbar"></div>
     <div id="results"></div>
   </section>
 
@@ -248,7 +249,10 @@ const eur=v=>"€ "+v.toFixed(2).replace(".",",");
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9,.]+/g," ").replace(/(\d)[,.](\d)/g,"$1,$2").trim();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dag=t=>new Date(t).toLocaleDateString("nl-NL",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"});
-const link=p=>/^https?:/.test(p[2])?p[2]:S.stores[p[0]].base+p[2];
+// Lidl- en DekaMarkt-links uit de dataset werken niet meer; daar zoeken we het product op.
+const SEARCHL={lidl:n=>"https://www.lidl.nl/q/search?q="+encodeURIComponent(n),dekamarkt:n=>"https://www.google.com/search?q="+encodeURIComponent("site:dekamarkt.nl "+n)};
+const OLDL=/boodschaapje\.nl\/product\/|dekamarkt\.nl\/boodschappen\/x\/x\/x\//;
+const link=p=>/^https?:/.test(p[2])?p[2]:(SEARCHL[S.stores[p[0]].id]?SEARCHL[S.stores[p[0]].id](p[1]):S.stores[p[0]].base+p[2]);
 const sname=si=>S.stores[si].name;
 const unitTxt=p=>p[5]!=null?eur(p[5])+" / "+p[6]:"";
 // Een product past als elk zoekwoord als heel woord voorkomt; het laatste woord mag ook het begin van een woord zijn.
@@ -478,14 +482,17 @@ Promise.all([fetch("producten.json").then(r=>r.json()),extra("aldi.json"),extra(
     const old=store.get("lijst-bewaard")?.items||SAMPLE;
     for(const t of old){const b=[...pick(t).values()].sort((a,b)=>a[3]-b[3])[0]; if(b) S.list.push({term:t,si:b[0],name:b[1]+(b[4]?" "+b[4]:""),link:link(b),price:b[3]})}
   }
-  // Aanbiedingen die op de aanbiedingenpagina's zijn gekozen, nu aan de lijst toevoegen.
+  // Oude, niet meer werkende Lidl/DekaMarkt-links in een bewaarde lijst vervangen.
+  for(const x of S.list) if(OLDL.test(x.link||"")){const id=S.stores[x.si]?.id; if(SEARCHL[id]) x.link=SEARCHL[id](x.name)}
+  if(S.saved?.list) for(const x of S.saved.list) if(OLDL.test(x.link||"")){const id=S.stores[x.si]?.id; if(SEARCHL[id]) x.link=SEARCHL[id](x.name)}
+  // Artikelen en aanbiedingen die op de andere pagina's zijn gekozen, nu aan de lijst toevoegen.
   const erbij=store.get("lijst-erbij"); let nErbij=0;
   if(Array.isArray(erbij)){
     const idx=new Map(S.stores.map((s,i)=>[s.id,i]));
-    for(const o of erbij) if(idx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.n,si:idx.get(o.s),name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offer:o.t||true});nErbij++}
+    for(const o of erbij) if(idx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.n,si:idx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(o.sz.toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.r?{}:{offer:o.t||true})});nErbij++}
     try{localStorage.removeItem("lijst-erbij")}catch(e){}
   }
   savedInfo(); $("q").value=new URLSearchParams(location.search).get("q")||"halfvolle melk"; search(); renderList(); renderTotals(); recompare();
-  if(nErbij){$("banner").innerHTML=`<div class="banner"><b>${nErbij} ${nErbij===1?"aanbieding":"aanbiedingen"}</b> van de aanbiedingenpagina op je lijst gezet.</div>`; jump("lijst")}
+  if(nErbij){$("banner").innerHTML=`<div class="banner"><b>${nErbij} ${nErbij===1?"artikel":"artikelen"}</b> op je lijst gezet.</div>`; jump("lijst")}
 }).catch(()=>{$("results").innerHTML='<p class="meta">De prijzen konden niet worden geladen. Herlaad de pagina.</p>'});
 </script>

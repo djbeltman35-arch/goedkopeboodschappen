@@ -1,7 +1,17 @@
-import json,re,sys,html,unicodedata,datetime
+import json,re,sys,html,unicodedata,datetime,os
+from urllib.parse import quote_plus
 BASE="https://goedkopeboodschappen.netlify.app"
 d=json.load(open(sys.argv[1])); out=sys.argv[2]
 stores=d['stores']; prods=d['products']
+# Aldi komt uit de dagelijkse data (data/aldi.json naast aanbiedingen.json).
+ALDI=os.path.join(os.path.dirname(sys.argv[4]),'aldi.json') if len(sys.argv)>4 else ''
+if ALDI and os.path.exists(ALDI):
+    ai=len(stores); stores.append({'id':'aldi','name':'Aldi','base':''})
+    for r in json.load(open(ALDI)).get('products',[]): prods.append([ai,*r])
+# Lidl- en DekaMarkt-links uit de dataset werken niet meer; daar zoeken we het product op.
+SEARCH={'lidl':lambda n:'https://www.lidl.nl/q/search?q='+quote_plus(n),'dekamarkt':lambda n:'https://www.google.com/search?q='+quote_plus('site:dekamarkt.nl '+n)}
+def plink(s,p): return p[2] if p[2].startswith('http') else SEARCH[s['id']](p[1]) if s['id'] in SEARCH else s['base']+p[2]
+def addbtn(s,p): return f'<button type="button" class="add" data-o="{html.escape(json.dumps({"s":s["id"],"n":p[1],"sz":p[4] or "","p":p[3],"u":plink(s,p),"r":1},ensure_ascii=False))}">+ Op mijn lijst</button>'
 def norm(s):
     s=unicodedata.normalize('NFD',s.lower()); s=''.join(c for c in s if unicodedata.category(c)!='Mn')
     s=re.sub(r'[^a-z0-9,.]+',' ',s); s=re.sub(r'(\d)[,.](\d)',r'\1,\2',s); return s.split()
@@ -23,6 +33,9 @@ h1{font:700 clamp(26px,4vw,36px)/1.15 "Familjen Grotesk",system-ui,sans-serif;ma
 table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:10px 12px;text-align:left;border-top:1px solid #ebe5d3;vertical-align:top}th{border-top:none;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#6b6455}
 td.p{font:700 15px "JetBrains Mono",ui-monospace,monospace;white-space:nowrap;text-align:right}tr.best td{background:#fff6d1}tr.best td:first-child{box-shadow:inset 4px 0 0 #c8281e}
 a{color:inherit}.cta{display:inline-block;margin:18px 0;background:#c8281e;color:#fff;font-weight:700;padding:12px 18px;border-radius:10px;text-decoration:none}
+.add{margin-top:6px;background:#c8281e;color:#fff;border:none;border-radius:10px;padding:8px 12px;font:700 14px "Public Sans",system-ui,sans-serif;cursor:pointer;white-space:nowrap}.add:hover{background:#a11d15}.add.on{background:#eef7f1;color:#1d7a46}
+.bar2{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(560px,calc(100% - 32px));display:flex;justify-content:space-between;align-items:center;gap:10px;background:#221f17;color:#fff;padding:10px 10px 10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px;z-index:5}.bar2 a{background:#c8281e;color:#fff;font-weight:700;padding:8px 12px;border-radius:10px;text-decoration:none;white-space:nowrap}.bar2[hidden]{display:none}
+.crumbs{font-size:14px;margin:0 0 4px}.crumbs a{font-weight:700}.faq h3{font:700 18px "Familjen Grotesk",system-ui,sans-serif;margin:18px 0 4px}.faq p{margin:0;max-width:65ch}body{padding-bottom:72px}
 .links{columns:3 180px;padding:0;list-style:none}.links li{padding:3px 0}.note{color:#6b6455;font-size:13px}
 footer{text-align:center;color:#6b6455;font-size:14px;padding:8px 16px 32px}footer a{color:#c8281e;font-weight:600;text-decoration:none}
 @media (prefers-color-scheme:dark){body{background:#16140f;color:#f1ecdf}.tbl{background:#1f1c15;border-color:#363126}th,td{border-color:#363126}th,.note,footer{color:#aba28c}tr.best td{background:#3a3214}}'''
@@ -32,13 +45,22 @@ FOOT='<footer><a href="/">Goedkope Boodschappen</a> · <a href="/vergelijk/">All
 def page(title,desc,path,body,ld):
     return f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{html.escape(title)}</title><meta name="description" content="{html.escape(desc)}"><link rel="canonical" href="{BASE}{path}">
-<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}"><meta name="theme-color" content="#ffcf1f">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}"><meta property="og:image" content="{BASE}/icons/icon-512.png"><meta property="og:site_name" content="Goedkope Boodschappen"><meta name="twitter:card" content="summary"><meta name="theme-color" content="#ffcf1f">
 {FAV}{FONT}<style>{CSS}</style><script type="application/ld+json">{json.dumps(ld,ensure_ascii=False)}</script></head><body>
 <div class="bar"><div class="wrap nav"><a class="brand" href="/">Goedkope Boodschappen</a><a class="nl" href="/aanbiedingen/">Aanbiedingen</a><a class="nl" href="/vergelijk/">Alle producten</a></div></div><header class="top"><div class="wrap">{body[0]}</div></header><main class="wrap">{body[1]}</main>{FOOT}</body></html>'''
+LISTJS='''<div class="bar2" id="bar2" hidden><span id="bar2t"></span><a href="/#lijst">Naar mijn lijst</a></div>
+<script>(()=>{const K="lijst-erbij",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []}},put=v=>{try{localStorage.setItem(K,JSON.stringify(v));return true}catch(e){return false}};
+window.mark=()=>{const q=get(),u=new Set(q.map(x=>x.u));document.querySelectorAll(".add").forEach(b=>{const o=JSON.parse(b.dataset.o);if(u.has(o.u)){b.textContent="✓ Op je lijst";b.classList.add("on")}});const n=q.length;document.getElementById("bar2").hidden=!n;document.getElementById("bar2t").textContent=n+(n===1?" artikel":" artikelen")+" klaar voor je lijst"};
+document.addEventListener("click",ev=>{const b=ev.target.closest(".add");if(!b)return;const o=JSON.parse(b.dataset.o),q=get();if(!q.some(x=>x.u===o.u)){q.push(o);if(!put(q)){b.textContent="Bewaren lukt niet in deze browser";return}}mark()});mark()})()</script>'''
 eur=lambda v:("€ %.2f"%v).replace('.',',')
 made=[]
-import os
 os.makedirs(f'{out}/vergelijk',exist_ok=True)
+CATOF={}
+for c in CATS:
+    for t in c[2]: CATOF.setdefault(t,c)
+def cslug(c): return slug(c[0].lower())
+unit=lambda p: f'{eur(p[5])} / {p[6]}' if p[5] is not None else ''
+picked={}
 for t in TERMS:
     toks=norm(t); rows=[]
     for si,s in enumerate(stores):
@@ -49,18 +71,34 @@ for t in TERMS:
         rows.append((s,best))
     if len(rows)<3: continue
     rows.sort(key=lambda r:(r[1][5] if r[1][5] is not None else 1e9, r[1][3]))
+    picked[t]=rows
+for t,rows in picked.items():
     name=t[0].upper()+t[1:]; sl=slug(t); path=f'/vergelijk/{sl}/'
-    cheapest=rows[0]
-    unit=lambda p: f'{eur(p[5])} / {p[6]}' if p[5] is not None else ''
-    trs=''.join(f'<tr{" class=best" if i==0 else ""}><td><b>{html.escape(s["name"])}</b></td><td><a href="{html.escape(s["base"]+p[2])}" rel="nofollow noopener" target="_blank">{html.escape(p[1])}</a><br><span class="note">{html.escape(p[4] or "")}</span></td><td class="p">{eur(p[3])}</td><td class="p">{unit(p)}</td></tr>' for i,(s,p) in enumerate(rows))
+    cheapest=rows[0]; dearest=rows[-1]
+    trs=''.join(f'<tr{" class=best" if i==0 else ""}><td><b>{html.escape(s["name"])}</b></td><td><a href="{html.escape(plink(s,p))}" rel="nofollow noopener" target="_blank">{html.escape(p[1])}</a><br><span class="note">{html.escape(p[4] or "")}</span><br>{addbtn(s,p)}</td><td class="p">{eur(p[3])}</td><td class="p">{unit(p)}</td></tr>' for i,(s,p) in enumerate(rows))
     prices=[p[3] for _,p in rows]
     title=f'{name} prijs vergelijken: goedkoopste supermarkt | Goedkope Boodschappen'
     desc=f'{name} is het goedkoopst bij {cheapest[0]["name"]} ({unit(cheapest[1]) or eur(cheapest[1][3])}). Vergelijk {name.lower()} bij {len(rows)} supermarkten, met directe links naar het product.'
-    ld=[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Goedkope Boodschappen","item":BASE+"/"},{"@type":"ListItem","position":2,"name":"Vergelijken","item":BASE+"/vergelijk/"},{"@type":"ListItem","position":3,"name":name,"item":BASE+path}]},
-        {"@context":"https://schema.org","@type":"ItemList","name":f"{name} per supermarkt","itemListElement":[{"@type":"ListItem","position":i+1,"item":{"@type":"Product","name":p[1],"offers":{"@type":"Offer","price":f"{p[3]:.2f}","priceCurrency":"EUR","url":s["base"]+p[2],"seller":{"@type":"Organization","name":s["name"]}}}} for i,(s,p) in enumerate(rows)]}]
     per={'kg':'per kilo','l':'per liter','st':'per stuk'}.get(cheapest[1][6],'')
-    head=f'<h1>{html.escape(name)}: waar is het het goedkoopst?</h1><p class="lead">{html.escape(name)} koop je {per} het voordeligst bij <b>{html.escape(cheapest[0]["name"])}</b>. Hieronder per supermarkt het voordeligste product, van goedkoop naar duur.</p>'
-    main=f'<div class="tbl"><table><thead><tr><th>Supermarkt</th><th>Product</th><th>Prijs</th><th>Per kg/l</th></tr></thead><tbody>{trs}</tbody></table></div><a class="cta" href="/">Zet {html.escape(name.lower())} op je boodschappenlijst</a><p class="note">Prijzen van {len(rows)} supermarkten, van {eur(min(prices))} tot {eur(max(prices))}. Reguliere webshopprijzen uit de open dataset van Checkjebon, zonder aanbiedingen. De prijs aan de kassa is leidend.</p>'
+    c=CATOF.get(t)
+    crumbs=[{"@type":"ListItem","position":1,"name":"Goedkope Boodschappen","item":BASE+"/"}]
+    crumbs+= [{"@type":"ListItem","position":2,"name":c[0],"item":BASE+f'/categorie/{cslug(c)}/'}] if c else [{"@type":"ListItem","position":2,"name":"Vergelijken","item":BASE+"/vergelijk/"}]
+    crumbs.append({"@type":"ListItem","position":3,"name":name,"item":BASE+path})
+    faq=[(f'Waar is {name.lower()} het goedkoopst?',f'{name} is het goedkoopst bij {cheapest[0]["name"]}: {cheapest[1][1]} kost {eur(cheapest[1][3])}'+(f' ({unit(cheapest[1])})' if unit(cheapest[1]) else '')+'.'),
+         (f'Wat kost {name.lower()} bij de supermarkt?',f'{name} kost bij {len(rows)} supermarkten tussen {eur(min(prices))} en {eur(max(prices))}, afhankelijk van merk en verpakking.'),
+         (f'Hoeveel bespaar je op {name.lower()}?',f'Per {"kilo" if cheapest[1][6]=="kg" else "liter" if cheapest[1][6]=="l" else "stuk"} is {cheapest[0]["name"]} goedkoper dan {dearest[0]["name"]} ({unit(cheapest[1])} tegen {unit(dearest[1])}).' if cheapest[1][5] and dearest[1][5] and dearest[1][5]>cheapest[1][5] else None)]
+    faq=[q for q in faq if q[1]]
+    ld=[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":crumbs},
+        {"@context":"https://schema.org","@type":"Product","name":name,"description":desc,"image":BASE+"/icons/icon-512.png","url":BASE+path,
+         "offers":{"@type":"AggregateOffer","priceCurrency":"EUR","lowPrice":f"{min(prices):.2f}","highPrice":f"{max(prices):.2f}","offerCount":len(rows),
+                   "offers":[{"@type":"Offer","name":p[1],"price":f"{p[3]:.2f}","priceCurrency":"EUR","url":plink(s,p),"availability":"https://schema.org/InStock","seller":{"@type":"Organization","name":s["name"]}} for s,p in rows]}},
+        {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in faq]}]
+    crumbhtml=f'<p class="crumbs"><a href="/">Home</a> › '+(f'<a href="/categorie/{cslug(c)}/">{html.escape(c[0])}</a>' if c else '<a href="/vergelijk/">Vergelijken</a>')+f' › {html.escape(name)}</p>'
+    head=crumbhtml+f'<h1>{html.escape(name)}: waar is het het goedkoopst?</h1><p class="lead">{html.escape(name)} koop je {per} het voordeligst bij <b>{html.escape(cheapest[0]["name"])}</b>. Hieronder per supermarkt het voordeligste product, van goedkoop naar duur. Zet het direct op je boodschappenlijst.</p>'
+    rel=[x for x in (c[2] if c else []) if x!=t and x in picked]
+    relhtml=f'<h2>Meer {html.escape(c[0].lower())} vergelijken</h2><ul class="links">'+''.join(f'<li><a href="/vergelijk/{slug(x)}/">{html.escape(x[0].upper()+x[1:])}</a></li>' for x in rel)+'</ul>' if rel else ''
+    faqhtml='<section class="faq"><h2>Veelgestelde vragen</h2>'+''.join(f'<h3>{html.escape(q)}</h3><p>{html.escape(a)}</p>' for q,a in faq)+'</section>'
+    main=f'<div class="tbl"><table><thead><tr><th>Supermarkt</th><th>Product</th><th>Prijs</th><th>Per kg/l</th></tr></thead><tbody>{trs}</tbody></table></div><p class="note">Prijzen van {len(rows)} supermarkten, van {eur(min(prices))} tot {eur(max(prices))}, bijgewerkt op {datetime.date.today().strftime("%d-%m-%Y")}. Reguliere webshopprijzen, zonder aanbiedingen. De prijs aan de kassa is leidend.</p>{faqhtml}{relhtml}<a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>{LISTJS}'
     os.makedirs(f'{out}/vergelijk/{sl}',exist_ok=True)
     open(f'{out}/vergelijk/{sl}/index.html','w').write(page(title,desc,path,(head,main),ld))
     made.append((name,path))
@@ -70,13 +108,14 @@ cats=[]
 for c in CATS:
     items=[t for t in c[2] if t in best]
     if not items: continue
-    cs=slug(c[0].lower()); cpath=f'/categorie/{cs}/'
-    li=''.join(f'<li><a href="{best[t]}">{html.escape(t[0].upper()+t[1:])}</a></li>' for t in items)
-    head=f'<h1>{html.escape(c[0])} vergelijken</h1><p class="lead">Bij welke supermarkt koop je {html.escape(c[0].lower())} het goedkoopst? Kies een product en zie de prijzen van alle grote supermarkten naast elkaar.</p>'
-    main=f'<ul class="links">{li}</ul><a class="cta" href="/">Maak je boodschappenlijst</a>'
-    ld={"@context":"https://schema.org","@type":"CollectionPage","name":f"{c[0]} vergelijken","url":BASE+cpath,"breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Goedkope Boodschappen","item":BASE+"/"},{"@type":"ListItem","position":2,"name":c[0],"item":BASE+cpath}]}}
+    cs=cslug(c); cpath=f'/categorie/{cs}/'
+    trs=''.join(f'<tr><td><a href="{best[t]}"><b>{html.escape(t[0].upper()+t[1:])}</b></a><br><span class="note">{html.escape(picked[t][0][1][1])}{" "+html.escape(picked[t][0][1][4]) if picked[t][0][1][4] and picked[t][0][1][4].lower() not in picked[t][0][1][1].lower() else ""}</span><br>{addbtn(*picked[t][0])}</td><td><b>{html.escape(picked[t][0][0]["name"])}</b></td><td class="p">{eur(picked[t][0][1][3])}</td></tr>' for t in items)
+    head=f'<p class="crumbs"><a href="/">Home</a> › {html.escape(c[0])}</p><h1>{c[1]} {html.escape(c[0])} vergelijken</h1><p class="lead">Bij welke supermarkt koop je {html.escape(c[0].lower())} het goedkoopst? Per product zie je de goedkoopste supermarkt. Klik op een product voor alle prijzen naast elkaar, of zet het meteen op je boodschappenlijst.</p>'
+    main=f'<div class="tbl"><table><thead><tr><th>Product</th><th>Goedkoopst bij</th><th>Prijs</th></tr></thead><tbody>{trs}</tbody></table></div><h2>Andere categorieën</h2><ul class="links">'+''.join(f'<li><a href="/categorie/{cslug(x)}/">{x[1]} {html.escape(x[0])}</a></li>' for x in CATS if x is not c and any(t in best for t in x[2]))+f'</ul><a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>{LISTJS}'
+    ld=[{"@context":"https://schema.org","@type":"CollectionPage","name":f"{c[0]} vergelijken","url":BASE+cpath,"breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Goedkope Boodschappen","item":BASE+"/"},{"@type":"ListItem","position":2,"name":c[0],"item":BASE+cpath}]}},
+        {"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"ListItem","position":i+1,"url":BASE+best[t],"name":t[0].upper()+t[1:]} for i,t in enumerate(items)]}]
     os.makedirs(f'{out}/categorie/{cs}',exist_ok=True)
-    open(f'{out}/categorie/{cs}/index.html','w').write(page(f'{c[0]} prijzen vergelijken bij alle supermarkten | Goedkope Boodschappen',f'Vergelijk de prijzen van {", ".join(items[:4])} en meer {c[0].lower()} bij Albert Heijn, Jumbo, Lidl, PLUS, Dirk en andere supermarkten.',cpath,(head,main),ld))
+    open(f'{out}/categorie/{cs}/index.html','w').write(page(f'{c[0]} prijzen vergelijken bij alle supermarkten | Goedkope Boodschappen',f'Vergelijk de prijzen van {", ".join(items[:4])} en meer {c[0].lower()} bij Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk en andere supermarkten.',cpath,(head,main),ld))
     cats.append((c[0],cpath))
 open(f'{out}/categorieen.txt','w').write('\n'.join(f'{n}\t{p}' for n,p in cats))
 lis=''.join(f'<li><a href="{p}">{html.escape(n)}</a></li>' for n,p in sorted(made))
@@ -125,12 +164,8 @@ fetch("https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/m
 let o=j.offers.filter(x=>N[x.s]&&x.p>0&&(!x.t||x.t>=d)&&(!S||x.s===S));const p=x=>x.was>x.p?(x.was-x.p)/x.was:0;o.sort((a,b)=>p(b)-p(a)||a.p-b.p);if(!o.length)return;
 document.getElementById("cnt").textContent=o.length;
 document.getElementById("grid").innerHTML=o.slice(0,2500).map(x=>`<li class="o" data-c="${e(x.c||"Overig")}"><span><span class="s">${e(SH[x.s]||N[x.s])}</span>${x.lbl?`<span class="l">${e(x.lbl)}</span>`:""}</span><a href="${e(x.u)}" rel="nofollow noopener" target="_blank"><b>${e(x.n)}</b></a><span class="z">${e(x.sz||"")}</span><span><span class="pr">${eur(x.p)}</span>${x.was>x.p?`<s>${eur(x.was)}</s>`:""}</span>${x.t?`<span class="t">t/m ${t(x.t)}</span>`:""}<button type="button" class="add" data-o="${e(JSON.stringify({s:x.s,n:x.n,sz:x.sz,p:x.p,u:x.u,t:x.t}))}">+ Op mijn lijst</button></li>`).join("");mark();applyCat(1)}).catch(()=>{})})()</script>
-<div class="bar2" id="bar2" hidden><span id="bar2t"></span><a href="/#lijst">Naar mijn lijst</a></div>
 <script>window.applyCat=(keep)=>{const s=document.getElementById("fcat");if(!s)return;const v=s.value,g=document.getElementById("grid");if(keep&&v&&![...g.children].some(li=>li.dataset.c===v)){s.value="";}const w=s.value;let n=0;[...g.children].forEach(li=>{const h=!!w&&li.dataset.c!==w;li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n};
-document.addEventListener("change",e=>{if(e.target.id==="fcat")applyCat()});</script>
-<script>(()=>{const K="lijst-erbij",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []}},put=v=>{try{localStorage.setItem(K,JSON.stringify(v));return true}catch(e){return false}};
-window.mark=()=>{const q=get(),u=new Set(q.map(x=>x.u));document.querySelectorAll(".add").forEach(b=>{const o=JSON.parse(b.dataset.o);if(u.has(o.u)){b.textContent="✓ Op je lijst";b.classList.add("on")}});const n=q.length;document.getElementById("bar2").hidden=!n;document.getElementById("bar2t").textContent=n+(n===1?" aanbieding":" aanbiedingen")+" klaar voor je lijst"};
-document.addEventListener("click",ev=>{const b=ev.target.closest(".add");if(!b)return;const o=JSON.parse(b.dataset.o),q=get();if(!q.some(x=>x.u===o.u)){q.push(o);if(!put(q)){b.textContent="Bewaren lukt niet in deze browser";return}}mark()});mark()})()</script>''' % json.dumps(NAMES)
+document.addEventListener("change",e=>{if(e.target.id==="fcat")applyCat()});</script>''' % json.dumps(NAMES)+LISTJS
     def chips(cur):
         return '<nav class="chips" aria-label="Supermarkten">'+f'<a href="/aanbiedingen/"{" class=on" if not cur else ""}>Alle</a>'+''.join(f'<a href="/aanbiedingen/{s}/"{" class=on" if cur==s else ""}>{html.escape(NAMES[s])}</a>' for s in stores_o)+'</nav>'
     def opage(cur,lst):
