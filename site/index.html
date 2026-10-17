@@ -233,9 +233,12 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 <div id="printsheet" aria-hidden="true"></div>
 <footer class="wrap site-foot"><p><a href="mailto:erik@beltman.email" title="Mail naar erik@beltman.email">Made by Erik</a></p></footer>
 <script>
-const CATS=[["Zuivel en eieren", "🥛", ["halfvolle melk", "volle melk", "karnemelk", "yoghurt", "kwark", "vla", "slagroom", "roomboter", "margarine", "eieren"]], ["Kaas en vleeswaren", "🧀", ["jonge kaas", "belegen kaas", "oude kaas", "geraspte kaas", "ham", "salami", "rookworst", "smeerkaas"]], ["Brood en ontbijt", "🍞", ["volkoren brood", "wit brood", "beschuit", "crackers", "ontbijtkoek", "cornflakes", "havermout", "muesli"]], ["Broodbeleg", "🥜", ["pindakaas", "hagelslag", "jam", "appelstroop", "chocoladepasta", "honing"]], ["Groente en fruit", "🍎", ["bananen", "appels", "sinaasappels", "aardappelen", "uien", "tomaten", "komkommer", "paprika", "wortels", "broccoli", "sla", "champignons"]], ["Vlees en vis", "🍗", ["kipfilet", "gehakt", "kipdijfilet", "speklapjes", "zalm", "tonijn", "vissticks"]], ["Pasta, rijst en koken", "🍝", ["rijst", "spaghetti", "macaroni", "penne", "tomatenpuree", "pastasaus", "olijfolie", "zonnebloemolie", "bloem", "suiker"]], ["Sauzen", "🥫", ["mayonaise", "ketchup", "mosterd", "appelmoes", "satesaus"]], ["Koffie en thee", "☕", ["koffiebonen", "koffiepads", "filterkoffie", "thee"]], ["Dranken", "🥤", ["coca cola", "cola", "sinaasappelsap", "appelsap", "spa", "bier", "ice tea"]], ["Snoep en chips", "🍫", ["chips", "pinda", "chocolade", "drop", "eierkoeken", "stroopwafels"]], ["Huishouden", "🧻", ["toiletpapier", "keukenrol", "wasmiddel", "afwasmiddel", "vaatwastabletten"]], ["Verzorging en baby", "🧴", ["tandpasta", "shampoo", "douchegel", "deodorant", "luiers"]], ["Huisdieren", "🐾", ["kattenvoer", "hondenvoer", "kattenbakvulling"]]];//EINDE CATS
+const CATS=[["Zuivel en eieren", "🥛", ["halfvolle melk", "volle melk", "karnemelk", "yoghurt", "kwark", "vla", "slagroom", "roomboter", "margarine", "eieren"]], ["Kaas en vleeswaren", "🧀", ["jonge kaas", "belegen kaas", "oude kaas", "geraspte kaas", "ham", "salami", "rookworst", "smeerkaas"]], ["Brood en ontbijt", "🍞", ["volkoren brood", "wit brood", "beschuit", "crackers", "ontbijtkoek", "cornflakes", "havermout", "muesli"]], ["Broodbeleg", "🥜", ["pindakaas", "hagelslag", "jam", "appelstroop", "chocoladepasta", "honing"]], ["Groente en fruit", "🍎", ["bananen", "appels", "sinaasappels", "aardappelen", "uien", "tomaten", "komkommer", "paprika", "wortels", "broccoli", "sla", "champignons"]], ["Vlees en vis", "🍗", ["kipfilet", "gehakt", "kipdijfilet", "speklapjes", "zalm", "tonijn", "vissticks"]], ["Pasta, rijst en koken", "🍝", ["rijst", "spaghetti", "macaroni", "penne", "tomatenpuree", "pastasaus", "olijfolie", "zonnebloemolie", "tarwebloem", "suiker"]], ["Sauzen", "🥫", ["mayonaise", "ketchup", "mosterd", "appelmoes", "satesaus"]], ["Koffie en thee", "☕", ["koffiebonen", "koffiepads", "filterkoffie", "thee"]], ["Dranken", "🥤", ["coca cola", "cola", "sinaasappelsap", "appelsap", "spa", "bier", "ice tea"]], ["Snoep en chips", "🍫", ["chips", "pinda", "chocolade reep", "drop", "eierkoeken", "stroopwafels"]], ["Huishouden", "🧻", ["toiletpapier", "keukenrol", "wasmiddel", "afwasmiddel", "vaatwastabletten"]], ["Verzorging en baby", "🧴", ["tandpasta", "shampoo", "douchegel", "deodorant", "luiers"]], ["Huisdieren", "🐾", ["kattenvoer", "hondenvoer", "kattenbakvulling"]]];//EINDE CATS
 const DATA="https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/";
-const EXCL=new Set(["choco","chocolade","gekookte","spinazie","roasted","americanos","krieltjes","salade","saus","smaak","snack","snacks","reep","koek","koekjes","chips","drink","mix","aardbei","vanille","banaan"]);
+// Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje).
+const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
+const STARTS=["kat","hond"];
+const EXCL=new Set(["choco","chocolade","gekookte","spinazie","roasted","americanos","krieltjes","salade","saus","smaak","snack","snacks","reep","koek","koekjes","chips","drink","mix","aardbei","vanille","banaan","zuigtabletten","tabletten","pastilles","snoepjes","gummies","siroop","limonade","thee","vla","yoghurt","ijs","sorbet","shampoo","douchegel","zeep","geurkaars","kaars","luchtverfrisser","wasmiddel","smaak","rijstwafels","wafels","koeken","speculaaskoeken","bladerdeeg","kaastengels","kaasstengels","tengels","tapenade","croissant","broodjes","pizzabroodjes","bakmix","thuisbakmix","mueslireep","repen","rooibos","kat","katten","kattenmousse","kattenvoer","hond","hondenvoer","pate","servet","design","cola","toetje","toetjes","vochtig","vochtige","dessert","pudding","cake","taart","soep","salade","spread","dip","chips","crackers","biscuit","ontbijtkoek","drinkyoghurt","ijsthee","bonbons","bonen","vega","vegan","vegetarisch","rulstukjes","hema","muesli","zonnebloem","granola","sheba","felix","whiskas","gourmet","sauce","ajax"]);
 
 const SAMPLE=["halfvolle melk 1 l","coca cola zero 1,5","pindakaas calve","pasta penne 500"];
 const S={stores:[],prods:[],list:[],sel:null,saved:null,lastQ:"",offers:null,view:null,ofs:"alle",ofc:"alle",ofn:60};
@@ -253,17 +256,24 @@ function matches(q,prefix=true){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   const m=S.prods.filter(p=>t.every((w,i)=>p.hay.some(x=>x===w||(prefix&&i===t.length-1&&x.startsWith(w)))));
   // Varianten als "choco melk" of "kaas snack" laten vallen, tenzij er niets anders is.
-  const clean=m.filter(p=>!p.hay.some(x=>EXCL.has(x)&&!t.includes(x)));
+  const clean=m.filter(p=>!p.hay.some(x=>!t.includes(x)&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e))||STARTS.some(e=>x.startsWith(e)))));
   return clean.length?clean:m;
 }
 // Per supermarkt het best passende goedkoopste product (kortste namen eerst, dan laagste prijs).
+// Aantal betekenisvolle woorden in de naam (zonder getallen, maten en "per", "stuks").
+const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","bio","biologisch","naturel"]);
+const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
 function perStore(m){
+  if(!m.length) return new Map();
+  // Alleen producten die ongeveer even kort benoemd zijn als het best passende product, over alle winkels heen.
+  // Zo wint "Ham 150 g" van "Kip & Ham loempia" en vergelijken we gelijke producten.
+  const gmin=Math.min(...m.map(words));
   const by=new Map();
-  for(const p of m){(by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
+  for(const p of m){ if(words(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
   const res=new Map();
   for(const [si,arr] of by){
-    const minLen=Math.min(...arr.map(p=>p.hay.length));
-    res.set(si,arr.filter(p=>p.hay.length<=minLen+3).sort((a,b)=>a[3]-b[3])[0]);
+    const minLen=Math.min(...arr.map(words));
+    res.set(si,arr.filter(p=>words(p)<=minLen+1).sort((a,b)=>a[3]-b[3])[0]);
   }
   return res;
 }
