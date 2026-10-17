@@ -78,13 +78,18 @@ details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:1
 @media (max-width:520px){.morelist li{grid-template-columns:minmax(0,1fr) auto auto}.morelist li .shopcell{grid-column:1/-1}}
 
 /* Categorieen en aanbiedingen */
-.catbar{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px;margin-top:16px}
+.catbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:16px}
 .cat{display:flex;align-items:center;gap:8px;text-align:left;background:var(--soft);border:2px solid var(--line);color:var(--ink);padding:9px 12px;font:600 14px/1.25 var(--body);min-width:0}
 .cat .ic{font-size:19px;line-height:1;flex:none}
 .cat:hover,.cat[aria-pressed=true]{border-color:var(--red)}
 .cat[aria-pressed=true]{background:var(--red-soft)}
 .cat.deal{grid-column:1/-1;background:var(--red);border-color:var(--red);color:var(--red-ink);font-size:18px;padding:14px 16px}
 .cat.deal:hover,.cat.deal[aria-pressed=true]{background:var(--red-dark);border-color:var(--brand)}
+.selwrap{grid-column:1/-1;position:relative;display:flex;align-items:center}
+.selwrap .ic{position:absolute;left:14px;font-size:19px;pointer-events:none}
+.selwrap select{width:100%;appearance:none;-webkit-appearance:none;font:600 16px var(--body);color:var(--ink);background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7l5 6 5-6' fill='none' stroke='%23c8281e' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/18px;border:2px solid var(--line);border-radius:10px;padding:13px 44px 13px 46px;cursor:pointer}
+.selwrap select:hover,.selwrap select:focus{border-color:var(--red);outline:none}
+.selwrap.small{margin:10px 0 0;max-width:420px}.selwrap.small select{font-size:15px;padding:10px 40px 10px 44px;background-color:var(--surface)}
 .cat.deal small{margin-left:auto;font:600 13px var(--body);background:var(--brand);color:var(--brand-ink);padding:3px 9px;border-radius:999px;white-space:nowrap}
 .viewhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:18px 0 4px}
 .viewhead h3{font:700 19px var(--display);margin:0}
@@ -233,7 +238,7 @@ const DATA="https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschap
 const EXCL=new Set(["choco","chocolade","gekookte","spinazie","roasted","americanos","krieltjes","salade","saus","smaak","snack","snacks","reep","koek","koekjes","chips","drink","mix","aardbei","vanille","banaan"]);
 
 const SAMPLE=["halfvolle melk 1 l","coca cola zero 1,5","pindakaas calve","pasta penne 500"];
-const S={stores:[],prods:[],list:[],sel:null,saved:null,lastQ:"",offers:null,view:null,ofs:"alle",ofn:60};
+const S={stores:[],prods:[],list:[],sel:null,saved:null,lastQ:"",offers:null,view:null,ofs:"alle",ofc:"alle",ofn:60};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const eur=v=>"€ "+v.toFixed(2).replace(".",",");
@@ -309,8 +314,9 @@ const unitOf=p=>p[5]??1e9;
 function cheapest(term){return [...pick(term).values()].sort((a,b)=>unitOf(a)-unitOf(b)||a[3]-b[3])}
 function catBar(){
   const n=S.offers?.offers?.length;
-  $("catbar").innerHTML=`<button type="button" class="cat deal" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic" aria-hidden="true">🔥</span>Aanbiedingen van deze week${n?`<small>${n} acties</small>`:""}</button>`+
-    CATS.map((c,i)=>`<button type="button" class="cat" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic" aria-hidden="true">${c[1]}</span>${esc(c[0])}</button>`).join("");
+  const cur=S.view&&S.view!=="deals"?S.view:"";
+  $("catbar").innerHTML=`<button type="button" class="cat deal" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic" aria-hidden="true">🔥</span>Aanbiedingen van deze week${n?`<small>${n} acties</small>`:""}</button>
+  <label class="selwrap"><span class="ic" aria-hidden="true">📂</span><select id="catsel" aria-label="Kies een categorie"><option value="">Kies een categorie…</option>${CATS.map((c,i)=>`<option value="${i}"${cur===String(i)?" selected":""}>${c[1]} ${esc(c[0])}</option>`).join("")}</select></label>`;
 }
 function renderView(){
   catBar();
@@ -329,11 +335,15 @@ function renderOffers(){
   const O=S.offers?.offers||[];
   if(!O.length){$("results").innerHTML=`<div class="viewhead"><h3>🔥 Aanbiedingen van deze week</h3></div><p class="meta">De aanbiedingen worden elke dag automatisch opgehaald. Ze zijn er nog niet, kijk later nog eens.</p>`;return}
   const by=new Map(); for(const o of O) by.set(o.si,(by.get(o.si)||0)+1);
-  const f=S.ofs==="alle"?O:O.filter(o=>o.si===+S.ofs);
+  const cats=new Map(); for(const o of O) if(S.ofs==="alle"||o.si===+S.ofs){const c=o.c||"Overig"; cats.set(c,(cats.get(c)||0)+1)}
+  const order=[...CATS.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
+  if(S.ofc!=="alle"&&!cats.has(S.ofc)) S.ofc="alle";
+  const f=O.filter(o=>(S.ofs==="alle"||o.si===+S.ofs)&&(S.ofc==="alle"||(o.c||"Overig")===S.ofc));
   const list=f.slice().sort((a,b)=>(b.pct||0)-(a.pct||0)||a.p-b.p).slice(0,S.ofn);
   $("results").innerHTML=`<div class="viewhead"><h3>🔥 Aanbiedingen van deze week</h3><span class="meta" style="margin:0">Bijgewerkt ${dag(S.offers.updated)}</span></div>
   <div class="chips"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle (${O.length})</button>${[...by].sort((a,b)=>sname(a[0]).localeCompare(sname(b[0]))).map(([si,n])=>`<button type="button" class="chip" data-ofs="${si}" aria-pressed="${S.ofs===String(si)}">${esc(sname(si))} (${n})</button>`).join("")}</div>
-  <p class="meta">Grootste korting eerst.</p>
+  <label class="selwrap small"><span class="ic" aria-hidden="true">📂</span><select id="ofcat" aria-label="Categorie van de aanbiedingen"><option value="alle">Alle categorieën (${[...cats.values()].reduce((a,b)=>a+b,0)})</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((CATS.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
+  <p class="meta">${f.length} aanbiedingen, de grootste korting eerst.</p>
   <ul class="offlist">${list.map(o=>`<li class="off"><span class="top2"><span class="shop">${esc(sname(o.si))}</span>${o.lbl?`<span class="lbl">${esc(o.lbl)}</span>`:""}</span>
     <span class="on"><a href="${esc(o.u)}" target="_blank" rel="noopener">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>
     <span class="prow"><span class="price tagp">${eur(o.p)}</span>${o.was?`<s>${eur(o.was)}</s>`:""}${o.t?`<span class="till">t/m ${kort(o.t)}</span>`:""}</span>
@@ -426,6 +436,10 @@ document.addEventListener("click",e=>{
   const tr=e.target.closest("[data-try]"); if(tr){$("q").value=tr.dataset.try;search();jump("results");return}
 });
 $("f").addEventListener("submit",e=>{e.preventDefault();search();$("q").blur();jump("results")});
+document.addEventListener("change",e=>{
+  if(e.target.id==="catsel"){S.view=e.target.value||null; if(S.view){renderView();jump("results")} else {catBar();$("results").innerHTML=""}}
+  if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers();jump("results")}
+});
 $("save").addEventListener("click",save);
 $("clear").addEventListener("click",()=>{S.list=[];S.sel=null;$("banner").innerHTML="";renderAll()});
 // Extra data die elke dag via GitHub wordt bijgewerkt: Aldi-assortiment en aanbiedingen. Mag ontbreken.
