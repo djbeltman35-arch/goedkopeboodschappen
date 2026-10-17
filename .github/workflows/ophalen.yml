@@ -1,0 +1,34 @@
+name: Prijzen ophalen
+
+# Elke ochtend Aldi-assortiment en aanbiedingen ophalen en in data/ zetten.
+# De site leest data/*.json rechtstreeks van raw.githubusercontent.com.
+on:
+  schedule:
+    - cron: "15 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ophalen
+  cancel-in-progress: false
+
+jobs:
+  ophalen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Ophalen
+        run: node ophalen/ophalen.mjs
+      - name: Opslaan
+        run: |
+          git config user.name "prijzen-bot"
+          git config user.email "prijzen-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "Prijzen bijgewerkt $(date -u +%F)"
+          git push
