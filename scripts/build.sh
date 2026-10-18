@@ -17,6 +17,7 @@ fi
 # 2. Vaste bestanden en de dagelijkse data (aanbiedingen, Aldi, status)
 cp -r site/icons site/manifest.webmanifest site/stijl.css site/sw.js site/google2c5158ed8322f460.html "$OUT"/
 cp data/aanbiedingen.json data/aldi.json data/status.json "$OUT/data/"
+[ -d data/social ] && cp -r data/social "$OUT/data/"
 
 # 3. Alle pagina's
 python3 scripts/bouw_paginas.py "$OUT"

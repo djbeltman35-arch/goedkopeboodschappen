@@ -25,6 +25,13 @@ jobs:
           node-version: 22
       - name: Ophalen
         run: node ophalen/ophalen.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Afbeeldingen voor sociale media
+        run: |
+          pip install --quiet pillow
+          python3 scripts/social.py || echo "social mislukt, prijzen worden wel opgeslagen"
       - name: Opslaan
         run: |
           git config user.name "prijzen-bot"
