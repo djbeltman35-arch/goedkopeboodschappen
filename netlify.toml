@@ -44,3 +44,29 @@
   from = "/aanbiedingen/albert-heijn/*"
   to = "/aanbiedingen/ah/"
   status = 301
+
+# Oude categorieën (oktober 2026 opnieuw ingedeeld)
+[[redirects]]
+  from = "/categorie/groente-en-fruit/"
+  to = "/categorie/groente-en-aardappelen/"
+  status = 301
+[[redirects]]
+  from = "/categorie/kaas-en-vleeswaren/"
+  to = "/categorie/kaas/"
+  status = 301
+[[redirects]]
+  from = "/categorie/pasta-rijst-en-koken/"
+  to = "/categorie/pasta-rijst-en-wereldkeuken/"
+  status = 301
+[[redirects]]
+  from = "/categorie/sauzen/"
+  to = "/categorie/sauzen-olie-en-kruiden/"
+  status = 301
+[[redirects]]
+  from = "/categorie/dranken/"
+  to = "/categorie/frisdrank-en-sap/"
+  status = 301
+[[redirects]]
+  from = "/categorie/snoep-en-chips/"
+  to = "/categorie/koek-en-snoep/"
+  status = 301

@@ -119,7 +119,7 @@ def kaart(titel, sub, regels, voet, bestand):
 # ---------- keuze van de aanbiedingen ----------
 d = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 nu = [o for o in d["offers"] if o.get("p") and (not o.get("v") or o["v"] <= VANDAAG) and (not o.get("t") or o["t"] >= VANDAAG) and o.get("s") in NAMEN]
-ETEN = {"Zuivel en eieren", "Kaas en vleeswaren", "Brood en ontbijt", "Broodbeleg", "Groente en fruit", "Vlees en vis", "Pasta, rijst en koken", "Sauzen", "Koffie en thee", "Dranken", "Snoep en chips", "Huishouden"}
+ETEN = {"Zuivel en eieren", "Kaas", "Vleeswaren en tapas", "Brood en ontbijt", "Broodbeleg", "Groente en aardappelen", "Fruit", "Vlees en vis", "Pasta, rijst en wereldkeuken", "Soep, conserven en bakken", "Sauzen, olie en kruiden", "Diepvries", "Koffie en thee", "Frisdrank en sap", "Koek en snoep", "Chips en noten", "Huishouden"}
 def score(o):
     pct = (o["was"] - o["p"]) / o["was"] if o.get("was") and o["was"] > o["p"] else 0
     if pct > .8: pct = 0  # onwaarschijnlijke "van"-prijs
@@ -141,9 +141,9 @@ for f in glob.glob(os.path.join(OUT, "*.png")):
 
 datum = f"{DAGEN[NU.weekday()]} {NU.day} {MAANDEN[NU.month - 1]}"
 # Elke dag een ander thema, zodat de berichten niet steeds hetzelfde zijn.
-THEMA = [("Nieuwe week, nieuwe aanbiedingen", None), ("Goedkoop koken vandaag", {"Vlees en vis", "Pasta, rijst en koken", "Groente en fruit", "Sauzen"}),
-         ("Voordelig ontbijt en lunch", {"Brood en ontbijt", "Broodbeleg", "Zuivel en eieren", "Kaas en vleeswaren"}), ("Grootste kortingen van vandaag", None),
-         ("Weekendboodschappen voor minder", {"Dranken", "Snoep en chips", "Vlees en vis", "Kaas en vleeswaren"}), ("Zaterdag: dit is nu het goedkoopst", None),
+THEMA = [("Nieuwe week, nieuwe aanbiedingen", None), ("Goedkoop koken vandaag", {"Vlees en vis", "Pasta, rijst en wereldkeuken", "Groente en aardappelen", "Soep, conserven en bakken", "Sauzen, olie en kruiden"}),
+         ("Voordelig ontbijt en lunch", {"Brood en ontbijt", "Broodbeleg", "Zuivel en eieren", "Kaas", "Vleeswaren en tapas", "Fruit"}), ("Grootste kortingen van vandaag", None),
+         ("Weekendboodschappen voor minder", {"Bier en wijn", "Frisdrank en sap", "Chips en noten", "Koek en snoep", "Vlees en vis", "Vleeswaren en tapas"}), ("Zaterdag: dit is nu het goedkoopst", None),
          ("Alvast voor volgende week", {"Huishouden", "Verzorging en baby", "Koffie en thee", "Zuivel en eieren"})]
 thema, cats = THEMA[NU.weekday()]
 pool = [o for o in nu if not cats or o.get("c") in cats] or nu

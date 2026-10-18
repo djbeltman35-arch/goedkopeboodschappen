@@ -7,6 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { categorieVan, zonderAccent } from './categorie.mjs';
 
 const DATA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
@@ -424,28 +425,7 @@ const dekamarkt = () => detailresult('dekamarkt', 'https://web-deka-gateway.deka
 
 /* ---------- categorie per aanbieding (zelfde namen als de categorieën op de site) ---------- */
 // Volgorde telt: specifieke groepen eerst, zodat "pindakaas" niet bij Kaas en "appelsap" niet bij Groente komt.
-const CAT_REGELS = [
-  ['Huisdieren', /(\bkat\b|\bkatten|\bhond\b|\bhonden|kattenbak|dierenvoer|whiskas|felix|pedigree|sheba|(?<!garden )gourmet (gold|perle|mon petit)|beneful|kauwstaven|hondensnack|kattensnack|huisdier)/],
-  ['Verzorging en baby', /(drogisterij|\bbaby\b|tandpasta|tandenborstel|opzetborstel|flosdraad|floss|shampoo|conditioner|douche|deo|zeep|luier|billendoek|scheer|trimmer|\bcreme\b|dagcreme|nachtcreme|handcreme|bodycreme|bodylotion|maandverband|verband|tampon|urineverlies|incontinentie|inlegkruis|mondwater|nivea|dove|axe\b|haarverf|haargel|haarspray|haarlak|gel styler|styler|hair|wax\b|paste\b|clay\b|anti-klit|gliss|syoss|wella|elvive|l'oreal|loreal|garnier|gillette|pampers|zonnebrand|wattenschijf|rexona|transpirant|sanex|palmolive|tissue|zakdoek|maskara|mascara|lippen|nagellak|tandzijde|oral-b|sensodyne|vaseline|always|libresse|vitamine|multivitamin|dagravit|curalyn|roter\b|probiotica|visolie|supplement|bruistablet|panty|haaraccessoire)/],
-  ['Huishouden', /(toiletpapier|\bwc|keukenrol|keukenpapier|wasmiddel|wasverzachter|\bwaspod|wasbeurt|afwas|vaatwas|schoonmaak|reiniger|schuurmiddel|ontvetter|vuilniszak|afvalzak|aluminiumfolie|batterij|bleek|robijn|ariel|persil|dreft|sun\b|vanish|glorix|ajax|andy\b|fairy|\bomo\b|reus\b|lenor|luchtverfrisser|air ?wick|cif\b|harpic|cillit|colour catcher|k2r|theelicht|kaars|pedaalemmer|vershouddoos|toiletblok)/],
-  ['Koffie en thee', /(koffie|thee\b|thee |theezak|infusion|espresso|cappuccino|latte|senseo|nespresso|dolce gusto|douwe egberts|pukka|clipper|lipton)/],
-  ['Dranken', /(\bcola|coca|pepsi|frisdrank|\bsap\b|sappen|appelsap|sinaasappelsap|juice|limonade|siroop|\bwater\b|mineraalwater|\bspa\b|sourcy|bier|\bipa\b|tripel|dubbel\b|\bbock|\bbok\b|ijsbock|trappist|blond 7|abdij|krat\b|veltliner|riesling|\bwitte wijn|\brode wijn|pils|\bwijn\b|wijnen\b|rose|ros[eé]\b|prosecco|cava\b|frizzante|moscato|verdejo|garnacha|grand cru|ice ?tea|energy|red bull|monster|radler|fanta|sprite|7up|chocomel|chocolademelk|smoothie|whisky|wodka|mixdrink|tempranillo|syrah|merlot|cabernet|chardonnay|sauvignon|shiraz|pinot|rioja|primitivo|montepulciano|malbec|champagne|port\b|aperol|\bgin\b|\brum\b(?! ?rozijn)|likeur|jenever|heineken|grolsch|hertog jan|amstel|brand\b|jupiler|leffe|stella artois|peroni|weihenstephan|gulpener|la trappe|westmalle|chouffe|duvel|affligem|grimbergen|crystal clear|healthy people|coolbest|drank\b|\d ?x ?\d+ ?ml|750 ?ml|75 ?cl)/],
-  ['Broodbeleg', /(\bbeleg\b|pindakaas|hagelslag|hagel\b|vlokken|muisjes|de ruijter|\bjam\b|appelstroop|chocopasta|chocoladepasta|hazelnootpasta|\bhoning|nutella|speculoospasta|calve)/],
-  ['Sauzen', /(saus|mayonaise|ketchup|mosterd|appelmoes|compote|dressing|sambal|pesto|fritessaus|tomato frito|tomatenpuree|tomato puree|ketjap)/],
-  ['Snoep en chips', /(chips|pinda|noten|nootjes|cashew|chocola|\breep|repen|\bdrop|snoep|(?<!pannen)koek|wafel|biscuit|\bcake|gebak|taart|\bijs\b|ijsjes|ben & jerry|magnum|popcorn|winegum|kauwgom|speculaas|bonbon|zoutje|tuc\b|cupcake|cream roll|\bchoco|lolly|proteinbar|proteinereep|chewy bar|kroepoek|muffin|donut|brownie|tompouce|marshmallow|lays|pringles|doritos|m&m|milka|tony|haribo|mentos|kitkat|snickers|twix|bounty|mars\b|maoam|frisia|lutti|klene|true dates|snack a jacks|\bchio\b|nougat|fudge|soezen|zoenen|mouse\b|munten)/],
-  ['Kaas en vleeswaren', /(\bkaas|kaasje|plakken|ham\b|salami|salame|rookworst|leverworst|snijworst|palingworst|metworst|vleeswaren|filet americain|cervelaat|boterhamworst|rookvlees|kipfilet beleg|smeerkaas|roomkaas|mozzarella|brie|feta|parmezaan|camembert|old amsterdam|leerdammer|beemster|marcaire|bleu d|blauwschimmel|paturain|heks'?nkaas|kabanos|fuet|iberico|chorizo|serrano|prosciutto|coppa|coburger|carpaccio|pepperoni|spianata|pat[eé]\b|tapas|olijven|hummus|tzatziki|aioli|\bdip\b|babaganoush|muhammara|gevulde (zoete )?peper)/],
-  ['Zuivel en eieren', /(\bmelk|yoghurt|kwark|\bvla\b|\bvla |slagroom|room\b|kookroom|\bboter|margarine|eieren|zuivel|skyr|kefir|toetje|pudding|danone|optimel|almhof|campina|arla|mona|becel|blue band|alpro|sojadrink|havermelk|haverdrink)/],
-  ['Vlees en vis', /(\bkip|gehakt|vlees|biefstuk|varken|speklap|spek\b|\bspek|\bworst|braadworst|grillworst|schnitzel|hamburger|burger|slavink|zalm|tonijn|\bvis\b|vissticks|fish|iglo|garnal|kabeljauw|pangasius|heek|haring|makreel|ansjovis|shoarma|saucijs|drumstick|kalkoen|rund|kipfilet|kipdij|bacon|gyros|sate|spareribs|steak|filet\b|entrecote|ossenhaas|rollade|kipkluif|kippenpoot|pulled|snackbal|vegetarische slager|speckjes)/],
-  ['Brood en ontbijt', /(bakkerij|brood|bolletjes|\bbollen|beschuit|cracker|ontbijtkoek|cornflakes|havermout|muesli|cruesli|granola|overnight oats|quaker|croissant|stokbrood|pistolet|krentenbol|\btoast|wraps|ontbijtgranen|crispies|kellogg|brinta|knackebrod|rozijnenbrood|afbak|pannenkoek|poffertjes)/],
-  ['Pasta, rijst en koken', /(pasta|spaghetti|macaroni|penne|fusilli|rigatoni|pappardelle|tagliatelle|chitarra|gnocchi|\brijst|risotto|noedel|\bmie\b|mihoen|\bolie|bloem\b|suiker|kruiden|bouillon|\bsoep|lasagne|tortellini|ravioli|pizza|maaltijd|wereldkeuken|tortilla|couscous|conserv|bonen in|knorr|honig|conimex|maggi|blik|loempia|nasi|bami|babi|foe yong|curry|ovenschotel|stamppot|quiche|tapenade|roerbakmix|basismix|verspakket|augurk|dwarsliggers|sesamzaad|friet|frites|aviko|bakmix|bak specialiteit|bakvulling|bakdecoratie|sukade)/],
-  ['Groente en fruit', /(banan|\bappel|\bpeer|peren|sinaasappel|mandarijn|clementine|druiven|aardbei|bessen|framboz|aardappel|krieltjes|\buien|\bui\b|tomaat|tomaten|komkommer|paprika|wortel|broccoli|bloemkool|\bsla\b|salade|spinazie|champignon|paddenstoel|courgette|\bprei|avocado|citroen|limoen|kiwi|mango|ananas|meloen|groente|fruit|kool\b|kool |minneola|grapefruit|nectarine|perzik|pruim|vijg|dadel|sperziebonen|boontjes|bonen|kikkererwten|linzen|kapucijners|veldertjes|doperw|\bmais\b|edamame|cannellini|zuurkool|andijvie|spruit|knoflook|bosui|rucola|pompoen|sweet dumpling|biet|kaki|rauwkost|pastinaak|knolselderij|venkel|aubergine|radijs|bieslook|peterselie|granaatappel|bosbes|blauwe bes|witlof|snoepgroente|snoeptomaat)/],
-];
-const zonderAccent = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-function categorieVan(naam) {
-  const t = zonderAccent(naam);
-  for (const [c, re] of CAT_REGELS) if (re.test(t)) return c;
-  return 'Overig';
-}
+// Categorieën van aanbiedingen staan in categorie.mjs (ook gebruikt om bestaande data opnieuw in te delen).
 
 /* ---------- netjes maken: maten, prijs per eenheid, dubbele acties ---------- */
 // "520 Mililiters" -> "520 ml", "1.25 KGrams" -> "1,25 kg", "15 Stuks" -> "15 stuks"

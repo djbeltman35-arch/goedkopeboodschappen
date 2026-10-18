@@ -1,16 +1,384 @@
 [
-["Zuivel en eieren","🥛",["halfvolle melk","volle melk","magere melk","karnemelk","chocolademelk","yoghurt","griekse yoghurt","kwark","skyr","vla","slagroom","kookroom","creme fraiche","roomboter","margarine","halvarine","eieren","havermelk","sojamelk"]],
-["Kaas en vleeswaren","🧀",["jonge kaas","jong belegen kaas","belegen kaas","oude kaas","geraspte kaas","plakken kaas","smeerkaas","roomkaas","mozzarella","feta","brie","parmezaan","ham","kipfilet beleg","salami","rookworst","leverworst","boterhamworst","cervelaat","filet americain","rookvlees","olijven","hummus"]],
-["Brood en ontbijt","🍞",["volkoren brood","wit brood","bruin brood","krentenbollen","croissants","beschuit","crackers","knackebrod","ontbijtkoek","cornflakes","havermout","muesli","cruesli","granola","pannenkoeken","tortilla wraps"]],
-["Broodbeleg","🥜",["pindakaas","hagelslag","chocoladevlokken","jam","appelstroop","chocoladepasta","hazelnootpasta","honing","speculoospasta","vruchtenhagel"]],
-["Groente en fruit","🍎",["bananen","appels","peren","sinaasappels","mandarijnen","druiven","aardbeien","blauwe bessen","kiwi","citroenen","avocado","mango","aardappelen","krieltjes","uien","rode uien","knoflook","tomaten","cherrytomaten","komkommer","paprika","wortels","broccoli","bloemkool","sperziebonen","spinazie","andijvie","boerenkool","zuurkool","sla","ijsbergsla","champignons","courgette","prei","witlof","spruitjes","rode kool","pompoen","diepvries spinazie","diepvries erwten"]],
-["Vlees en vis","🍗",["kipfilet","kipdijfilet","kippendijen","kipdrumsticks","gehakt","rundergehakt","half om half gehakt","gehaktballen","hamburgers","speklapjes","spekreepjes","varkenshaas","biefstuk","rookworst","braadworst","shoarma","zalm","tonijn","kabeljauw","garnalen","vissticks","haring","makreel"]],
-["Pasta, rijst en koken","🍝",["rijst","basmati rijst","pandan rijst","zilvervliesrijst","spaghetti","macaroni","penne","fusilli","lasagne","noedels","mie","couscous","tomatenpuree","passata","tomatenblokjes","pastasaus","olijfolie","zonnebloemolie","bakboter","tarwebloem","suiker","zout","peper","bouillonblokjes","kidneybonen","kikkererwten","linzen","mais","soep","pizza","friet","aardappelpuree"]],
-["Sauzen","🥫",["mayonaise","fritessaus","ketchup","curry","mosterd","appelmoes","satesaus","sambal","ketjap","sojasaus","pesto","knoflooksaus","barbecuesaus","slasaus"]],
-["Koffie en thee","☕",["koffiebonen","koffiepads","koffiecups","filterkoffie","oploskoffie","espresso","thee","groene thee","rooibos thee","muntthee"]],
-["Dranken","🥤",["coca cola","coca cola zero","pepsi","cola","sinaasappelsap","appelsap","multivitaminesap","spa","bronwater","mineraalwater","bruisend water","ice tea","limonade siroop","energiedrank","bier","alcoholvrij bier","rode wijn","witte wijn","rose"]],
-["Snoep en chips","🍫",["chips","paprika chips","naturel chips","tortilla chips","pinda","nootjes","cashewnoten","chocolade reep","melkchocolade","pure chocolade","drop","winegums","snoep","eierkoeken","stroopwafels","koekjes","speculaas","biscuits","popcorn","ijs"]],
-["Huishouden","🧻",["toiletpapier","keukenrol","tissues","wasmiddel","wasverzachter","vaatwastabletten","afwasmiddel","allesreiniger","wc reiniger","schoonmaakazijn","vuilniszakken","aluminiumfolie","vershoudfolie","batterijen"]],
-["Verzorging en baby","🧴",["tandpasta","tandenborstel","shampoo","conditioner","douchegel","zeep","handzeep","deodorant","scheermesjes","maandverband","tampons","luiers","billendoekjes","zonnebrand","bodylotion"]],
-["Huisdieren","🐾",["kattenvoer","kattenbrokken","hondenvoer","hondenbrokken","kattenbakvulling","hondensnacks"]]
+ [
+  "Groente en aardappelen",
+  "🥦",
+  [
+   "aardappelen",
+   "krieltjes",
+   "aardappelpuree",
+   "uien",
+   "rode uien",
+   "knoflook",
+   "tomaten",
+   "cherrytomaten",
+   "komkommer",
+   "paprika",
+   "wortels",
+   "broccoli",
+   "bloemkool",
+   "sperziebonen",
+   "spinazie",
+   "andijvie",
+   "boerenkool",
+   "zuurkool",
+   "sla",
+   "ijsbergsla",
+   "champignons",
+   "courgette",
+   "prei",
+   "witlof",
+   "spruitjes",
+   "rode kool",
+   "pompoen"
+  ]
+ ],
+ [
+  "Fruit",
+  "🍎",
+  [
+   "bananen",
+   "appels",
+   "peren",
+   "sinaasappels",
+   "mandarijnen",
+   "druiven",
+   "aardbeien",
+   "blauwe bessen",
+   "kiwi",
+   "citroenen",
+   "avocado",
+   "mango"
+  ]
+ ],
+ [
+  "Brood en ontbijt",
+  "🍞",
+  [
+   "volkoren brood",
+   "wit brood",
+   "bruin brood",
+   "krentenbollen",
+   "croissants",
+   "beschuit",
+   "crackers",
+   "knackebrod",
+   "ontbijtkoek",
+   "cornflakes",
+   "havermout",
+   "muesli",
+   "cruesli",
+   "granola",
+   "pannenkoeken",
+   "tortilla wraps"
+  ]
+ ],
+ [
+  "Broodbeleg",
+  "🥜",
+  [
+   "pindakaas",
+   "hagelslag",
+   "chocoladevlokken",
+   "vruchtenhagel",
+   "jam",
+   "appelstroop",
+   "chocoladepasta",
+   "hazelnootpasta",
+   "speculoospasta",
+   "honing"
+  ]
+ ],
+ [
+  "Zuivel en eieren",
+  "🥛",
+  [
+   "halfvolle melk",
+   "volle melk",
+   "magere melk",
+   "karnemelk",
+   "chocolademelk",
+   "havermelk",
+   "sojamelk",
+   "yoghurt",
+   "griekse yoghurt",
+   "kwark",
+   "skyr",
+   "vla",
+   "slagroom",
+   "kookroom",
+   "creme fraiche",
+   "roomboter",
+   "margarine",
+   "halvarine",
+   "eieren"
+  ]
+ ],
+ [
+  "Kaas",
+  "🧀",
+  [
+   "jonge kaas",
+   "jong belegen kaas",
+   "belegen kaas",
+   "oude kaas",
+   "plakken kaas",
+   "geraspte kaas",
+   "smeerkaas",
+   "roomkaas",
+   "mozzarella",
+   "feta",
+   "brie",
+   "parmezaan"
+  ]
+ ],
+ [
+  "Vleeswaren en tapas",
+  "🥓",
+  [
+   "ham",
+   "kipfilet beleg",
+   "salami",
+   "leverworst",
+   "boterhamworst",
+   "cervelaat",
+   "filet americain",
+   "rookvlees",
+   "olijven",
+   "hummus"
+  ]
+ ],
+ [
+  "Vlees en vis",
+  "🍗",
+  [
+   "kipfilet",
+   "kipdijfilet",
+   "kippendijen",
+   "kipdrumsticks",
+   "gehakt",
+   "rundergehakt",
+   "half om half gehakt",
+   "gehaktballen",
+   "hamburgers",
+   "speklapjes",
+   "spekreepjes",
+   "varkenshaas",
+   "biefstuk",
+   "rookworst",
+   "braadworst",
+   "shoarma",
+   "zalm",
+   "tonijn",
+   "kabeljauw",
+   "garnalen",
+   "haring",
+   "makreel"
+  ]
+ ],
+ [
+  "Pasta, rijst en wereldkeuken",
+  "🍝",
+  [
+   "rijst",
+   "basmati rijst",
+   "pandan rijst",
+   "zilvervliesrijst",
+   "spaghetti",
+   "macaroni",
+   "penne",
+   "fusilli",
+   "lasagne",
+   "noedels",
+   "mie",
+   "couscous"
+  ]
+ ],
+ [
+  "Soep, conserven en bakken",
+  "🥫",
+  [
+   "soep",
+   "tomatenpuree",
+   "passata",
+   "tomatenblokjes",
+   "kidneybonen",
+   "kikkererwten",
+   "linzen",
+   "mais",
+   "appelmoes",
+   "tarwebloem",
+   "suiker"
+  ]
+ ],
+ [
+  "Sauzen, olie en kruiden",
+  "🧂",
+  [
+   "pastasaus",
+   "pesto",
+   "mayonaise",
+   "fritessaus",
+   "ketchup",
+   "curry",
+   "mosterd",
+   "satesaus",
+   "sambal",
+   "ketjap",
+   "sojasaus",
+   "knoflooksaus",
+   "barbecuesaus",
+   "slasaus",
+   "olijfolie",
+   "zonnebloemolie",
+   "bakboter",
+   "zout",
+   "peper",
+   "bouillonblokjes"
+  ]
+ ],
+ [
+  "Diepvries",
+  "❄️",
+  [
+   "pizza",
+   "friet",
+   "kroketten",
+   "frikandellen",
+   "vissticks",
+   "diepvries spinazie",
+   "diepvries erwten",
+   "ijs"
+  ]
+ ],
+ [
+  "Koffie en thee",
+  "☕",
+  [
+   "koffiebonen",
+   "koffiepads",
+   "koffiecups",
+   "filterkoffie",
+   "oploskoffie",
+   "espresso",
+   "thee",
+   "groene thee",
+   "rooibos thee",
+   "muntthee"
+  ]
+ ],
+ [
+  "Frisdrank en sap",
+  "🥤",
+  [
+   "coca cola",
+   "coca cola zero",
+   "pepsi",
+   "cola",
+   "sinaasappelsap",
+   "appelsap",
+   "multivitaminesap",
+   "spa",
+   "bronwater",
+   "mineraalwater",
+   "bruisend water",
+   "ice tea",
+   "limonade siroop",
+   "energiedrank"
+  ]
+ ],
+ [
+  "Bier en wijn",
+  "🍷",
+  [
+   "bier",
+   "alcoholvrij bier",
+   "rode wijn",
+   "witte wijn",
+   "rose"
+  ]
+ ],
+ [
+  "Koek en snoep",
+  "🍫",
+  [
+   "chocolade reep",
+   "melkchocolade",
+   "pure chocolade",
+   "drop",
+   "winegums",
+   "snoep",
+   "eierkoeken",
+   "stroopwafels",
+   "koekjes",
+   "speculaas",
+   "biscuits"
+  ]
+ ],
+ [
+  "Chips en noten",
+  "🥨",
+  [
+   "chips",
+   "paprika chips",
+   "naturel chips",
+   "tortilla chips",
+   "pinda",
+   "nootjes",
+   "cashewnoten",
+   "popcorn"
+  ]
+ ],
+ [
+  "Huishouden",
+  "🧻",
+  [
+   "toiletpapier",
+   "keukenrol",
+   "tissues",
+   "wasmiddel",
+   "wasverzachter",
+   "vaatwastabletten",
+   "afwasmiddel",
+   "allesreiniger",
+   "wc reiniger",
+   "schoonmaakazijn",
+   "vuilniszakken",
+   "aluminiumfolie",
+   "vershoudfolie",
+   "batterijen"
+  ]
+ ],
+ [
+  "Verzorging en baby",
+  "🧴",
+  [
+   "tandpasta",
+   "tandenborstel",
+   "shampoo",
+   "conditioner",
+   "douchegel",
+   "zeep",
+   "handzeep",
+   "deodorant",
+   "scheermesjes",
+   "maandverband",
+   "tampons",
+   "zonnebrand",
+   "bodylotion",
+   "luiers",
+   "billendoekjes"
+  ]
+ ],
+ [
+  "Huisdieren",
+  "🐾",
+  [
+   "kattenvoer",
+   "kattenbrokken",
+   "kattenbakvulling",
+   "hondenvoer",
+   "hondenbrokken",
+   "hondensnacks"
+  ]
+ ]
 ]
