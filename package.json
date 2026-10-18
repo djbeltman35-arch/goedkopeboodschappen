@@ -1,0 +1,9 @@
+{
+  "name": "goedkopeboodschappen",
+  "private": true,
+  "type": "module",
+  "description": "Goedkope Boodschappen: functies voor meldingen bij aanbiedingen",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

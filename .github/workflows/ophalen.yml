@@ -32,6 +32,10 @@ jobs:
         run: |
           pip install --quiet pillow
           python3 scripts/social.py || echo "social mislukt, prijzen worden wel opgeslagen"
+      - name: Prijsgeschiedenis
+        run: |
+          curl -fsSL --max-time 180 -o /tmp/supermarkets.json https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json \
+            && python3 scripts/historie.py bijwerken /tmp/supermarkets.json || echo "geschiedenis mislukt"
       - name: Opslaan
         run: |
           git config user.name "prijzen-bot"
