@@ -92,7 +92,7 @@ def eff_unit(p):
 # ---------- zoeken (gelijk aan de app) ----------
 ENDS = ["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"]
 STARTS = ["kat", "hond"]
-EXCL = set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare glutenvrij proteine protein light zero suikervrij".split())
+EXCL = set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde glutenvrij proteine protein light zero suikervrij".split())
 UNITW = set("g gr gram kg kilo l liter ml cl st stuk stuks per x ca pak pack fles blik zak naturel".split())
 for p in prods:
     p.append(norm(p[1] + " " + (p[4] or "")))  # p[7] = woorden
@@ -124,7 +124,7 @@ def mark_bad(arr):
     med = u[len(u) // 2]
     for p in arr:
         v = eff_unit(p)
-        if v is not None and (v > med * 4 or v < med / 4): BAD.add(id(p))
+        if v is not None and (v > med * 3 or v < med / 3): BAD.add(id(p))
 def rank(p):
     if id(p) in BAD: return 1e6 + eff(p)
     return eff_unit(p) if eff_unit(p) is not None else eff(p) * 1000
