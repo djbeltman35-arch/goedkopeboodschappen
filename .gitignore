@@ -1,3 +1,5 @@
 public/
 
 scripts/fonts/
+node_modules/
+.netlify/

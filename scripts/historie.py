@@ -63,7 +63,8 @@ if __name__ == "__main__":
     if cmd == "dag":
         print(json.dumps(dag(sys.argv[2]), ensure_ascii=False))
     elif cmd == "bijwerken":
-        vandaag = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=1))).date().isoformat()
+        from zoneinfo import ZoneInfo
+        vandaag = datetime.datetime.now(ZoneInfo("Europe/Amsterdam")).date().isoformat()
         h = voeg_toe(laad(), vandaag, meet(sys.argv[2])); schrijf(h)
         print("historie:", len(h["dagen"]), "dagen,", len(h["termen"]), "producten")
     elif cmd == "terugvullen":

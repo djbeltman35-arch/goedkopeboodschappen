@@ -59,6 +59,51 @@ def offer_card(o):
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span></span>'
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>{t}{offerbtn(o)}</li>')
 
+
+# ---------- prijsgeschiedenis ----------
+try: HIST = json.load(open(os.path.join(ROOT, "data", "historie.json")))
+except Exception: HIST = {"dagen": [], "termen": {}, "eenheid": {}}
+def kortdatum(d):
+    d = datetime.date.fromisoformat(d); return f"{d.day} {MND[d.month - 1]}"
+def prijsverloop(t, nu_laagst):
+    """Grafiek (inline SVG) van de laagste en de middelste prijs per eenheid over de bewaarde dagen, met een kort oordeel."""
+    reeks = HIST["termen"].get(t); dagen = HIST["dagen"]
+    if not reeks or len(dagen) < 5: return ""
+    laag, mid = [], []
+    for i in range(len(dagen)):
+        v = sorted(x[i] for x in reeks.values() if x[i] is not None)
+        laag.append(v[0] if v else None); mid.append(v[len(v) // 2] if v else None)
+    pts = [(i, a, b) for i, (a, b) in enumerate(zip(laag, mid)) if a is not None]
+    if len(pts) < 5: return ""
+    eh = eenheid(HIST["eenheid"].get(t, ""))
+    lo, hi = min(p[1] for p in pts), max(max(p[1], p[2]) for p in pts)
+    if hi - lo < .01: hi = lo + .01
+    W, H, L, R, T, B = 640, 260, 110, 14, 20, 46
+    x = lambda i: L + (W - L - R) * i / max(1, len(dagen) - 1)
+    y = lambda v: T + (H - T - B) * (1 - (v - lo) / (hi - lo))
+    lijn = lambda k: " ".join(f"{'M' if j == 0 else 'L'}{x(p[0]):.1f},{y(p[k]):.1f}" for j, p in enumerate(pts))
+    gem = sum(p[1] for p in pts) / len(pts)
+    nu = nu_laagst if nu_laagst is not None else pts[-1][1]
+    laagste_max = max(p[1] for p in pts)
+    if laagste_max - lo < .005:
+        tekst = f"De laagste prijs per {eh} is sinds {kortdatum(dagen[0])} niet veranderd: {eur(lo)}."
+        oordeel = None
+    elif nu <= lo * 1.01: oordeel = f"Dit is de laagste prijs sinds {kortdatum(dagen[0])}."
+    elif nu < gem * .97: oordeel = "Dat is lager dan gemiddeld: een goed moment om te kopen."
+    elif nu > gem * 1.03: oordeel = "Dat is hoger dan gemiddeld."
+    else: oordeel = "Dat is ongeveer de gemiddelde prijs."
+    if oordeel is not None:
+        tekst = (f"De laagste prijs per {eh} was sinds {kortdatum(dagen[0])} tussen {eur(lo)} en {eur(laagste_max)}, gemiddeld {eur(gem)}. "
+                 f"Nu is de laagste prijs {eur(nu)}. {oordeel}")
+    svg = (f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{esc(tekst)}" style="width:100%;height:auto;display:block">'
+           f'<line x1="{L}" x2="{W - R}" y1="{y(lo):.1f}" y2="{y(lo):.1f}" stroke="var(--line)"/><line x1="{L}" x2="{W - R}" y1="{y(hi):.1f}" y2="{y(hi):.1f}" stroke="var(--line)"/>'
+           f'<text x="{L - 10}" y="{y(hi) + 8:.1f}" text-anchor="end" font-size="22" fill="var(--muted)">{eur(hi)}</text><text x="{L - 10}" y="{y(lo) + 8:.1f}" text-anchor="end" font-size="22" fill="var(--muted)">{eur(lo)}</text>'
+           f'<text x="{L}" y="{H - 8}" font-size="22" fill="var(--muted)">{kortdatum(dagen[0])}</text><text x="{W - R}" y="{H - 8}" text-anchor="end" font-size="22" fill="var(--muted)">{kortdatum(dagen[-1])}</text>'
+           f'<path d="{lijn(2)}" fill="none" stroke="var(--muted)" stroke-width="3" stroke-dasharray="8 7"/>'
+           f'<path d="{lijn(1)}" fill="none" stroke="var(--green)" stroke-width="5" stroke-linejoin="round"/></svg>')
+    return (f'<h2>Prijsverloop van {esc(t)}</h2><div class="panel">{svg}<p class="note" style="margin:8px 0 0"><span style="color:var(--green);font-weight:700">━</span> laagste prijs per {esc(eh)} &nbsp; '
+            f'<span style="color:var(--muted);font-weight:700">┅</span> middelste prijs van alle supermarkten</p></div><p>{esc(tekst)}</p>')
+
 made = []  # (pad, prioriteit)
 
 # ---------- productpagina's ----------
@@ -93,7 +138,7 @@ for t, rows in PICKED.items():
     head = ch + f"<h1>{esc(name)}: waar is het goedkoopst?</h1><p class=\"lead\">{esc(name)} koop je nu het voordeligst bij <b>{esc(win)}</b>" + (f": {esc(vanaf)}" if vanaf else "") + (f", {besp}% goedkoper dan bij {esc(loser)}." if besp >= 5 else ".") + "</p>"
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
-            f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{faq_html(faq)}{relhtml}{LISTJS}')
+            f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and id(p) not in BAD), default=None))}{faq_html(faq)}{relhtml}{LISTJS}')
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{name} prijzen per supermarkt", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "item": {"@type": "Product", "name": p[1], "offers": {"@type": "Offer", "price": f"{eff(p):.2f}", "priceCurrency": "EUR", "url": plink(p), "availability": "https://schema.org/InStock",
          "seller": {"@type": "Organization", "name": NAMEN.get(stores[si]["id"], stores[si]["name"])}}}} for i, (si, p) in enumerate(rows)]}]

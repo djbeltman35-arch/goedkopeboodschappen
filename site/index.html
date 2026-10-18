@@ -107,6 +107,10 @@
 .forlist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid rgba(0,0,0,.07);font-size:14px}
 .forlist li:first-child{border-top:none}
 .forlist a{text-decoration:none;font-weight:700}
+.notify{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--soft);font-size:15px}
+.notify p{margin:0 0 8px}
+.notify button{padding:9px 13px;font-size:15px}
+.notify .on{color:var(--green-dark);font-weight:700}
 .ltools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .ltools button{padding:9px 13px;font-size:15px}
 .mystores{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
@@ -174,6 +178,7 @@
       <div id="welcome"></div>
       <ul class="items" id="items"></ul>
       <div id="forlist"></div>
+      <div class="notify" id="notify" hidden></div>
       <div class="where" id="where"></div>
       <div class="ltools" id="ltools" hidden>
         <button type="button" class="btn-line" id="share">Lijst delen</button>
@@ -212,6 +217,7 @@
 
 <script>
 const CATS={{CATS}};
+const PAGINAS=new Map(CATS.flatMap(c=>c[2]).map(t=>[t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9,.]+/g," ").trim(),t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")]));
 const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
 const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
@@ -310,6 +316,7 @@ function search(fromUser){
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   $("results").innerHTML=`<h2>${esc(q[0].toUpperCase()+q.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
+  ${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -374,8 +381,8 @@ function addOffer(o){
   S.list.push({term:o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offerTill:o.t||null});
   gc("lijst-actie/"+o.s,"Actie op lijst"); after();
 }
-function after(){S.sel=null;save();renderList();renderWhere();if(S.view)renderView();else if(S.lastQ)search();dock()}
-function save(){store.set("lijst-v3",S.list)}
+function after(){S.sel=null;save();renderList();renderWhere();if(S.view)renderView();else if(S.lastQ)search();dock();renderNotify()}
+function save(){store.set("lijst-v3",S.list);pushLater()}
 // Actuele prijs van het gekozen product, inclusief een lopende aanbieding.
 function cur(x){const p=S.byLink.get(x.link); if(p) return eff(p); if(x.offerTill!==undefined) return (!x.offerTill||x.offerTill>=today)?x.price:null; return null}
 const priceOf=x=>cur(x)??x.price;
@@ -474,6 +481,33 @@ function dock(){
 // Op een smal scherm de onderbalk verbergen zolang de lijst zelf in beeld is.
 function dockVis(){if(!dockVis.o&&"IntersectionObserver"in window){dockVis.o=new IntersectionObserver(e=>{$("dock").style.visibility=e[0].isIntersecting?"hidden":"visible"});dockVis.o.observe($("lijst"))}}
 
+
+/* Meldingen: een pushbericht als iets van je lijst in de aanbieding komt (via /api/meldingen, zonder account). */
+const pushKan="serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent), standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+const b64ToBytes=s=>{const p="=".repeat((4-s.length%4)%4),b=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+async function pushSub(){if(!pushKan)return null;try{const r=await navigator.serviceWorker.getRegistration();return r?await r.pushManager.getSubscription():null}catch(e){return null}}
+const winkelsAan=()=>[...new Set(S.stores.filter(s=>s.count&&!S.off.has(s.id)).map(s=>s.id))];
+async function pushSync(sub){sub=sub||await pushSub();if(!sub)return;try{await fetch("/api/meldingen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON(),termen:S.list.map(x=>x.term),winkels:winkelsAan()})})}catch(e){}}
+async function pushAan(){
+  try{
+    const perm=await Notification.requestPermission(); if(perm!=="granted"){S.pushMsg="Je hebt meldingen geweigerd. Je kunt ze aanzetten in de instellingen van je browser.";return renderNotify()}
+    const reg=await navigator.serviceWorker.register("/sw.js"); await navigator.serviceWorker.ready;
+    const {sleutel}=await (await fetch("/api/meldingen")).json(); if(!sleutel) throw new Error("geen sleutel");
+    const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(sleutel)});
+    await pushSync(sub); S.pushOn=true; S.pushMsg=""; gc("meldingen/aan","Meldingen aangezet");
+  }catch(e){S.pushMsg="Aanzetten lukte niet. Probeer het later nog eens."}
+  renderNotify();
+}
+async function pushUit(){const sub=await pushSub();if(sub){try{await fetch("/api/meldingen",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON()})})}catch(e){}try{await sub.unsubscribe()}catch(e){}}S.pushOn=false;gc("meldingen/uit","Meldingen uitgezet");renderNotify()}
+function renderNotify(){
+  const el=$("notify"); if(!S.list.length){el.hidden=true;return} el.hidden=false;
+  if(S.pushOn){el.innerHTML=`<p class="on">🔔 Meldingen staan aan</p><p>Je krijgt 's ochtends een bericht als iets van je lijst in de aanbieding komt.</p><button type="button" class="btn-line" data-push="uit">Meldingen uitzetten</button>`;return}
+  if(!pushKan){el.innerHTML=isIOS&&!standalone?`<p>🔔 <b>Melding bij aanbiedingen?</b> Zet deze site eerst op je beginscherm: tik op deel <span aria-hidden="true">⬆️</span> en kies "Zet op beginscherm". Open hem daarna vanaf je beginscherm.</p>`:"";el.hidden=!el.innerHTML;return}
+  el.innerHTML=`<p>🔔 <b>Melding als iets van je lijst in de aanbieding komt?</b> Gratis, zonder account. Je kunt het altijd weer uitzetten.</p>${S.pushMsg?`<p class="muted">${esc(S.pushMsg)}</p>`:""}<button type="button" class="btn" data-push="aan">Meldingen aanzetten</button>`;
+}
+let pushT; function pushLater(){if(!S.pushOn)return;clearTimeout(pushT);pushT=setTimeout(()=>pushSync(),2000)}
+
 function printList(){
   const r=S.printRow; if(!r) return; gc("print","Lijst geprint");
   const d=new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
@@ -494,7 +528,7 @@ function storesUi(){
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
-function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock()}
+function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
@@ -505,13 +539,14 @@ document.addEventListener("click",e=>{
   const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}
   const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);after();return}
+  const pu=e.target.closest("[data-push]"); if(pu){pu.disabled=true;pu.dataset.push==="aan"?pushAan():pushUit();return}
   const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
   const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
 });
 document.addEventListener("change",e=>{
   const dn=e.target.closest("[data-done]"); if(dn){const x=S.list[+dn.dataset.done];if(x){x.done=dn.checked;save();renderList()}return}
-  const st=e.target.closest("[data-store]"); if(st){st.checked?S.off.delete(st.dataset.store):S.off.add(st.dataset.store);store.set("winkels-uit",[...S.off]);pickCache.clear();storesUi();renderAll();gc("winkels/"+(S.stores.length-S.off.size),"Winkels gekozen");return}
+  const st=e.target.closest("[data-store]"); if(st){st.checked?S.off.delete(st.dataset.store):S.off.add(st.dataset.store);store.set("winkels-uit",[...S.off]);pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+(S.stores.length-S.off.size),"Winkels gekozen");return}
   if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers()}
   if(e.target.id==="ofsort"){S.ofsort=e.target.value;renderOffers()}
 });
@@ -561,6 +596,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   if(sp.get("q")) gc("zoek/"+norm(sp.get("q")),"Zoekt: "+sp.get("q"));
   if(sp.get("v")==="aanbiedingen"){S.view="deals";renderView()} else search();
   renderList(); renderWhere(); welcome(); dock();
+  pushSub().then(sub=>{S.pushOn=!!sub;renderNotify();if(sub)pushSync(sub)});
   if(added){$("welcome").innerHTML=`<div class="welcome"><b>${added} ${added===1?"artikel":"artikelen"}</b> op je lijst gezet.</div>`;jump("lijst")}
   if(!S.snap||S.snap.day!==today) snapshot();
   if(S.offersUpdated) $("src").textContent=`Prijzen van de webshops van de supermarkten. Aanbiedingen bijgewerkt op ${dagLang(S.offersUpdated)}. De prijs aan de kassa is leidend.`;
