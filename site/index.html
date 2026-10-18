@@ -718,7 +718,12 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   if(sp.get("q")) gc("zoek/"+norm(sp.get("q")),"Zoekt: "+sp.get("q"));
   if(sp.get("v")==="aanbiedingen"){S.view="deals";renderView()} else search();
   renderList(); renderWhere(); welcome(); dock(); if(!S.list.length&&matchMedia("(min-width:921px)").matches) $("bulk").open=true;
-  pushSub().then(sub=>{S.pushOn=!!sub;renderNotify();if(sub)pushSync(sub)});
+  pushSub().then(async sub=>{S.pushOn=!!sub;renderNotify();if(!sub)return;
+    // Is de serversleutel veranderd, dan het abonnement stil vernieuwen (anders komen er geen meldingen meer aan).
+    try{const {sleutel}=await (await fetch("/api/meldingen")).json();const oud=sub.options?.applicationServerKey;
+      const zelfde=oud&&sleutel&&btoa(String.fromCharCode(...new Uint8Array(oud))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")===sleutel;
+      if(sleutel&&oud&&!zelfde){await sub.unsubscribe();const reg=await navigator.serviceWorker.ready;sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(sleutel)})}}catch(e){}
+    pushSync(sub)});
   mailStatus();
   const em=sp.get("email"); if(em){const t={bevestigd:"<b>Gelukt!</b> Je krijgt voortaan een mail als iets van je lijst in de aanbieding komt.",uit:"Je bent afgemeld. Je krijgt geen mails meer van ons.",onbekend:"Deze link is verlopen of al gebruikt. Meld je gerust opnieuw aan."}[em];
     if(t){$("welcome").innerHTML=`<div class="welcome">📧 ${t}</div>`;jump("lijst")} if(em==="uit")store.set("email-token",null);
