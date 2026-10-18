@@ -147,7 +147,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a class="wide" href="/categorie/">Categorieën</a></nav>
   </div>
 </header>
 
@@ -217,7 +217,7 @@ const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkop
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
 const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
 const STARTS=["kat","hond"];
-const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactose biologisch bio glutenvrij proteine protein light zero suikervrij".split(" "));
+const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare glutenvrij proteine protein light zero suikervrij".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
 const S={stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
@@ -258,24 +258,32 @@ const nu=o=>(!o.v||o.v<=today)&&(!o.t||o.t>=today);
 function offerOf(p){if(p.o===undefined){const k=pkey(p);const o=k?S.okey.get(sid(p[0])+"|"+k):null;p.o=o&&o.p<p[3]-.004?o:null}return p.o&&nu(p.o)?p.o:null}
 const eff=p=>offerOf(p)?.p??p[3];
 const effUnit=p=>p[5]!=null?p[5]*eff(p)/p[3]:null;
+const sizeTxt=p=>{const z=String(p[4]||"").trim();return z&&norm(p[1]).includes(norm(z))?"":z};
 const unitTxt=(v,u)=>v!=null&&u?`${eur(v)} per ${u==="st"?"stuk":u==="l"?"liter":"kilo"}`:"";
 
 /* Zoeken */
 function matches(q,prefix=true,pool=S.prods){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
-  const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>x===w||(prefix&&i===t.length-1&&x.startsWith(w)))));
-  const clean=m.filter(p=>!p.hay.some(x=>!t.includes(x)&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e)))));
+  // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
+  const fit=(x,w,last)=>x===w||(w.length>=5&&x.endsWith(w))||(prefix&&last&&x.startsWith(w));
+  const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
+  const clean=m.filter(p=>!p.hay.some(x=>vreemd(x,t)));
   return clean.length?clean:m;
 }
+// Woord dat laat zien dat het om een ander product of een variant gaat.
+const vreemd=(x,t)=>!t.includes(x)&&!t.some(w=>w.length>=5&&x.endsWith(w))&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e)));
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
-const rank=p=>effUnit(p)??(eff(p)*1000);
+const rank=p=>p.bad?1e6+eff(p):effUnit(p)??(eff(p)*1000);
+// Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
+function markBad(arr){const u=arr.map(effUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=effUnit(p);p.bad=v!=null&&(v>med*4||v<med/4)}}
 // Per supermarkt het best passende goedkoopste product: alleen producten die ongeveer even kort benoemd zijn als de beste treffer.
 function perStore(m){
   if(!m.length) return new Map();
+  markBad(m);
   const gmin=Math.min(...m.map(words)), by=new Map();
   for(const p of m){ if(words(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
   const res=new Map();
-  for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>eff(a)-eff(b))[0])}
+  for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
   return res;
 }
 const pickCache=new Map();
@@ -285,8 +293,8 @@ function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
   return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}</div>
-  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(p[4]||"")}</span></div>
-  <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${esc(unitTxt(u,p[6]))}</span></div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span></div>
+  <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":esc(unitTxt(u,p[6]))}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
 function search(fromUser){
@@ -298,9 +306,10 @@ function search(fromUser){
   const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
   const top=best[0], last=best[best.length-1];
-  const diff=best.length>1&&effUnit(top)!=null&&effUnit(last)!=null?Math.round((1-effUnit(top)/effUnit(last))*100):0;
+  const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
+  const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   $("results").innerHTML=`<h2>${esc(q[0].toUpperCase()+q.slice(1))}</h2>
-  <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(top[0]))} betaal je ${diff}% minder dan bij ${esc(sname(last[0]))}`:""}.</p>
+  <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -390,8 +399,11 @@ function totals(){
     let sum=0,miss=0;
     const items=S.list.map(x=>{
       if(x.s===s.id){const pr=priceOf(x);sum+=pr;return {name:x.name,link:x.link,price:pr}}
-      const p=pick(x.term).get(si); if(!p){miss++;return null}
-      const pr=eff(p); sum+=pr; return {name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:pr,deal:!!offerOf(p)};
+      const p=pick(x.term).get(si); if(!p||p.bad){miss++;return null}
+      // Rekenen met dezelfde hoeveelheid als het product dat je koos (2 liter melk is 2 liter melk, in welke verpakking ook).
+      const p0=S.byLink.get(x.link), q=p0&&!p0.bad&&p0[5]>0&&p0[6]===p[6]&&effUnit(p)!=null?p0[3]/p0[5]:null;
+      const pr=q?effUnit(p)*q:eff(p); sum+=pr;
+      return {name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:pr,deal:!!offerOf(p),conv:q?(p0[4]||""):""};
     });
     return {si,sum,miss,items};
   }).filter(Boolean).sort((a,b)=>a.miss-b.miss||a.sum-b.sum);
@@ -422,7 +434,7 @@ function renderWhere(){
     }
   }
   const r=rows.find(r=>r.si===sel);
-  html+=`<div class="detail"><ul>${r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener" data-out="${esc(sid(sel))}">${esc(it.name)}</a><span>${it.deal?'<span class="pill">actie</span> ':""}${eur(it.price)}</span></li>`:`<li><span class="miss">${esc(S.list[i].term)}: niet te koop bij ${esc(sname(sel))}</span><span></span></li>`).join("")}</ul></div>`;
+  html+=`<div class="detail"><ul>${r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener" data-out="${esc(sid(sel))}">${esc(it.name)}</a><span>${it.deal?'<span class="pill">actie</span> ':""}${eur(it.price)}${it.conv?`<br><span class="muted" style="font-size:12px">voor ${esc(it.conv)}</span>`:""}</span></li>`:`<li><span class="miss">${esc(S.list[i].term)}: niet te koop bij ${esc(sname(sel))}</span><span></span></li>`).join("")}</ul></div>`;
   $("where").innerHTML=html; S.printRow=r;
 }
 // Aanbiedingen die passen bij wat er op je lijst staat.
@@ -431,10 +443,12 @@ function renderForList(){
   const seen=new Set(S.list.map(x=>x.link)), out=[];
   for(const x of S.list){
     const t=norm(x.term).split(" ").filter(w=>w.length>1&&!/^\d/.test(w)); if(!t.length) continue;
-    const m=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)&&!seen.has(o.u)&&t.every(w=>o.hay.includes(w))&&!o.hay.some(h=>!t.includes(h)&&EXCL.has(h)));
+    const p0=S.byLink.get(x.link), u0=p0&&!p0.bad?effUnit(p0):null, cur0=priceOf(x);
+    const m=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)&&!seen.has(o.u)&&t.every(w=>o.hay.some(h=>h===w||(w.length>=5&&h.endsWith(w))))&&!o.hay.some(h=>vreemd(h,t))&&
+      o.hay.filter(h=>!/^[\d,.%+]+[a-z]*$/.test(h)&&!UNITW.has(h)).length<=t.length+3&&
+      (u0!=null&&o.pp!=null&&p0[6]===o.eh?o.pp<u0*.97:o.p<cur0-.004));
     if(!m.length) continue;
-    const b=m.sort((a,b)=>(a.pp??a.p*1000)-(b.pp??b.p*1000))[0];
-    if(b.p<priceOf(x)-.004||b.s!==x.s) out.push({x,b});
+    out.push({x,b:m.sort((a,b)=>(a.pp??a.p*1000)-(b.pp??b.p*1000))[0]});
     if(out.length>=5) break;
   }
   $("forlist").innerHTML=out.length?`<div class="forlist"><h3>🔥 Nu in de aanbieding voor je lijst</h3><ul>${out.map(({x,b})=>`<li><span><span class="shop">${esc(STORENAMES[b.s]||b.s)}</span> <a href="${esc(b.u)}" target="_blank" rel="noopener" data-out="${esc(b.s)}">${esc(b.n)}</a>${b.lbl?` <span class="muted">${esc(b.lbl)}</span>`:""}</span>${tag(b.p,"deal")}</li>`).join("")}</ul></div>`:"";

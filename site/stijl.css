@@ -57,7 +57,7 @@ button{font:700 16px var(--text);cursor:pointer;border-radius:12px;border:2px so
 .nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;font-weight:700;font-size:15px;padding:8px 10px;border-radius:10px}
 .nav a:hover,.nav a[aria-current=page]{background:var(--green-soft);color:var(--green-dark)}
-@media (max-width:640px){.brand span{display:none}.nav a{font-size:14px;padding:7px 8px}}
+@media (max-width:640px){.brand span{display:none}.nav{flex-wrap:nowrap;gap:2px}.nav a{font-size:14px;padding:7px 7px;white-space:nowrap}.nav a.wide{display:none}}
 
 /* Statische pagina's (productvergelijkingen, categorieën, info) */
 .pagehead{padding-block:24px 8px}
