@@ -1,509 +1,572 @@
-<title>Goedkope Boodschappen prototype</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Public+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap">
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Boodschappen vergelijken bij 11 supermarkten | Goedkope Boodschappen</title>
+<meta name="description" content="Waar zijn je boodschappen het goedkoopst? Vergelijk prijzen en aanbiedingen van Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk, Hoogvliet, DekaMarkt, Vomar, SPAR en Poiesz. Gratis, zonder reclame, elke dag bijgewerkt.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://goedkopeboodschappen.netlify.app/">
+<meta name="theme-color" content="#0e7c4a">
+<meta name="google-site-verification" content="qW08s7N_6THUJ-zVfpa8KrDFVk6qh4AaJBKK_nKP26c">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen">
+<meta property="og:url" content="https://goedkopeboodschappen.netlify.app/">
+<meta property="og:title" content="Waar zijn je boodschappen het goedkoopst?">
+<meta property="og:description" content="Vergelijk 11 supermarkten in één keer. Gratis, zonder reclame en elke dag bijgewerkt.">
+<meta property="og:image" content="https://goedkopeboodschappen.netlify.app/icons/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="/stijl.css?v={{VERSIE}}">
+<link rel="preload" href="/producten.json" as="fetch" crossorigin>
+<script type="application/ld+json">{{LDJSON}}</script>
 <style>
-/* Layout: rode menubalk, gele kop; daaronder drie genummerde stappen in volgorde: 1 zoeken + top 3 kiezen (volle breedte), 2 boodschappenlijst, 3 totaal bij 3 supermarkten. Geel = prijskaartjes en kop, rood = acties en stapnummers. */
-:root{
-  --bg:#fbfaf5; --surface:#ffffff; --ink:#221f17; --muted:#6b6455; --line:#ebe5d3; --soft:#f5f1e4;
-  --red:#c8281e; --red-dark:#a11d15; --red-ink:#ffffff; --red-soft:#fdeceb; --brand:#ffcf1f; --brand-soft:#fff6d1; --brand-ink:#221f17; --ok:#1d7a46;
-  --display:"Familjen Grotesk",system-ui,sans-serif; --body:"Public Sans",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#16140f; --surface:#1f1c15; --ink:#f1ecdf; --muted:#aba28c; --line:#363126; --soft:#27231a;
-  --red:#e0473c; --red-dark:#c8281e; --red-ink:#ffffff; --red-soft:#3b1a17; --brand:#f5c400; --brand-soft:#3a3214; --brand-ink:#16140f; --ok:#5cc58a; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#16140f; --surface:#1f1c15; --ink:#f1ecdf; --muted:#aba28c; --line:#363126; --soft:#27231a;
-  --red:#e0473c; --red-dark:#c8281e; --red-ink:#ffffff; --red-soft:#3b1a17; --brand:#f5c400; --brand-soft:#3a3214; --brand-ink:#16140f; --ok:#5cc58a; color-scheme:dark}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-a{color:inherit}
-button{font:600 15px var(--body);border-radius:10px;cursor:pointer;border:1px solid transparent;padding:10px 16px}
-.btn{background:var(--red);color:var(--red-ink);border-color:var(--red)}
-.btn:hover{background:var(--red-dark);border-color:var(--red-dark)}
-.btn-line{background:var(--surface);color:var(--ink);border-color:var(--line)}
-.btn-line:hover{border-color:var(--red);color:var(--red)}
-input:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-input[type=search]{flex:1 1 220px;min-width:0;font:inherit;font-size:18px;padding:14px 16px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink)}
-input[type=search]:focus{border-color:var(--red);outline:none}
-.price{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tagp{background:var(--brand);color:var(--brand-ink);padding:4px 9px;border-radius:4px;font-size:16px}
-.shop{display:inline-block;font:700 11px var(--body);text-transform:uppercase;letter-spacing:.05em;color:var(--red-ink);background:var(--red);padding:2px 7px;border-radius:4px;white-space:nowrap}
+/* Alleen voor de app op de startpagina */
+.hero{padding-block:26px 22px}
+.hero h1{max-width:20ch;margin-bottom:8px}
+.hero .lead{color:var(--muted);font-size:18px}
+.search{display:flex;gap:8px;margin-top:18px;max-width:720px}
+.search input{flex:1;min-width:0;font:400 19px var(--text);color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:15px 16px}
+.search input:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 4px var(--green-soft)}
+.search .btn{padding:0 22px;font-size:17px;border-radius:14px}
+.promise{display:flex;flex-wrap:wrap;gap:4px 18px;margin:14px 0 0;padding:0;list-style:none;font-size:15px;color:var(--muted)}
+.promise li::before{content:"✓";color:var(--green);font-weight:700;margin-right:6px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start;padding-block:6px 30px}
+@media (max-width:920px){.app{grid-template-columns:minmax(0,1fr)}}
+.quick{margin:0 0 6px}
+.res h2{font-size:21px;margin:16px 0 4px}
+.res .meta{color:var(--muted);font-size:15px;margin:0 0 8px}
+.rows{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto 46px;gap:12px;align-items:center;padding:12px 12px 12px 14px;border-top:1px solid var(--line)}
+.row:first-child{border-top:none}
+.row.win{background:var(--tag-soft)}
+.row .who{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
+.row .nm{font-weight:700;text-decoration:none;overflow-wrap:anywhere}
+.row .nm:hover{text-decoration:underline}
+.row .sz{color:var(--muted);font-size:14px}
+.row .pr{display:grid;justify-items:end;gap:3px}
+.plus{width:46px;height:46px;padding:0;border-radius:12px;background:var(--green);color:var(--on-green);font-size:26px;line-height:1;display:grid;place-items:center}
+.plus:hover{background:var(--green-dark)}
+.plus.done{background:var(--green-soft);color:var(--green-dark);font-size:20px}
+.win-label{font:700 13px var(--text);color:var(--green-dark)}
+.more{margin-top:10px}
+.more summary{cursor:pointer;font-weight:700;color:var(--green-dark);padding:8px 0}
+.empty{padding:18px 4px;color:var(--muted)}
+.hint{color:var(--muted);font-size:15px;margin:6px 0 0}
 
-/* Kop */
-.bar{background:var(--red);color:var(--red-ink)}
-.bar .wrap{display:flex;align-items:center;gap:10px;padding-block:10px}
-.logo{width:30px;height:30px;flex:none}
-.brandname{font:700 20px var(--display);letter-spacing:-.01em}
-.topnav{margin-left:auto;display:flex;gap:16px}.topnav a{color:var(--red-ink);font-weight:800;font-size:18px;text-decoration:none;white-space:nowrap}.topnav a:hover{text-decoration:underline}
-@media (max-width:560px){.brandname{font-size:17px}.topnav{gap:12px}.topnav a{font-size:16px}}
-.top{background:var(--brand);color:var(--brand-ink);border-bottom:4px solid var(--red)}
-.top .wrap{padding-block:18px;display:grid;gap:6px}
-.top h1{font:700 clamp(24px,3.6vw,34px)/1.15 var(--display);margin:0;text-wrap:balance;letter-spacing:-.015em}
-.top p{margin:0;font-weight:500;max-width:60ch;color:#221f17}
+/* Lijst */
+.list{position:sticky;top:12px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+@media (max-width:920px){.list{position:static}}
+.list h2{margin:0 0 2px;font-size:22px;display:flex;align-items:baseline;gap:8px}
+.list h2 small{font-size:15px;color:var(--muted);font-weight:400;margin-left:auto}
+.welcome{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--green-soft);font-size:15px}
+.welcome.up{background:var(--deal-soft)}
+.items{list-style:none;margin:12px 0 0;padding:0}
+.it{display:grid;grid-template-columns:28px minmax(0,1fr) auto 30px;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.it:first-child{border-top:none}
+.it .chk{width:24px;height:24px;margin:0;accent-color:var(--green);cursor:pointer}
+.it .t{font-weight:700;line-height:1.25}
+.it .p{color:var(--muted);font-size:14px;overflow-wrap:anywhere;margin-top:2px}
+.it .p a{text-decoration:none}
+.it .p a:hover{text-decoration:underline}
+.it.done .t,.it.done .p{text-decoration:line-through;opacity:.5}
+.it .ch{display:block;font-size:12px;text-align:right;margin-top:3px;color:var(--green-dark);font-weight:700}
+.it .ch.up{color:var(--deal)}
+.del{border:none;background:none;color:var(--muted);font-size:22px;padding:2px;line-height:1}
+.del:hover{color:var(--deal)}
+.lempty{padding:6px 0 2px;color:var(--muted);font-size:15px}
+.lempty ul{margin:8px 0 0;padding-left:20px}
+.lempty li{margin:3px 0}
+.where{margin-top:16px}
+.where h3{margin:0 0 8px;font-size:17px}
+.store{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;width:100%;text-align:left;border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:var(--surface);font:inherit;color:inherit}
+.store:hover{border-color:var(--green)}
+.store[aria-pressed=true]{border-color:var(--green);background:var(--green-soft)}
+.store .n{font-weight:700}
+.store .s{grid-column:1;font-size:13px;color:var(--muted)}
+.store .s .miss{color:var(--deal)}
+.store .tag{grid-row:1/3;grid-column:2}
+.best .n::after{content:"Goedkoopst";margin-left:8px;font:700 12px var(--text);color:var(--on-green);background:var(--green);padding:2px 7px;border-radius:6px;vertical-align:2px}
+.saving{margin-top:10px;font-size:15px}
+.saving b{color:var(--green-dark)}
+.combo{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--tag-soft);font-size:15px}
+.combo p{margin:0}
+.combo details{margin-top:6px}
+.combo summary{cursor:pointer;font-weight:700;color:var(--green-dark)}
+.combo ul{list-style:none;margin:6px 0 0;padding:0}
+.combo li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-top:1px solid rgba(0,0,0,.07);font-size:14px}
+.detail{margin-top:12px}
+.detail ul{list-style:none;margin:0;padding:0}
+.detail li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.detail li a{text-decoration:none;overflow-wrap:anywhere}
+.detail li a:hover{text-decoration:underline}
+.detail .miss{color:var(--deal)}
+.forlist{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--deal-soft)}
+.forlist h3{margin:0 0 6px;font-size:16px;color:var(--deal)}
+.forlist ul{list-style:none;margin:0;padding:0}
+.forlist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid rgba(0,0,0,.07);font-size:14px}
+.forlist li:first-child{border-top:none}
+.forlist a{text-decoration:none;font-weight:700}
+.ltools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.ltools button{padding:9px 13px;font-size:15px}
+.mystores{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.mystores summary{cursor:pointer;font-weight:700;font-size:15px}
+.sgrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.sgrid label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:14px;font-weight:700;cursor:pointer;background:var(--surface)}
+.sgrid input{accent-color:var(--green);width:17px;height:17px;margin:0}
+.src{font-size:13px;color:var(--muted);margin:14px 0 0}
 
-/* Stappen */
-main{padding-block:22px 28px;display:grid;gap:22px}
-.cols{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:start}
-@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
-.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
-.stephead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--red);color:var(--red-ink);display:grid;place-items:center;font:700 16px var(--display)}
-.stephead h2{font:700 20px var(--display);margin:0}
-.stephead .side{margin-left:auto;font-size:13px;color:var(--muted);text-align:right}
-.hint{color:var(--muted);font-size:14px;margin:0 0 12px}
-.addrow{display:flex;gap:8px;flex-wrap:wrap}
+/* Uitleg onderaan */
+.how{padding-block:10px 10px}
+.how ol{list-style:none;counter-reset:s;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.how ol li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 16px 58px;position:relative}
+.how ol li::before{content:counter(s);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--tag);color:var(--tag-ink);font:700 19px/30px var(--num);text-align:center}
+.how ol b{display:block}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.why div{background:var(--green-soft);border-radius:var(--r);padding:16px}
+.why h3{margin:0 0 4px;font-size:17px}
+.why p{margin:0;font-size:15px}
+.seo{padding-block:8px 10px}
+.seo p{max-width:75ch}
+.seo .links{margin-top:6px}
 
-/* Stap 1: top 3 resultaten */
-.meta{color:var(--muted);font-size:14px;margin:14px 0 8px}
-.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-@media (max-width:760px){.picks{grid-template-columns:minmax(0,1fr)}}
-.pick{position:relative;display:grid;gap:8px;align-content:start;border:2px solid var(--line);border-radius:12px;padding:14px;background:var(--surface)}
-.pick.first{border-color:var(--red)}
-.pick .rank{font:700 12px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.pick.first .rank{color:var(--red)}
-.pick .pname{font-weight:600;overflow-wrap:anywhere}
-.pick .pname a{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
-.pick .pname a:hover{text-decoration-color:var(--red)}
-.pick .size{color:var(--muted);font-size:13px}
-.pick .prow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.pick .unit{font:600 12px var(--mono);color:var(--muted)}
-.pick .btn{width:100%}
-.pick .added{width:100%;text-align:center;padding:10px;border-radius:10px;background:var(--soft);color:var(--ok);font-weight:700}
-details.more{margin-top:12px}
-details.more summary{cursor:pointer;color:var(--red);font-weight:600;font-size:14px}
-.morelist{list-style:none;margin:8px 0 0;padding:0}
-.morelist li{display:grid;grid-template-columns:96px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
-.morelist .mini{padding:5px 10px;font-size:13px}
-@media (max-width:520px){.morelist li{grid-template-columns:minmax(0,1fr) auto auto}.morelist li .shopcell{grid-column:1/-1}}
-
-/* Categorieen en aanbiedingen */
-.catbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:16px}
-.cat{display:flex;align-items:center;gap:8px;text-align:left;background:var(--soft);border:2px solid var(--line);color:var(--ink);padding:9px 12px;font:600 14px/1.25 var(--body);min-width:0}
-.cat .ic{font-size:19px;line-height:1;flex:none}
-.cat:hover,.cat[aria-pressed=true]{border-color:var(--red)}
-.cat[aria-pressed=true]{background:var(--red-soft)}
-.cat.deal{grid-column:1/-1;background:var(--red);border-color:var(--red);color:var(--red-ink);font-size:18px;padding:14px 16px}
-.cat.deal:hover,.cat.deal[aria-pressed=true]{background:var(--red-dark);border-color:var(--brand)}
-.selwrap{grid-column:1/-1;position:relative;display:flex;align-items:center}
-.selwrap .ic{position:absolute;left:14px;font-size:19px;pointer-events:none}
-.selwrap select{width:100%;appearance:none;-webkit-appearance:none;font:600 16px var(--body);color:var(--ink);background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7l5 6 5-6' fill='none' stroke='%23c8281e' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/18px;border:2px solid var(--line);border-radius:10px;padding:13px 44px 13px 46px;cursor:pointer}
-.selwrap select:hover,.selwrap select:focus{border-color:var(--red);outline:none}
-.selwrap.small{margin:10px 0 0;max-width:420px}.selwrap.small select{font-size:15px;padding:10px 40px 10px 44px;background-color:var(--surface)}
-.cat.deal small{margin-left:auto;font:600 13px var(--body);background:var(--brand);color:var(--brand-ink);padding:3px 9px;border-radius:999px;white-space:nowrap}
-.viewhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:18px 0 4px}
-.viewhead h3{font:700 19px var(--display);margin:0}
-.artlist,.offlist{list-style:none;margin:8px 0 0;padding:0}
-.artlist li{display:grid;grid-template-columns:150px minmax(0,1fr) auto 40px;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
-.artname{background:none;border:none;padding:0;text-align:left;font:700 15px var(--body);color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
-.artname:hover{text-decoration-color:var(--red)}
-.artlist .pn{min-width:0;overflow-wrap:anywhere;color:var(--muted)}
-.artlist .pn a{color:var(--ink)}
-.artlist .unit,.off .unit{display:block;font:600 11px var(--mono);color:var(--muted);text-align:right}
-.plus{padding:6px 0;width:40px;font-size:18px;line-height:1}
-.ok{color:var(--ok);font-weight:700;text-align:center}
-@media (max-width:620px){.artlist li{grid-template-columns:minmax(0,1fr) auto 40px}.artlist .artcell{grid-column:1/-1}}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
-.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font:600 13px var(--body);color:var(--ink)}
-.chip[aria-pressed=true]{background:var(--red);border-color:var(--red);color:var(--red-ink)}
-.offlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
-.off{display:grid;gap:6px;align-content:start;border:2px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);min-width:0}
-.off .top2{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.off .lbl{font:700 11px var(--body);text-transform:uppercase;letter-spacing:.04em;background:var(--brand);color:var(--brand-ink);padding:2px 7px;border-radius:4px}
-.off .on{font-weight:600;overflow-wrap:anywhere}
-.off .on a{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
-.off .sz{color:var(--muted);font-size:13px;font-weight:400}
-.off .prow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.off s{color:var(--muted);font:600 13px var(--mono)}
-.off .till{font-size:12px;color:var(--muted)}
-.off .btn{width:100%;padding:8px}
-.off .added{text-align:center;padding:8px;border-radius:10px;background:var(--soft);color:var(--ok);font-weight:700}
-.morebtn{margin-top:12px}
-
-/* Stap 2: lijst */
-.banner{margin:0 0 12px;padding:10px 12px;background:var(--red-soft);border-left:4px solid var(--red);border-radius:6px;font-size:14px}
-.lines{list-style:none;margin:0;padding:0}
-.line{display:grid;grid-template-columns:28px minmax(0,1fr) auto 32px;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
-.line:first-child{border-top:none}
-.line .term{font-weight:700}
-.chk{width:24px;height:24px;margin:0;accent-color:var(--red,#c8281e);cursor:pointer}
-.line.done .term,.line.done .prod{text-decoration:line-through;opacity:.55}.line.done .price{opacity:.55}
-.gekocht{color:var(--muted);font-size:13px;font-weight:600}
-.line .prod{color:var(--muted);font-size:13px;overflow-wrap:anywhere;margin-top:3px}
-.line .prod a{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
-.delta{display:block;font:500 11px var(--body);text-align:right;margin-top:3px;color:var(--muted)}
-.delta.up{color:var(--red)}
-.del{background:none;border:none;color:var(--muted);padding:4px;font-size:20px;line-height:1;border-radius:6px}
-.del:hover{color:var(--red);background:var(--soft)}
-.empty{padding:14px 0;color:var(--muted)}
-.sumline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;margin-top:10px;background:var(--soft);border-radius:10px;font-weight:700}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-
-/* Stap 3: totaal per supermarkt */
-.podium{display:grid;gap:10px}
-.shopcard{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px;border:2px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
-.shopcard:hover{border-color:var(--red)}
-.shopcard[aria-pressed=true]{border-color:var(--red);background:var(--red-soft)}
-.shopcard .r{width:36px;height:36px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font:700 17px var(--display)}
-.shopcard.best .r{background:var(--red);color:var(--red-ink)}
-.shopname{font:700 17px var(--display)}
-.sub{display:block;font-size:12px;color:var(--muted);margin-top:2px}
-.sub .miss{color:var(--red)}
-.total{font-size:20px}
-.cheap{display:inline-block;margin-left:6px;font:700 10px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--red-ink);background:var(--red);padding:2px 6px;border-radius:4px;vertical-align:middle}
-.save{margin-top:12px;padding:10px 12px;background:var(--brand-soft);border-radius:10px;font-size:14px}
-.atshop{margin-top:14px}
-.atshop h3{font:700 15px var(--display);margin:0 0 6px;color:var(--red)}
-.atshop ul{list-style:none;margin:0;padding:0}
-.atshop li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
-.atshop li a{overflow-wrap:anywhere}
-.missing{color:var(--red)}
-
-.note{color:var(--muted);font-size:13px;max-width:75ch;margin:0}
-.seo h2{font:700 20px var(--display);margin:0 0 8px}.seo a{color:var(--red)}
-.site-foot{padding-block:8px 32px;color:var(--muted);font-size:14px;text-align:center}
-.site-foot a{color:var(--red);font-weight:600;text-decoration:none}
-.site-foot a:hover{text-decoration:underline}
-.printbtn{width:100%;margin-top:14px}
 #printsheet{display:none}
-#results,#detail,#lijst{scroll-margin-top:12px}
-.toast{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;width:min(560px,calc(100% - 32px));display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--ink);color:var(--bg);padding:10px 10px 10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px}
-.toast b{font-weight:700}.toast span{min-width:0;overflow-wrap:anywhere}.toast .btn{flex:none;padding:8px 12px}
 @media print{
   body{background:#fff;color:#000}
   body>*:not(#printsheet){display:none!important}
-  #printsheet{display:block;font:12pt/1.4 var(--body);color:#000}
-  #printsheet h1{font:700 22pt var(--display);margin:0 0 4pt;border-bottom:3pt solid #c8281e;padding-bottom:4pt}
-  #printsheet .pmeta{color:#555;font-size:10pt;margin:4pt 0 12pt}
+  #printsheet{display:block;font:12pt/1.4 var(--text);color:#000}
+  #printsheet h1{font-size:22pt;margin:0 0 4pt}
   #printsheet table{width:100%;border-collapse:collapse}
-  #printsheet th,#printsheet td{text-align:left;padding:6pt 4pt;border-bottom:1px solid #ccc;vertical-align:top}
-  #printsheet th{font-size:9pt;text-transform:uppercase;color:#555}
-  #printsheet .box{width:18pt;font-size:14pt}
-  #printsheet .pp{text-align:right;white-space:nowrap;font-family:var(--mono)}
-  #printsheet tfoot td{font-weight:700;border-bottom:none;border-top:2pt solid #000}
+  #printsheet td,#printsheet th{text-align:left;padding:6pt 4pt;border-bottom:1px solid #ccc}
+  #printsheet .pp{text-align:right}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.searchbox{padding:12px;border:3px solid var(--red,#c8281e);border-radius:16px}.searchbox .stephead{margin-top:0}
-.catbar.top1{margin:0 0 24px;padding:12px;border:3px solid var(--red,#c8281e);border-radius:16px}
 </style>
-
-<div class="bar"><div class="wrap">
-  <img class="logo" src="icons/icon.svg" alt="" width="30" height="30">
-  <span class="brandname">Goedkope Boodschappen</span>
-  <nav class="topnav" aria-label="Menu"><a href="/categorie/">Categorieën</a></nav>
-</div></div>
+<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
 <header class="top">
-  <div class="wrap">
-    <h1>Waar zijn jouw boodschappen het goedkoopst?</h1>
-    <p>Zoek een product of kies een categorie, zet de goedkoopste op je lijst en zie wat je hele lijst kost bij de 3 voordeligste supermarkten.</p>
+  <div class="wrap bar">
+    <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
+    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a class="wide" href="/categorie/">Categorieën</a></nav>
   </div>
 </header>
 
-<main class="wrap">
-  <section class="step" aria-labelledby="h1s">
-    <div class="catbar top1" id="catbar"></div>
-    <div class="searchbox">
-    <div class="stephead"><span class="num">1</span><h2 id="h1s">Zoek een product</h2></div>
-    <form class="addrow" id="f" role="search">
-      <input type="search" id="q" placeholder="Zoek bijv. halfvolle melk, pindakaas of koffiebonen" autocomplete="off" aria-label="Zoek een product">
-      <button type="submit" class="btn">Zoeken</button>
+<main>
+  <section class="wrap hero">
+    <h1>Waar zijn je boodschappen het goedkoopst?</h1>
+    <p class="lead">Zoek een product, zet het op je lijst en zie meteen bij welke supermarkt je het minst betaalt.</p>
+    <form class="search" id="f" role="search" action="/">
+      <label class="sr" for="q">Zoek een product</label>
+      <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
+      <button type="submit" class="btn">Zoek</button>
     </form>
-    <div id="results"></div>
-    </div>
+    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Gratis en zonder reclame</li></ul>
   </section>
 
-  <div class="cols">
-    <section class="step" id="lijst" aria-labelledby="h2s">
-      <div class="stephead"><span class="num">2</span><h2 id="h2s">Mijn boodschappenlijst</h2><span class="side" id="savedinfo"></span></div>
-      <div id="banner"></div>
-      <ul class="lines" id="items"></ul>
-      <div class="sumline" id="sumline" hidden></div>
-      <div class="actions">
-        <button type="button" class="btn" id="save">Lijst bewaren</button>
-        <button type="button" class="btn-line" id="clear">Lijst leegmaken</button>
-      </div>
+  <div class="wrap app">
+    <section class="res" aria-label="Zoekresultaten">
+      <div class="chips quick" id="quick"></div>
+      <div id="results" aria-live="polite"><p class="loading">Prijzen laden…</p></div>
     </section>
 
-    <section class="step" aria-labelledby="h3s">
-      <div class="stephead"><span class="num">3</span><h2 id="h3s">Wat kost je hele lijst?</h2></div>
-      <p class="hint">Je complete lijst bij de 3 voordeligste supermarkten. Tik op een winkel om te zien wat je daar koopt.</p>
-      <div class="podium" id="totals"></div>
-      <div id="savebox"></div>
-      <div class="atshop" id="detail"></div>
-    </section>
+    <aside class="list" id="lijst" aria-labelledby="lh">
+      <h2 id="lh">Mijn lijst <small id="lcount"></small></h2>
+      <div id="welcome"></div>
+      <ul class="items" id="items"></ul>
+      <div id="forlist"></div>
+      <div class="where" id="where"></div>
+      <div class="ltools" id="ltools" hidden>
+        <button type="button" class="btn-line" id="share">Lijst delen</button>
+        <button type="button" class="btn-line" id="print">Printen</button>
+        <button type="button" class="btn-line" id="clear">Leegmaken</button>
+      </div>
+      <details class="mystores" id="mystores"><summary id="mysum">Mijn supermarkten</summary><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt.</p><div class="sgrid" id="sgrid"></div></details>
+      <p class="src" id="src">Prijzen van de webshops van de supermarkten, elke dag bijgewerkt. De prijs aan de kassa is leidend.</p>
+    </aside>
   </div>
 
-  <p class="note" id="srcnote">Prijzen van AH, Jumbo, Lidl, PLUS, Dirk, DekaMarkt, Hoogvliet, SPAR, Poiesz en Vomar: reguliere webshopprijzen uit de open dataset van Checkjebon (MIT-licentie). De prijs aan de kassa is altijd leidend. Je lijst wordt alleen in deze browser bewaard.</p>
+  <section class="wrap how" aria-labelledby="hw">
+    <h2 id="hw">Zo werkt het</h2>
+    <ol>
+      <li><b>Zoek wat je nodig hebt</b>Je ziet direct de goedkoopste versie per supermarkt, per kilo of liter.</li>
+      <li><b>Zet het op je lijst</b>Je lijst blijft vanzelf bewaard op je telefoon of computer.</li>
+      <li><b>Kies je winkel</b>We rekenen uit waar je hele lijst het goedkoopst is, en of twee winkels combineren loont.</li>
+    </ol>
+    <div class="why">
+      <div><h3>Kom gerust terug</h3><p>Bij je volgende bezoek zie je meteen of je lijst goedkoper of duurder is geworden, en wat ervan in de aanbieding is.</p></div>
+      <div><h3>Ik verdien er niets aan</h3><p>Geen reclame, geen betaalde plekken en geen commissie van supermarkten. Deze site is gratis en onafhankelijk. <a href="/over/">Over deze site</a></p></div>
+    </div>
+  </section>
+  <!--SEO-->
 </main>
 
-<div class="toast" id="toast" role="status" hidden></div>
+<footer class="foot">
+  <div class="wrap">
+    <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:erik@beltman.email">Made by Erik</a></nav>
+    <p class="small">Versie {{VERSIE}}</p>
+  </div>
+</footer>
+<div class="dock" id="dock" hidden></div>
 <div id="printsheet" aria-hidden="true"></div>
-<footer class="wrap site-foot"><p><a href="mailto:erik@beltman.email" title="Mail naar erik@beltman.email">Made by Erik</a></p></footer>
+
 <script>
-const CATS=[["Zuivel en eieren", "🥛", ["halfvolle melk", "volle melk", "karnemelk", "yoghurt", "kwark", "vla", "slagroom", "roomboter", "margarine", "eieren"]], ["Kaas en vleeswaren", "🧀", ["jonge kaas", "belegen kaas", "oude kaas", "geraspte kaas", "ham", "salami", "rookworst", "smeerkaas"]], ["Brood en ontbijt", "🍞", ["volkoren brood", "wit brood", "beschuit", "crackers", "ontbijtkoek", "cornflakes", "havermout", "muesli"]], ["Broodbeleg", "🥜", ["pindakaas", "hagelslag", "jam", "appelstroop", "chocoladepasta", "honing"]], ["Groente en fruit", "🍎", ["bananen", "appels", "sinaasappels", "aardappelen", "uien", "tomaten", "komkommer", "paprika", "wortels", "broccoli", "sla", "champignons"]], ["Vlees en vis", "🍗", ["kipfilet", "gehakt", "kipdijfilet", "speklapjes", "zalm", "tonijn", "vissticks"]], ["Pasta, rijst en koken", "🍝", ["rijst", "spaghetti", "macaroni", "penne", "tomatenpuree", "pastasaus", "olijfolie", "zonnebloemolie", "tarwebloem", "suiker"]], ["Sauzen", "🥫", ["mayonaise", "ketchup", "mosterd", "appelmoes", "satesaus"]], ["Koffie en thee", "☕", ["koffiebonen", "koffiepads", "filterkoffie", "thee"]], ["Dranken", "🥤", ["coca cola", "cola", "sinaasappelsap", "appelsap", "spa", "bier", "ice tea"]], ["Snoep en chips", "🍫", ["chips", "pinda", "chocolade reep", "drop", "eierkoeken", "stroopwafels"]], ["Huishouden", "🧻", ["toiletpapier", "keukenrol", "wasmiddel", "afwasmiddel", "vaatwastabletten"]], ["Verzorging en baby", "🧴", ["tandpasta", "shampoo", "douchegel", "deodorant", "luiers"]], ["Huisdieren", "🐾", ["kattenvoer", "hondenvoer", "kattenbakvulling"]]];//EINDE CATS
-const DATA="https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/";
-// Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje).
+const CATS={{CATS}};
+const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
+const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
+// Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
 const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
 const STARTS=["kat","hond"];
-const EXCL=new Set(["choco","chocolade","gekookte","spinazie","roasted","americanos","krieltjes","salade","saus","smaak","snack","snacks","reep","koek","koekjes","chips","drink","mix","aardbei","vanille","banaan","zuigtabletten","tabletten","pastilles","snoepjes","gummies","siroop","limonade","thee","vla","yoghurt","ijs","sorbet","shampoo","douchegel","zeep","geurkaars","kaars","luchtverfrisser","wasmiddel","smaak","rijstwafels","wafels","koeken","speculaaskoeken","bladerdeeg","kaastengels","kaasstengels","tengels","tapenade","croissant","broodjes","pizzabroodjes","bakmix","thuisbakmix","mueslireep","repen","rooibos","kat","katten","kattenmousse","kattenvoer","hond","hondenvoer","pate","servet","design","cola","toetje","toetjes","vochtig","vochtige","dessert","pudding","cake","taart","soep","salade","spread","dip","chips","crackers","biscuit","ontbijtkoek","drinkyoghurt","ijsthee","bonbons","bonen","vega","vegan","vegetarisch","rulstukjes","hema","muesli","zonnebloem","granola","sheba","felix","whiskas","gourmet","sauce","ajax"]);
+const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde glutenvrij proteine protein light zero suikervrij".split(" "));
+const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const SAMPLE=["halfvolle melk 1 l","coca cola zero 1,5","pindakaas calve","pasta penne 500"];
-const S={stores:[],prods:[],list:[],sel:null,saved:null,lastQ:"",offers:null,view:null,ofs:"alle",ofc:"alle",ofn:60};
+const S={stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const eur=v=>"€ "+v.toFixed(2).replace(".",",");
-const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9,.]+/g," ").replace(/(\d)[,.](\d)/g,"$1,$2").trim();
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const dag=t=>new Date(t).toLocaleDateString("nl-NL",{day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"});
-// Lidl- en DekaMarkt-links uit de dataset werken niet meer; daar zoeken we het product op.
-const SEARCHL={lidl:n=>"https://www.lidl.nl/q/search?q="+encodeURIComponent(n),dekamarkt:n=>"https://www.google.com/search?q="+encodeURIComponent("site:dekamarkt.nl "+n)};
-const OLDL=/boodschaapje\.nl\/product\/|dekamarkt\.nl\/boodschappen\/x\/x\/x\//;
-const link=p=>/^https?:/.test(p[2])?p[2]:(SEARCHL[S.stores[p[0]].id]?SEARCHL[S.stores[p[0]].id](p[1]):S.stores[p[0]].base+p[2]);
-const sname=si=>S.stores[si].name;
-const unitTxt=p=>p[5]!=null?eur(p[5])+" / "+p[6]:"";
-// Een product past als elk zoekwoord als heel woord voorkomt; het laatste woord mag ook het begin van een woord zijn.
-function matches(q,prefix=true){
+const tag=(v,cls="")=>`<span class="tag ${cls}"><span class="e">€</span>${v.toFixed(2).replace(".",",")}</span>`;
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9,.]+/g," ").replace(/(\d)[,.](\d)/g,"$1,$2").trim();
+const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Amsterdam"}).format(new Date());
+const dagKort=d=>new Date(d+"T12:00:00").toLocaleDateString("nl-NL",{weekday:"short",day:"numeric",month:"short"}).replace(".","");
+const dagLang=t=>new Date(t).toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long"});
+const sid=si=>S.stores[si].id;
+const sname=si=>STORENAMES[sid(si)]||S.stores[si].name;
+const on=si=>!S.off.has(sid(si));
+
+/* Bezoekersstatistiek (GoatCounter, zonder cookies). Telt alleen gebeurtenissen, geen persoonsgegevens. */
+const gcq=[];
+function gc(path,title){gcq.push({path:path.slice(0,200),title:title||path,event:true});flush()}
+function flush(){if(!window.goatcounter||!goatcounter.count){if(!flush.t)flush.t=setTimeout(()=>{flush.t=0;flush()},1500);return}while(gcq.length)try{goatcounter.count(gcq.shift())}catch(e){}}
+
+/* Links: Lidl- en DekaMarkt-links uit de dataset werken niet; daar zoeken we het product op. */
+const SEARCHL={lidl:n=>"https://www.lidl.nl/q/search?q="+encodeURIComponent(n),dekamarkt:n=>"https://www.dekamarkt.nl/zoeken?zoekterm="+encodeURIComponent(n)};
+const OLDL=/boodschaapje\.nl\/product\/|dekamarkt\.nl\/boodschappen\/x\/x\/x\/|google\.com\/search\?q=site%3Adekamarkt/;
+const link=p=>/^https?:/.test(p[2])?p[2]:(SEARCHL[sid(p[0])]?SEARCHL[sid(p[0])](p[1]):S.stores[p[0]].base+p[2]);
+
+/* Aanbiedingen koppelen aan producten via het product-id van de winkel */
+function pkey(p){
+  const id=sid(p[0]),l=String(p[2]);let m;
+  if(id==="ah")return (m=l.match(/wi(\d+)/))?"wi"+m[1]:null;
+  if(id==="jumbo")return (m=l.match(/(\d+[A-Z]{2,4})\/?$/))?m[1]:null;
+  if(id==="plus")return (m=l.match(/-(\d+)\/?$/))?m[1]:null;
+  if(id==="hoogvliet")return l.replace(/^.*\/product\//,"").replace(/\/$/,"").replace(/-\d+$/,"");
+  if(id==="dirk"||id==="dekamarkt"||id==="poiesz")return (m=l.match(/(\d+)\/?$/))?m[1]:null;
+  return null;
+}
+const nu=o=>(!o.v||o.v<=today)&&(!o.t||o.t>=today);
+function offerOf(p){if(p.o===undefined){const k=pkey(p);const o=k?S.okey.get(sid(p[0])+"|"+k):null;p.o=o&&o.p<p[3]-.004?o:null}return p.o&&nu(p.o)?p.o:null}
+const eff=p=>offerOf(p)?.p??p[3];
+const effUnit=p=>p[5]!=null?p[5]*eff(p)/p[3]:null;
+const sizeTxt=p=>{const z=String(p[4]||"").trim();return z&&norm(p[1]).includes(norm(z))?"":z};
+const unitTxt=(v,u)=>v!=null&&u?`${eur(v)} per ${u==="st"?"stuk":u==="l"?"liter":"kilo"}`:"";
+
+/* Zoeken */
+function matches(q,prefix=true,pool=S.prods){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
-  const m=S.prods.filter(p=>t.every((w,i)=>p.hay.some(x=>x===w||(prefix&&i===t.length-1&&x.startsWith(w)))));
-  // Varianten als "choco melk" of "kaas snack" laten vallen, tenzij er niets anders is.
-  const clean=m.filter(p=>!p.hay.some(x=>!t.includes(x)&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e))||STARTS.some(e=>x.startsWith(e)))));
+  // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
+  const fit=(x,w,last)=>x===w||(w.length>=5&&x.endsWith(w))||(prefix&&last&&x.startsWith(w));
+  const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
+  const clean=m.filter(p=>!p.hay.some(x=>vreemd(x,t)));
   return clean.length?clean:m;
 }
-// Per supermarkt het best passende goedkoopste product (kortste namen eerst, dan laagste prijs).
-// Aantal betekenisvolle woorden in de naam (zonder getallen, maten en "per", "stuks").
-const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","bio","biologisch","naturel"]);
+// Woord dat laat zien dat het om een ander product of een variant gaat.
+const vreemd=(x,t)=>!t.includes(x)&&!t.some(w=>w.length>=5&&x.endsWith(w))&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e)));
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
+const rank=p=>p.bad?1e6+eff(p):effUnit(p)??(eff(p)*1000);
+// Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
+function markBad(arr){const u=arr.map(effUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=effUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
+// Per supermarkt het best passende goedkoopste product: alleen producten die ongeveer even kort benoemd zijn als de beste treffer.
 function perStore(m){
   if(!m.length) return new Map();
-  // Alleen producten die ongeveer even kort benoemd zijn als het best passende product, over alle winkels heen.
-  // Zo wint "Ham 150 g" van "Kip & Ham loempia" en vergelijken we gelijke producten.
-  const gmin=Math.min(...m.map(words));
-  const by=new Map();
+  markBad(m);
+  const gmin=Math.min(...m.map(words)), by=new Map();
   for(const p of m){ if(words(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
   const res=new Map();
-  for(const [si,arr] of by){
-    const minLen=Math.min(...arr.map(words));
-    res.set(si,arr.filter(p=>words(p)<=minLen+1).sort((a,b)=>a[3]-b[3])[0]);
-  }
+  for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
   return res;
 }
 const pickCache=new Map();
-function pick(term){if(!pickCache.has(term)) pickCache.set(term,perStore(matches(term,false)));return pickCache.get(term)}
-const inList=p=>S.list.some(x=>x.si===p[0]&&x.link===link(p));
-function addOffer(o){
-  if(S.list.some(x=>x.link===o.u)) return;
-  S.list.push({term:o.n,si:o.si,name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offer:o.t||true});
-  S.sel=null; renderAll(); toast(o.n);
-}
-// Korte melding onderin na toevoegen, met een knop naar de lijst.
-function toast(name){
-  const sum=S.list.reduce((a,x)=>a+(currentPrice(x)??x.price),0);
-  $("toast").innerHTML=`<span>✓ <b>${esc(name)}</b> staat op je lijst · ${S.list.length} artikelen, ${eur(sum)}</span><button type="button" class="btn" data-golist>Bekijk lijst</button>`;
-  $("toast").hidden=false; clearTimeout(S.tt); S.tt=setTimeout(()=>$("toast").hidden=true,5000);
-}
-function addProduct(p,term){
-  if(inList(p)) return;
-  S.list.push({term:term||S.lastQ,si:p[0],name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:p[3]});
-  S.sel=null; renderAll(); toast(p[1]);
-}
+function pick(term){if(!pickCache.has(term))pickCache.set(term,perStore(matches(term,false)));return pickCache.get(term)}
 
-/* Stap 1 */
-function search(){
-  const q=$("q").value.trim(); S.lastQ=q; S.view=null; catBar();
+function rowHtml(p,i,term){
+  const o=offerOf(p), price=eff(p), u=effUnit(p);
+  const added=S.list.some(x=>x.link===link(p));
+  return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}</div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span></div>
+  <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":esc(unitTxt(u,p[6]))}</span></div>
+  ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
+}
+function search(fromUser){
+  const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick();
   if(!q){$("results").innerHTML="";return}
-  // Eerst hele woorden; alleen als dat niets oplevert ook woorden die zo beginnen.
   let m=matches(q,false); if(!m.length) m=matches(q);
-  if(!m.length){$("results").innerHTML=`<p class="meta">Niets gevonden voor "${esc(q)}". Probeer minder of kortere woorden.</p>`;return}
-  // Top 3 = goedkoopste per kilo/liter/stuk, één product per supermarkt.
-  const best=[...perStore(m).values()].sort((a,b)=>(a[5]??1e9)-(b[5]??1e9)||a[3]-b[3]);
-  const top=best.slice(0,3), rest=m.filter(p=>!top.includes(p)).sort((a,b)=>(a[5]??1e9)-(b[5]??1e9)||a[3]-b[3]).slice(0,40);
-  const ranks=["Goedkoopst","2e plek","3e plek"];
-  $("results").innerHTML=`<p class="meta">De 3 goedkoopste voor "<b>${esc(q)}</b>" (per kilo, liter of stuk), bij ${best.length} supermarkten gevonden:</p>
-  <div class="picks">${top.map((p,i)=>`<div class="pick${i===0?" first":""}">
-    <span class="rank">${ranks[i]}</span>
-    <span><span class="shop">${esc(sname(p[0]))}</span></span>
-    <span class="pname"><a href="${esc(link(p))}" target="_blank" rel="noopener">${esc(p[1])}</a> <span class="size">${esc(p[4]||"")}</span></span>
-    <span class="prow"><span class="price tagp">${eur(p[3])}</span><span class="unit">${unitTxt(p)}</span></span>
-    ${inList(p)?'<span class="added">✓ Op je lijst</span>':`<button type="button" class="btn" data-add="${S.prods.indexOf(p)}">+ Op mijn lijst</button>`}
-  </div>`).join("")}</div>
-  ${rest.length?`<details class="more"><summary>Meer producten bekijken (${rest.length})</summary><ul class="morelist">${rest.map(p=>`<li><span class="shopcell"><span class="shop">${esc(sname(p[0]))}</span></span><a href="${esc(link(p))}" target="_blank" rel="noopener">${esc(p[1])} <span class="size" style="color:var(--muted)">${esc(p[4]||"")}</span></a><span class="price">${eur(p[3])}</span>${inList(p)?'<span style="color:var(--ok);font-weight:700">✓</span>':`<button type="button" class="btn-line mini" data-add="${S.prods.indexOf(p)}" aria-label="${esc(p[1])} toevoegen">+</button>`}</li>`).join("")}</ul></details>`:""}`;
+  if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
+  if(!m.length){$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.</div>`;return}
+  const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
+  const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
+  const top=best[0], last=best[best.length-1];
+  const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
+  const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
+  $("results").innerHTML=`<h2>${esc(q[0].toUpperCase()+q.slice(1))}</h2>
+  <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
+  <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
+  ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
 
-/* Categorieen en aanbiedingen */
-const unitOf=p=>p[5]??1e9;
-function cheapest(term){return [...pick(term).values()].sort((a,b)=>unitOf(a)-unitOf(b)||a[3]-b[3])}
-function catBar(){
-  const n=S.offers?.offers?.length;
-  const cur=S.view&&S.view!=="deals"?S.view:"";
-  $("catbar").innerHTML=`<button type="button" class="cat deal" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic" aria-hidden="true">🔥</span>Aanbiedingen van deze week${n?`<small>${n} acties</small>`:""}</button>
-  <label class="selwrap"><span class="ic" aria-hidden="true">📂</span><select id="catsel" aria-label="Kies een categorie"><option value="">Kies een categorie…</option>${CATS.map((c,i)=>`<option value="${i}"${cur===String(i)?" selected":""}>${c[1]} ${esc(c[0])}</option>`).join("")}</select></label>`;
+/* Snelkeuze: aanbiedingen en categorieën */
+function quick(){
+  const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
+  $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}">🔥 Aanbiedingen${n?` (${n})`:""}</button>`+
+    CATS.map((c,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}">${c[1]} ${esc(c[0])}</button>`).join("");
 }
 function renderView(){
-  catBar();
+  quick();
   if(S.view==="deals") return renderOffers();
   const c=CATS[+S.view];
-  const rows=c[2].map(t=>{const b=cheapest(t)[0];return {t,b}}).filter(r=>r.b);
-  $("results").innerHTML=`<div class="viewhead"><h3>${c[1]} ${esc(c[0])}</h3></div>
-  <p class="meta">Per artikel de goedkoopste supermarkt, per kilo, liter of stuk. Tik op een artikel voor de top 3.</p>
-  <ul class="artlist">${rows.map(({t,b})=>`<li><span class="artcell"><button type="button" class="artname" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</button></span>
-    <span class="pn"><span class="shop">${esc(sname(b[0]))}</span> <a href="${esc(link(b))}" target="_blank" rel="noopener">${esc(b[1])}</a> ${esc(b[4]||"")}</span>
-    <span><span class="price tagp">${eur(b[3])}</span><span class="unit">${unitTxt(b)}</span></span>
-    ${inList(b)?'<span class="ok" aria-label="Op je lijst">✓</span>':`<button type="button" class="btn plus" data-add="${S.prods.indexOf(b)}" data-term="${esc(t)}" aria-label="${esc(t)} toevoegen">+</button>`}</li>`).join("")}</ul>`;
+  const rows=c[2].map(t=>({t,b:[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]})).filter(r=>r.b);
+  $("results").innerHTML=`<h2>${c[1]} ${esc(c[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
+  <ul class="rows">${rows.map(({t,b})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span></div>
+    <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${esc(unitTxt(effUnit(b),b[6]))}</span></div>
+    ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}</ul>`;
 }
-const kort=d=>new Date(d+"T12:00:00").toLocaleDateString("nl-NL",{weekday:"short",day:"numeric",month:"short"});
 function renderOffers(){
-  const O=S.offers?.offers||[];
-  if(!O.length){$("results").innerHTML=`<div class="viewhead"><h3>🔥 Aanbiedingen van deze week</h3></div><p class="meta">De aanbiedingen worden elke dag automatisch opgehaald. Ze zijn er nog niet, kijk later nog eens.</p>`;return}
-  const by=new Map(); for(const o of O) by.set(o.si,(by.get(o.si)||0)+1);
-  const cats=new Map(); for(const o of O) if(S.ofs==="alle"||o.si===+S.ofs){const c=o.c||"Overig"; cats.set(c,(cats.get(c)||0)+1)}
+  const all=S.offers.filter(o=>!S.off.has(o.s));
+  const pool=all.filter(o=>S.ofsoon?o.v&&o.v>today:nu(o));
+  const soonN=all.filter(o=>o.v&&o.v>today).length;
+  const by=new Map(); for(const o of pool) by.set(o.s,(by.get(o.s)||0)+1);
+  if(S.ofs!=="alle"&&!by.has(S.ofs)) S.ofs="alle";
+  const qw=norm(S.ofq).split(" ").filter(Boolean);
+  const f=pool.filter(o=>(S.ofs==="alle"||o.s===S.ofs)&&(S.ofc==="alle"||(o.c||"Overig")===S.ofc)&&(!qw.length||qw.every(w=>o.hay.some(x=>x.startsWith(w)))));
+  const cats=new Map(); for(const o of pool) if(S.ofs==="alle"||o.s===S.ofs){const c=o.c||"Overig";cats.set(c,(cats.get(c)||0)+1)}
+  const sorters={korting:(a,b)=>(b.pct-a.pct)||a.p-b.p,prijs:(a,b)=>a.p-b.p,eenheid:(a,b)=>(a.pp??1e9)-(b.pp??1e9)||a.p-b.p};
+  const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofn);
   const order=[...CATS.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
-  if(S.ofc!=="alle"&&!cats.has(S.ofc)) S.ofc="alle";
-  const f=O.filter(o=>(S.ofs==="alle"||o.si===+S.ofs)&&(S.ofc==="alle"||(o.c||"Overig")===S.ofc));
-  const list=f.slice().sort((a,b)=>(b.pct||0)-(a.pct||0)||a.p-b.p).slice(0,S.ofn);
-  $("results").innerHTML=`<div class="viewhead"><h3>🔥 Aanbiedingen van deze week</h3><span class="meta" style="margin:0">Bijgewerkt ${dag(S.offers.updated)}</span></div>
-  <div class="chips"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle (${O.length})</button>${[...by].sort((a,b)=>sname(a[0]).localeCompare(sname(b[0]))).map(([si,n])=>`<button type="button" class="chip" data-ofs="${si}" aria-pressed="${S.ofs===String(si)}">${esc(sname(si))} (${n})</button>`).join("")}</div>
-  <label class="selwrap small"><span class="ic" aria-hidden="true">📂</span><select id="ofcat" aria-label="Categorie van de aanbiedingen"><option value="alle">Alle categorieën (${[...cats.values()].reduce((a,b)=>a+b,0)})</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((CATS.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
-  <p class="meta">${f.length} aanbiedingen, de grootste korting eerst. Nettorama zet zijn aanbiedingen alleen in een bladerfolder, zonder losse prijzen. <a href="https://www.nettorama.nl/actiefolder" target="_blank" rel="noopener">Bekijk de Nettorama-folder van deze week</a>.</p>
-  <ul class="offlist">${list.map(o=>`<li class="off"><span class="top2"><span class="shop">${esc(sname(o.si))}</span>${o.lbl?`<span class="lbl">${esc(o.lbl)}</span>`:""}</span>
-    <span class="on"><a href="${esc(o.u)}" target="_blank" rel="noopener">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>
-    <span class="prow"><span class="price tagp">${eur(o.p)}</span>${o.was?`<s>${eur(o.was)}</s>`:""}${o.t?`<span class="till">t/m ${kort(o.t)}</span>`:""}</span>
-    ${S.list.some(x=>x.link===o.u)?'<span class="added">✓ Op je lijst</span>':`<button type="button" class="btn" data-offer="${O.indexOf(o)}">+ Op mijn lijst</button>`}</li>`).join("")}</ul>
-  ${f.length>list.length?`<button type="button" class="btn-line morebtn" data-ofmore>Meer aanbiedingen tonen (${f.length-list.length})</button>`:""}`;
+  $("results").innerHTML=`<h2>🔥 Aanbiedingen</h2>
+  <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
+  <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
+  <div class="tools"><label><span class="sr">Zoek in aanbiedingen</span><input type="search" id="ofq" placeholder="Zoek in de aanbiedingen" value="${esc(S.ofq)}"></label>
+  <label><span class="sr">Categorie</span><select id="ofcat"><option value="alle">Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((CATS.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
+  <label><span class="sr">Sorteren</span><select id="ofsort"><option value="korting"${S.ofsort==="korting"?" selected":""}>Grootste korting eerst</option><option value="prijs"${S.ofsort==="prijs"?" selected":""}>Laagste prijs eerst</option><option value="eenheid"${S.ofsort==="eenheid"?" selected":""}>Laagste prijs per kilo of liter</option></select></label></div>
+  <p class="meta" style="margin-top:10px">${f.length} aanbiedingen. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut.</p>
+  ${list.length?`<ul class="offers">${list.map(offerCard).join("")}</ul>`:`<div class="empty">Geen aanbiedingen gevonden. Probeer een ander woord of kies “Alle winkels”.</div>`}
+  ${f.length>list.length?`<button type="button" class="btn-line" data-ofmore style="margin-top:12px">Meer aanbiedingen tonen (${f.length-list.length})</button>`:""}`;
+}
+function offerCard(o){
+  const added=S.list.some(x=>x.link===o.u);
+  return `<li class="offer"><span class="top2"><span class="shop">${esc(STORENAMES[o.s]||o.s)}</span>${o.lbl?`<span class="pill">${esc(o.lbl)}</span>`:""}${o.v&&o.v>today?`<span class="soon">vanaf ${dagKort(o.v)}</span>`:""}</span>
+  <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>
+  <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>
+  ${o.t?`<span class="till">t/m ${dagKort(o.t)}</span>`:""}
+  ${added?'<span class="add on">✓ Op je lijst</span>':`<button type="button" class="add" data-offer="${o.i}">+ Op mijn lijst</button>`}</li>`;
 }
 
-/* Stap 2 */
+/* Lijst */
+function addProduct(p,term){
+  if(S.list.some(x=>x.link===link(p))) return;
+  const t=(term||S.lastQ||p[1]).trim();
+  S.list.push({term:t,si:p[0],s:sid(p[0]),name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:eff(p)});
+  gc("lijst/"+norm(t),"Op lijst: "+t); after();
+}
+function addOffer(o){
+  if(S.list.some(x=>x.link===o.u)) return;
+  S.list.push({term:o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz?" "+o.sz:""),link:o.u,price:o.p,offerTill:o.t||null});
+  gc("lijst-actie/"+o.s,"Actie op lijst"); after();
+}
+function after(){S.sel=null;save();renderList();renderWhere();if(S.view)renderView();else if(S.lastQ)search();dock()}
+function save(){store.set("lijst-v3",S.list)}
+// Actuele prijs van het gekozen product, inclusief een lopende aanbieding.
+function cur(x){const p=S.byLink.get(x.link); if(p) return eff(p); if(x.offerTill!==undefined) return (!x.offerTill||x.offerTill>=today)?x.price:null; return null}
+const priceOf=x=>cur(x)??x.price;
 function renderList(){
-  store.set("lijst-v2",S.list);
-  const prev=new Map((S.saved?.list||[]).map(x=>[x.link,x]));
-  $("items").innerHTML=S.list.map((x,i)=>{const o=prev.get(x.link);
-    const cur=currentPrice(x); let delta="";
-    if(o&&cur!=null&&Math.abs(o.price-cur)>=0.005) delta=`<span class="delta ${cur>o.price?"up":""}">was ${eur(o.price)}</span>`;
-    return `<li class="line${x.done?" done":""}"><input type="checkbox" class="chk" data-done="${i}"${x.done?" checked":""} aria-label="${esc(x.term)} gekocht"><div><div class="term">${esc(x.term)}</div><div class="prod"><span class="shop">${esc(sname(x.si))}</span> <a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.name)}</a></div></div>
-      <div><span class="price tagp">${eur(cur??x.price)}</span>${delta}</div><button type="button" class="del" data-del="${i}" aria-label="Verwijder ${esc(x.name)}">×</button></li>`}).join("")||'<li class="empty">Je lijst is nog leeg. Zoek bij stap 1 een product en tik op "+ Op mijn lijst".</li>';
-  const sum=S.list.reduce((a,x)=>a+(currentPrice(x)??x.price),0);
-  $("sumline").hidden=!S.list.length;
-  const nDone=S.list.filter(x=>x.done).length;
-  $("sumline").innerHTML=`<span>Jouw keuzes samen (${S.list.length} artikelen)${nDone?`<br><span class="gekocht">✓ ${nDone} van ${S.list.length} gekocht</span>`:""}</span><span class="price">${eur(sum)}</span>`;
-}
-// Actuele prijs van het gekozen product (zelfde link) in de huidige data.
-function currentPrice(x){const p=S.byLink.get(x.link);return p?p[3]:null}
-
-/* Stap 3 */
-function renderTotals(){
   const n=S.list.length;
-  if(!n){$("totals").innerHTML='<p class="hint">Zet producten op je lijst om hier de totalen te zien.</p>';$("savebox").innerHTML="";$("detail").innerHTML="";return}
-  // Per artikel en winkel: het gekozen product als het bij die winkel is, anders het goedkoopste vergelijkbare product.
-  const rows=S.stores.map((s,si)=>{
-    let sum=0,miss=0; const items=S.list.map(x=>{
-      if(x.si===si){const pr=currentPrice(x)??x.price;sum+=pr;return {name:x.name,link:x.link,price:pr}}
-      const p=pick(x.term).get(si); if(!p){miss++;return null}
-      sum+=p[3]; return {name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:p[3]};
+  $("lcount").textContent=n?`${n} ${n===1?"artikel":"artikelen"}`:"";
+  $("ltools").hidden=!n;
+  const prev=S.snap?.prices||{};
+  $("items").innerHTML=n?S.list.map((x,i)=>{const c=priceOf(x),was=prev[x.link];let ch="";
+    if(was!=null&&Math.abs(was-c)>=.01) ch=`<span class="ch${c>was?" up":""}">${c>was?"was":"was"} ${eur(was)}</span>`;
+    return `<li class="it${x.done?" done":""}"><input type="checkbox" class="chk" data-done="${i}"${x.done?" checked":""} aria-label="${esc(x.term)} afvinken">
+    <div><div class="t">${esc(x.term)}</div><div class="p"><span class="shop">${esc(STORENAMES[x.s]||x.s)}</span> <a href="${esc(x.link)}" target="_blank" rel="noopener" data-out="${esc(x.s)}">${esc(x.name)}</a></div></div>
+    <div>${tag(c)}${ch}</div><button type="button" class="del" data-del="${i}" aria-label="${esc(x.term)} verwijderen">×</button></li>`}).join(""):
+    `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<ul><li>Je lijst blijft vanzelf bewaard.</li><li>Kom je terug, dan zie je meteen wat goedkoper is geworden.</li><li>Wat er van je lijst in de aanbieding is, zie je hier ook.</li></ul></li>`;
+  renderForList();
+}
+// Winkeltotalen: per artikel het gekozen product als het bij die winkel is, anders het goedkoopste vergelijkbare product.
+function totals(){
+  return S.stores.map((s,si)=>{
+    if(!s.count||!on(si)) return null;
+    let sum=0,miss=0;
+    const items=S.list.map(x=>{
+      if(x.s===s.id){const pr=priceOf(x);sum+=pr;return {name:x.name,link:x.link,price:pr}}
+      const p=pick(x.term).get(si); if(!p||p.bad){miss++;return null}
+      // Rekenen met dezelfde hoeveelheid als het product dat je koos (2 liter melk is 2 liter melk, in welke verpakking ook).
+      const p0=S.byLink.get(x.link), q=p0&&!p0.bad&&p0[5]>0&&p0[6]===p[6]&&effUnit(p)!=null?p0[3]/p0[5]:null;
+      const pr=q?effUnit(p)*q:eff(p); sum+=pr;
+      return {name:p[1]+(p[4]?" "+p[4]:""),link:link(p),price:pr,deal:!!offerOf(p),conv:q?(p0[4]||""):""};
     });
     return {si,sum,miss,items};
-  }).filter(r=>S.stores[r.si].count).sort((a,b)=>a.miss-b.miss||a.sum-b.sum);
-  const top=rows.slice(0,3), sel=top.some(r=>r.si===S.sel)?S.sel:top[0].si;
-  $("totals").innerHTML=top.map((r,i)=>`<button type="button" class="shopcard${i===0?" best":""}" data-si="${r.si}" aria-pressed="${r.si===sel}">
-    <span class="r">${i+1}</span>
-    <span><span class="shopname">${esc(sname(r.si))}</span>${i===0?'<span class="cheap">Goedkoopst</span>':""}
-      <span class="sub">${n-r.miss} van ${n} artikelen${r.miss?` · <span class="miss">${r.miss} niet te koop</span>`:""}</span></span>
-    <span class="price total">${eur(r.sum)}</span></button>`).join("");
-  const full=rows.filter(r=>!r.miss);
-  $("savebox").innerHTML=full.length>1?`<div class="save">Bij <b>${esc(sname(full[0].si))}</b> betaal je <b class="price">${eur(full.at(-1).sum-full[0].sum)}</b> minder dan bij de duurste supermarkt (${esc(sname(full.at(-1).si))}).</div>`:"";
-  const r=rows.find(r=>r.si===sel);
-  $("detail").innerHTML=`<h3>Je lijst bij ${esc(sname(sel))}</h3><ul>`+r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.name)}</a><span class="price">${eur(it.price)}</span></li>`:`<li><span class="missing">${esc(S.list[i].term)}: niet te koop</span><span></span></li>`).join("")+"</ul>"+
-    `<button type="button" class="btn printbtn" data-print="${sel}">🖨️ Print of bewaar als pdf</button>`;
-  S.printRow=r;
+  }).filter(Boolean).sort((a,b)=>a.miss-b.miss||a.sum-b.sum);
 }
+function renderWhere(){
+  const n=S.list.length;
+  if(!n){$("where").innerHTML="";return}
+  const rows=totals(); if(!rows.length){$("where").innerHTML="";return}
+  const top=rows.slice(0,3), sel=top.some(r=>r.si===S.sel)?S.sel:top[0].si;
+  const full=rows.filter(r=>!r.miss);
+  let html=`<h3>Waar is je lijst het goedkoopst?</h3>`+top.map((r,i)=>`<button type="button" class="store${i===0?" best":""}" data-si="${r.si}" aria-pressed="${r.si===sel}"><span class="n">${esc(sname(r.si))}</span>${tag(r.sum,"big")}<span class="s">${n-r.miss} van ${n} artikelen${r.miss?` · <span class="miss">${r.miss} niet te koop</span>`:""}</span></button>`).join("");
+  if(full.length>1) html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(full.at(-1).sum-full[0].sum)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`;
+  // Twee winkels combineren: loont het om een deel elders te halen?
+  if(n>=3&&rows.length>1){
+    const base=rows[0];let best=null;
+    for(let a=0;a<rows.length;a++)for(let b=a+1;b<rows.length;b++){
+      const A=rows[a],B=rows[b];let sum=0,miss=0;const split=[];
+      S.list.forEach((x,i)=>{const pa=A.items[i],pb=B.items[i];if(!pa&&!pb){miss++;return}
+        const useB=!pa||(pb&&pb.price<pa.price-.004);const it=useB?pb:pa;sum+=it.price;split.push({si:useB?B.si:A.si,term:x.term,price:it.price})});
+      if(miss>base.miss) continue;
+      if(!best||sum<best.sum) best={sum,split,a:A.si,b:B.si};
+    }
+    const gain=best?base.sum-best.sum:0;
+    if(best&&gain>=1.5&&gain>=base.sum*.05&&new Set(best.split.map(s=>s.si)).size===2){
+      const na=best.split.filter(s=>s.si===best.a).length, nb=best.split.length-na;
+      html+=`<div class="combo"><p><b>Slim combineren:</b> haal ${na} ${na===1?"artikel":"artikelen"} bij ${esc(sname(best.a))} en ${nb} bij ${esc(sname(best.b))}. Dan betaal je ${eur(best.sum)}, dat is <b>${eur(gain)} minder</b> dan alles bij ${esc(sname(base.si))}.</p>
+      <details><summary>Wat haal ik waar?</summary><ul>${best.split.map(s=>`<li><span>${esc(s.term)}</span><span><span class="shop">${esc(sname(s.si))}</span> ${eur(s.price)}</span></li>`).join("")}</ul></details></div>`;
+    }
+  }
+  const r=rows.find(r=>r.si===sel);
+  html+=`<div class="detail"><ul>${r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener" data-out="${esc(sid(sel))}">${esc(it.name)}</a><span>${it.deal?'<span class="pill">actie</span> ':""}${eur(it.price)}${it.conv?`<br><span class="muted" style="font-size:12px">voor ${esc(it.conv)}</span>`:""}</span></li>`:`<li><span class="miss">${esc(S.list[i].term)}: niet te koop bij ${esc(sname(sel))}</span><span></span></li>`).join("")}</ul></div>`;
+  $("where").innerHTML=html; S.printRow=r;
+}
+// Aanbiedingen die passen bij wat er op je lijst staat.
+function renderForList(){
+  if(!S.list.length||!S.offers.length){$("forlist").innerHTML="";return}
+  const seen=new Set(S.list.map(x=>x.link)), out=[];
+  for(const x of S.list){
+    const t=norm(x.term).split(" ").filter(w=>w.length>1&&!/^\d/.test(w)); if(!t.length) continue;
+    const p0=S.byLink.get(x.link), u0=p0&&!p0.bad?effUnit(p0):null, cur0=priceOf(x);
+    const m=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)&&!seen.has(o.u)&&t.every(w=>o.hay.some(h=>h===w||(w.length>=5&&h.endsWith(w))))&&!o.hay.some(h=>vreemd(h,t))&&
+      o.hay.filter(h=>!/^[\d,.%+]+[a-z]*$/.test(h)&&!UNITW.has(h)).length<=t.length+3&&
+      (u0!=null&&o.pp!=null&&p0[6]===o.eh?o.pp<u0*.97:o.p<cur0-.004));
+    if(!m.length) continue;
+    out.push({x,b:m.sort((a,b)=>(a.pp??a.p*1000)-(b.pp??b.p*1000))[0]});
+    if(out.length>=5) break;
+  }
+  $("forlist").innerHTML=out.length?`<div class="forlist"><h3>🔥 Nu in de aanbieding voor je lijst</h3><ul>${out.map(({x,b})=>`<li><span><span class="shop">${esc(STORENAMES[b.s]||b.s)}</span> <a href="${esc(b.u)}" target="_blank" rel="noopener" data-out="${esc(b.s)}">${esc(b.n)}</a>${b.lbl?` <span class="muted">${esc(b.lbl)}</span>`:""}</span>${tag(b.p,"deal")}</li>`).join("")}</ul></div>`:"";
+}
+// Bij terugkomst: wat is er veranderd sinds je vorige bezoek?
+function welcome(){
+  const prev=S.snap; if(!prev||!S.list.length||prev.day===today){$("welcome").innerHTML="";return}
+  let up=0,down=0,diff=0;
+  for(const x of S.list){const was=prev.prices[x.link];if(was==null)continue;const c=priceOf(x);diff+=c-was;if(c>was+.004)up++;else if(c<was-.004)down++}
+  const when=dagLang(prev.at);
+  const msg=(up||down)?`Sinds ${when} ${down?`zijn ${down} ${down===1?"artikel":"artikelen"} goedkoper`:""}${up&&down?" en ":""}${up?`${up} duurder`:""} geworden. Je lijst kost nu ${diff<=0?eur(-diff)+" minder":eur(diff)+" meer"}.`:`Sinds ${when} zijn de prijzen van je lijst gelijk gebleven.`;
+  $("welcome").innerHTML=`<div class="welcome${diff>0.004?" up":""}"><b>Welkom terug!</b> ${msg}</div>`;
+}
+function snapshot(){const prices={};for(const x of S.list)prices[x.link]=priceOf(x);store.set("lijst-vorige",{day:today,at:Date.now(),prices})}
 
-// Printversie van de lijst bij de gekozen winkel; via het printvenster kan je ook "Opslaan als pdf" kiezen.
+function dock(){
+  const n=S.list.length,d=$("dock");
+  if(!n){d.hidden=true;document.body.classList.remove("hasdock");return}
+  const r=totals()[0];
+  d.innerHTML=`<span><b>${n} ${n===1?"artikel":"artikelen"}</b>${r?` · goedkoopst bij ${esc(sname(r.si))}: <b>${eur(r.sum)}</b>`:""}</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`;
+  d.hidden=false; document.body.classList.add("hasdock"); dockVis();
+}
+// Op een smal scherm de onderbalk verbergen zolang de lijst zelf in beeld is.
+function dockVis(){if(!dockVis.o&&"IntersectionObserver"in window){dockVis.o=new IntersectionObserver(e=>{$("dock").style.visibility=e[0].isIntersecting?"hidden":"visible"});dockVis.o.observe($("lijst"))}}
+
 function printList(){
-  const r=S.printRow; if(!r) return;
-  const today=new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p class="pmeta">${today} · ${r.items.filter(Boolean).length} artikelen · Goedkope Boodschappen</p>
-  <table><thead><tr><th></th><th>Artikel</th><th>Product</th><th>Prijs</th></tr></thead><tbody>${r.items.map((it,i)=>`<tr><td class="box">☐</td><td>${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop bij "+esc(sname(r.si))}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody>
-  <tfoot><tr><td></td><td colspan="2">Totaal</td><td class="pp">${eur(r.sum)}</td></tr></tfoot></table>
-  <p class="pmeta">Prijzen van ${new Date().toLocaleDateString("nl-NL")}. De prijs aan de kassa is leidend. goedkopeboodschappen.netlify.app</p>`;
+  const r=S.printRow; if(!r) return; gc("print","Lijst geprint");
+  const d=new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p>${d} · goedkopeboodschappen.netlify.app</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
   window.print();
 }
-function savedInfo(){$("savedinfo").textContent=S.saved?`Bewaard op ${dag(S.saved.at)}`:"Nog niet bewaard"}
-function save(){
-  S.saved={list:S.list.map(x=>({...x,price:currentPrice(x)??x.price})),at:Date.now()};
-  const ok=store.set("lijst-bewaard-v2",S.saved); savedInfo();
-  $("banner").innerHTML=`<div class="banner">${ok?"Je lijst is bewaard. Kom je terug, dan vergelijken we hem automatisch opnieuw.":"Bewaren lukt niet in deze browser, bijvoorbeeld in een privévenster."}</div>`;
-  renderList();
+async function shareList(){
+  const url=location.origin+"/?lijst="+encodeURIComponent(S.list.map(x=>x.term).join("~"));
+  gc("deel","Lijst gedeeld");
+  try{ if(navigator.share){await navigator.share({title:"Mijn boodschappenlijst",text:"Mijn boodschappenlijst op Goedkope Boodschappen",url});return}
+    await navigator.clipboard.writeText(url); $("share").textContent="Link gekopieerd ✓"; setTimeout(()=>$("share").textContent="Lijst delen",2500);
+  }catch(e){prompt("Kopieer deze link:",url)}
 }
-// Bij terugkomst: bewaarde lijst opnieuw vergelijken met de prijzen van vandaag.
-function recompare(){
-  if(!S.saved?.list?.length) return;
-  let up=0,down=0,diff=0;
-  for(const o of S.saved.list){const c=currentPrice(o); if(c==null) continue; diff+=c-o.price; if(c>o.price+0.004) up++; else if(c<o.price-0.004) down++;}
-  const msg=(up||down)?`${down} goedkoper, ${up} duurder. Totaal ${diff<=0?eur(-diff)+" minder":eur(diff)+" meer"} dan toen.`:"Er is niets veranderd sinds die keer.";
-  $("banner").innerHTML=`<div class="banner"><b>Welkom terug.</b> Je lijst van ${dag(S.saved.at)} is opnieuw vergeleken. ${msg}</div>`;
+function storesUi(){
+  const ids=[...new Set(S.stores.filter(s=>s.count).map(s=>s.id))].sort((a,b)=>(STORENAMES[a]||a).localeCompare(STORENAMES[b]||b));
+  const k=ids.filter(id=>!S.off.has(id)).length;
+  $("mysum").textContent=`Mijn supermarkten (${k} van ${ids.length})`;
+  $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
-// Na een klik naar de plek springen waar het resultaat staat.
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
-function renderAll(){renderList();renderTotals();if(S.view) renderView(); else if(S.lastQ) search()}
+function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock()}
 
 document.addEventListener("click",e=>{
+  const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
-  const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers.offers[+of.dataset.offer]);return}
-  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();jump("results")} else {catBar();$("results").innerHTML=""} return}
-  const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();jump("results");return}
+  const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
+  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":CATS[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
+  const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel");return}
+  const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}
-  const dn=e.target.closest("[data-done]"); if(dn){const x=S.list[+dn.dataset.done]; if(x){x.done=dn.checked; renderList()} return}
-  const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);S.sel=null;renderAll();return}
-  if(e.target.closest("[data-print]")){printList();return}
-  if(e.target.closest("[data-golist]")){$("toast").hidden=true;jump("lijst");return}
-  const t=e.target.closest(".shopcard"); if(t){S.sel=+t.dataset.si;renderTotals();jump("detail");return}
-  const tr=e.target.closest("[data-try]"); if(tr){$("q").value=tr.dataset.try;search();jump("results");return}
+  const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);after();return}
+  const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
+  const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
+  if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
 });
-$("f").addEventListener("submit",e=>{e.preventDefault();search();$("q").blur();jump("results")});
 document.addEventListener("change",e=>{
-  if(e.target.id==="catsel"){S.view=e.target.value||null; if(S.view){renderView();jump("results")} else {catBar();$("results").innerHTML=""}}
-  if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers();jump("results")}
+  const dn=e.target.closest("[data-done]"); if(dn){const x=S.list[+dn.dataset.done];if(x){x.done=dn.checked;save();renderList()}return}
+  const st=e.target.closest("[data-store]"); if(st){st.checked?S.off.delete(st.dataset.store):S.off.add(st.dataset.store);store.set("winkels-uit",[...S.off]);pickCache.clear();storesUi();renderAll();gc("winkels/"+(S.stores.length-S.off.size),"Winkels gekozen");return}
+  if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers()}
+  if(e.target.id==="ofsort"){S.ofsort=e.target.value;renderOffers()}
 });
-$("save").addEventListener("click",save);
-$("clear").addEventListener("click",()=>{S.list=[];S.sel=null;$("banner").innerHTML="";renderAll()});
-// Extra data die elke dag via GitHub wordt bijgewerkt: Aldi-assortiment en aanbiedingen. Mag ontbreken.
-const extra=f=>fetch(DATA+f,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null);
-Promise.all([fetch("producten.json").then(r=>r.json()),extra("aldi.json"),extra("aanbiedingen.json")]).then(([d,aldi,offers])=>{
+document.addEventListener("input",e=>{if(e.target.id==="ofq"){S.ofq=e.target.value;clearTimeout(S.ofqt);S.ofqt=setTimeout(()=>{const pos=e.target.selectionStart;renderOffers();const i=$("ofq");i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}},250)}});
+$("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
+$("share").addEventListener("click",shareList);
+$("print").addEventListener("click",printList);
+$("clear").addEventListener("click",()=>{if(confirm("Je hele lijst leegmaken?")){S.list=[];after()}});
+
+async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cache:"no-cache"});if(r.ok)return await r.json()}catch(e){}}return null}
+Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
   S.stores=d.stores; S.prods=d.products;
-  // Aldi staat altijd op dezelfde plek in de winkellijst, zodat bewaarde lijsten blijven kloppen.
-  const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:"https://www.aldi.nl/product/"});
+  // Aldi staat altijd achteraan in de winkellijst.
+  const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
   if(aldi?.products) for(const r of aldi.products) S.prods.push([ai,...r]);
+  S.sidx=new Map(S.stores.map((s,i)=>[s.id,i]));
   S.byLink=new Map();
-  for(const p of S.prods){p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");S.byLink.set(link(p),p)}
+  S.prods.forEach((p,i)=>{p.i=i;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");S.byLink.set(link(p),p)});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);
   if(offers?.offers){
-    const idx=new Map(S.stores.map((s,i)=>[s.id,i])), today=new Date().toISOString().slice(0,10);
-    offers.offers=offers.offers.filter(o=>idx.has(o.s)&&o.p>0&&(!o.t||o.t>=today)).map(o=>({...o,si:idx.get(o.s),pct:o.was>o.p?(o.was-o.p)/o.was:0}));
-    S.offers=offers;
+    S.offers=offers.offers.filter(o=>S.sidx.has(o.s)&&o.p>0&&(!o.t||o.t>=today));
+    S.offers.forEach((o,i)=>{o.i=i;o.pct=o.was>o.p?(o.was-o.p)/o.was:0;o.hay=norm(o.n+" "+(o.sz||"")).split(" ");if(o.k)S.okey.set(o.s+"|"+o.k,o)});
+    S.offersUpdated=offers.updated;
   }
-  const extras=[aldi?.products?.length?`Aldi: ${aldi.products.length} producten`:"",S.offers?.offers?.length?`aanbiedingen van ${new Set(S.offers.offers.map(o=>o.si)).size} supermarkten`:""].filter(Boolean);
-  if(extras.length) $("srcnote").textContent+=` ${extras.join(" en ").replace(/^./,c=>c.toUpperCase())}, elke dag automatisch bijgewerkt.`;
-  catBar();
-  S.saved=store.get("lijst-bewaard-v2");
-  const draft=store.get("lijst-v2");
-  if(S.saved?.list){ S.list=S.saved.list.map(x=>({...x}));
-    // Afvinken (gekocht) wordt in de werklijst bewaard, ook als de lijst niet opnieuw is bewaard.
-    const dd=new Map((Array.isArray(draft)?draft:[]).map(x=>[x.link,!!x.done])); for(const x of S.list) if(dd.has(x.link)) x.done=dd.get(x.link);
+  S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
+  // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.
+  let list=store.get("lijst-v3");
+  if(!Array.isArray(list)){const old=store.get("lijst-v2")||store.get("lijst-bewaard-v2")?.list;list=Array.isArray(old)?old.map(x=>({...x,s:S.stores[x.si]?.id})):[]}
+  S.list=list.filter(x=>x&&x.link&&x.s).map(x=>({...x,si:S.sidx.get(x.s)??x.si}));
+  for(const x of S.list) if(OLDL.test(x.link)&&SEARCHL[x.s]) x.link=SEARCHL[x.s](x.name);
+  const sp=new URLSearchParams(location.search);
+  let added=0;
+  const shared=sp.get("lijst");
+  if(shared) for(const t of shared.split("~").map(s=>s.trim()).filter(Boolean).slice(0,60)){
+    if(S.list.some(x=>norm(x.term)===norm(t))) continue;
+    const b=[...pick(t).values()].sort((a,b)=>eff(a)-eff(b))[0]; if(b){S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(b[4]?" "+b[4]:""),link:link(b),price:eff(b)});added++}
   }
-  else if(Array.isArray(draft)) S.list=draft;
-  else{ // Voorbeeldlijst: per term het goedkoopste product.
-    const old=store.get("lijst-bewaard")?.items||SAMPLE;
-    for(const t of old){const b=[...pick(t).values()].sort((a,b)=>a[3]-b[3])[0]; if(b) S.list.push({term:t,si:b[0],name:b[1]+(b[4]?" "+b[4]:""),link:link(b),price:b[3]})}
-  }
-  // Oude, niet meer werkende Lidl/DekaMarkt-links in een bewaarde lijst vervangen.
-  for(const x of S.list) if(OLDL.test(x.link||"")){const id=S.stores[x.si]?.id; if(SEARCHL[id]) x.link=SEARCHL[id](x.name)}
-  if(S.saved?.list) for(const x of S.saved.list) if(OLDL.test(x.link||"")){const id=S.stores[x.si]?.id; if(SEARCHL[id]) x.link=SEARCHL[id](x.name)}
-  // Artikelen en aanbiedingen die op de andere pagina's zijn gekozen, nu aan de lijst toevoegen.
-  const erbij=store.get("lijst-erbij"); let nErbij=0;
+  const erbij=store.get("lijst-erbij");
   if(Array.isArray(erbij)){
-    const idx=new Map(S.stores.map((s,i)=>[s.id,i]));
-    for(const o of erbij) if(idx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.n,si:idx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(o.sz.toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.r?{}:{offer:o.t||true})});nErbij++}
+    for(const o of erbij) if(S.sidx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.term||o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(String(o.sz).toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.r?{}:{offerTill:o.t||null})});added++}
     try{localStorage.removeItem("lijst-erbij")}catch(e){}
   }
-  savedInfo(); $("q").value=new URLSearchParams(location.search).get("q")||"halfvolle melk"; search(); renderList(); renderTotals(); recompare();
-  if(nErbij){$("banner").innerHTML=`<div class="banner"><b>${nErbij} ${nErbij===1?"artikel":"artikelen"}</b> op je lijst gezet.</div>`; jump("lijst")}
-}).catch(()=>{$("results").innerHTML='<p class="meta">De prijzen konden niet worden geladen. Herlaad de pagina.</p>'});
+  if(added) save();
+  S.snap=store.get("lijst-vorige");
+  storesUi(); quick();
+  $("q").value=sp.get("q")||(S.list.length?"":"halfvolle melk");
+  if(sp.get("q")) gc("zoek/"+norm(sp.get("q")),"Zoekt: "+sp.get("q"));
+  if(sp.get("v")==="aanbiedingen"){S.view="deals";renderView()} else search();
+  renderList(); renderWhere(); welcome(); dock();
+  if(added){$("welcome").innerHTML=`<div class="welcome"><b>${added} ${added===1?"artikel":"artikelen"}</b> op je lijst gezet.</div>`;jump("lijst")}
+  if(!S.snap||S.snap.day!==today) snapshot();
+  if(S.offersUpdated) $("src").textContent=`Prijzen van de webshops van de supermarkten. Aanbiedingen bijgewerkt op ${dagLang(S.offersUpdated)}. De prijs aan de kassa is leidend.`;
+}).catch(e=>{console.error(e);$("results").innerHTML='<div class="empty">De prijzen konden niet worden geladen. Controleer je internetverbinding en herlaad de pagina.</div>'});
+// Snel opnieuw openen en offline je lijst bekijken.
+if("serviceWorker" in navigator&&location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
 </script>
+</body>
+</html>

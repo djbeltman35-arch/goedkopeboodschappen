@@ -140,7 +140,7 @@ async function aldi() {
       const strike = (per.strikePrice || cp.strikePrice)?.strikePriceValue;
       // Ook in het assortiment, zodat Aldi meedoet in zoeken en totalen.
       producten.push([naam, link, p1, sz, ...perEenheid(p1, sz)]);
-      aanbod.push({ s: 'aldi', n: naam, sz, p: p1, was: strike > p1 ? r2(strike / (tweeVoor ? 2 : 1)) : null, lbl: tweeVoor ? `2 voor ${String(per.priceValue.toFixed(2)).replace('.', ',')}` : label || null, u: link, t: per.validUntilLocalDate || null });
+      aanbod.push({ s: 'aldi', k: String(p.objectID || id).replace(/\D/g, '') || null, n: naam, sz, p: p1, was: strike > p1 ? r2(strike / (tweeVoor ? 2 : 1)) : null, lbl: tweeVoor ? `2 voor ${String(per.priceValue.toFixed(2)).replace('.', ',')}` : label || null, u: link, t: per.validUntilLocalDate || null });
     } else {
       producten.push([naam, link, r2(prijs), sz, ppe, eh]);
     }
@@ -150,13 +150,17 @@ async function aldi() {
 }
 
 /* ---------- Albert Heijn: app-zoekdienst met anonieme token, filter bonus ---------- */
+// AH geeft soms een tijdelijke 503; daarom meer pogingen met langere pauzes.
 async function ah() {
   const H = { 'User-Agent': 'Appie/8.22.3', 'X-Application': 'AHWEBSHOP' };
-  const tok = (await haal('https://api.ah.nl/mobile-auth/v1/auth/token/anonymous', { method: 'POST', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: 'appie' }) }, 'json', 5)).access_token;
+  const tok = (await haal('https://api.ah.nl/mobile-auth/v1/auth/token/anonymous', { method: 'POST', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: 'appie' }) }, 'json', 6)).access_token;
   if (!tok) throw new Error('geen AH-token');
   const uit = new Map();
+  // De zoekdienst geeft maximaal 3000 resultaten (3 pagina's van 1000); daarna antwoordt hij met 400.
   for (let page = 0; page < 3; page++) {
-    const d = await haal(`https://api.ah.nl/mobile-services/product/search/v2?sortOn=RELEVANCE&filters=${encodeURIComponent('bonus=Bonus')}&size=1000&page=${page}`, { headers: { ...H, Authorization: `Bearer ${tok}` } });
+    let d;
+    try { d = await haal(`https://api.ah.nl/mobile-services/product/search/v2?sortOn=RELEVANCE&filters=${encodeURIComponent('bonus=Bonus')}&size=1000&page=${page}`, { headers: { ...H, Authorization: `Bearer ${tok}` } }, 'json', 6); }
+    catch (e) { if (uit.size && /HTTP 400/.test(e.message)) break; throw e; }
     const ps = d.products || [];
     for (const p of ps) {
       if (!p.isBonus && !p.bonusMechanism) continue;
@@ -164,12 +168,162 @@ async function ah() {
       const was = p.priceBeforeBonus ?? null;
       const prijs = p.currentPrice ?? actiePrijs(p.bonusMechanism, was);
       if (!(prijs > 0)) continue;
-      uit.set(p.webshopId, { s: 'ah', n: p.title, sz: p.salesUnitSize || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: p.bonusMechanism || 'Bonus', u: `https://www.ah.nl/producten/product/wi${p.webshopId}`, t: dagVan(p.bonusEndDate) });
+      uit.set(p.webshopId, { s: 'ah', n: p.title, sz: p.salesUnitSize || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: p.bonusMechanism || 'Bonus', u: `https://www.ah.nl/producten/product/wi${p.webshopId}`, t: dagVan(p.bonusEndDate), k: `wi${p.webshopId}`, sc: [p.mainCategory, p.subCategory].filter(Boolean).join(' ') });
     }
-    if (ps.length < 1000) break;
-    await slaap(500);
+    if (ps.length < 1000 || (d.page && page + 1 >= d.page.totalPages)) break;
+    await slaap(800);
   }
   return [...uit.values()];
+}
+
+/* ---------- PLUS: OutSystems-dataservice van de actiepagina ---------- */
+// De api-versie staat in het script van de actiepagina; die lezen we elke keer opnieuw, zodat een nieuwe PLUS-versie niets breekt.
+async function plus() {
+  const B = 'https://www.plus.nl';
+  const H = { 'Content-Type': 'application/json; charset=UTF-8', 'X-CSRFToken': 'T6C+9iB49TLra4jEsMeSckDMNhQ=', 'OutSystems-locale': 'nl-NL', Referer: `${B}/aanbiedingen` };
+  const tok = (await haal(`${B}/moduleservices/moduleversioninfo`)).versionToken;
+  const info = (await haal(`${B}/moduleservices/moduleinfo`)).manifest?.urlVersions || {};
+  const pad = Object.keys(info).find(u => /ECP_Composition_CW\.Promotions\.Promotion_LP_Content_TF\.mvc\.js$/.test(u));
+  let api = 'JLLMwEcN2MnU+RXNqWqRIQ';
+  if (pad) { const js = await haal(B + pad + info[pad], {}, 'text'); api = (js.match(/DataActionGetPromotionList", "[^"]+", "([^"]+)"/) || [])[1] || api; }
+  const vars = { IsShowData: true, StoreNumber: 0, StoreChannel: '', CheckoutId: '', IsOrderEditMode: false, OrderEditId: '', PromotionPeriodId: 0, HideDummy: false, IsDesktop: true, IsTablet: false, IsPhone: false, OneWelcomeUserId: '', IsCustomerUnderAge: false, UserStoreId: '0', ItemsInCartJSON: '', IsTimetraveler: false, IsNextWeekPromotions: false };
+  const vraag = async extra => (await haal(`${B}/screenservices/ECP_Composition_CW/Promotions/Promotion_LP_Content_TF/DataActionGetPromotionList`, { method: 'POST', headers: H, body: JSON.stringify({ versionInfo: { moduleVersion: tok, apiVersion: api }, viewName: 'MainFlow.Promotions', screenData: { variables: { ...vars, ...extra } } }) })).data;
+  const vd = vandaag();
+  const alle = new Map();
+  const catVan = new Map();
+  // Deze week en (als die al online staat) volgende week; acties die nog niet begonnen zijn, krijgen een startdatum mee.
+  for (const extra of [{}, { IsNextWeekPromotions: true }]) {
+    let d;
+    try { d = await vraag(extra); } catch (e) { if (!alle.size) throw e; continue; }
+    for (const cat of d?.PromotionOfferList?.List || []) for (const o of cat.Category?.Offers?.List || []) {
+      if (o.IsFreeDeliveryOffer || !o.EndDate || o.EndDate < vd) continue;
+      alle.set(o.Slug + o.StartDate, o); catVan.set(o.Slug + o.StartDate, cat.Category?.CategoryLabel || '');
+    }
+    await slaap(500);
+  }
+  const uit = [];
+  for (const o of alle.values()) {
+    const lbl = String(o.DisplayInfo_Label || '').replace(/\s+/g, ' ').trim();
+    const l = lbl.toLowerCase().replace(/(\d)\.(\d)/g, '$1,$2');
+    const nieuw = getal(o.NewPrice), orig = getal(o.PriceOriginal_Product), laag = getal(o.PriceOriginal_Lowest);
+    let p = null, was = null, m;
+    if ((m = l.match(/(\d+)\s*\+\s*(\d+) gratis/))) {
+      const n = +m[1] + +m[2];
+      if (o.IsSingleProduct && orig > 0) { p = actiePrijs(l, orig); was = orig; }
+      else if (nieuw > 0) { p = nieuw / n; was = laag > 0 ? laag / n : null; }
+    } else if (/voor \d/.test(l) || /halve prijs|% korting/.test(l)) {
+      p = actiePrijs(l, orig > 0 ? orig : null) ?? (nieuw > 0 ? nieuw : null); was = orig > 0 ? orig : null;
+    } else if (nieuw > 0) { p = nieuw; was = orig > nieuw ? orig : laag > nieuw ? laag : null; }
+    if (!(p > 0)) continue;
+    const naam = [o.Brand, o.Name].map(x => String(x || '').trim()).filter(Boolean).join(' ').replace(/\s+/g, ' ');
+    const sz = String(o.Variant || o.Package || (o.IsSingleProduct ? (o.Slug.match(/-((?:schaal|zak|bakje|net|pak|fles|kuipje|doos|blik|pot|kg|stuk|tray)[a-z-]*-[\d,.]+-[a-z]+)-\d+$/) || [])[1]?.replace(/-/g, ' ') : '') || '').trim();
+    uit.push({ s: 'plus', n: naam || lbl, sz, p: r2(p), was: was > p + .004 ? r2(was) : null, lbl: lbl ? lbl.charAt(0) + lbl.slice(1).toLowerCase() : null, u: o.IsSingleProduct ? `${B}/product/${o.Slug}` : `${B}/aanbiedingen`, t: o.EndDate, v: o.StartDate > vd ? o.StartDate : null, k: o.IsSingleProduct ? String(o.Product_SKU) : null, sc: catVan.get(o.Slug + o.StartDate) });
+  }
+  if (!uit.length) throw new Error('0 PLUS-aanbiedingen');
+  return uit;
+}
+
+/* ---------- Hoogvliet: Next.js-pagina's met de actieweek per productgroep ---------- */
+function nextJson(html) {
+  const m = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  return m ? JSON.parse(m[1]) : null;
+}
+async function hoogvliet() {
+  const BASE = 'https://www.hoogvliet.com';
+  const eerste = nextJson(await haal(`${BASE}/aanbiedingen`, {}, 'text'));
+  const periodes = eerste?.props?.pageProps?.promotionPeriods || [];
+  const vd = vandaag();
+  const per = periodes.find(p => String(p.validFrom).slice(0, 10) <= vd && vd <= String(p.validTo).slice(0, 10)) || periodes[0];
+  if (!per) throw new Error('geen Hoogvliet-actieweek gevonden');
+  const tot = String(per.validTo).slice(0, 10);
+  const items = new Map();
+  const neem = p => {
+    for (const g of p?.groups || []) for (const it of g.items || []) {
+      const sku = it.sku || it.first_child_sku || it.id;
+      if (!items.has(sku)) items.set(sku, { ...it, _groep: g.name || g.slug || '' });
+    }
+  };
+  neem(per);
+  for (const g of per.groups || []) {
+    try {
+      const d = nextJson(await haal(`${BASE}/aanbiedingen/${g.slug || g.id}`, {}, 'text'));
+      const pp = (d?.props?.pageProps?.promotionPeriods || []).find(x => x.weekNr === per.weekNr);
+      neem(pp);
+    } catch (e) { console.warn('hoogvliet groep mislukt', g.slug, e.message); }
+    await slaap(300);
+  }
+  const uit = [];
+  for (const it of items.values()) {
+    const pr = it.price_range?.minimum_price || {};
+    const prijs = pr.final_price?.value ?? getal(it.meta_promotion_price?.value);
+    const was = pr.regular_price?.value ?? getal(it.meta_original_price?.value);
+    if (!(prijs > 0)) continue;
+    const merk = it.brand?.value || it.display_name || '';
+    const naam = (merk && !String(it.name).toLowerCase().startsWith(merk.toLowerCase()) ? merk + ' ' : '') + it.name;
+    const st = it.sub_title_attributes || {};
+    const sz = it.promotion_meta_data?.promotie_beschrijving || (st.volume ? `${st.volume} ${String(st.unit || '').toLowerCase()}` : '');
+    const link = it.first_child_product_link || it.product_link;
+    uit.push({ s: 'hoogvliet', n: naam.replace(/\s+/g, ' ').trim(), sz, p: r2(prijs), was: was > prijs + .004 ? r2(was) : null, lbl: [it.promotion_meta_data?.korting_label, it.discount_label].find(x => x && !/^per\b/i.test(x)) || null, u: link ? BASE + link : `${BASE}/aanbiedingen`, t: tot, sc: [it._groep, ...(it.categories || []).map(c => c.name)].join(' '), k: link ? link.replace(/^\/product\//, '').replace(/-\d+$/, '') : null });
+  }
+  if (!uit.length) throw new Error('geen Hoogvliet-aanbiedingen gevonden');
+  return uit;
+}
+
+/* ---------- Poiesz: Nuxt-pagina, aanbiedingen staan in de __NUXT_DATA__-payload ---------- */
+// Nuxt 3 zet de data als platte lijst met verwijzingen (indexen); dit zet hem terug in objecten.
+function nuxtData(html) {
+  const m = html.match(/<script[^>]*id="__NUXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+  if (!m) return null;
+  const a = JSON.parse(m[1]);
+  const memo = new Map();
+  const rev = i => {
+    if (memo.has(i)) return memo.get(i);
+    const v = a[i];
+    let r;
+    if (Array.isArray(v)) {
+      if (typeof v[0] === 'string' && ['Reactive', 'ShallowReactive', 'Ref', 'ShallowRef', 'NuxtError'].includes(v[0])) { memo.set(i, null); r = rev(v[1]); }
+      else if (typeof v[0] === 'string' && ['EmptyRef', 'EmptyShallowRef', 'Set', 'Map', 'Date'].includes(v[0])) r = null;
+      else { r = []; memo.set(i, r); for (const x of v) r.push(typeof x === 'number' ? rev(x) : x); }
+    } else if (v && typeof v === 'object') {
+      r = {}; memo.set(i, r);
+      for (const [k, x] of Object.entries(v)) r[k] = typeof x === 'number' ? rev(x) : x;
+    } else r = v;
+    memo.set(i, r);
+    return r;
+  };
+  return rev(0);
+}
+function zoek(node, test, diepte = 0) {
+  if (!node || typeof node !== 'object' || diepte > 30) return null;
+  if (test(node)) return node;
+  for (const v of Array.isArray(node) ? node : Object.values(node)) { const r = zoek(v, test, diepte + 1); if (r) return r; }
+  return null;
+}
+async function poiesz() {
+  const root = nuxtData(await haal('https://webwinkel.poiesz-supermarkten.nl/aanbiedingen', {}, 'text'));
+  const blok = zoek(root, x => x.validFrom && Array.isArray(x.categories) && x.categories.some(c => Array.isArray(c?.offers)));
+  if (!blok) throw new Error('geen Poiesz-aanbiedingen in de pagina');
+  const tot = dagVan(blok.validUntil);
+  // validUntil is het begin van de dag ná de laatste actiedag.
+  const t = tot ? new Date(new Date(tot + 'T12:00:00Z').getTime() - 864e5).toISOString().slice(0, 10) : null;
+  const uit = [];
+  for (const c of blok.categories) for (const o of c.offers || []) {
+    const regel1 = String(o.offerTypeLine1 || '').trim(), regel2 = String(o.offerTypeLine2 || '').trim().toLowerCase();
+    const prods = (o.overviewProducts || []).filter(Boolean);
+    const een = prods.length === 1 ? prods[0] : null;
+    const prijsVan = o.newPriceLow;
+    let p = null, was = null, lbl = null;
+    if (/^\d+\s*\+\s*\d+$/.test(regel1)) { lbl = `${regel1} gratis`; was = prijsVan; p = actiePrijs(lbl, prijsVan); }
+    else if (/^\d+$/.test(regel1) && regel2 === 'voor') { lbl = `${regel1} voor ${String(prijsVan?.toFixed?.(2) ?? prijsVan).replace('.', ',')}`; p = prijsVan / +regel1; was = een?.strikeThroughPrice ?? null; }
+    else if (/%/.test(regel1 + regel2)) { lbl = `${regel1} ${regel2}`.trim(); p = een?.price ?? prijsVan; was = een?.strikeThroughPrice ?? o.oldPriceLow; }
+    else { p = prijsVan ?? een?.price; was = een?.strikeThroughPrice ?? o.oldPriceLow ?? null; }
+    if (!(p > 0)) continue;
+    const naam = String(o.commercialTextLine1 || een?.name || '').replace(/\s+/g, ' ').trim();
+    const sz = String(o.commercialTextDetailsLine2 || o.commercialTextDetailsLine1 || een?.packageDescription || '').replace(/\s+/g, ' ').trim();
+    uit.push({ s: 'poiesz', n: naam, sz, p: r2(p), was: was > p + .004 ? r2(was) : null, lbl, u: een ? `https://webwinkel.poiesz-supermarkten.nl/boodschappen/producten/${een.id}` : 'https://webwinkel.poiesz-supermarkten.nl/aanbiedingen', t, k: een ? String(een.id) : null, sc: c.name || '' });
+  }
+  if (!uit.length) throw new Error('0 Poiesz-aanbiedingen');
+  return uit;
 }
 
 /* ---------- Jumbo: open GraphQL-zoekdienst, filter aanbiedingen ---------- */
@@ -188,7 +342,7 @@ async function jumbo() {
       const tags = (promo?.tags || []).map(t => t.text).filter(t => t && !/^alleen online$/i.test(t));
       const prijs = p.price?.promoPrice != null ? p.price.promoPrice / 100 : tags.map(t => actiePrijs(t, normaal)).find(x => x != null) ?? normaal;
       if (!(prijs > 0)) continue;
-      uit.push({ s: 'jumbo', n: p.title, sz: p.subtitle || p.packSizeDisplay || '', p: r2(prijs), was: normaal > prijs + .004 ? r2(normaal) : null, lbl: tags.join(', ') || null, u: `https://www.jumbo.com/producten/${slug(p.title)}-${p.id}`, t: dagVan(promo?.end?.iso) });
+      uit.push({ s: 'jumbo', n: p.title, sz: p.subtitle || p.packSizeDisplay || '', p: r2(prijs), was: normaal > prijs + .004 ? r2(normaal) : null, lbl: tags.join(', ') || null, u: `https://www.jumbo.com/producten/${slug(p.title)}-${p.id}`, t: dagVan(promo?.end?.iso), k: String(p.id) });
     }
     if (!(d.products || []).length) break;
     await slaap(400);
@@ -212,58 +366,122 @@ async function lidl() {
     if (items.length < 60) break;
     await slaap(400);
   }
+  // De actiepagina zelf: daar staan ook de Lidl Plus-acties en de acties van volgende week (vanaf maandag).
+  try {
+    const page = await haal('https://www.lidl.nl/c/aanbiedingen/a10008785', {}, 'text');
+    const vd = vandaag();
+    const ontsnap = s => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    for (const m of page.matchAll(/data-grid-data="([^"]*)"/g)) {
+      let x; try { x = JSON.parse(ontsnap(m[1])); } catch { continue; }
+      const sleutel = x.productId || x.erpNumber || x.fullTitle;
+      if (!x.fullTitle || uit.has(sleutel)) continue;
+      const pr = x.price || {}, lp = (x.lidlPlus || [])[0];
+      let p = pr.price, was = pr.oldPrice || pr.discount?.deletedPrice || null, lbl = pr.discount?.percentageDiscount ? `-${pr.discount.percentageDiscount}%` : null;
+      if (!(p > 0) && lp?.price?.price > 0) {
+        p = lp.price.price; lbl = `${lp.highlightText || ''} ${lp.lidlPlusText || 'met Lidl Plus'}`.trim();
+        const pct = +(String(lp.highlightText || '').match(/(\d+)\s*%/) || [])[1];
+        if (pct > 0 && pct < 90) was = p / (1 - pct / 100);
+      }
+      if (!(p > 0)) continue;
+      const van = dagVan(x.storeStartDate), tot = dagVan(x.storeEndDate);
+      uit.set(sleutel, { s: 'lidl', n: String(x.fullTitle).replace(/[®™]/g, '').replace(/\s+/g, ' ').trim(), sz: pr.packaging?.text || lp?.price?.packaging?.text || '', p: r2(p), was: was > p + .004 ? r2(was) : null, lbl, u: x.canonicalUrl ? new URL(x.canonicalUrl, 'https://www.lidl.nl').href : 'https://www.lidl.nl/c/aanbiedingen/a10008785', t: tot, v: van && van > vd ? van : null });
+    }
+  } catch (e) { console.warn('lidl actiepagina mislukt', e.message); }
+  if (!uit.size) throw new Error('geen Lidl-aanbiedingen gevonden');
   return [...uit.values()];
 }
 
-/* ---------- Dirk: open GraphQL-gateway, aanbiedingen per afdeling ---------- */
-async function dirk() {
+/* ---------- Dirk en DekaMarkt: zelfde GraphQL-gateway (Detailresult), aanbiedingen per afdeling ---------- */
+async function detailresult(id, gateway, winkel, link) {
   const uit = new Map();
   for (let dep = 1; dep <= 20; dep++) {
-    const q = `{listOffers(department:${dep},store:66){currentOffers{offerId headerText packaging offerPrice normalPrice endDate products{productId offerPrice normalPrice productInformation{headerText packaging}}}}}`;
+    const q = `{listOffers(department:${dep},store:${winkel}){currentOffers{offerId headerText packaging offerPrice normalPrice endDate products{productId offerPrice normalPrice productInformation{headerText packaging}}}}}`;
     let j;
-    try { j = await haal('https://web-gateway.dirk.nl/graphql', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) }); }
-    catch (e) { console.warn('dirk afdeling', dep, e.message); continue; }
+    try { j = await haal(gateway, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) }); }
+    catch (e) { console.warn(id, 'afdeling', dep, e.message); continue; }
     for (const o of j?.data?.listOffers?.currentOffers || []) {
-      const ps = o.products?.length ? o.products : [{ productId: o.offerId, offerPrice: o.offerPrice, normalPrice: o.normalPrice, productInformation: { headerText: o.headerText, packaging: o.packaging } }];
+      // Als geen enkel product een eigen actieprijs heeft, geldt de actie voor de combinatie: dan tonen we de actie zelf.
+      const eigen = (o.products || []).filter(p => p && p.offerPrice > 0 && p.offerPrice < p.normalPrice - .004);
+      const ps = eigen.length ? eigen : o.products?.length === 1 ? o.products : [{ productId: null, offerPrice: o.offerPrice, normalPrice: o.normalPrice, productInformation: { headerText: o.headerText, packaging: o.packaging } }];
       for (const p of ps) {
         if (!p) continue;
-        const prijs = p.offerPrice > 0 ? p.offerPrice : o.offerPrice;
-        const was = p.normalPrice > 0 ? p.normalPrice : o.normalPrice;
+        // Bij een actie over meerdere producten staat de actieprijs soms alleen bij de actie zelf.
+        const prijs = p.offerPrice > 0 && p.offerPrice < (p.normalPrice || 1e9) ? p.offerPrice : o.offerPrice > 0 ? o.offerPrice : p.offerPrice;
+        const was = p.normalPrice > prijs ? p.normalPrice : o.normalPrice;
         if (!(prijs > 0)) continue;
         const naam = p.productInformation?.headerText || o.headerText;
-        uit.set(o.offerId + ':' + p.productId, { s: 'dirk', n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: null, u: p.productId ? `https://www.dirk.nl/boodschappen/x/x/${slug(naam)}/${p.productId}` : 'https://www.dirk.nl/aanbiedingen', t: dagVan(o.endDate) });
+        uit.set(o.offerId + ':' + p.productId, { s: id, n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs + .004 ? r2(was) : null, lbl: null, u: link(naam, p.productId), t: dagVan(o.endDate), k: p.productId ? String(p.productId) : null });
       }
     }
     await slaap(300);
   }
-  if (!uit.size) throw new Error('geen Dirk-aanbiedingen gevonden');
+  if (!uit.size) throw new Error(`geen ${id}-aanbiedingen gevonden`);
   return [...uit.values()];
 }
+const dirk = () => detailresult('dirk', 'https://web-gateway.dirk.nl/graphql', 66, (naam, id) => id ? `https://www.dirk.nl/boodschappen/x/x/${slug(naam)}/${id}` : 'https://www.dirk.nl/aanbiedingen');
+// DekaMarkt-productlinks werken niet los; daarom naar de actiepagina.
+const dekamarkt = () => detailresult('dekamarkt', 'https://web-deka-gateway.dekamarkt.nl/graphql', 283, () => 'https://www.dekamarkt.nl/aanbiedingen');
 
 /* ---------- categorie per aanbieding (zelfde namen als de categorieën op de site) ---------- */
 // Volgorde telt: specifieke groepen eerst, zodat "pindakaas" niet bij Kaas en "appelsap" niet bij Groente komt.
 const CAT_REGELS = [
-  ['Huisdieren', /\b(kat|katten|hond|honden|kattenbak|dierenvoer|whiskas|felix|pedigree|sheba|gourmet)/],
-  ['Groente en fruit', /(spinazie|zuurkool|rode kool|boerenkool|sperziebonen|doperwten|wortelen|bloemkool)/],
-  ['Verzorging en baby', /(tandpasta|tandenborstel|shampoo|conditioner|douche|deo|zeep|luier|billendoek|scheer|creme|bodylotion|maandverband|tampon|mondwater|nivea|dove|axe\b|haarverf|haargel|gillette|pampers|zonnebrand|wattenschijf|rexona|transpirant|sanex|palmolive|incontinentie|inlegkruis|tissue|zakdoek|maskara|mascara|lippen|nagellak|tandzijde)/],
-  ['Huishouden', /(toiletpapier|\bwc|keukenrol|keukenpapier|wasmiddel|wasverzachter|\bwaspod|afwas|vaatwas|schoonmaak|reiniger|vuilniszak|afvalzak|aluminiumfolie|batterij|bleek|robijn|ariel|persil|dreft|sun\b|vanish|glorix|ajax|andy\b|fairy|omo|witte reus|lenor)/],
-  ['Koffie en thee', /(koffie|\bthee\b|theezak|espresso|cappuccino|latte|senseo|nespresso|dolce gusto|douwe egberts)/],
-  ['Dranken', /(\bcola|coca|pepsi|frisdrank|\bsap\b|sappen|appelsap|sinaasappelsap|limonade|siroop|\bwater\b|\bspa\b|bier|veltliner|riesling|\bwitte wijn|\brode wijn|pils|\bwijn\b|wijnen\b|rose|prosecco|ice ?tea|energy|radler|fanta|sprite|7up|chocomel|chocolademelk|smoothie|whisky|wodka|tempranillo|syrah|merlot|cabernet|chardonnay|sauvignon|shiraz|pinot|rioja|primitivo|montepulciano|malbec|cava\b|champagne|port\b|aperol|\bgin\b|\brum\b(?! ?rozijn)|likeur|jenever|heineken|grolsch|hertog jan|amstel|brand\b|jupiler)/],
-  ['Broodbeleg', /(pindakaas|hagelslag|\bjam\b|appelstroop|chocopasta|chocoladepasta|hazelnootpasta|\bhoning|vlokken|nutella|speculoospasta|calve)/],
-  ['Sauzen', /(saus|mayonaise|ketchup|mosterd|appelmoes|dressing|sambal|pesto|fritessaus)/],
-  ['Snoep en chips', /(chips|pinda|noten|nootjes|cashew|chocola|\breep|\bdrop|snoep|\bkoek|koekjes|wafel|biscuit|\bcake|gebak|taart|\bijs\b|ijsjes|magnum|popcorn|winegum|kauwgom|speculaas|bonbon|zoutje|tuc\b|cupcake|cream roll|\bchoco|lolly|proteinbar|kroepoek|muffin|donut|brownie|tompouce|\bbonbon|marshmallow|lays|pringles|doritos|m&m|milka|tony|haribo|mentos|kitkat|snickers|twix|bounty|mars\b)/],
-  ['Kaas en vleeswaren', /(\bkaas|kaasje|plakken|\bham\b|beenham|achterham|salami|rookworst|leverworst|vleeswaren|filet americain|cervelaat|boterhamworst|rookvlees|kipfilet beleg|smeerkaas|mozzarella|brie|feta|parmezaan|camembert|old amsterdam|leerdammer|beemster|kabanos|fuet|iberico|chorizo|serrano|prosciutto|paté|pate\b|tapas)/],
-  ['Zuivel en eieren', /(\bmelk|yoghurt|kwark|\bvla\b|\bvla |slagroom|room\b|kookroom|\bboter|margarine|eieren|zuivel|skyr|toetje|pudding|danone|optimel|almhof|campina|arla|mona|becel|blue band)/],
-  ['Vlees en vis', /(\bkip|gehakt|vlees|biefstuk|varken|speklap|\bspek|\bworst|braadworst|schnitzel|hamburger|slavink|zalm|tonijn|\bvis\b|vissticks|garnal|kabeljauw|pangasius|haring|makreel|shoarma|saucijs|drumstick|kalkoen|rund|kipfilet|kipdij|bacon|gyros|sate\b|spareribs|steak|filet\b|entrecote|ossenhaas|rollade|kipkluif|kippenpoot|vlees)/],
-  ['Brood en ontbijt', /(brood|bolletjes|\bbollen|beschuit|cracker|ontbijtkoek|cornflakes|havermout|muesli|granola|croissant|stokbrood|pistolet|krentenbol|\btoast|wraps|ontbijtgranen|crunchy|kellogg|brinta|knackebrod|rozijnenbrood|afbak)/],
-  ['Pasta, rijst en koken', /(pasta|spaghetti|macaroni|penne|fusilli|\brijst|noedel|\bmie\b|tomatenpuree|\bolie|bloem\b|suiker|kruiden|bouillon|\bsoep|lasagne|tortellini|ravioli|pizza|maaltijd|wereldkeuken|tortilla|couscous|conserv|bonen in|knorr|honig|conimex|maggi|blik|loempia|nasi|bami|curry|ovenschotel|stamppot|quiche|tapenade)/],
-  ['Groente en fruit', /(banan|\bappel|\bpeer|peren|sinaasappel|mandarijn|druiven|aardbei|bessen|framboz|aardappel|krieltjes|\buien|\bui\b|tomaat|tomaten|komkommer|paprika|wortel|broccoli|bloemkool|\bsla\b|salade|spinazie|champignon|courgette|\bprei|avocado|citroen|limoen|kiwi|mango|ananas|meloen|groente|fruit|kool|minneola|clementine|grapefruit|nectarine|perzik|pruim|vijg|dadel|sperziebonen|andijvie|spruit|knoflook|bosui|rucola|pompoen|biet)/],
+  ['Huisdieren', /(\bkat\b|\bkatten|\bhond\b|\bhonden|kattenbak|dierenvoer|whiskas|felix|pedigree|sheba|(?<!garden )gourmet (gold|perle|mon petit)|beneful|kauwstaven|hondensnack|kattensnack|huisdier)/],
+  ['Verzorging en baby', /(drogisterij|\bbaby\b|tandpasta|tandenborstel|opzetborstel|flosdraad|floss|shampoo|conditioner|douche|deo|zeep|luier|billendoek|scheer|trimmer|\bcreme\b|dagcreme|nachtcreme|handcreme|bodycreme|bodylotion|maandverband|verband|tampon|urineverlies|incontinentie|inlegkruis|mondwater|nivea|dove|axe\b|haarverf|haargel|haarspray|haarlak|gel styler|styler|hair|wax\b|paste\b|clay\b|anti-klit|gliss|syoss|wella|elvive|l'oreal|loreal|garnier|gillette|pampers|zonnebrand|wattenschijf|rexona|transpirant|sanex|palmolive|tissue|zakdoek|maskara|mascara|lippen|nagellak|tandzijde|oral-b|sensodyne|vaseline|always|libresse|vitamine|multivitamin|dagravit|curalyn|roter\b|probiotica|visolie|supplement|bruistablet|panty|haaraccessoire)/],
+  ['Huishouden', /(toiletpapier|\bwc|keukenrol|keukenpapier|wasmiddel|wasverzachter|\bwaspod|wasbeurt|afwas|vaatwas|schoonmaak|reiniger|schuurmiddel|ontvetter|vuilniszak|afvalzak|aluminiumfolie|batterij|bleek|robijn|ariel|persil|dreft|sun\b|vanish|glorix|ajax|andy\b|fairy|\bomo\b|reus\b|lenor|luchtverfrisser|air ?wick|cif\b|harpic|cillit|colour catcher|k2r|theelicht|kaars|pedaalemmer|vershouddoos|toiletblok)/],
+  ['Koffie en thee', /(koffie|thee\b|thee |theezak|infusion|espresso|cappuccino|latte|senseo|nespresso|dolce gusto|douwe egberts|pukka|clipper|lipton)/],
+  ['Dranken', /(\bcola|coca|pepsi|frisdrank|\bsap\b|sappen|appelsap|sinaasappelsap|juice|limonade|siroop|\bwater\b|mineraalwater|\bspa\b|sourcy|bier|\bipa\b|tripel|dubbel\b|\bbock|\bbok\b|ijsbock|trappist|blond 7|abdij|krat\b|veltliner|riesling|\bwitte wijn|\brode wijn|pils|\bwijn\b|wijnen\b|rose|ros[eé]\b|prosecco|cava\b|frizzante|moscato|verdejo|garnacha|grand cru|ice ?tea|energy|red bull|monster|radler|fanta|sprite|7up|chocomel|chocolademelk|smoothie|whisky|wodka|mixdrink|tempranillo|syrah|merlot|cabernet|chardonnay|sauvignon|shiraz|pinot|rioja|primitivo|montepulciano|malbec|champagne|port\b|aperol|\bgin\b|\brum\b(?! ?rozijn)|likeur|jenever|heineken|grolsch|hertog jan|amstel|brand\b|jupiler|leffe|stella artois|peroni|weihenstephan|gulpener|la trappe|westmalle|chouffe|duvel|affligem|grimbergen|crystal clear|healthy people|coolbest|drank\b|\d ?x ?\d+ ?ml|750 ?ml|75 ?cl)/],
+  ['Broodbeleg', /(\bbeleg\b|pindakaas|hagelslag|hagel\b|vlokken|muisjes|de ruijter|\bjam\b|appelstroop|chocopasta|chocoladepasta|hazelnootpasta|\bhoning|nutella|speculoospasta|calve)/],
+  ['Sauzen', /(saus|mayonaise|ketchup|mosterd|appelmoes|compote|dressing|sambal|pesto|fritessaus|tomato frito|tomatenpuree|tomato puree|ketjap)/],
+  ['Snoep en chips', /(chips|pinda|noten|nootjes|cashew|chocola|\breep|repen|\bdrop|snoep|(?<!pannen)koek|wafel|biscuit|\bcake|gebak|taart|\bijs\b|ijsjes|ben & jerry|magnum|popcorn|winegum|kauwgom|speculaas|bonbon|zoutje|tuc\b|cupcake|cream roll|\bchoco|lolly|proteinbar|proteinereep|chewy bar|kroepoek|muffin|donut|brownie|tompouce|marshmallow|lays|pringles|doritos|m&m|milka|tony|haribo|mentos|kitkat|snickers|twix|bounty|mars\b|maoam|frisia|lutti|klene|true dates|snack a jacks|\bchio\b|nougat|fudge|soezen|zoenen|mouse\b|munten)/],
+  ['Kaas en vleeswaren', /(\bkaas|kaasje|plakken|ham\b|salami|salame|rookworst|leverworst|snijworst|palingworst|metworst|vleeswaren|filet americain|cervelaat|boterhamworst|rookvlees|kipfilet beleg|smeerkaas|roomkaas|mozzarella|brie|feta|parmezaan|camembert|old amsterdam|leerdammer|beemster|marcaire|bleu d|blauwschimmel|paturain|heks'?nkaas|kabanos|fuet|iberico|chorizo|serrano|prosciutto|coppa|coburger|carpaccio|pepperoni|spianata|pat[eé]\b|tapas|olijven|hummus|tzatziki|aioli|\bdip\b|babaganoush|muhammara|gevulde (zoete )?peper)/],
+  ['Zuivel en eieren', /(\bmelk|yoghurt|kwark|\bvla\b|\bvla |slagroom|room\b|kookroom|\bboter|margarine|eieren|zuivel|skyr|kefir|toetje|pudding|danone|optimel|almhof|campina|arla|mona|becel|blue band|alpro|sojadrink|havermelk|haverdrink)/],
+  ['Vlees en vis', /(\bkip|gehakt|vlees|biefstuk|varken|speklap|spek\b|\bspek|\bworst|braadworst|grillworst|schnitzel|hamburger|burger|slavink|zalm|tonijn|\bvis\b|vissticks|fish|iglo|garnal|kabeljauw|pangasius|heek|haring|makreel|ansjovis|shoarma|saucijs|drumstick|kalkoen|rund|kipfilet|kipdij|bacon|gyros|sate|spareribs|steak|filet\b|entrecote|ossenhaas|rollade|kipkluif|kippenpoot|pulled|snackbal|vegetarische slager|speckjes)/],
+  ['Brood en ontbijt', /(bakkerij|brood|bolletjes|\bbollen|beschuit|cracker|ontbijtkoek|cornflakes|havermout|muesli|cruesli|granola|overnight oats|quaker|croissant|stokbrood|pistolet|krentenbol|\btoast|wraps|ontbijtgranen|crispies|kellogg|brinta|knackebrod|rozijnenbrood|afbak|pannenkoek|poffertjes)/],
+  ['Pasta, rijst en koken', /(pasta|spaghetti|macaroni|penne|fusilli|rigatoni|pappardelle|tagliatelle|chitarra|gnocchi|\brijst|risotto|noedel|\bmie\b|mihoen|\bolie|bloem\b|suiker|kruiden|bouillon|\bsoep|lasagne|tortellini|ravioli|pizza|maaltijd|wereldkeuken|tortilla|couscous|conserv|bonen in|knorr|honig|conimex|maggi|blik|loempia|nasi|bami|babi|foe yong|curry|ovenschotel|stamppot|quiche|tapenade|roerbakmix|basismix|verspakket|augurk|dwarsliggers|sesamzaad|friet|frites|aviko|bakmix|bak specialiteit|bakvulling|bakdecoratie|sukade)/],
+  ['Groente en fruit', /(banan|\bappel|\bpeer|peren|sinaasappel|mandarijn|clementine|druiven|aardbei|bessen|framboz|aardappel|krieltjes|\buien|\bui\b|tomaat|tomaten|komkommer|paprika|wortel|broccoli|bloemkool|\bsla\b|salade|spinazie|champignon|paddenstoel|courgette|\bprei|avocado|citroen|limoen|kiwi|mango|ananas|meloen|groente|fruit|kool\b|kool |minneola|grapefruit|nectarine|perzik|pruim|vijg|dadel|sperziebonen|boontjes|bonen|kikkererwten|linzen|kapucijners|veldertjes|doperw|\bmais\b|edamame|cannellini|zuurkool|andijvie|spruit|knoflook|bosui|rucola|pompoen|sweet dumpling|biet|kaki|rauwkost|pastinaak|knolselderij|venkel|aubergine|radijs|bieslook|peterselie|granaatappel|bosbes|blauwe bes|witlof|snoepgroente|snoeptomaat)/],
 ];
 const zonderAccent = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 function categorieVan(naam) {
   const t = zonderAccent(naam);
   for (const [c, re] of CAT_REGELS) if (re.test(t)) return c;
   return 'Overig';
+}
+
+/* ---------- netjes maken: maten, prijs per eenheid, dubbele acties ---------- */
+// "520 Mililiters" -> "520 ml", "1.25 KGrams" -> "1,25 kg", "15 Stuks" -> "15 stuks"
+function netteMaat(sz) {
+  let t = String(sz || '').replace(/\s+/g, ' ').trim();
+  if (!t) return '';
+  t = t.replace(/(\d)\s*(?:mililiters?|milliliters?|ml)\b/gi, '$1 ml').replace(/(\d)\s*(?:liters?|ltr|l)\b/gi, '$1 l')
+    .replace(/(\d)\s*(?:kgrams?|kilograms?|kilo's?|kilo|kg)\b/gi, '$1 kg').replace(/(\d)\s*(?:grams?|gr|g)\b/gi, '$1 g')
+    .replace(/(\d)\s*(?:centiliters?|cl)\b/gi, '$1 cl').replace(/\bstuks\b/gi, 'stuks').replace(/\bstuk\b/gi, 'stuk')
+    .replace(/(\d)\.(\d)/g, '$1,$2');
+  return /^[A-Z0-9 ,.]+$/.test(t) && /[A-Z]{3}/.test(t) ? t.toLowerCase() : t;
+}
+const sleutelNaam = s => zonderAccent(s).replace(/[^a-z0-9]+/g, ' ').trim();
+function opschonen(lijst) {
+  const gezien = new Map();
+  for (const o of lijst) {
+    o.n = String(o.n || '').replace(/[®™]/g, '').replace(/\s+/g, ' ').trim();
+    o.sz = netteMaat(o.sz);
+    if (o.sz && sleutelNaam(o.n).endsWith(sleutelNaam(o.sz))) o.sz = '';
+    const [pp, eh] = perEenheid(o.p, o.sz || o.n);
+    if (pp != null && pp < 2000) { o.pp = pp; o.eh = eh; }
+    if (o.was != null && !(o.was > o.p + .004)) o.was = null;
+    // Labels als "VOOR 0.99" of "1+1 GRATIS" -> "Voor 0,99", "1+1 gratis"
+    if (o.lbl) {
+      let l = String(o.lbl).replace(/\s+/g, ' ').trim().replace(/(\d)\.(\d)/g, '$1,$2');
+      if (l === l.toUpperCase()) l = l.charAt(0) + l.slice(1).toLowerCase();
+      o.lbl = l || null;
+    }
+    if (!o.k) delete o.k;
+    if (!o.v) delete o.v;
+    // Zelfde winkel, naam, maat en prijs = dubbel (komt voor bij acties die in twee afdelingen staan).
+    const sl = [o.s, sleutelNaam(o.n), o.sz, o.p].join('|');
+    const oud = gezien.get(sl);
+    if (!oud || (!oud.k && o.k)) gezien.set(sl, o);
+  }
+  return [...gezien.values()];
 }
 
 /* ---------- samenvoegen ---------- */
@@ -277,7 +495,10 @@ const status = lees('status.json', {});
 const aanbod = {};
 let aldiAssortiment = null;
 
-for (const [id, fn] of Object.entries({ aldi, ah, jumbo, lidl, dirk })) {
+// Alle winkels tegelijk; Aldi duurt het langst (honderden pagina's), de rest is in een paar minuten klaar.
+const WINKELS = { aldi, ah, jumbo, lidl, plus, dirk, dekamarkt, hoogvliet, poiesz };
+const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
+await Promise.all(Object.entries(WINKELS).filter(([id]) => !alleen.length || alleen.includes(id)).map(async ([id, fn]) => {
   const t0 = Date.now();
   try {
     const r = await fn();
@@ -292,12 +513,21 @@ for (const [id, fn] of Object.entries({ aldi, ah, jumbo, lidl, dirk })) {
     status[id] = { ...(status[id] || {}), ok: false, fout: String(e.message || e).slice(0, 300), tijd: nu };
     console.error(id, 'MISLUKT:', e.message);
   }
-}
+}));
+// Winkels die deze keer niet zijn opgehaald (WINKELS=...), houden hun vorige acties.
+const overgeslagen = new Set(vorigAanbod.map(o => o.s).filter(id => !(id in aanbod)));
+for (const o of vorigAanbod) if (overgeslagen.has(o.s)) (aanbod[o.s] ||= []).push(o);
 
 const vd = vandaag();
-const offers = Object.values(aanbod).flat().filter(o => o.n && o.p > 0 && (!o.t || o.t >= vd)).map(o => ({ ...o, c: categorieVan(o.n) }));
+const offers = opschonen(Object.values(aanbod).flat().filter(o => o.n && o.p > 0 && (!o.t || o.t >= vd))).map(({ sc, ...o }) => {
+  // Eerst op de productnaam; lukt dat niet, dan op de afdeling van de supermarkt zelf.
+  let c = categorieVan(o.n + ' ' + (o.sz || ''));
+  if (c === 'Overig' && sc) c = categorieVan(sc);
+  return { ...o, c };
+});
 schrijf('aanbiedingen.json', { updated: nu, offers });
 if (aldiAssortiment?.length) schrijf('aldi.json', { updated: nu, products: aldiAssortiment });
 schrijf('status.json', status);
 console.log(`klaar: ${offers.length} aanbiedingen, Aldi-assortiment ${aldiAssortiment?.length ?? 'niet bijgewerkt'}`);
+const tel = {}; for (const o of offers) tel[o.c] = (tel[o.c] || 0) + 1; console.log('categorieën', JSON.stringify(tel));
 if (Object.values(status).every(s => !s.ok)) process.exit(1);
