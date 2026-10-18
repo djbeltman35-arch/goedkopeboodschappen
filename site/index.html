@@ -111,6 +111,10 @@
 .notify p{margin:0 0 8px}
 .notify button{padding:9px 13px;font-size:15px}
 .notify .on{color:var(--green-dark);font-weight:700}
+.notify .mail{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.notify .mrow{display:flex;gap:8px;flex-wrap:wrap}
+.notify input[type=email]{flex:1 1 180px;min-width:0;font:400 16px var(--text);color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:9px 12px}
+.notify input[type=email]:focus{border-color:var(--green);outline:none}
 .ltools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .ltools button{padding:9px 13px;font-size:15px}
 .mystores{margin-top:16px;max-width:720px;background:var(--green-soft);border:2px solid var(--green);border-radius:14px}
@@ -565,11 +569,35 @@ async function pushAan(){
 async function pushUit(){const sub=await pushSub();if(sub){try{await fetch("/api/meldingen",{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({sub:sub.toJSON()})})}catch(e){}try{await sub.unsubscribe()}catch(e){}}S.pushOn=false;gc("meldingen/uit","Meldingen uitgezet");renderNotify()}
 function renderNotify(){
   const el=$("notify"); if(!S.list.length){el.hidden=true;return} el.hidden=false;
-  if(S.pushOn){el.innerHTML=`<p class="on">🔔 Meldingen staan aan</p><p>Je krijgt 's ochtends een bericht als iets van je lijst in de aanbieding komt.</p><button type="button" class="btn-line" data-push="uit">Meldingen uitzetten</button>`;return}
-  if(!pushKan){el.innerHTML=isIOS&&!standalone?`<p>🔔 <b>Melding bij aanbiedingen?</b> Zet deze site eerst op je beginscherm: tik op deel <span aria-hidden="true">⬆️</span> en kies "Zet op beginscherm". Open hem daarna vanaf je beginscherm.</p>`:"";el.hidden=!el.innerHTML;return}
-  el.innerHTML=`<p>🔔 <b>Melding als iets van je lijst in de aanbieding komt?</b> Gratis, zonder account. Je kunt het altijd weer uitzetten.</p>${S.pushMsg?`<p class="muted">${esc(S.pushMsg)}</p>`:""}<button type="button" class="btn" data-push="aan">Meldingen aanzetten</button>`;
+  let push="";
+  if(S.pushOn) push=`<p class="on">🔔 Meldingen staan aan</p><p>Je krijgt 's ochtends een bericht als iets van je lijst in de aanbieding komt.</p><button type="button" class="btn-line" data-push="uit">Meldingen uitzetten</button>`;
+  else if(!pushKan) push=isIOS&&!standalone?`<p>🔔 <b>Melding op je telefoon?</b> Zet deze site op je beginscherm: tik op deel <span aria-hidden="true">⬆️</span> en kies "Zet op beginscherm". Open hem daarna vanaf je beginscherm.</p>`:"";
+  else push=`<p>🔔 <b>Melding als iets van je lijst in de aanbieding komt?</b> Gratis, zonder account. Je kunt het altijd weer uitzetten.</p>${S.pushMsg?`<p class="muted">${esc(S.pushMsg)}</p>`:""}<button type="button" class="btn" data-push="aan">Meldingen aanzetten</button>`;
+  el.innerHTML=push+mailHtml(!!push); el.hidden=!el.innerHTML;
 }
-let pushT; function pushLater(){if(!S.pushOn)return;clearTimeout(pushT);pushT=setTimeout(()=>pushSync(),2000)}
+/* E-mailmeldingen: aanmelden met bevestigingsmail, afmelden met één klik. De browser onthoudt alleen een willekeurige sleutel. */
+function mailHtml(lijn){
+  const M=S.mail; if(!M?.aan&&M?.status!=="bevestigd"&&M?.status!=="wacht") return "";
+  const cls=lijn?"mail":"";
+  if(M.status==="bevestigd") return `<div class="${cls}"><p class="on">📧 E-mail bij aanbiedingen staat aan${M.adres?` (${esc(M.adres)})`:""}</p><button type="button" class="btn-line" data-mail="uit">E-mail uitzetten</button></div>`;
+  if(M.status==="wacht") return `<div class="${cls}"><p>📧 <b>Bijna klaar!</b> We hebben je een mail gestuurd. Tik op de knop in die mail om te bevestigen. Niets ontvangen? Kijk ook even bij spam.</p><button type="button" class="btn-line" data-mail="uit">Annuleren</button></div>`;
+  return `<div class="${cls}"><p>📧 <b>${lijn?"Of liever per e-mail?":"Mail als iets van je lijst in de aanbieding komt?"}</b> Gratis, hoogstens één mail per dag, afmelden met één klik.</p>${M.msg?`<p class="muted">${esc(M.msg)}</p>`:""}<form class="mrow" id="mailf"><label class="sr" for="mailin">Je e-mailadres</label><input type="email" id="mailin" placeholder="jouw@email.nl" autocomplete="email" required><button type="submit" class="btn">Aanmelden</button></form></div>`;
+}
+const mailToken=()=>store.get("email-token");
+async function mailStatus(){
+  try{const t=mailToken();const r=await (await fetch("/api/email"+(t?"?token="+t:""))).json();S.mail={aan:r.aan,status:r.status,adres:r.adres};if(t&&r.status==="onbekend")store.set("email-token",null)}catch(e){S.mail=null}
+  renderNotify();
+}
+async function mailAan(email){
+  S.mail.msg="";
+  try{const r=await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,termen:S.list.map(x=>x.term),winkels:winkelsAan()})});const j=await r.json();
+    if(j.token){store.set("email-token",j.token);S.mail.status=j.status;gc("email/aanmelden","E-mail aangemeld")} else S.mail.msg=j.fout||"Aanmelden lukte niet.";
+  }catch(e){S.mail.msg="Aanmelden lukte niet. Probeer het later nog eens."}
+  renderNotify();
+}
+async function mailUit(){const t=mailToken();if(t){try{await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,afmelden:true})})}catch(e){}}store.set("email-token",null);S.mail.status=null;gc("email/uit","E-mail uitgezet");renderNotify()}
+async function mailSync(){const t=mailToken();if(!t)return;try{await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,termen:S.list.map(x=>x.term),winkels:winkelsAan()})})}catch(e){}}
+let pushT; function pushLater(){if(!S.pushOn&&!mailToken())return;clearTimeout(pushT);pushT=setTimeout(()=>{if(S.pushOn)pushSync();mailSync()},2000)}
 
 function printList(){
   const r=S.printRow; if(!r) return; gc("print","Lijst geprint");
@@ -609,6 +637,7 @@ document.addEventListener("click",e=>{
   const ba=e.target.closest("[data-bar]"); if(ba){barAction(ba.dataset.bar);return}
   const sa=e.target.closest("[data-sall]"); if(sa){if(sa.dataset.sall==="1")S.off.clear();else for(const s of S.stores)if(s.count)S.off.add(s.id);winkelsGewijzigd();return}
   if(e.target.closest("[data-kies]")){$("mystores").open=true;jump("mystores");return}
+  const ml=e.target.closest("[data-mail]"); if(ml){ml.disabled=true;mailUit();return}
   const pu=e.target.closest("[data-push]"); if(pu){pu.disabled=true;pu.dataset.push==="aan"?pushAan():pushUit();return}
   const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
   const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
@@ -622,6 +651,7 @@ document.addEventListener("change",e=>{
   if(e.target.id==="ofsort"){S.ofsort=e.target.value;renderOffers()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="ofq"){S.ofq=e.target.value;clearTimeout(S.ofqt);S.ofqt=setTimeout(()=>{const pos=e.target.selectionStart;renderOffers();const i=$("ofq");i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}},250)}});
+document.addEventListener("submit",e=>{if(e.target.id==="mailf"){e.preventDefault();const b=e.target.querySelector("button");b.disabled=true;b.textContent="Even geduld…";mailAan($("mailin").value.trim())}});
 $("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
 function bulkAdd(){
@@ -689,6 +719,11 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   if(sp.get("v")==="aanbiedingen"){S.view="deals";renderView()} else search();
   renderList(); renderWhere(); welcome(); dock(); if(!S.list.length&&matchMedia("(min-width:921px)").matches) $("bulk").open=true;
   pushSub().then(sub=>{S.pushOn=!!sub;renderNotify();if(sub)pushSync(sub)});
+  mailStatus();
+  const em=sp.get("email"); if(em){const t={bevestigd:"<b>Gelukt!</b> Je krijgt voortaan een mail als iets van je lijst in de aanbieding komt.",uit:"Je bent afgemeld. Je krijgt geen mails meer van ons.",onbekend:"Deze link is verlopen of al gebruikt. Meld je gerust opnieuw aan."}[em];
+    if(t){$("welcome").innerHTML=`<div class="welcome">📧 ${t}</div>`;jump("lijst")} if(em==="uit")store.set("email-token",null);
+    const et=sp.get("t"); if(em==="bevestigd"&&/^[a-f0-9]{48}$/.test(et||"")){store.set("email-token",et);mailStatus()}
+    sp.delete("email");sp.delete("t");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+location.hash)}
   if(added){$("welcome").innerHTML=`<div class="welcome"><b>${added} ${added===1?"artikel":"artikelen"}</b> op je lijst gezet.</div>`;jump("lijst")}
   if(!S.snap||S.snap.day!==today) snapshot();
   if(S.offersUpdated) $("src").textContent=`Prijzen van de webshops van de supermarkten. Aanbiedingen bijgewerkt op ${dagLang(S.offersUpdated)}. De prijs aan de kassa is leidend.`;
