@@ -159,28 +159,38 @@ PAKKET = [("halfvolle melk", 2, "l"), ("yoghurt", 1, "l"), ("eieren", 10, "st"),
           ("rijst", 1, "kg"), ("spaghetti", .5, "kg"), ("pastasaus", .5, "kg"), ("olijfolie", .5, "l"), ("suiker", 1, "kg"),
           ("koffiebonen", .5, "kg"), ("thee", 20, "st"), ("sinaasappelsap", 1.5, "l"), ("cola", 1.5, "l"), ("chips", .2, "kg"),
           ("toiletpapier", 8, "st"), ("wasmiddel", 1, "l"), ("tandpasta", .075, "l"), ("afwasmiddel", .5, "l")]
+# Andere eenheden waarin winkels hetzelfde verkopen (komkommer per stuk of per kilo, appels per kilo of per stuk).
+OMREKEN = {"komkommer": {"kg": .4}, "appels": {"st": 6}, "uien": {"st": 8}, "bananen": {"st": 6}, "roomboter": {"st": 1},
+           "thee": {"kg": .04}, "volkoren brood": {"st": 1}, "tomaten": {"st": 5}, "paprika": {"st": 3}, "eieren": {}}
 def pakket_kosten():
     tabel = {}
     for term, q, u in PAKKET:
         rows = dict(per_store(matches(term)).items())
         for si, p in rows.items():
-            if p[6] == u and eff_unit(p) is not None and 0 < eff_unit(p) < 500:
-                tabel.setdefault(term, {})[si] = (eff_unit(p) * q, p)
-    termen = [t for t in tabel if len(tabel[t]) >= 0.6 * AANTAL]
+            if id(p) in BAD or eff_unit(p) is None or not 0 < eff_unit(p) < 500: continue
+            if p[6] == u: tabel.setdefault(term, {})[si] = (eff_unit(p) * q, p)
+            elif p[6] in OMREKEN.get(term, {}): tabel.setdefault(term, {})[si] = (eff_unit(p) * OMREKEN[term][p[6]], p)
+    # Eerlijk vergelijken: alleen boodschappen die bij álle meegenomen winkels te vinden zijn.
+    # Winkels die te veel missen vallen af, tot er minstens 18 gemeenschappelijke boodschappen over zijn.
+    winkels = [si for si, s in enumerate(stores) if s["count"] and sum(1 for t in tabel if si in tabel[t]) >= 0.75 * len(PAKKET)]
+    while True:
+        termen = [t for t, _, _ in PAKKET if t in tabel and all(si in tabel[t] for si in winkels)]
+        if len(termen) >= 15 or len(winkels) <= 3: break
+        winkels.remove(min(winkels, key=lambda si: sum(1 for t in tabel if si in tabel[t])))
     res = []
-    for si, s in enumerate(stores):
-        if not s["count"]: continue
-        have = [t for t in termen if si in tabel[t]]
-        if len(have) < 0.8 * len(termen): continue
-        tot = 0.0; regels = []
-        for t in termen:
-            if si in tabel[t]: tot += tabel[t][si][0]; regels.append((t, tabel[t][si][0], tabel[t][si][1], False))
-            else:
-                med = statistics.median(v[0] for v in tabel[t].values()); tot += med; regels.append((t, med, None, True))
-        res.append({"si": si, "tot": tot, "mist": len(termen) - len(have), "regels": regels})
+    for si in winkels:
+        regels = [(t, tabel[t][si][0], tabel[t][si][1], False) for t in termen]
+        res.append({"si": si, "tot": sum(r[1] for r in regels), "mist": 0, "regels": regels})
     res.sort(key=lambda r: r["tot"])
     return res, termen
 PAK, PAKTERMEN = pakket_kosten()
+if os.environ.get('DEBUG_PAKKET'):
+    _t = {}
+    for term, q, u in PAKKET:
+        for si, p in per_store(matches(term)).items():
+            ok = p[6] == u and eff_unit(p) is not None
+            _t.setdefault(stores[si]['id'], []).append(term if ok else term.upper()+'('+str(p[6])+')')
+    for k, v in _t.items(): print(k, len([x for x in v if x.islower()]), v)
 PAKRANG = {r["si"]: i + 1 for i, r in enumerate(PAK)}
 
 # ---------- sjabloon ----------
@@ -255,9 +265,10 @@ for t, rows in PICKED.items():
     trs = ""
     for i, (si, p) in enumerate(rows):
         o = offer_of(p)
-        trs += (f'<tr{" class=win" if i == 0 else ""}><td><b>{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</b>{"<span class=sub>Goedkoopst</span>" if i == 0 else ""}</td>'
-                f'<td><a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}">{esc(p[1])}</a><span class="sub">{esc(p[4] or "")}{" · " + esc(o["lbl"] or "aanbieding") if o else ""}</span>{addbtn(p, t)}</td>'
-                f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}</td><td class="p"><span class="unit">{"" if id(p) in BAD else esc(per(eff_unit(p), p[6]))}</span></td></tr>')
+        unit = "" if id(p) in BAD else per(eff_unit(p), p[6])
+        trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
+                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, t)}</td>'
+                f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
     acties = term_offers(t)
     actie_html = (f'<h2>{esc(name)} in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in acties) + "</ul>") if acties else ""
     faq = [(f"Waar is {t} het goedkoopst?", f"{name} is nu het goedkoopst bij {win}: {p0[1]} kost {eur(eff(p0))}" + (f", dat is {per(u0, p0[6])}" if u0 else "") + "."),
@@ -266,7 +277,7 @@ for t, rows in PICKED.items():
     rel = [x for x in (c[2] if c else []) if x != t and x in PICKED][:24]
     relhtml = (f"<h2>Meer {esc(c[0].lower())} vergelijken</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk/{slug(x)}/">{esc(cap(x))}</a></li>' for x in rel) + "</ul>") if rel else ""
     head = ch + f"<h1>{esc(name)}: waar is het goedkoopst?</h1><p class=\"lead\">{esc(name)} koop je nu het voordeligst bij <b>{esc(win)}</b>" + (f": {esc(vanaf)}" if vanaf else "") + (f", {besp}% goedkoper dan bij {esc(loser)}." if besp >= 5 else ".") + "</p>"
-    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th>Voordeligste product</th><th style="text-align:right">Prijs</th><th style="text-align:right">Per {esc(eh or "stuk")}</th></tr></thead><tbody>{trs}</tbody></table></div>'
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{faq_html(faq)}{relhtml}{LISTJS}')
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{name} prijzen per supermarkt", "itemListElement": [
@@ -313,7 +324,10 @@ def offers_page(cur, lst):
     nu_ = [o for o in lst if not o.get("v") or o["v"] <= VANDAAG]; straks = [o for o in lst if o.get("v") and o["v"] > VANDAAG]
     nu_.sort(key=lambda o: (-o["pct"], o["p"])); straks.sort(key=lambda o: (o["v"], -o["pct"]))
     path = f"/aanbiedingen/{cur}/" if cur else "/aanbiedingen/"
-    eind = max((o["t"] for o in nu_ if o.get("t")), default=None)
+    eind_tel = {}
+    for o in nu_:
+        if o.get("t"): eind_tel[o["t"]] = eind_tel.get(o["t"], 0) + 1
+    eind = max(eind_tel, key=eind_tel.get) if eind_tel else None
     beste = nu_[0] if nu_ else None
     if cur:
         nm = NAMEN[cur]; naam_actie = "Bonus" if cur == "ah" else "aanbiedingen"
@@ -332,7 +346,7 @@ def offers_page(cur, lst):
     icon = {c[0]: c[1] for c in CATS}
     sel = ('<div class="tools"><label><span class="sr">Categorie</span><select id="fcat"><option value="">Alle categorieën</option>' + "".join(f'<option value="{esc(c)}">{icon.get(c, "🛒")} {esc(c)} ({cnt[c]})</option>' for c in order) + "</select></label></div>") if len(order) > 1 else ""
     ch, cld = crumbs(*([("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], None)] if cur else [("Aanbiedingen", None)]))
-    body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in nu_[:400])}</ul>' +
+    body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in nu_[:240])}</ul>' +
             (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">{"".join(offer_card(o) for o in straks[:120])}</ul>' if straks else "") +
             '<a class="cta" href="/?v=aanbiedingen">Zoek en filter in alle aanbiedingen</a>'
             '<p class="note">Actieprijzen zoals de supermarkt ze online toont. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut. De prijs aan de kassa is leidend.</p>'

@@ -19,15 +19,20 @@ for si,s in enumerate(d):
     items=s.get('d',[])
     if not items: continue
     stores.append({'id':s['n'],'name':s['c'],'base':s['u']})
-    ok=0
+    ok=0;conflict=0
     for p in items:
         if not p.get('p'): continue
         v,u=parse(p.get('s',''),p['n'])
+        # Staat er in de naam een andere hoeveelheid dan in de maat ("Kipfilet 1000 g" met maat "150 g"), dan klopt een van beide niet:
+        # dan geen prijs per kilo/liter, zodat het product niet onterecht als goedkoopste bovenaan komt.
+        vn,un=parse(p['n']); vs,us=parse(p.get('s',''))
+        if vn and vs and un==us and max(vn,vs)/min(vn,vs)>1.25: v=None; conflict+=1
         up=None
         if v:
             ok+=1
             up=round(p['p']/v*(1000 if u in('g','ml') else 1),2)
         prods.append([len(stores)-1,p['n'],p['l'],p['p'],p.get('s',''),up,{'g':'kg','ml':'l','st':'st'}.get(u,'')])
     stats[s['n']]=(len(items),ok)
+    if conflict: print(s['n'],conflict,'producten met tegenstrijdige maat')
 [[p.__setitem__(1,p[1].replace("\ufffd","")) for p in prods]];json.dump({'stores':stores,'products':prods},open(out,'w'),ensure_ascii=False,separators=(',',':'))
 for k,(n,ok) in stats.items(): print(f'{k:10} {n:6} producten, eenheidsprijs bij {ok/n*100 if n else 0:4.0f}%')
