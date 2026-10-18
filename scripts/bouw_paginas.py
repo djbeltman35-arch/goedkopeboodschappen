@@ -63,6 +63,14 @@ def offer_card(o):
 # ---------- prijsgeschiedenis ----------
 try: HIST = json.load(open(os.path.join(ROOT, "data", "historie.json")))
 except Exception: HIST = {"dagen": [], "termen": {}, "eenheid": {}}
+# Klein bestand voor de app: per product en winkel de laagste gewone prijs per eenheid van de bewaarde dagen (zonder vandaag).
+if len(HIST["dagen"]) >= 30:
+    laagste = {"sinds": HIST["dagen"][0], "eh": HIST["eenheid"], "t": {}}
+    for t_, perw in HIST["termen"].items():
+        m = {w: min(v for v in r[:-1] if v is not None) for w, r in perw.items() if any(v is not None for v in r[:-1])}
+        if m: laagste["t"][t_] = {w: round(v, 3) for w, v in m.items()}
+    os.makedirs(os.path.join(OUT, "data"), exist_ok=True)
+    json.dump(laagste, open(os.path.join(OUT, "data", "laagste.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 def kortdatum(d):
     d = datetime.date.fromisoformat(d); return f"{d.day} {MND[d.month - 1]}"
 def prijsverloop(t, nu_laagst):
