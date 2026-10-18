@@ -3,3 +3,4 @@ public/
 scripts/fonts/
 node_modules/
 .netlify/
+__pycache__/
