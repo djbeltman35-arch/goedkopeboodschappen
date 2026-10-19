@@ -626,7 +626,7 @@ function storesUi(){
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
-function winkelsGewijzigd(){store.set("winkels-uit",[...S.off]);pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
+function winkelsGewijzigd(){store.set("winkels-uit",[...S.off]);document.dispatchEvent(new Event("winkels"));pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
 function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
