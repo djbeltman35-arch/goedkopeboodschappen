@@ -142,3 +142,4 @@ body.hasdock{padding-bottom:84px}
 .mtop .addall{margin-top:4px}.feiten{display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0 0;font-size:16px}.feiten b{font-family:var(--num)}
 .ptable td.c{text-align:right;white-space:nowrap;font-family:var(--num)}.ptable tr.vk td{color:var(--muted)}
 #karm[aria-pressed=true]{background:var(--green-soft);border-color:var(--green);color:var(--green-dark)}
+.mcard .maddkaart{align-self:flex-start;margin-top:4px}

@@ -627,6 +627,12 @@ function storesUi(){
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
 function winkelsGewijzigd(){store.set("winkels-uit",[...S.off]);document.dispatchEvent(new Event("winkels"));pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
+function erbijLaden(){let n=0;const erbij=store.get("lijst-erbij");if(Array.isArray(erbij)){
+    for(const o of erbij) if(S.sidx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.term||o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(String(o.sz).toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.r?{}:{offerTill:o.t||null})});n++}
+    try{localStorage.removeItem("lijst-erbij")}catch(e){}
+  }return n}
+// Maaltijden en losse pagina's zetten artikelen klaar in "lijst-erbij"; hier direct op de lijst zetten.
+document.addEventListener("erbij",()=>{if(!S.list)return;if(erbijLaden()){save();renderAll();const l=document.getElementById("lijst");if(l)l.scrollIntoView({behavior:"smooth"})}});
 function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
@@ -709,11 +715,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
     if(S.list.some(x=>norm(x.term)===norm(t))) continue;
     const b=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]; if(b){S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b),...(q>1?{q}:{})});added++}
   }
-  const erbij=store.get("lijst-erbij");
-  if(Array.isArray(erbij)){
-    for(const o of erbij) if(S.sidx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.term||o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(String(o.sz).toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.r?{}:{offerTill:o.t||null})});added++}
-    try{localStorage.removeItem("lijst-erbij")}catch(e){}
-  }
+  added+=erbijLaden();
   if(added) save();
   // De gedeelde link uit de adresbalk halen, anders komen verwijderde artikelen terug bij opnieuw laden.
   if(shared){sp.delete("lijst");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+location.hash)}

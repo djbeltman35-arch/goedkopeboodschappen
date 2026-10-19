@@ -48,6 +48,15 @@ function koppen(off){vragen(off);const t=[...document.querySelectorAll("[data-be
 function alles(){const off=uit();kaarten(off);koppen(off);const el=document.getElementById("mdata");if(!el)return;const ban=document.getElementById("mkeus");
  if(off.size){maaltijd(off);const D=JSON.parse(el.textContent);faq(D,Object.keys(D.st).filter(s=>!off.has(s)).sort((a,b)=>D.st[a].t-D.st[b].t))}
  else if(ban){ban.hidden=false;ban.innerHTML=`Vergeleken bij alle ${Object.keys(N).length} supermarkten. <a href="/#mystores">Kies je eigen supermarkten</a> om alleen die te zien.`}}
+document.addEventListener("click",async ev=>{const b=ev.target.closest(".maddkaart");if(!b)return;b.disabled=true;b.textContent="Bezig…";
+ try{const t=await (await fetch(`/maaltijden/${b.dataset.m}/`)).text(),d=new DOMParser().parseFromString(t,"text/html"),D=JSON.parse(d.getElementById("mdata").textContent),off=uit();
+  const s=Object.keys(D.st).filter(x=>!off.has(x)).sort((a,c)=>D.st[a].t-D.st[c].t)[0];
+  if(!s){b.textContent="Niet bij jouw winkels";return}
+  let q=[];try{q=JSON.parse(localStorage.getItem("lijst-erbij")||"[]")||[]}catch(x){}
+  for(const o of D.st[s].os)if(!q.some(x=>x.u===o.u))q.push(o);localStorage.setItem("lijst-erbij",JSON.stringify(q));
+  b.textContent=`✓ Op je lijst (${N[s]})`;b.classList.add("on");window.mark&&mark();document.dispatchEvent(new Event("erbij"));
+  try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,title:"Maaltijd op lijst",event:true})}catch(x){}
+ }catch(x){b.disabled=false;b.textContent="Probeer opnieuw"}});
 const kb=document.getElementById("karm");if(kb)kb.addEventListener("click",()=>{const aan=kb.getAttribute("aria-pressed")!=="true";kb.setAttribute("aria-pressed",aan);kb.textContent=aan?"Toon alle maaltijden":"Alleen caloriearm (tot 550 kcal)";
  document.querySelectorAll(".msoort").forEach(sec=>{let n=0;sec.querySelectorAll("[data-kcal]").forEach(c=>{const h=aan&&+c.dataset.kcal>550;c.hidden=h;if(!h)n++});sec.hidden=!n})});
 alles();document.addEventListener("winkels",alles);window.addEventListener("storage",ev=>{if(ev.key==="winkels-uit")alles()})})()</script>""")
@@ -60,7 +69,8 @@ def kaart(m):
     si, r = m["rang"][0]
     return (f'<li class="mcard" data-kcal="{m["kcal"]}" data-p="{esc(prijzen_json(m))}"><a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
-            f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span></li>')
+            f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span>'
+            f'<button type="button" class="add maddkaart" data-m="{m["slug"]}">+ Op mijn lijst</button></li>')
 def prijzen_json(m): return json.dumps({stores[si]["id"]: round(r["tot"], 2) for si, r in m["rang"]}, separators=(",", ":"))
 
 KCAL_ARM = 550  # caloriearm: hoogstens zoveel kcal per persoon
