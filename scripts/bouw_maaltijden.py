@@ -20,6 +20,16 @@ def foto_html(m):
     licentie = f'<a href="{lu}" rel="noopener" target="_blank">{lt}</a>' if lu else lt
     return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high">'
             f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">Wikimedia Commons</a> (bijgesneden)</figcaption></figure>')
+MAAL_BEELDEN = {}  # pad -> lijst afbeeldings-url's, voor de afbeeldingen-sitemap
+def beeld_objecten(m):
+    """Afbeeldingen als ImageObject met maker en licentie (Google toont dan de juiste bronvermelding)."""
+    f = FOTO.get(m["slug"])
+    if not f: return beelden(m)
+    maten = {"16x9": (1200, 675), "4x3": (1200, 900), "1x1": (1200, 1200)}
+    return [{"@type": "ImageObject", "url": u, "contentUrl": u, "width": maten[x][0], "height": maten[x][1],
+             "creditText": f"{f['maker'] or 'Wikimedia Commons'} via Wikimedia Commons", "license": lic_url(f["licentie"]) or f["bron"],
+             "acquireLicensePage": f["bron"], **({"creator": {"@type": "Person", "name": f["maker"]}} if f["maker"] else {})}
+            for x, u in zip(("16x9", "4x3", "1x1"), beelden(m))]
 def beelden(m):
     if m["slug"] in FOTO: return [f"{BASE}/maaltijden-foto/{m['slug']}-{x}.jpg" for x in ("16x9", "4x3", "1x1")]
     return [f"{BASE}/maaltijden-img/{m['slug']}-16x9.png", f"{BASE}/maaltijden-img/{m['slug']}-1x1.png"]
@@ -163,14 +173,14 @@ for m in MAAL:
               "recipeCategory": "Hoofdgerecht", "recipeCuisine": "Nederlands", "inLanguage": "nl-NL", "recipeIngredient": ing_lijst,
               "nutrition": {"@type": "NutritionInformation", "calories": f"{m['kcal']} kcal", "servingSize": "1 persoon"},
               "isBasedOn": burl, "author": {"@type": "Organization", "name": bnaam},
-              "image": beelden(m),
+              "image": beeld_objecten(m),
               "datePublished": "2026-10-19", "dateModified": VANDAAG,
               "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
               "keywords": f"{kl}, goedkoop, prijs, {', '.join(wnaam(si) for si, _ in top3)}",
               "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{r1['tot']:.2f}", "highPrice": f"{rN['tot']:.2f}", "offerCount": len(m["rang"])}}
     recipe.pop("offers")  # Recipe ondersteunt geen offers; prijs staat in de tekst en de FAQ.
     schrijf(path, page(path, title, desc, head, body, [cld, recipe, faq_ld(faq)], actief="/maaltijden/", extra_css=MCSS, og_title=f"{naam}: {eur(r1['tot'])} bij {wnaam(s1)}", og_img=beelden(m)[0].replace(BASE, "")))
-    made.append((path, "0.8")); maal_paden.append(path)
+    made.append((path, "0.8")); maal_paden.append(path); MAAL_BEELDEN[path] = beelden(m)[:1]
 
 # ---------- overzicht ----------
 if MAAL:
