@@ -18,6 +18,7 @@ def kaart(m):
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
             f'<span class="mw">{tag(r["tot"])}<span>bij <b>{esc(wnaam(si))}</b><br><span class="mm">{pp(r["tot"])} per persoon</span></span></span></li>')
 
+SOORT_PAD = {"aardappel": ("aardappelgerechten", "Aardappelgerechten"), "pasta": ("pasta", "Pasta"), "rijst": ("rijst-en-noedels", "Rijst en noedels"), "salade": ("salades", "Salades")}
 maal_paden = []
 for m in MAAL:
     path = f"/maaltijden/{m['slug']}/"
@@ -27,7 +28,8 @@ for m in MAAL:
     title = f"{naam}: wat kost het? Goedkoopst bij {wnaam(s1)} ({eur(r1['tot'])} voor 4)"
     desc = (f"{naam} voor 4 personen kost nu {eur(r1['tot'])} bij {wnaam(s1)} ({pp(r1['tot'])} per persoon), daarna {wnaam(top3[1][0])} en {wnaam(top3[2][0])}. "
             f"{m['kcal']} kcal per persoon. Prijzen van {len(m['rang'])} supermarkten, elke dag bijgewerkt.")
-    ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), (naam, None))
+    sp = SOORT_PAD.get(m["soort"])
+    ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), *([(sp[1], f"/maaltijden/{sp[0]}/")] if sp else []), (naam, None))
     # top 3
     tops = ""
     for i, (si, r) in enumerate(top3):
@@ -91,7 +93,9 @@ if MAAL:
     for key, titel, emo in SOORTEN:
         ms = sorted([m for m in MAAL if m["soort"] == key], key=lambda m: m["rang"][0][1]["tot"])
         if not ms: continue
-        secties += f'<section class="msoort" id="{key}"><h2>{emo} {esc(titel)}</h2><ul class="mgrid">' + "".join(kaart(m) for m in ms) + "</ul></section>"
+        sp = SOORT_PAD.get(key)
+        kop_ = f'<a href="/maaltijden/{sp[0]}/" style="text-decoration:none">{esc(titel)}</a>' if sp else esc(titel)
+        secties += f'<section class="msoort" id="{key}"><h2>{emo} {kop_}</h2><ul class="mgrid">' + "".join(kaart(m) for m in ms) + "</ul></section>"
     sprong = " · ".join(f'<a href="#{k}">{esc(t)}</a>' for k, t, _ in SOORTEN if any(m["soort"] == k for m in MAAL))
     faq = [("Wat is de goedkoopste maaltijd?", f"Van de {len(MAAL)} maaltijden is {goedkoopst['naam'].lower()} het goedkoopst: {eur(goedkoopst['rang'][0][1]['tot'])} voor 4 personen bij {wnaam(goedkoopst['rang'][0][0])}, {pp(goedkoopst['rang'][0][1]['tot'])} per persoon."),
            ("Bij welke supermarkt kook je het goedkoopst?", f"{wnaam(vaakst)} is bij {winst[vaakst]} van de {len(MAAL)} maaltijden het goedkoopst. Per gerecht verschilt het, daarom staan bij elke maaltijd de 3 goedkoopste supermarkten."),
@@ -103,7 +107,9 @@ if MAAL:
             f"Vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Goedkoopst: <a href=\"/maaltijden/{goedkoopst['slug']}/\">{esc(goedkoopst['naam'].lower())}</a> voor {eur(goedkoopst['rang'][0][1]['tot'])}.</p><p class=\"feiten\">{sprong}</p>")
-    body = (secties + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM}, naar gebruikte hoeveelheid, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq))
+    themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
+                  + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
+    body = (secties + themalinks + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM}, naar gebruikte hoeveelheid, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq))
     il = {"@context": "https://schema.org", "@type": "ItemList", "name": "Complete maaltijden met prijs per supermarkt",
           "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/maaltijden/{m['slug']}/", "name": m["naam"]} for i, m in enumerate(MAAL)]}
     schrijf("/maaltijden/", page("/maaltijden/", title, desc, head, body, [cld, il, faq_ld(faq)], actief="/maaltijden/", extra_css=MCSS, og_title="Complete maaltijden: waar kook je het goedkoopst?"))
@@ -119,4 +125,41 @@ if MAAL:
                  + "".join(kaart(m) for m in keuze) + f'</ul><a class="cta" href="/maaltijden/">Alle {len(MAAL)} maaltijden: aardappel, pasta, rijst, salades en meer</a></section>')
 else:
     MAAL_HOME = ""
+
+# ---------- themapagina's ----------
+def themapagina(slug_, kort, h1, title, lead, ms, faq_extra=()):
+    path = f"/maaltijden/{slug_}/"
+    ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), (kort, None))
+    trs = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. <a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></b><span class="sub">{m["kcal"]} kcal per persoon · {m["tijd"]} min</span></td>'
+                  f'<td>{esc(wnaam(m["rang"][0][0]))}</td><td class="p">{tag(m["rang"][0][1]["tot"])}<br><span class="unit">{pp(m["rang"][0][1]["tot"])} p.p.</span></td></tr>' for i, m in enumerate(ms))
+    g = ms[0]
+    faq = [(f"Wat is de goedkoopste uit deze lijst?", f"{g['naam']}: {eur(g['rang'][0][1]['tot'])} voor 4 personen bij {wnaam(g['rang'][0][0])}, {pp(g['rang'][0][1]['tot'])} per persoon."), *faq_extra,
+           ("Hoe actueel zijn de prijzen?", f"De prijzen worden elke dag bijgewerkt met de prijzen en aanbiedingen van de supermarkten. Deze pagina is van {DATUM}.")]
+    andere = [(f"/maaltijden/{x}/", t) for x, t in [("goedkoop-avondeten", "De 10 goedkoopste maaltijden"), ("stamppot", "Goedkope stamppotten"), *SOORT_PAD.values()] if x != slug_]
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Maaltijd (4 personen)</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
+            f'<p class="note">Prijzen van {DATUM} voor alle ingrediënten, naar gebruikte hoeveelheid. Tik op een maaltijd voor de 3 goedkoopste supermarkten en wat elk ingrediënt kost.</p>'
+            + faq_html(faq) + '<h2>Meer overzichten</h2><ul class="links">' + "".join(f'<li><a href="{h}">{esc(t)}</a></li>' for h, t in andere) + '<li><a href="/maaltijden/">Alle complete maaltijden</a></li></ul>')
+    il = {"@context": "https://schema.org", "@type": "ItemList", "name": h1, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/maaltijden/{m['slug']}/", "name": m["naam"]} for i, m in enumerate(ms)]}
+    schrijf(path, page(path, title, lead_txt(lead), crumbs_head(ch, h1, lead), body, [cld, il, faq_ld(faq)], actief="/maaltijden/", og_title=h1))
+    made.append((path, "0.8"))
+def lead_txt(h): return re.sub(r"<[^>]+>", "", h)
+def crumbs_head(ch, h1, lead): return ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>"
+pprs = lambda m: m["rang"][0][1]["tot"]
+if MAAL:
+    alle = sorted(MAAL, key=pprs)
+    top = alle[:10]
+    themapagina("goedkoop-avondeten", "Goedkoop avondeten", "Goedkoop avondeten: de 10 goedkoopste maaltijden",
+                f"Goedkoop avondeten voor 4 personen: de 10 goedkoopste maaltijden ({MAAND})",
+                f"De 10 goedkoopste gewone avondmaaltijden van dit moment, voor 4 personen. Al vanaf <b>{eur(pprs(top[0]))}</b> ({pp(pprs(top[0]))} per persoon), met de supermarkt waar je het minst betaalt.", top,
+                [("Hoe kook je goedkoop?", "Kies gerechten met aardappelen, rijst, pasta of peulvruchten als basis, koop groente van het seizoen en let op de aanbiedingen. Rekenen met de prijs per kilo helpt: grote verpakkingen en huismerken zijn vaak het voordeligst.")])
+    st = sorted([m for m in MAAL if any(w in m["slug"] for w in ("stamppot", "hutspot", "boerenkool"))], key=pprs)
+    if len(st) >= 2:
+        themapagina("stamppot", "Stamppot", "Goedkope stamppot: wat kost het per supermarkt?", f"Goedkope stamppot: boerenkool, hutspot, andijvie en zuurkool vergeleken ({MAAND})",
+                    f"Wat kost een stamppot voor 4 personen? {len(st)} Hollandse klassiekers met de supermarkt waar alle ingrediënten samen het goedkoopst zijn. Vanaf <b>{eur(pprs(st[0]))}</b>.", st,
+                    [("Welke stamppot is het goedkoopst?", f"Nu is {st[0]['naam'].lower()} het goedkoopst: {eur(pprs(st[0]))} voor 4 personen bij {wnaam(st[0]['rang'][0][0])}.")])
+    for key, (sl_, kort) in SOORT_PAD.items():
+        ms = sorted([m for m in MAAL if m["soort"] == key], key=pprs)
+        if len(ms) < 2: continue
+        themapagina(sl_, kort, f"{kort}: goedkope maaltijden per supermarkt", f"Goedkope {kort.lower()}: {len(ms)} maaltijden met prijs per supermarkt ({MAAND})",
+                    f"{len(ms)} gewone {kort.lower()} voor 4 personen, met calorieën en de supermarkt waar je het minst betaalt. Vanaf <b>{eur(pprs(ms[0]))}</b> voor het hele gerecht.", ms)
 print(len(MAAL), "maaltijdpagina's")
