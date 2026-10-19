@@ -70,3 +70,13 @@
   from = "/categorie/snoep-en-chips/"
   to = "/categorie/koek-en-snoep/"
   status = 301
+
+# Zoektermen aangescherpt (oktober 2026)
+[[redirects]]
+  from = "/vergelijk/zout/"
+  to = "/vergelijk/keukenzout/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/parmezaan/"
+  to = "/vergelijk/parmigiano/"
+  status = 301

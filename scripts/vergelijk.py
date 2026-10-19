@@ -109,6 +109,10 @@ def _vreemd_woord(x, t):
     if k not in _VREEMD:
         _VREEMD[k] = x not in t and not any(len(w) >= 5 and x.endswith(w) for w in t) and (x in EXCL or any(x.endswith(e) and x != e.rstrip("s") for e in ENDS) or any(x.startswith(e) for e in STARTS))
     return _VREEMD[k]
+VERFIJN = {k: v for k, v in json.load(open(os.path.join(ROOT, "scripts", "verfijn.json"))).items() if not k.startswith("_")}
+def _verfijn(m, t):
+    niet = [n for n in VERFIJN.get(" ".join(t), []) if not any(n in w for w in t)]
+    return [p for p in m if not any(n in x for x in p[7] for n in niet)] if niet else m
 def matches(term):
     t = tuple(norm(term))
     if not t: return []
@@ -121,7 +125,7 @@ def matches(term):
         sets.append(ids)
     m = [prods[i] for i in sorted(set.intersection(*sets))]
     clean = [p for p in m if not any(_vreemd_woord(x, t) for x in p[7])]
-    return clean or m
+    return _verfijn(clean or m, t)
 def per_store(m):
     if not m: return {}
     mark_bad(m)

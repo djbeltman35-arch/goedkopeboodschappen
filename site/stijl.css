@@ -57,7 +57,7 @@ button{font:700 16px var(--text);cursor:pointer;border-radius:12px;border:2px so
 .nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .nav a{text-decoration:none;font-weight:700;font-size:15px;padding:8px 10px;border-radius:10px}
 .nav a:hover,.nav a[aria-current=page]{background:var(--green-soft);color:var(--green-dark)}
-@media (max-width:640px){.brand span{display:none}.nav{flex-wrap:nowrap;gap:2px}.nav a{font-size:14px;padding:7px 7px;white-space:nowrap}.nav a.wide{display:none}}
+@media (max-width:640px){.brand span{display:none}.nav{flex-wrap:nowrap;gap:2px}.nav a{font-size:14px;padding:7px 7px;white-space:nowrap}.nav a.wide{display:none}.nav .lg{display:none}}
 
 /* Statische pagina's (productvergelijkingen, categorieën, info) */
 .pagehead{padding-block:24px 8px}
@@ -129,3 +129,15 @@ body.hasdock{padding-bottom:84px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 @media print{.top,.foot,.dock{display:none!important}}
+
+/* complete maaltijden */
+.mgrid{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.mcard a.mt{font-weight:700;font-size:18px;text-decoration:none;color:var(--ink)}.mcard a.mt:hover{color:var(--green)}
+.mcard .mm{font-size:14px;color:var(--muted)}.mcard .mw{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.msoort{margin-top:28px}.msoort h2{margin:0}
+.mtop{list-style:none;padding:0;margin:14px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.mtop li{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.mtop li.w{background:var(--tag-soft);border-color:var(--tag)}.mtop .rk{font:700 15px var(--text);color:var(--muted)}
+.mtop .addall{margin-top:4px}.feiten{display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0 0;font-size:16px}.feiten b{font-family:var(--num)}
+.ptable td.c{text-align:right;white-space:nowrap;font-family:var(--num)}.ptable tr.vk td{color:var(--muted)}

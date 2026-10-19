@@ -187,7 +187,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste<span class=lg> supermarkt</span></a><a class="wide" href="/categorie/">Categorieën</a></nav>
   </div>
 </header>
 
@@ -232,6 +232,7 @@
     </aside>
   </div>
 
+  <!--MAALTIJDEN-->
   <section class="wrap how" aria-labelledby="hw">
     <h2 id="hw">Zo werkt het</h2>
     <ol>
@@ -250,7 +251,7 @@
 <footer class="foot">
   <div class="wrap">
     <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
     <p class="small">Gemaakt door Erik · Versie {{VERSIE}}</p>
   </div>
 </footer>
@@ -316,8 +317,11 @@ function matches(q,prefix=true,pool=S.prods){
   const fit=(x,w,last)=>x===w||(w.length>=5&&x.endsWith(w))||(prefix&&last&&x.startsWith(w));
   const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
   const clean=m.filter(p=>!p.hay.some(x=>vreemd(x,t)));
-  return clean.length?clean:m;
+  return verfijn(clean.length?clean:m,t);
 }
+// Per zoekterm woorden die laten zien dat het iets anders is (tomaten ≠ tomatenketchup); zelfde lijst als de vergelijkingspagina's.
+const VERFIJN={{VERFIJN}};
+const verfijn=(m,t)=>{const niet=(VERFIJN[t.join(" ")]||[]).filter(n=>!t.some(w=>w.includes(n)));return niet.length?m.filter(p=>!p.hay.some(x=>niet.some(n=>x.includes(n)))):m};
 // Woord dat laat zien dat het om een ander product of een variant gaat.
 const vreemd=(x,t)=>!t.includes(x)&&!t.some(w=>w.length>=5&&x.endsWith(w))&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e)));
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
