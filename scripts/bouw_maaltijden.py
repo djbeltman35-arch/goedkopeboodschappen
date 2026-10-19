@@ -231,7 +231,7 @@ else:
 def themapagina(slug_, kort, h1, title, lead, ms, faq_extra=()):
     path = f"/maaltijden/{slug_}/"
     ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), (kort, None))
-    trs = "".join(f'<tr{" class=win" if i == 0 else ""} data-p="{esc(prijzen_json(m))}"><td><b><span class="rn">{i + 1}.</span> <a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></b><span class="sub">{m["kcal"]} kcal per persoon · {m["tijd"]} min</span></td>'
+    trs = "".join(f'<tr{" class=win" if i == 0 else ""} data-p="{esc(prijzen_json(m))}"><td><b><span class="rn">{i + 1}.</span> <a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></b><span class="sub">{m["kcal"]} kcal per persoon · {m["tijd"]} min</span><button type="button" class="add maddkaart" data-m="{m["slug"]}" style="margin-top:8px">+ Op mijn lijst</button></td>'
                   f'<td class="p"><span class="kp">{tag(m["rang"][0][1]["tot"])}</span><br><span class="unit">bij <b class="kw">{esc(wnaam(m["rang"][0][0]))}</b></span><br><span class="unit kpp" data-kort="1">{pp(m["rang"][0][1]["tot"])} p.p.</span></td></tr>' for i, m in enumerate(ms))
     g = ms[0]
     faq = [(f"Wat is de goedkoopste uit deze lijst?", f"{g['naam']}: {eur(g['rang'][0][1]['tot'])} voor 4 personen bij {wnaam(g['rang'][0][0])}, {pp(g['rang'][0][1]['tot'])} per persoon."), *faq_extra,
