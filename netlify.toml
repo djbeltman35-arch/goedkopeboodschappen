@@ -36,6 +36,16 @@
     Cache-Control = "public, max-age=604800"
 
 [[headers]]
+  for = "/maaltijden-foto/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/maaltijden-img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
   for = "/sw.js"
   [headers.values]
     Cache-Control = "no-cache"

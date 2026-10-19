@@ -5,6 +5,28 @@ def hoev(q, eenheid_):
     if eenheid_ == "l": return f"{round(q * 1000)} ml" if q < 1 else f"{str(round(q, 2)).replace('.', ',')} liter"
     return f"{round(q * 1000)} g" if q < 1 else f"{str(round(q, 2)).replace('.', ',')} kg"
 def pp(v): return eur(v / 4)
+# Echte foto's (vrije licentie, Wikimedia Commons); maaltijden zonder foto houden de grafische afbeelding.
+FOTO = json.load(open(os.path.join(ROOT, "scripts", "maaltijd_fotos.json")))
+LIC = {"CC0": "https://creativecommons.org/publicdomain/zero/1.0/deed.nl"}
+def lic_url(l):
+    if l in LIC: return LIC[l]
+    m_ = re.match(r"CC (BY(?:-SA)?) ([0-9.]+)", l)
+    return f"https://creativecommons.org/licenses/{m_.group(1).lower()}/{m_.group(2)}/deed.nl" if m_ else None
+def foto_html(m):
+    f = FOTO.get(m["slug"])
+    if not f: return ""
+    lu, lt = lic_url(f["licentie"]), esc(f["licentie"])
+    maker = esc(f["maker"]) + ", " if f["maker"] else ""
+    licentie = f'<a href="{lu}" rel="noopener" target="_blank">{lt}</a>' if lu else lt
+    return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high">'
+            f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">Wikimedia Commons</a> (bijgesneden)</figcaption></figure>')
+def beelden(m):
+    if m["slug"] in FOTO: return [f"{BASE}/maaltijden-foto/{m['slug']}-{x}.jpg" for x in ("16x9", "4x3", "1x1")]
+    return [f"{BASE}/maaltijden-img/{m['slug']}-16x9.png", f"{BASE}/maaltijden-img/{m['slug']}-1x1.png"]
+def kaartbeeld(m):
+    if m["slug"] in FOTO: return f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="" loading="lazy">'
+    emo = {k: e_ for k, _, e_ in SOORTEN}.get(m["soort"], "🍽️")
+    return f'<div class="mimg mleeg" aria-hidden="true">{emo}</div>'
 
 MCSS = ""
 # Toont alleen de supermarkten die de bezoeker bij "Mijn supermarkten" heeft aangevinkt (bewaard als "winkels-uit" in de browser).
@@ -67,7 +89,7 @@ try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,ti
 def wnaam(si): return NAMEN.get(stores[si]["id"], stores[si]["name"])
 def kaart(m):
     si, r = m["rang"][0]
-    return (f'<li class="mcard" data-kcal="{m["kcal"]}" data-p="{esc(prijzen_json(m))}"><a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
+    return (f'<li class="mcard" data-kcal="{m["kcal"]}" data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
             f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span>'
             f'<button type="button" class="add maddkaart" data-m="{m["slug"]}">+ Op mijn lijst</button></li>')
@@ -128,7 +150,7 @@ for m in MAAL:
             f"Bij {esc(wnaam(sN))} betaal je {eur(rN['tot'] - r1['tot'])} meer.</p>"
             f'<p class="feiten"><span><b>{m["kcal"]}</b> kcal per persoon{" · <a href=/maaltijden/caloriearm/>caloriearm</a>" if m["kcal"] <= KCAL_ARM else ""}</span><span><b>{m["tijd"]}</b> minuten</span><span><b>4</b> personen</span><span>Recept: <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a></span></p>')
     andere = [x for x in MAAL if x["soort"] == m["soort"] and x is not m] + [x for x in MAAL if x["soort"] != m["soort"]]
-    body = (f'<p class="note" id="mkeus" hidden></p><h2 id="mtoph">De 3 goedkoopste supermarkten</h2><ul class="mtop" id="mtop">{tops}</ul>'
+    body = (foto_html(m) + f'<p class="note" id="mkeus" hidden></p><h2 id="mtoph">De 3 goedkoopste supermarkten</h2><ul class="mtop" id="mtop">{tops}</ul>'
             f'<h2>Wat heb je nodig?</h2><div class="tblwrap"><table class="ptable" id="mtab"><thead><tr><th>Ingrediënt</th>{kop}</tr></thead><tbody>{rijen}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, naar gebruikte hoeveelheid: in de winkel koop je vaak een heel pak, de rest heb je over voor een volgende keer. Tik op een prijs voor het product. {esc(noot)}</p>'
             f'<h2>Bereiding</h2><p>De bereiding staat in het originele recept op <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a>. Daar vind je ook de stappen en tips.</p>'
@@ -141,13 +163,13 @@ for m in MAAL:
               "recipeCategory": "Hoofdgerecht", "recipeCuisine": "Nederlands", "inLanguage": "nl-NL", "recipeIngredient": ing_lijst,
               "nutrition": {"@type": "NutritionInformation", "calories": f"{m['kcal']} kcal", "servingSize": "1 persoon"},
               "isBasedOn": burl, "author": {"@type": "Organization", "name": bnaam},
-              "image": [f"{BASE}/maaltijden-img/{m['slug']}-16x9.png", f"{BASE}/maaltijden-img/{m['slug']}-1x1.png"],
+              "image": beelden(m),
               "datePublished": "2026-10-19", "dateModified": VANDAAG,
               "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
               "keywords": f"{kl}, goedkoop, prijs, {', '.join(wnaam(si) for si, _ in top3)}",
               "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{r1['tot']:.2f}", "highPrice": f"{rN['tot']:.2f}", "offerCount": len(m["rang"])}}
     recipe.pop("offers")  # Recipe ondersteunt geen offers; prijs staat in de tekst en de FAQ.
-    schrijf(path, page(path, title, desc, head, body, [cld, recipe, faq_ld(faq)], actief="/maaltijden/", extra_css=MCSS, og_title=f"{naam}: {eur(r1['tot'])} bij {wnaam(s1)}", og_img=f"/maaltijden-img/{m['slug']}-16x9.png"))
+    schrijf(path, page(path, title, desc, head, body, [cld, recipe, faq_ld(faq)], actief="/maaltijden/", extra_css=MCSS, og_title=f"{naam}: {eur(r1['tot'])} bij {wnaam(s1)}", og_img=beelden(m)[0].replace(BASE, "")))
     made.append((path, "0.8")); maal_paden.append(path)
 
 # ---------- overzicht ----------
