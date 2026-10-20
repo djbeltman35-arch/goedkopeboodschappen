@@ -480,6 +480,16 @@ json.dump({"stores": _pd["stores"], "products": [p_ for i, p_ in enumerate(_pd["
 json.dump({"products": [p_ for i, p_ in enumerate(_pd["products"]) if i not in _kern]},
           open(os.path.join(OUT, "producten-rest.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 print(len(_kern), "van", _n, "producten in producten-kern.json")
+# Ook per winkel (p/<winkel>-kern.json en p/<winkel>-rest.json): de app laadt dan alleen de winkels die je aan hebt staan.
+os.makedirs(os.path.join(OUT, "p"), exist_ok=True)
+_per = {}
+for i, p_ in enumerate(_pd["products"]): _per.setdefault((p_[0], i in _kern), []).append(p_)
+_tel = {}
+for si_, s_ in enumerate(_pd["stores"]):
+    for deel, k_ in (("kern", True), ("rest", False)):
+        json.dump(_per.get((si_, k_), []), open(os.path.join(OUT, "p", f"{s_['id']}-{deel}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+    _tel[s_["id"]] = len(_per.get((si_, True), [])) + len(_per.get((si_, False), []))
+json.dump({"stores": _pd["stores"], "n": _tel}, open(os.path.join(OUT, "winkels.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # Prijzen per soort en winkel voor het weekoverzicht per mail (netlify/functions/weekoverzicht.mjs):
 # {soort: {"w": {winkel: prijs}, "n": naam van het goedkoopste product, "s": winkel daarvan}}
 _tp = {}

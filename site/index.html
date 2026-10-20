@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <link rel="stylesheet" href="/stijl.css?v={{VERSIE}}"><script src="/fout.js?v={{VERSIE}}" defer></script>
-<link rel="preload" href="/producten-kern.json" as="fetch" crossorigin>
+<link rel="preload" href="/winkels.json" as="fetch" crossorigin>
 <script type="application/ld+json">{{LDJSON}}</script>
 <style>
 /* Alleen voor de app op de startpagina */
@@ -209,6 +209,7 @@
       <button type="submit" class="btn">Zoek</button>
     </form>
     <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Gratis en zonder reclame</li></ul>
+    <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
@@ -452,19 +453,51 @@ function rowHtml(p,i,term){
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":u!=null?esc(unitTxt(u,p[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
+/* Zoeken dat fouten vergeeft: synoniemen, enkelvoud/meervoud en tikfouten. */
+const SYNONIEM={"wc papier":"toiletpapier","wcpapier":"toiletpapier","wc rol":"toiletpapier","wc rollen":"toiletpapier","wc-papier":"toiletpapier","pleepapier":"toiletpapier",
+  "keukenpapier":"keukenrol","patat":"friet","patatje":"friet","frites":"friet","frikandel":"frikandellen","kroket":"kroketten","bitterbal":"bitterballen","ei":"eieren","eitjes":"eieren",
+  "aardappel":"aardappelen","aardappels":"aardappelen","pieper":"aardappelen","piepers":"aardappelen","tomaat":"tomaten","banaan":"bananen","appel":"appels","peer":"peren","sinaasappel":"sinaasappels",
+  "ui":"uien","uitjes":"uien","mandarijn":"mandarijnen","druif":"druiven","aardbei":"aardbeien","citroen":"citroenen","komkommers":"komkommer","paprika":"paprika rood","wortel":"winterpeen","wortels":"winterpeen","worteltjes":"bospeen",
+  "gehaktbal":"gehaktballen","hamburger":"hamburgers","pannenkoek":"pannenkoeken","stroopwafel":"stroopwafels","koekje":"koekjes","boterham":"volkoren brood","brood":"volkoren brood",
+  "spa rood":"bruisend water","spa blauw":"water zonder prik","bronwater":"water zonder prik","mineraalwater":"water zonder prik","coca cola":"cola","cocacola":"cola","coke":"cola",
+  "pils":"Pils krat 24 flesjes","bier":"Pils krat 24 flesjes","biertje":"Pils krat 24 flesjes","wijntje":"rode wijn","koffiecup":"koffiecups","koffiepad":"koffiepads","senseo":"koffiepads","nespresso":"koffiecups",
+  "luier":"luiers","pamper":"luiers","pampers":"luiers","tandpasta's":"tandpasta","shampo":"shampoo","wasverzachter":"wasverzachter","wasmiddel":"wasmiddel vloeibaar","vaatwasser tabletten":"vaatwastabletten",
+  "afwastabletten":"vaatwastabletten","pindasaus":"satesaus","satésaus":"satesaus","mayo":"mayonaise","ketsjup":"ketchup","sambal oelek":"sambal","choco":"chocoladepasta","nutella":"hazelnootpasta",
+  "kattenbak":"kattenbakvulling","hondenbrok":"hondenbrokken","kattenbrok":"kattenbrokken"};
+let VOCAB=null;
+function woordenlijst(){if(VOCAB&&VOCAB.n===S.prods.length)return VOCAB;const m=new Map();for(const p of S.prods)for(const w of p.hay)if(w.length>=3&&!/\d/.test(w))m.set(w,(m.get(w)||0)+1);VOCAB={m,n:S.prods.length};return VOCAB}
+function bewerkAfstand(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;let v=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){let prev=v[0],min=v[0]=i;for(let j=1;j<=b.length;j++){const t=v[j];v[j]=Math.min(v[j]+1,v[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=t;if(v[j]<min)min=v[j]}if(min>max)return max+1}return v[b.length]}
+function verbeter(q){
+  const n=norm(q); if(SYNONIEM[n]) return SYNONIEM[n];
+  const ws=n.split(" ").filter(Boolean); if(!ws.length) return "";
+  const V=woordenlijst().m; let veranderd=false;
+  const uit=ws.map(w=>{if(V.has(w)||w.length<4||/\d/.test(w))return w;
+    // enkelvoud/meervoud
+    for(const k of [w+"en",w+"s",w+"n",w.replace(/(en|s)$/,""),w.replace(/([^aeiou])\1en$/,"$1en")]) if(k!==w&&V.has(k)){veranderd=true;return k}
+    // tikfout: meest voorkomende woord op 1 (of bij lange woorden 2) letters afstand
+    const max=w.length>=8?2:1;let best=null,bc=0,bd=9;
+    for(const [x,c] of V){if(Math.abs(x.length-w.length)>max)continue;const d=bewerkAfstand(w,x,max);if(d<=max&&(d<bd||(d===bd&&c>bc))){best=x;bc=c;bd=d}}
+    if(best){veranderd=true;return best} return w});
+  return veranderd?uit.join(" "):"";
+}
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick();
   if(!q){$("results").innerHTML="";return}
   let m=matches(q,false); if(!m.length) m=matches(q);
   if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
-  if(!m.length){$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.</div>`;return}
+  // Niets gevonden: synoniem, enkelvoud/meervoud of tikfout proberen ("pindakas" wordt pindakaas).
+  let bedoeld="";
+  if(!m.length){const alt=verbeter(q); if(alt){const m2=matches(alt,false).length?matches(alt,false):matches(alt); if(m2.length){m=m2;bedoeld=alt;if(fromUser)gc("verbeterd/"+norm(q)+"/"+norm(alt),"Zoekt (verbeterd): "+q+" → "+alt)}}}
+  if(!m.length){if(fromUser&&S.restGeladen)gc("geen/"+norm(q),"Niets gevonden: "+q);$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.${!S.restGeladen?" (De laatste producten worden nog geladen; probeer het zo nog eens.)":""}</div>`;return}
   const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
   const keus=kiesPrecies(q);
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
   const top=best[0], last=best[best.length-1];
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
-  $("results").innerHTML=`<h2>${esc(q[0].toUpperCase()+q.slice(1))}</h2>
+  const kop=bedoeld||q;
+  $("results").innerHTML=`${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${keus}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
@@ -846,6 +879,20 @@ async function winkelsInBuurt(){
   buurtLijst();
   gc("buurt/"+gevonden.size,"Winkels in de buurt");
 }
+/* "Zet op je beginscherm": vanaf het tweede bezoek, weg te klikken, niet als de app al geïnstalleerd is. */
+let installVraag=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();installVraag=e;toonInstall()});
+addEventListener("appinstalled",()=>{store.set("install-weg",1);$("installeer").hidden=true;gc("installeer/gedaan","App geïnstalleerd")});
+function toonInstall(){
+  const el=$("installeer"); if(!el) return;
+  const al=matchMedia("(display-mode: standalone)").matches||navigator.standalone, weg=store.get("install-weg"), bezoek=+store.get("bezoeken")||0;
+  if(al||weg||bezoek<2){el.hidden=true;return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+  if(installVraag) el.innerHTML=`<span>📲 <b>Zet Goedkope Boodschappen op je beginscherm</b>: opent sneller en werkt als een app.</span><button type="button" class="btn" data-installeer>Installeren</button><button type="button" class="weg" data-installweg aria-label="Niet nu">×</button>`;
+  else if(ios) el.innerHTML=`<span>📲 <b>Zet deze site op je beginscherm</b>: tik op <b>Deel</b> (het vierkantje met een pijltje omhoog) en kies <b>Zet op beginscherm</b>.</span><button type="button" class="weg" data-installweg aria-label="Niet nu">×</button>`;
+  else {el.hidden=true;return}
+  el.hidden=false;
+}
 function storesUi(){
   const ids=[...new Set(S.stores.filter(s=>s.count).map(s=>s.id))].sort((a,b)=>(STORENAMES[a]||a).localeCompare(STORENAMES[b]||b));
   const k=ids.filter(id=>!S.off.has(id)).length;
@@ -858,7 +905,9 @@ function storesUi(){
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
-function winkelsGewijzigd(){store.set("winkels-uit",[...S.off]);document.dispatchEvent(new Event("winkels"));pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
+async function bijladen(){if(!S.perWinkel)return;const nodig=S.stores.filter(s=>s.count&&!S.off.has(s.id)&&s.id!=="aldi"&&!S.kern.has(s.id)).map(s=>s.id);if(!nodig.length)return;
+  await laadWinkels(nodig,"kern");if(S.restGeladen)await laadWinkels(nodig,"rest");pickCache.clear();renderAll();if(S.view)renderView()}
+function winkelsGewijzigd(){bijladen();store.set("winkels-uit",[...S.off]);document.dispatchEvent(new Event("winkels"));pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
 function erbijLaden(){let n=0;const erbij=store.get("lijst-erbij");if(Array.isArray(erbij)){
     for(const o of erbij){
       if(o.maal){if(!S.maal.some(m=>m.slug===o.maal.slug))S.maal.push(o.maal);continue}
@@ -889,6 +938,8 @@ document.addEventListener("click",e=>{
   const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
   const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
   const ro=e.target.closest("[data-route]"); if(ro){gc("route/"+ro.dataset.route,"Route Google Maps")}
+  if(e.target.closest("[data-installeer]")){if(installVraag){installVraag.prompt();installVraag.userChoice.then(c=>{gc("installeer/"+c.outcome,"Installeren");if(c.outcome==="accepted")store.set("install-weg",1);installVraag=null;toonInstall()})}return}
+  if(e.target.closest("[data-installweg]")){store.set("install-weg",1);$("installeer").hidden=true;gc("installeer/weg","Installatieknop weggeklikt");return}
   if(e.target.closest("[data-buurt]")){winkelsInBuurt();return}
   const mk=e.target.closest("[data-merk]"); if(mk){S.merk=mk.dataset.merk;store.set("merken",S.merk);pickCache.clear();storesUi();renderAll();gc("merken/"+S.merk,"Merkkeuze");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
@@ -926,18 +977,36 @@ $("share").addEventListener("click",shareList);
 $("print").addEventListener("click",printList);
 
 // De rest van de prijslijst (producten buiten de categorieën) op de achtergrond erbij laden.
+// Producten toevoegen aan de app (zoekwoorden, link, merk). Gebruikt bij het opstarten en bij later bijladen.
+function voegToe(arr){for(const p of arr){p.i=S.prods.length;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);p.merk=S.amerk?merkVan(p[1],sid(p[0])):"";S.byLink.set(p.lk,p);S.prods.push(p)}}
+// Per winkel laden: eerst de producten uit de categorieën (kern), daarna de rest. Alleen voor winkels die aan staan.
+S.kern=new Set();S.rest=new Set();
+async function laadWinkels(ids,deel){
+  const lijsten=await Promise.all(ids.map(id=>fetch(`/p/${id}-${deel}.json`).then(r=>r.ok?r.json():null).catch(()=>null)));
+  ids.forEach((id,i)=>{if(lijsten[i]){voegToe(lijsten[i]);(deel==="kern"?S.kern:S.rest).add(id)}});
+}
 async function laadRest(){
-  let j=null; try{j=await (await fetch("/producten-rest.json")).json()}catch(e){return}
-  if(!j?.products) return;
-  for(const p of j.products){p.i=S.prods.length;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);p.merk=merkVan(p[1],sid(p[0]));S.byLink.set(p.lk,p);S.prods.push(p);if(S.stores[p[0]])S.stores[p[0]].count++}
+  if(S.perWinkel){await laadWinkels([...S.kern].filter(id=>!S.rest.has(id)),"rest")}
+  else{let j=null; try{j=await (await fetch("/producten-rest.json")).json()}catch(e){return}
+    if(!j?.products) return; voegToe(j.products); for(const p of j.products) if(S.stores[p[0]])S.stores[p[0]].count++}
   pickCache.clear(); S.restGeladen=true;
   // Alleen opnieuw tekenen wat er nu staat (zoeken, je lijst); zonder te verspringen.
   renderList();renderWhere();if(!S.view&&S.lastQ)search();
 }
 async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cache:"no-cache"});if(r.ok)return await r.json()}catch(e){}}return null}
 fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste=j;if(S.prods.length){if(S.view)renderView();else search()}}}).catch(()=>{});
-Promise.all([fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("/producten.json").then(r=>r.json())),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
-  S.stores=d.stores; S.prods=d.products;
+// Opstarten: welke winkels er zijn (winkels.json), daarna alleen de prijzen van de winkels die aan staan.
+async function prijzenLaden(){
+  const uit=new Set(store.get("winkels-uit")||[]);
+  try{const w=await (await fetch("/winkels.json")).json();
+    let ids=w.stores.map(s=>s.id).filter(id=>!uit.has(id)); if(!ids.length) ids=w.stores.map(s=>s.id);
+    S.prods=[];S.byLink=new Map();S.stores=w.stores;S.winkelN=w.n;S.perWinkel=true;
+    const lijsten=await Promise.all(ids.map(id=>fetch(`/p/${id}-kern.json`).then(r=>r.ok?r.json():Promise.reject())));
+    return {stores:w.stores,products:lijsten.flat(),totaal:1,ids};
+  }catch(e){S.perWinkel=false;return fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("/producten.json").then(r=>r.json()))}
+}
+Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
+  S.stores=d.stores; S.prods=d.products; if(d.ids) for(const id of d.ids) S.kern.add(id);
   // Aldi staat altijd achteraan in de winkellijst.
   const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
   if(aldi?.products) for(const r of aldi.products) S.prods.push([ai,...r]);
@@ -949,6 +1018,7 @@ Promise.all([fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject(
   // Door 3 of meer bezoekers als "klopt niet" gemeld: tijdelijk weglaten (zie netlify/functions/betwist.mjs).
   fetch("/api/betwist").then(r=>r.ok?r.json():null).then(j=>{if(j?.links?.length){S.betwist=new Set(j.links);pickCache.clear();renderAll()}}).catch(()=>{});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);
+  if(S.perWinkel) S.stores.forEach(s=>{if(S.winkelN?.[s.id]) s.count=S.winkelN[s.id]});
   if(offers?.offers){
     S.offers=offers.offers.filter(o=>S.sidx.has(o.s)&&o.p>0&&(!o.t||o.t>=today));
     S.offers.forEach((o,i)=>{o.i=i;o.merk=merkVan(o.n,o.s);o.pct=o.was>o.p?(o.was-o.p)/o.was:0;o.hay=norm(o.n+" "+(o.sz||"")).split(" ");if(o.k)S.okey.set(o.s+"|"+o.k,o)});
@@ -957,6 +1027,7 @@ Promise.all([fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject(
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
   S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";
   S.buurt=store.get("buurt")||null;
+  store.set("bezoeken",(+store.get("bezoeken")||0)+1); toonInstall();
   // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.
   let list=store.get("lijst-v3");
   if(!Array.isArray(list)){const old=store.get("lijst-v2")||store.get("lijst-bewaard-v2")?.list;list=Array.isArray(old)?old.map(x=>({...x,s:S.stores[x.si]?.id})):[]}
