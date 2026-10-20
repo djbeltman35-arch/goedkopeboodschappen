@@ -293,3 +293,8 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .wmblok{margin:14px 0 18px;padding:14px 16px;border-radius:16px;background:var(--green-soft)}
 .wmblok p{margin:0 0 6px}.wmblok span{font-size:14px;color:var(--muted)}
 #quick a.chip.wm{border-color:var(--green);background:var(--green-soft)}
+/* Handige functies op de startpagina, zichtbaar in plaats van verstopt */
+.handig{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 4px;font-size:14px}
+.handig b{margin-right:2px}
+.hchip{display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--text);text-decoration:none;cursor:pointer}
+.hchip:hover{border-color:var(--green);color:var(--green-dark)}

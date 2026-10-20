@@ -222,6 +222,14 @@
   <div class="wrap app">
     <section class="res" aria-label="Zoekresultaten">
       <div class="chips quick tegels" id="quick" role="group" aria-label="Categorieën"></div>
+      <div class="handig" aria-label="Handig"><b>Handig:</b>
+        <button type="button" class="hchip" data-handig="plak">📋 Hele lijst plakken</button>
+        <button type="button" class="hchip" data-handig="buurt">📍 Winkels bij mij</button>
+        <button type="button" class="hchip" data-handig="mail">🔔 Mail bij aanbiedingen</button>
+        <button type="button" class="hchip" data-handig="alarm">⏰ Prijsalarm</button>
+        <a class="hchip" href="/besparen/">💡 Bespaartips</a>
+        <a class="hchip" href="/prijsindex/">📈 Worden boodschappen duurder?</a>
+      </div>
       <div id="results" aria-live="polite"><p class="loading">Prijzen laden…</p></div>
     </section>
 
@@ -958,6 +966,12 @@ function renderAll(){renderList();renderWhere();if(S.view)renderView();else sear
 
 document.addEventListener("click",e=>{
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
+  const hd=e.target.closest("[data-handig]"); if(hd){const k=hd.dataset.handig;gc("handig/"+k,"Handig: "+k);
+    if(k==="plak"){const d=$("bulk");d.open=true;d.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>$("bulkt").focus(),400)}
+    else if(k==="buurt"){const d=$("mystores");d.open=true;const b=d.querySelector("[data-buurt]");if(b){b.scrollIntoView({behavior:"smooth",block:"center"});b.click()}}
+    else if(k==="mail"){jump("notify")}
+    else if(k==="alarm"){$("q").focus();$("q").scrollIntoView({behavior:"smooth",block:"center"});const r=$("results");if(r&&!r.querySelector(".alarm"))r.insertAdjacentHTML("afterbegin",'<p class="alarm on">⏰ <b>Prijsalarm</b>: zoek een product (bijvoorbeeld koffiebonen) en tik bij de resultaten op <b>Zet aan</b>. Je krijgt een mail als de prijs per kilo onder jouw grens komt.</p>')}
+    return}
   const au=e.target.closest("[data-alarm-uit]"); if(au){store.set("alarmen",(store.get("alarmen")||[]).filter(x=>x.k!==au.dataset.alarmUit));alarmSync();gc("alarm/uit","Prijsalarm uit");search();return}
   const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
