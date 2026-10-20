@@ -103,9 +103,14 @@ const os=JSON.parse(b.dataset.os);for(const o of os)if(!q.some(x=>x.u===o.u))q.p
 try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,title:"Maaltijd op lijst",event:true})}catch(x){}}catch(x){b.textContent="Bewaren lukt niet in deze browser"}});</script>"""
 
 def wnaam(si): return NAMEN.get(stores[si]["id"], stores[si]["name"])
+def mlabels(m):
+    """Labels bij een maaltijd: glutenvrij en caloriearm (hooguit KCAL_ARM kcal per persoon)."""
+    l = ('<a class="lbl gv" href="/maaltijden/glutenvrij/">🌾 Glutenvrij</a>' if m.get("glutenvrij") else "") + \
+        ('<a class="lbl arm" href="/maaltijden/caloriearm/">🥗 Caloriearm</a>' if m["kcal"] <= KCAL_ARM else "")
+    return f'<span class="mlbls">{l}</span>' if l else ""
 def kaart(m):
     si, r = m["rang"][0]
-    return (f'<li class="mcard" data-kcal="{m["kcal"]}"{' data-gv="1"' if m.get("glutenvrij") else ""} data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
+    return (f'<li class="mcard" data-kcal="{m["kcal"]}"{' data-gv="1"' if m.get("glutenvrij") else ""} data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>{mlabels(m)}'
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
             f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span>'
             + f'<span class="wk mws">{esc(winkelregel(m))}</span>'
@@ -174,7 +179,7 @@ for m in MAAL:
            (f"Waar is {kl} het goedkoopst?", f"De ingrediënten zijn samen het goedkoopst bij {wnaam(s1)} ({eur(r1['tot'])}), gevolgd door {wnaam(top3[1][0])} ({eur(top3[1][1]['tot'])}) en {wnaam(top3[2][0])} ({eur(top3[2][1]['tot'])})."),
            (f"Hoeveel calorieën heeft {kl}?", f"Ongeveer {m['kcal']} kcal per persoon, berekend uit de ingrediënten van het recept voor 4 personen."),
            ("Hoe wordt de prijs berekend?", "Per supermarkt zoeken we voor elk ingrediënt de goedkoopste verpakking waar genoeg in zit, en tellen we de prijzen op zoals je ze aan de kassa betaalt. Aanbiedingen die nu lopen tellen mee. We laten ook zien hoeveel daarvan je in het recept gebruikt; de rest houd je over. Olie, zout, kruiden en andere voorraadkastspullen tellen niet mee.")]
-    head = (ch + f"<h1>{esc(naam)}: waar is het goedkoopst?</h1><p class=\"lead\" id=\"mlead\">Alle ingrediënten voor 4 personen kosten nu <b>{eur(r1['tot'])}</b> bij <b>{esc(wnaam(s1))}</b>. Daarvan gebruik je {eur(r1['gebruik'])} in dit recept; de rest houd je over. "
+    head = (ch + f"<h1>{esc(naam)}: waar is het goedkoopst?</h1>{mlabels(m)}<p class=\"lead\" id=\"mlead\">Alle ingrediënten voor 4 personen kosten nu <b>{eur(r1['tot'])}</b> bij <b>{esc(wnaam(s1))}</b>. Daarvan gebruik je {eur(r1['gebruik'])} in dit recept; de rest houd je over. "
             f"Bij {esc(wnaam(sN))} betaal je {eur(rN['tot'] - r1['tot'])} meer.</p>"
             f'<p class="feiten"><span><b>{m["kcal"]}</b> kcal per persoon{" · <a href=/maaltijden/caloriearm/>caloriearm</a>" if m["kcal"] <= KCAL_ARM else ""}{" · <a href=/maaltijden/glutenvrij/>glutenvrij</a>" if m["glutenvrij"] else ""}</span><span><b>{m["tijd"]}</b> minuten</span><span><b>4</b> personen</span><span>Recept: <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a></span></p>')
     andere = [x for x in MAAL if x["soort"] == m["soort"] and x is not m] + [x for x in MAAL if x["soort"] != m["soort"]]

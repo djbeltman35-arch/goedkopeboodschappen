@@ -38,6 +38,15 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
 def schrijf(path, inhoud):
     p = os.path.join(OUT, path.strip("/"), "index.html") if path.endswith("/") else os.path.join(OUT, path.lstrip("/"))
     os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "w").write(inhoud)
+# Labels: glutenvrij (in de productnaam) en caloriearm (EU-regel: hooguit 40 kcal per 100 g of 20 kcal per 100 ml).
+GV_RE = re.compile(r"gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senza glutine", re.I)
+def kcal_arm(kt):
+    m = re.match(r"^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$", kt or "")
+    return bool(m) and float(m.group(1).replace(",", ".")) <= (20 if m.group(2) == "ml" else 40)
+def labels(naam, kt=""):
+    return (('<span class="lbl gv">🌾 Glutenvrij</span>' if GV_RE.search(naam or "") else "")
+            + ('<span class="lbl arm">🥗 Caloriearm</span>' if kcal_arm(kt) else ""))
+
 def crumbs(*items):
     # Duidelijk terug kunnen: een knop naar de bovenliggende pagina en naar Home, met daaronder het kruimelpad.
     ouder = [(t, h) for t, h in items if h]
@@ -62,7 +71,7 @@ def offer_card(o):
     pp = f'<span class="unit">{esc(per(o.get("pp"), o.get("eh")))}</span>' if o.get("pp") else ""
     t = f'<span class="till">t/m {kortdag(o["t"])}</span>' if o.get("t") else ""
     return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
-            f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span></span>'
+            f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"))}</span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>{t}{offerbtn(o)}</li>')
 def fout_knop(t, si, p):
@@ -164,7 +173,7 @@ for t, rows in PICKED.items():
         o = offer_of(p)
         unit = "" if id(p) in BAD else (per(*toon_unit(p)) or "inhoud onbekend")
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
-                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
+                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{labels(p[1], kcal_txt(t))}{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
     acties = term_offers(t)
     actie_html = (f'<h2>{esc(name)} in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in acties) + "</ul>") if acties else ""
@@ -197,7 +206,7 @@ def winkels_txt(t):
 def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
-    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
+    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + labels(p[1], kt) + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
             + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)) or "inhoud onbekend")}</span></td></tr>')
 # Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
 PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Andere soorten"]

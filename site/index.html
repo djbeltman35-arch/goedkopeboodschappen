@@ -443,13 +443,18 @@ function laag(p,term){
   if(n!=null&&u>=n*1.08) return `<span class="hoger" title="Normaal ${esc(unitTxt(n,p[6]))}">Duurder dan normaal</span>`;
   return "";
 }
+// Labels bij een product: glutenvrij (staat in de productnaam) en caloriearm (EU-regel "laag in calorieën":
+// hooguit 40 kcal per 100 g of 20 kcal per 100 ml).
+const GV_RE=/gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senza glutine/i;
+function kcalArm(kt){const m=/^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$/.exec(kt||"");return !!m&&parseFloat(m[1].replace(",","."))<=(m[2]==="ml"?20:40)}
+const labels=(naam,kt)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"");
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
 function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
   return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${i>=0?laag(p,term):""}</div>
-  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${i>=0?foutKnop(p,term):""}</div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${labels(p[1],KCAL[(term||"").toLowerCase()])}${i>=0?foutKnop(p,term):""}</div>
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":u!=null?esc(unitTxt(u,p[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
@@ -557,7 +562,7 @@ function perPak(alle,ts){
 const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
 function rijen(rows){
   return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
-    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${winkels(v)}${foutKnop(b,t)}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t])}${winkels(v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
@@ -603,7 +608,7 @@ function ofSecties(list,f){
 function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
   return `<li class="offer"><span class="top2"><span class="shop">${esc(STORENAMES[o.s]||o.s)}</span>${o.lbl?`<span class="pill">${esc(o.lbl)}</span>`:""}${o.v&&o.v>today?`<span class="soon">vanaf ${dagKort(o.v)}</span>`:""}</span>
-  <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}
+  <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}${labels(o.n,o.kc)}
   <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>
   ${o.t?`<span class="till">t/m ${dagKort(o.t)}</span>`:""}
   ${added?'<span class="add on">✓ Op je lijst</span>':`<button type="button" class="add" data-offer="${o.i}">+ Op mijn lijst</button>`}</li>`;
