@@ -261,9 +261,12 @@ for t, rows in PICKED.items():
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
             f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and id(p) not in BAD), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
-    ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{name} prijzen per supermarkt", "itemListElement": [
-        {"@type": "ListItem", "position": i + 1, "item": {"@type": "Product", "name": p[1], "offers": {"@type": "Offer", "price": f"{eff(p):.2f}", "priceCurrency": "EUR", "url": plink(p), "availability": "https://schema.org/InStock",
-         "seller": {"@type": "Organization", "name": NAMEN.get(stores[si]["id"], stores[si]["name"])}}}} for i, (si, p) in enumerate(rows)]}]
+    # Eén product (de soort) met een AggregateOffer: zo kan Google de prijsrange "van € x tot € y bij n winkels" tonen.
+    _pr = [eff(p) for _, p in rows]
+    ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "Product", "name": cap(name), "description": desc,
+          "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{min(_pr):.2f}", "highPrice": f"{max(_pr):.2f}", "offerCount": len(rows),
+                     "offers": [{"@type": "Offer", "name": p[1], "price": f"{eff(p):.2f}", "priceCurrency": "EUR", "url": plink(p), "availability": "https://schema.org/InStock",
+                                 "seller": {"@type": "Organization", "name": NAMEN.get(stores[si]["id"], stores[si]["name"])}} for si, p in rows]}}]
     schrijf(path, page(path, title, desc, head, body, ld, og_title=f"{name}: waar is het goedkoopst?"))
     made.append((path, "0.7"))
 print(len(PICKED), "productpagina's")
