@@ -288,7 +288,7 @@ const STARTS=["kat","hond"];
 const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const S={betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
+const S={dieet:{gv:false,arm:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -400,7 +400,11 @@ function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a
 }
 // Merkkeuze: "alle", "zonder" (zonder huismerken) of "huis" (alleen huismerken). Producten zonder merk tellen altijd mee.
 const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
-function matches(q,prefix=true,pool=S.prods,basis=false){
+// Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
+const dieetOk=(naam,kt)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt));
+function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()])):r}
+const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button></div>${S.dieet.gv||S.dieet.arm?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
+function matches0(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
   // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
@@ -502,7 +506,7 @@ function search(fromUser){
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
-  $("results").innerHTML=`${terugNav("Alle categorieën")}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${keus}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
@@ -533,7 +537,7 @@ function renderView(){
   if(S.view==="deals") return renderOffers();
   const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
   const blok=c=>{const rows=c[2].map(t=>{const v=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b));return {t,b:v[0],v}}).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}${perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("")}`:""};
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2>${dieetChips()}<p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
   ${subs.length>1?`<div class="chips subchips">${subs.map(c=>`<a class="chip" href="#sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</a>`).join("")}</div>`:""}${subs.map(blok).join("")}`;
 }
 // Drank per verpakking onder een eigen kopje (krat, flesjes, blikjes), zodat je gelijke verpakkingen naast elkaar ziet.
@@ -567,7 +571,7 @@ function rijen(rows){
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
 function renderOffers(){
-  const all=S.offers.filter(o=>!S.off.has(o.s)&&merkOk(o));
+  const all=S.offers.filter(o=>!S.off.has(o.s)&&merkOk(o)&&dieetOk(o.n,o.kc));
   const pool=all.filter(o=>S.ofsoon?o.v&&o.v>today:nu(o));
   const soonN=all.filter(o=>o.v&&o.v>today).length;
   const by=new Map(); for(const o of pool) by.set(o.s,(by.get(o.s)||0)+1);
@@ -579,7 +583,7 @@ function renderOffers(){
   const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofc==="alle"?S.ofn:Math.max(S.ofn,400));
   const order=[...GROEPEN.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
   if(S.ofc!=="alle"&&!cats.has(S.ofc)){S.ofc="alle";return renderOffers()}
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2>${dieetChips()}
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
   <div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-ofc="alle" aria-pressed="${S.ofc==="alle"}">Alle categorieën</button>${order.map(c=>`<button type="button" class="chip" data-ofc="${esc(c)}" aria-pressed="${S.ofc===c}"><span class="ic">${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])}</span>${esc(c)} (${cats.get(c)})</button>`).join("")}</div>
@@ -950,6 +954,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-terug]")||e.target.closest("[data-home]")){const home=!!e.target.closest("[data-home]");S.view=null;$("q").value="";S.lastQ="";quick();$("results").innerHTML="";
     if(home){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});history.replaceState(null,"","/")}else jump("quick");return}
   if(e.target.closest("[data-buurt]")){winkelsInBuurt();return}
+  const dt=e.target.closest("[data-dieet]"); if(dt){const k=dt.dataset.dieet;S.dieet[k]=!S.dieet[k];store.set("dieet",S.dieet);pickCache.clear();renderAll();gc("dieet/"+k+"/"+S.dieet[k],"Dieetfilter");return}
   const mk=e.target.closest("[data-merk]"); if(mk){S.merk=mk.dataset.merk;store.set("merken",S.merk);pickCache.clear();storesUi();renderAll();gc("merken/"+S.merk,"Merkkeuze");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
 });
@@ -1034,7 +1039,7 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
     S.offersUpdated=offers.updated;
   }
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
-  S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";
+  S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";{const d=store.get("dieet");if(d&&typeof d==="object")S.dieet={gv:!!d.gv,arm:!!d.arm}}
   S.buurt=store.get("buurt")||null;
   store.set("bezoeken",(+store.get("bezoeken")||0)+1); toonInstall();
   // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.

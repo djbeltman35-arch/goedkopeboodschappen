@@ -16,7 +16,7 @@ def header(actief=""):
     links = "".join(f'<a href="{h}"{" class=" + c if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/glutenvrij/">Glutenvrij</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -529,6 +529,85 @@ app = (app.replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).repla
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 open(os.path.join(OUT, "index.html"), "w").write(app)
 made.insert(0, ("/", "1.0"))
+
+# ---------- Glutenvrij: alle producten met glutenvrij in de naam, per soort ----------
+GV_SOORTEN = [  # (slug, naam, icoon, woorden in de productnaam)
+    ("brood", "Glutenvrij brood", "🍞", ["brood", "bollen", "broodje", "desem", "baguette", "ciabatta", "bagel", "buns", "flatbread", "pita", "tijger", "volkoren", "meergranen"]),
+    ("pasta", "Glutenvrije pasta", "🍝", ["pasta", "spaghetti", "penne", "fusilli", "macaroni", "lasagne", "tagliatelle", "farfalle", "tortellini", "ravioli", "gnocchi", "noedels", "mie"]),
+    ("crackers", "Glutenvrije crackers en knäckebröd", "🍘", ["cracker", "knäcke", "knacke", "beschuit", "toast", "rijstwafel", "maiswafel", "grissin", "soepstengel", "cracotte"]),
+    ("koek", "Glutenvrije koek, cake en snoep", "🍪", ["koek", "wafel", "cake", "brownie", "biscuit", "muffin", "cookie", "speculaas", "taart", "donut", "reep", "chocolade", "snoep", "drop", "gevuld", "croissant", "kaneel", "spekulatius", "lange vinger", "madeleine"]),
+    ("ontbijt", "Glutenvrije ontbijtgranen", "🥣", ["muesli", "granola", "cornflakes", "havermout", "cereal", "crunch", "flakes", "pap", "ontbijt", "porridge", "oats"]),
+    ("bakken", "Glutenvrij meel en bakmixen", "🥖", ["meel", "bloem", "mix", "bakmix", "paneermeel", "maizena", "deeg"]),
+    ("diepvries", "Glutenvrije pizza en snacks", "🍕", ["pizza", "nugget", "schnitzel", "kroket", "bitterbal", "frikandel", "loempia", "snack", "burger", "quiche"]),
+    ("sauzen", "Glutenvrije sauzen en ketjap", "🥫", ["ketjap", "saus", "tamari", "soja", "jus", "bouillon", "soep", "dressing", "mayonaise"]),
+    ("bier", "Glutenvrij bier", "🍺", ["bier", "pils", "beer", "lager"]),
+]
+def _gv_soort(naam):
+    n = naam.lower()
+    for sl, _, _, ws in GV_SOORTEN:
+        if any(w in n for w in ws): return sl
+    return None
+def _ut(p):
+    u = eff_unit(p)
+    if u is None or not p[6]: return ""
+    return f"{eur(u)} per {dict(kg='kilo', l='liter', st='stuk').get(p[6], p[6])}"
+GV_PER = {}
+for p in prods:
+    if not stores[p[0]].get("count") or not GV_RE.search(p[1]): continue
+    sl = _gv_soort(p[1])
+    if sl: GV_PER.setdefault(sl, []).append(p)
+def _gv_sort(p):
+    u = eff_unit(p); return (u if u is not None else 1e9, eff(p))
+GV_LIJST = [(sl, nm_, ic) for sl, nm_, ic, _ in GV_SOORTEN if len({p[0] for p in GV_PER.get(sl, [])}) >= 2]
+if GV_LIJST:
+    totaal = sum(len(GV_PER[sl]) for sl, _, _ in GV_LIJST)
+    def _rij(p, t):
+        return (f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a>'
+                f'<span class="sub">{esc(p[4] or "")}</span>{fout_knop(t, p[0], p)}{addbtn(p, t)}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>')
+    for sl, naam_, ic in GV_LIJST:
+        arr = sorted(GV_PER[sl], key=_gv_sort)
+        best = {}
+        for p in arr: best.setdefault(p[0], p)
+        bestl = sorted(best.values(), key=_gv_sort)
+        w = bestl[0]; n_w = len(best)
+        path = f"/glutenvrij/{sl}/"
+        title = f"{naam_} vergelijken: goedkoopst bij {nm(w[0])} ({MAAND})"
+        desc = f"{len(arr)} producten {naam_.lower().replace('glutenvrij ', '').replace('glutenvrije ', '')} zonder gluten bij {n_w} supermarkten naast elkaar, op prijs per kilo. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Elke dag bijgewerkt."
+        ch, cld = crumbs(("Glutenvrij", "/glutenvrij/"), (naam_, None))
+        head = ch + f'<h1>{ic} {esc(naam_)}: waar is het goedkoopst?</h1><p class="lead">{len(arr)} glutenvrije producten bij {n_w} supermarkten, van goedkoop naar duur op prijs per kilo of liter. Nu het voordeligst: <b>{esc(w[1])}</b> bij <b>{esc(nm(w[0]))}</b>.</p>'
+        faq = [(f"Waar koop je {naam_.lower()} het goedkoopst?", f"Op {DATUM} is {w[1]} bij {nm(w[0])} het voordeligst: {eur(eff(w))}" + (f" ({_ut(w)})" if _ut(w) else "") + "."),
+               (f"Welke supermarkten verkopen {naam_.lower()}?", ", ".join(nm(si) for si in sorted(best, key=lambda si: _gv_sort(best[si]))) + "."),
+               ("Hoe weet ik zeker dat het glutenvrij is?", "We tonen producten met glutenvrij of gluten free in de productnaam. Controleer bij coeliakie altijd het etiket en het glutenvrij-logo (de doorgestreepte aar).")]
+        body = (f'<h2>Goedkoopst per supermarkt</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(_rij(p, naam_) for p in bestl) + "</tbody></table></div>"
+                + (f'<h2>Alle {len(arr)} producten</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(_rij(p, naam_) for p in arr[:80]) + "</tbody></table></div>" if len(arr) > len(bestl) else "")
+                + f'<p class="note">Bijgewerkt op {DATUM}. Prijzen van de webshops; lopende aanbiedingen tellen mee. Controleer bij een allergie altijd het etiket.</p>'
+                + '<h2>Meer glutenvrij</h2><ul class="links">' + "".join(f'<li><a href="/glutenvrij/{s2}/">{i2} {esc(n2)}</a></li>' for s2, n2, i2 in GV_LIJST if s2 != sl)
+                + '<li><a href="/maaltijden/glutenvrij/">🍽️ Glutenvrije maaltijden met prijs per supermarkt</a></li></ul>' + faq_html(faq))
+        schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], og_title=f"{naam_}: goedkoopst bij {nm(w[0])}"))
+        made.append((path, "0.7"))
+    # Verzamelpagina
+    blok = ""
+    for sl, naam_, ic in GV_LIJST:
+        arr = sorted(GV_PER[sl], key=_gv_sort); w = arr[0]
+        blok += f'<li><a href="/glutenvrij/{sl}/"><b>{ic} {esc(naam_)}</b></a> <span class="sub">{len(arr)} producten bij {len({p[0] for p in arr})} supermarkten · voordeligst: {esc(w[1])} bij {esc(nm(w[0]))}, {eur(eff(w))}</span></li>'
+    perwinkel = {}
+    for sl, _, _ in GV_LIJST:
+        for p in GV_PER[sl]: perwinkel[p[0]] = perwinkel.get(p[0], 0) + 1
+    ww = sorted(perwinkel.items(), key=lambda kv: -kv[1])
+    title = f"Glutenvrije boodschappen vergelijken: {totaal} producten bij {len(ww)} supermarkten"
+    desc = f"Glutenvrij brood, pasta, crackers, koek en meer: {totaal} producten zonder gluten bij {len(ww)} supermarkten naast elkaar, op prijs per kilo. Zie waar je glutenvrij het goedkoopst koopt. Elke dag bijgewerkt."
+    ch, cld = crumbs(("Glutenvrij", None))
+    head = ch + f'<h1>🌾 Glutenvrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{totaal} glutenvrije producten bij {len(ww)} supermarkten, per soort van goedkoop naar duur. Glutenvrij is vaak duur; hier zie je in één keer waar je het minst betaalt.</p>'
+    faq = [("Welke supermarkt heeft de meeste glutenvrije producten?", f"Online vinden we nu de meeste glutenvrije producten bij {nm(ww[0][0])} ({ww[0][1]}), gevolgd door {nm(ww[1][0])} ({ww[1][1]})." if len(ww) > 1 else ""),
+           ("Hoe komen jullie aan deze producten?", "We tonen alle producten met glutenvrij of gluten free in de productnaam uit de webshops van de supermarkten, elke dag bijgewerkt. Groente, fruit, vlees en vis zijn van nature glutenvrij en staan hier niet apart."),
+           ("Is dit geschikt bij coeliakie?", "Gebruik het als prijsvergelijking. Controleer bij coeliakie altijd het etiket en het glutenvrij-logo (de doorgestreepte aar).")]
+    faq = [f for f in faq if f[1]]
+    body = (f'<ul class="links gvlijst">{blok}</ul><h2>Glutenvrij per supermarkt</h2><ul class="links">' + "".join(f"<li>{esc(nm(si))}: {n} producten</li>" for si, n in ww) + "</ul>"
+            + '<h2>Glutenvrij koken</h2><p><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden met prijs per supermarkt</a>: gewone avondmaaltijden zonder pasta, brood of bloem, met de goedkoopste winkel voor alle ingrediënten. In de app kun je ook bij elke categorie op <b>🌾 Alleen glutenvrij</b> tikken.</p>'
+            + faq_html(faq) + '<a class="cta" href="/">Vergelijk je hele boodschappenlijst</a>')
+    schrijf("/glutenvrij/", page("/glutenvrij/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Glutenvrije boodschappen: waar is het goedkoopst?"))
+    made.append(("/glutenvrij/", "0.8"))
+    print(len(GV_LIJST), "glutenvrij-pagina's,", totaal, "producten")
 
 # ---------- 404, sitemap, robots ----------
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
