@@ -18,7 +18,7 @@ def foto_html(m):
     lu, lt = lic_url(f["licentie"]), esc(f["licentie"])
     maker = esc(f["maker"]) + ", " if f["maker"] else ""
     licentie = f'<a href="{lu}" rel="noopener" target="_blank">{lt}</a>' if lu else lt
-    return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high">'
+    return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" srcset="/maaltijden-foto/{m["slug"]}-kaart.jpg 640w, /maaltijden-foto/{m["slug"]}-16x9.jpg 1200w" sizes="(max-width: 760px) 100vw, 720px" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high" decoding="async">'
             f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">Wikimedia Commons</a> (bijgesneden)</figcaption></figure>')
 MAAL_BEELDEN = {}  # pad -> lijst afbeeldings-url's, voor de afbeeldingen-sitemap
 def beeld_objecten(m):

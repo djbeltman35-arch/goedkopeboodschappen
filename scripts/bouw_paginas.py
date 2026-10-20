@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from vergelijk import *
 from vergelijk import json, re, html, datetime, itertools, statistics, quote, quote_plus
 # ---------- sjabloon ----------
-FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">'
+FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap" media="print" onload="this.media=\'all\'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>'
 FAV = '<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">'
 GC = '<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
 NAV = [("/aanbiedingen/", '<span class="ic">🔥 </span>Aanbiedingen', "pill aanb"), ("/maaltijden/", '<span class="ic">🍽️ </span>Maaltijden', "pill mt"), ("/feestdagen/", "🎉 Feestdagen", "feest"), ("/categorie/", "Categorieën", "wide")]
