@@ -374,3 +374,13 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 @media (max-width:420px){.ptable.hist th,.ptable.hist td{padding-left:6px;padding-right:6px;font-size:13px}}
 .low{display:inline-block;font:700 13px var(--text);color:var(--green-dark);background:var(--green-soft);padding:2px 8px;border-radius:6px}
 .hoger{display:inline-block;font:700 13px var(--text);color:var(--deal);background:var(--deal-soft);padding:2px 8px;border-radius:6px}
+.oordeel.let{color:var(--muted);font-weight:600}
+.deel{margin:4px 0 14px}.deelknop{display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:7px 14px;border-radius:999px;font-weight:700}
+.lbl.hl{background:#eef7f2;color:#1f5e44;border:1px solid #c6e3d4}.lbl.ks{background:#eef2fb;color:#2a4a86;border:1px solid #c9d5ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .lbl.hl{background:#14281f;color:#a6dcc2;border-color:#2c4c3d}:root:not([data-theme=light]) .lbl.ks{background:#171f33;color:#adc3ef;border-color:#2e3d60}}
+:root[data-theme=dark] .lbl.hl{background:#14281f;color:#a6dcc2;border-color:#2c4c3d}:root[data-theme=dark] .lbl.ks{background:#171f33;color:#adc3ef;border-color:#2e3d60}
+/* Filterbalk maaltijden: twee rustige rijen die horizontaal schuiven in plaats van de hele balk te vullen */
+.mfbalk .mfilters{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.mfbalk .mfilters::-webkit-scrollbar{display:none}
+.mfbalk .mfilters .btn{flex:none;white-space:nowrap;padding:6px 11px;font-size:14px}
+.mfbalk .mdier{margin-top:6px}

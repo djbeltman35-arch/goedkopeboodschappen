@@ -17,10 +17,10 @@ def header(actief=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav><nav class="snel" aria-label="Populair"><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a><a class="sk wm" href="/maaltijden/weekmenu/">📅 Weekmenu<span class="lg2"> met boodschappenlijst</span></a></nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/lactosevrij/">Lactosevrij</a><a href="/vegan/">Vegan</a><a href="/eiwitrijk/">Eiwitrijk</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/lactosevrij/">Lactosevrij</a><a href="/vegan/">Vegan</a><a href="/halal/">Halal</a><a href="/koosjer/">Koosjer</a><a href="/eiwitrijk/">Eiwitrijk</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
-LISTJS = '''<script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
+LISTJS = '''<script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
 <script>(()=>{const K="lijst-erbij",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []}},put=v=>{try{localStorage.setItem(K,JSON.stringify(v));return true}catch(e){return false}},
 cnt=()=>{try{return (JSON.parse(localStorage.getItem("lijst-v3")||"[]")||[]).length}catch(e){return 0}};
 window.mark=()=>{const q=get(),u=new Set(q.map(x=>x.u));document.querySelectorAll(".add[data-o]").forEach(b=>{const o=JSON.parse(b.dataset.o);if(u.has(o.u)){b.textContent="✓ Klaar voor je lijst";b.classList.add("on")}});
@@ -54,6 +54,7 @@ LV_RE = re.compile(r"lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei|\
 # Vegan: met vegan of 100% plantaardig in de naam, plantaardige zuivel- en vleesvervangers, tofu/tempeh/seitan en volledig plantaardige merken.
 VG_RE = re.compile(r"\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs|burger|gehakt|stukjes|balletjes|schnitzel|worst|kipstukjes|reepjes)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b|\b(?:tofu|tempeh|seitan)\b", re.I)
 VG_NIET = re.compile(r"gyoza|dumpling|loempia|niet vegan|aftersun|zonnebrand|spray|vitamine|supplement|capsule|tablet|shampoo|zeep|douche|creme voor|tandpasta|deodorant|lippen|nagel|make-up|mascara|\bmet (?:kip|ei|kaas|vlees)\b", re.I)
+HALAL_RE = re.compile(r"\bhalal\b", re.I)
 def is_vegan(naam): return bool(naam) and bool(VG_RE.search(naam)) and not VG_NIET.search(naam)
 VG_SOORTEN = [  # (slug, naam, icoon, woorden in de productnaam); de eerste soort die past telt
     ("melk", "Plantaardige melk en drinks", "🥛", ["drink", "drank", "melk", "barista", "latte", "cappuccino", "shake", "calcium", "meal to go", "the original", "oatly haver", "no sugars", "ongezoet 1"]),
@@ -86,6 +87,7 @@ def labels(naam, kt="", term=""):
     return (('<span class="lbl gv">🌾 Glutenvrij</span>' if GV_RE.search(naam or "") else "")
             + ('<span class="lbl lv">🥛 Lactosevrij</span>' if LV_RE.search(naam or "") else "")
             + ('<span class="lbl vg">🌱 Vegan</span>' if is_vegan(naam) else "")
+            + ('<span class="lbl hl">Halal</span>' if HALAL_RE.search(naam or "") else "")
             + ('<span class="lbl arm">🥗 Caloriearm</span>' if kcal_arm(kt) else "")
             + ('<span class="lbl eiw">💪 Eiwitrijk</span>' if eiwitrijk(term, kt) else ""))
 
@@ -118,7 +120,7 @@ def offer_card(o):
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"), o.get("tm", ""))}</span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>'
-            + (f'<span class="oordeel {o["ds"]}">{"🔥" if o["ds"] == "top" else "👍" if o["ds"] == "ok" else "⚠️"} {esc(o["dt"])}</span>' if o.get("ds") else "")
+            + (f'<span class="oordeel {o["ds"]}">{"🔥" if o["ds"] == "top" else "👍" if o["ds"] == "ok" else "ℹ️" if o["ds"] == "let" else "⚠️"} {esc(o["dt"])}</span>' if o.get("ds") else "")
             + f'{t}{offerbtn(o)}</li>')
 def fout_knop(t, si, p):
     """Knopje "Klopt niet?" (afgehandeld in /fout.js)."""
@@ -349,7 +351,7 @@ body = "".join(f'<h2><a href="/categorie/{slug(g)}/">{gi} {esc(g)}</a></h2><ul c
                for g, gi in GROEPEN if g in GROEP_ITEMS)
 body += ('<h2><a href="/vegan/">🌱 Vegan</a></h2><ul class="chips">' + "".join(f'<li><a href="/vegan/{sl}/">{ic} {esc(nm_)}</a></li>' for sl, nm_, ic in VG_LIJST)
          + '<li><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden</a></li></ul>'
-         + '<h2>Dieet en leefstijl</h2><ul class="chips"><li><a href="/glutenvrij/">🌾 Glutenvrij</a></li><li><a href="/lactosevrij/">🥛 Lactosevrij</a></li><li><a href="/eiwitrijk/">💪 Eiwitrijk</a></li><li><a href="/vegan/">🌱 Vegan</a></li><li><a href="/maaltijden/caloriearm/">🥗 Caloriearm</a></li></ul>')
+         + '<h2>Dieet en leefstijl</h2><ul class="chips"><li><a href="/glutenvrij/">🌾 Glutenvrij</a></li><li><a href="/lactosevrij/">🥛 Lactosevrij</a></li><li><a href="/eiwitrijk/">💪 Eiwitrijk</a></li><li><a href="/vegan/">🌱 Vegan</a></li><li><a href="/halal/">Halal</a></li><li><a href="/koosjer/">Koosjer</a></li><li><a href="/maaltijden/caloriearm/">🥗 Caloriearm</a></li></ul>')
 schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} boodschappen in {len(catpaths)} categorieën bij {AANTAL} supermarkten: groente, diepvries, zuivel, vlees, frisdrank, bier, huishouden en meer.", head, body, actief="/categorie/"))
 made.append(("/categorie/", "0.6"))
 lis = "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in sorted(PICKED))
@@ -371,8 +373,27 @@ def _deel_in(o):
         if c[2]: o["tm"] = c[2]; _oordeel(o, c[2])
     return bool(c)
 _TERMPROD = {}
+def _historie_check(o, term):
+    """Is het een echte aanbieding? Vergeleken met de prijzen van dezelfde soort bij dezelfde winkel van de afgelopen weken."""
+    if not o.get("pp") or o.get("ds") == "duur" or HIST.get("eenheid", {}).get(term) != o.get("eh"): return
+    r = HIST.get("termen", {}).get(term, {}).get(o.get("s")) or []
+    oud = [v for v in r[:-1] if v is not None]
+    if len(oud) < 10: return
+    eh = {"kg": "kilo", "l": "liter", "st": "stuk"}.get(o["eh"], o["eh"])
+    wn = NAMEN.get(o["s"], o["s"])
+    normaal = sorted(oud[-30:])[len(oud[-30:]) // 2]
+    if not (normaal * .3 < o["pp"] < normaal * 3): return  # andere maat of soort: niets zeggen
+    zes = [v for v in oud[-42:]]
+    if o["pp"] < min(oud) * .99 and o.get("ds") != "top":
+        o["ds"], o["dt"] = "top", f"Echte korting: goedkoper dan de gewone prijs van alle {term} bij {wn} sinds {kortdatum(HIST['dagen'][0])}"
+    elif o["pp"] >= normaal and o.get("ds") != "top":
+        o["ds"], o["dt"] = "let", f"Let op: bij {wn} is {term} zonder actie al te koop vanaf {eur(normaal)} per {eh}"
+    elif zes and o["pp"] > min(zes) * 1.05 and o.get("ds") is None:
+        o["ds"], o["dt"] = "let", f"De afgelopen weken was {term} bij {wn} al eens {eur(min(zes))} per {eh}"
 def _oordeel(o, term):
     """Eerlijk oordeel per actie: vergeleken met de gewone prijs per kilo/liter/stuk van dezelfde soort bij alle supermarkten."""
+    _oordeel0(o, term); _historie_check(o, term)
+def _oordeel0(o, term):
     if not o.get("pp") or not o.get("eh") or term not in PICKED: return
     gewoon = [(p[5], si) for si, p in PICKED[term] if p[6] == o["eh"] and p[5] and id(p) not in BAD]
     if len(gewoon) < 2: return
@@ -513,9 +534,19 @@ if PAK:
            ("Hoe vaak wordt dit bijgewerkt?", "Elke dag. De prijzen komen van de webshops van de supermarkten.")]
     ch, cld = crumbs(("Goedkoopste supermarkt", None))
     head = ch + f"<h1>De goedkoopste supermarkt van {MAAND}</h1><p class=\"lead\">Een vast boodschappenmandje van {len(PAKTERMEN)} producten, voor iedereen hetzelfde, kost bij <b>{esc(nm(w['si']))}</b> {eur(w['tot'])}. Bij {esc(nm(l['si']))} betaal je {eur(verschil)} meer.</p>" + JOUW
+    # Waarom bovenaan: per product welke winkel het goedkoopst is (zuiver uitgerekend, niemand betaalt voor een plek).
+    _wins = {}
+    for i_, t_ in enumerate(PAKTERMEN):
+        vv = [(r["regels"][i_][1], r["si"]) for r in PAK]; mn = min(v for v, _ in vv)
+        for v, si_ in vv:
+            if v <= mn + .004: _wins[si_] = _wins.get(si_, 0) + 1
+    _waarom_html = (f'<div class="panel"><p style="margin:0"><b>Waarom staat {esc(nm(w["si"]))} bovenaan?</b> Puur uitgerekend: het hele mandje is daar het goedkoopst. '
+                    f'Bij {_wins.get(w["si"], 0)} van de {len(PAKTERMEN)} producten is {esc(nm(w["si"]))} zelf de goedkoopste winkel. '
+                    'Geen enkele supermarkt betaalt voor een plek. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p></div>')
     paren = [(a, b) for a, b in itertools.combinations([r["si"] for r in PAK[:8]], 2)]
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th style="text-align:right">Totaal</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Bijgewerkt op {DATUM}. Supermarkten met te weinig producten online (zoals Vomar en Poiesz) staan alleen in de lijst als we genoeg van deze boodschappen vinden.</p>'
+            + _waarom_html +
             f'<h2>Wat zit er in het vaste boodschappenmandje?</h2><p class="note">Dit mandje is voor iedereen hetzelfde en staat los van je eigen lijst.</p><ul class="links">{mand}</ul><h2>Zo is het opgebouwd</h2>{detail}'
             + '<h2>Twee supermarkten vergelijken</h2><ul class="links">' + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(a))} of {esc(nm(b))}?</a></li>' for a, b in paren) + "</ul>"
             + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>')
@@ -794,6 +825,7 @@ if len(_eiw) >= 10:
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>' + "".join(_er(r, i) for i, r in enumerate(_eiw)) + "</tbody></table></div>"
             + f'<p class="note">Berekend met de goedkoopste verpakking per product op {DATUM} en gemiddelde eiwitwaarden per 100 gram (richtwaarden; per merk iets anders, kijk op het etiket). Eieren gerekend met 60 gram per ei.</p>'
             + '<h2>Proteïneproducten vergelijken</h2><p>Proteïnekwark, -pudding, -drinks, -repen en whey per supermarkt: <a href="/categorie/proteine-en-sportvoeding/">bekijk de categorie Proteïne en sportvoeding</a>. In de app kun je bij elke categorie op <b>💪 Alleen eiwitrijk</b> tikken.</p>'
+            + '<h2>Eiwitrijk koken</h2><p><a href="/maaltijden/weekmenu-eiwitrijk/">📅 Eiwitrijk weekmenu</a>: 5 avondmaaltijden met minstens 30 gram eiwit per persoon, samen ingekocht. Of bekijk alle <a href="/maaltijden/eiwitrijk/">eiwitrijke maaltijden met prijs per supermarkt</a>.</p>'
             + faq_html(faq) + '<a class="cta" href="/">Zet eiwitrijke producten op je lijst</a>')
     schrijf("/eiwitrijk/", page("/eiwitrijk/", f"Goedkoopste eiwitten: prijs per 10 gram eiwit ({MAAND})", f"Wat kost 10 gram eiwit? Kipfilet, kwark, eieren, tonijn, linzen, whey en proteïnerepen vergeleken bij 11 supermarkten. Nu het goedkoopst: {top[1]} voor {eur(top[0])} per 10 g.", head, body, [cld, faq_ld(faq)], og_title="Goedkoopste eiwitten: wat kost 10 gram eiwit?"))
     made.append(("/eiwitrijk/", "0.8"))
@@ -830,7 +862,7 @@ if _lv_n >= 20:
            ("Welke supermarkten verkopen lactosevrije producten?", ", ".join(nm(si) for si in winkels_lv) + ". Arla, Melkan en de huismerken hebben de meeste."),
            ("Zit er lactose in kaas?", "Harde, belegen en oude kaas bevatten van nature bijna geen lactose; veel mensen met lactose-intolerantie kunnen die gewoon eten. Bij zachte kaas, melk en yoghurt is lactosevrij wel handig.")]
     head = ch + f'<h1>🥛 Lactosevrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{_lv_n} lactosevrije producten bij {len(winkels_lv)} supermarkten, per soort van goedkoop naar duur op prijs per kilo of liter.</p>'
-    body = blok + f'<p class="note">Alle producten met lactosevrij in de naam, bijgewerkt op {DATUM}. Controleer bij een allergie altijd het etiket. In de app kun je bij elke categorie op <b>🥛 Alleen lactosevrij</b> tikken.</p>' + faq_html(faq) + '<p><a href="/glutenvrij/">Glutenvrije boodschappen vergelijken →</a></p>'
+    body = blok + f'<p class="note">Alle producten met lactosevrij in de naam, bijgewerkt op {DATUM}. Controleer bij een allergie altijd het etiket. In de app kun je bij elke categorie op <b>🥛 Alleen lactosevrij</b> tikken.</p>' + '<h2>Lactosevrij koken</h2><p><a href="/maaltijden/weekmenu-lactosevrij/">📅 Lactosevrij weekmenu</a> en alle <a href="/maaltijden/lactosevrij/">lactosevrije maaltijden met prijs per supermarkt</a>.</p>' + faq_html(faq) + '<p><a href="/glutenvrij/">Glutenvrije boodschappen vergelijken →</a></p>'
     schrijf("/lactosevrij/", page("/lactosevrij/", f"Lactosevrij vergelijken: {_lv_n} producten bij {len(winkels_lv)} supermarkten", f"Lactosevrije melk, yoghurt, kaas, boter en meer: {_lv_n} producten bij {len(winkels_lv)} supermarkten naast elkaar op prijs per liter of kilo. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
     made.append(("/lactosevrij/", "0.7"))
     print("/lactosevrij/:", _lv_n, "producten")
@@ -882,6 +914,62 @@ if VG_LIJST:
     schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen vergelijken: {_vg_n} producten bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
     made.append(("/vegan/", "0.8"))
     print("/vegan/:", _vg_n, "producten in", len(VG_LIJST), "soorten:", {sl: len(VG_PER[sl]) for sl, _, _ in VG_LIJST})
+
+# ---------- Halal en koosjer: producten, maaltijden en feestdagen ----------
+HL_SOORTEN = [("vlees", "Halal kip en vlees", "🍗", ["kip", "vlees", "gehakt", "kalkoen", "merguez", "burger", "rund", "shoarma", "kebab", "tenders", "filet", "drumstick", "worst", "lams", "schnitzel", "nugget", "gyros"]),
+              ("beleg", "Halal vleeswaren en spreads", "🥪", ["spread", "beleg", "plakjes", "rookvlees", "salami", "vleeswaren", "ham", "pastrami", "cervelaat"]),
+              ("overig", "Overige halal producten", "🛒", [])]
+HL_PER = {}
+for p in prods:
+    if not stores[p[0]].get("count") or not HALAL_RE.search(p[1]): continue
+    n = p[1].lower(); sl = next((sl for sl, _, _, ws in HL_SOORTEN if ws and any(w in n for w in ws)), "overig")
+    HL_PER.setdefault(sl, []).append(p)
+_hl_n = sum(len(v) for v in HL_PER.values())
+if _hl_n >= 5:
+    _hl_lijst = [(sl, nm_, ic) for sl, nm_, ic, _ in HL_SOORTEN if HL_PER.get(sl)]
+    # Per soort een eigen pagina, net als bij de gewone categorieën, vegan en glutenvrij.
+    for sl, naam_, ic in _hl_lijst:
+        arr = sorted(HL_PER[sl], key=_gv_sort)
+        best = {}
+        for p in arr: best.setdefault(p[0], p)
+        bestl = sorted(best.values(), key=_gv_sort); w = bestl[0]
+        path = f"/halal/{sl}/"
+        ch, cld = crumbs(("Halal", "/halal/"), (naam_, None))
+        head = (ch + f'<h1>{ic} {esc(naam_)}: waar is het goedkoopst?</h1><p class="lead">{len(arr)} halal producten bij {len(best)} supermarkten, van goedkoop naar duur op prijs per kilo. Nu het voordeligst: <b>{esc(w[1])}</b> bij <b>{esc(nm(w[0]))}</b>.</p>'
+                + '<ul class="chips">' + "".join(f'<li><a href="/halal/{s2}/"{" aria-current=\"page\"" if s2 == sl else ""}>{i2} {esc(n2)}</a></li>' for s2, n2, i2 in _hl_lijst) + '</ul>')
+        faq = [(f"Waar koop je {naam_.lower()} het goedkoopst?", f"Op {DATUM} is {w[1]} bij {nm(w[0])} het voordeligst: {eur(eff(w))}" + (f" ({_ut(w)})" if _ut(w) else "") + "."),
+               ("Hoe weten jullie dat het halal is?", "We tonen producten met halal in de productnaam. Kijk voor zekerheid naar het halal-keurmerk op de verpakking.")]
+        body = (f'<div class="tblwrap"><table class="ptable"><tbody>' + "".join(_vrij(p, naam_) for p in arr) + "</tbody></table></div>"
+                + f'<p class="note">Bijgewerkt op {DATUM}. Controleer altijd het keurmerk op de verpakking.</p>'
+                + '<h2>Meer halal</h2><ul class="links">' + "".join(f'<li><a href="/halal/{s2}/">{i2} {esc(n2)}</a></li>' for s2, n2, i2 in _hl_lijst if s2 != sl)
+                + '<li><a href="/maaltijden/halal/">Halal maaltijden met prijs per supermarkt</a></li><li><a href="/maaltijden/weekmenu-halal/">📅 Halal weekmenu</a></li></ul>' + faq_html(faq))
+        schrijf(path, page(path, f"{naam_} vergelijken: goedkoopst bij {nm(w[0])} ({MAAND})", f"{len(arr)} producten: {naam_.lower()} bij {len(best)} supermarkten naast elkaar, op prijs per kilo. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}.", head, body, [cld, faq_ld(faq)]))
+        made.append((path, "0.6"))
+    blok = '<ul class="links">' + "".join(f'<li><a href="/halal/{sl}/"><b>{ic} {esc(naam_)}</b></a> <span class="sub">{len(HL_PER[sl])} producten bij {len({p[0] for p in HL_PER[sl]})} supermarkten · voordeligst: {esc(min(HL_PER[sl], key=_gv_sort)[1])} bij {esc(nm(min(HL_PER[sl], key=_gv_sort)[0]))}, {eur(eff(min(HL_PER[sl], key=_gv_sort)))}</span></li>' for sl, naam_, ic in _hl_lijst) + '</ul>'
+    _hlw = sorted({p[0] for v in HL_PER.values() for p in v})
+    ch, cld = crumbs(("Halal", None))
+    faq = [("Welke supermarkten verkopen halal vlees?", ", ".join(nm(si) for si in _hlw) + ". Het meeste halal vlees is van het merk Wahid of het eigen halal-assortiment van de supermarkt."),
+           ("Hoe weten jullie dat het halal is?", "We tonen producten met halal in de productnaam. Kijk voor zekerheid naar het halal-keurmerk op de verpakking."),
+           ("Is vegetarisch eten altijd halal?", "Producten zonder vlees zijn meestal geschikt, maar let op gelatine (in snoep en toetjes), alcohol (in sommige sauzen en desserts) en E-nummers van dierlijke oorsprong. Vegan producten bevatten geen gelatine.")]
+    head = ch + f'<h1>Halal boodschappen: waar is het goedkoopst?</h1><p class="lead">{_hl_n} halal producten bij {len(_hlw)} supermarkten naast elkaar, met de prijs per kilo. Plus halal maaltijden en een halal weekmenu met boodschappenlijst.</p>'
+    body = (blok + '<h2>Halal koken</h2><ul class="links"><li><a href="/maaltijden/halal/">Halal maaltijden met prijs per supermarkt</a>: zonder varkensvlees en alcohol</li><li><a href="/maaltijden/weekmenu-halal/">📅 Halal weekmenu met boodschappenlijst</a></li><li><a href="/ramadan/">🌙 Ramadan en Suikerfeest: iftar-boodschappen vergelijken</a></li><li><a href="/vegan/">🌱 Vegan producten</a> (zonder vlees en gelatine)</li></ul>'
+            + f'<p class="note">Producten met halal in de naam, bijgewerkt op {DATUM}. Controleer altijd het keurmerk op de verpakking.</p>' + faq_html(faq))
+    schrijf("/halal/", page("/halal/", f"Halal boodschappen vergelijken: {_hl_n} producten bij {len(_hlw)} supermarkten", f"Halal kip, gehakt, vleeswaren en meer bij {len(_hlw)} supermarkten naast elkaar op prijs per kilo. Met halal maaltijden en een halal weekmenu. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/halal/", "0.7"))
+    print("/halal/:", _hl_n, "producten")
+# Koosjer: supermarkten zetten het hechsjer zelden online; daarom eerlijke uitleg, matzes en koosjere maaltijden.
+_mz = sorted([p for p in prods if stores[p[0]].get("count") and re.search(r"\bmatze|matzes", p[1], re.I)], key=_gv_sort)
+ch, cld = crumbs(("Koosjer", None))
+faq = [("Kun je koosjer kopen in de supermarkt?", "Ja, maar supermarkten zetten het hechsjer (koosjer-keurmerk) bijna nooit in hun webshop. Veel gewone producten hebben wel een hechsjer op de verpakking; de lijsten daarvan worden bijgehouden door het Nederlands-Israëlitisch Kerkgenootschap (NIK). Koosjer vlees koop je bij een koosjere slager."),
+       ("Wat betekent koosjer koken?", "Geen varkensvlees, schaaldieren of andere niet-koosjere dieren, vlees en zuivel niet samen in één maaltijd, en vlees dat koosjer geslacht is. Vis met schubben en vinnen, groente, fruit, eieren en granen zijn neutraal (parve)."),
+       ("Hoe zijn de koosjere maaltijden gekozen?", "Het zijn recepten zonder varkensvlees, zonder schaaldieren en zonder vlees samen met zuivel. Kies voor vlees en bewerkte producten een variant met hechsjer.")]
+head = ch + '<h1>Koosjer boodschappen en maaltijden</h1><p class="lead">Koosjer koken met boodschappen uit de supermarkt: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen per supermarkt.</p>'
+body = ('<div class="panel"><p style="margin:0">Eerlijk is eerlijk: supermarkten zetten het koosjer-keurmerk (hechsjer) bijna nooit online. Wij kunnen dus geen product als koosjer markeren. Wel tonen we maaltijden die bij de koosjere regels passen, en producten die je voor de Joodse feestdagen nodig hebt.</p></div>'
+        + '<h2>Koosjer koken</h2><ul class="links"><li><a href="/maaltijden/koosjer/">Koosjere maaltijden met prijs per supermarkt</a></li><li><a href="/maaltijden/weekmenu-koosjer/">📅 Koosjer weekmenu met boodschappenlijst</a></li><li><a href="/chanoeka/">🕎 Chanoeka</a> · <a href="/pesach/">Pesach</a></li></ul>'
+        + (f'<h2>Matzes per supermarkt</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, "matzes")}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>' for p in _mz[:20]) + '</tbody></table></div><p class="note">Voor Pesach heb je matzes nodig die koosjer voor Pesach zijn; kijk op de verpakking.</p>' if _mz else "")
+        + faq_html(faq))
+schrijf("/koosjer/", page("/koosjer/", "Koosjer boodschappen: maaltijden, matzes en prijzen per supermarkt", "Koosjer koken met supermarktboodschappen: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen bij 11 supermarkten.", head, body, [cld, faq_ld(faq)]))
+made.append(("/koosjer/", "0.6"))
 
 # ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
 AANB_PRODUCT = [  # (slug, naam, zoekpatroon in de actienaam, uitsluiten, vaste soorten om te vergelijken)
@@ -1000,7 +1088,7 @@ if PAK and _huis_vb:
     title = f"Besparen op boodschappen: 8 tips met echte prijzen ({MAAND})"
     desc = f"Hoe bespaar je op boodschappen? Huismerken zijn nu gemiddeld {round(med * 100)}% goedkoper en {nm(w['si'])} scheelt {eur(l['tot'] - w['tot'])} per mandje met {nm(l['si'])}. 8 tips, onderbouwd met de prijzen van vandaag."
     head = ch + f'<h1>Besparen op boodschappen: 8 tips met echte prijzen</h1><p class="lead">Geen algemene tips, maar wat het vandaag écht scheelt, uitgerekend met de prijzen van {len([s_ for s_ in stores if s_.get("count")])} supermarkten. Bijgewerkt op {DATUM}.</p>'
-    body = tiphtml + '<h2>Meer weten</h2><ul class="links"><li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: per product vergeleken</a></li><li><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a></li><li><a href="/prijsindex/">Worden boodschappen duurder? De prijsindex</a></li></ul>' + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
+    body = tiphtml + '<h2>Meer weten</h2><ul class="links"><li><a href="/eten-voor-50-euro-per-week/">Eten voor 50 euro per week</a></li><li><a href="/studentenboodschappen/">Studentenboodschappen</a></li><li><a href="/prijsrapport/">Prijsrapport van deze maand</a></li><li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: per product vergeleken</a></li><li><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a></li><li><a href="/prijsindex/">Worden boodschappen duurder? De prijsindex</a></li></ul>' + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
     schrijf("/besparen/", page("/besparen/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Besparen op boodschappen: 8 tips met echte prijzen"))
     made.append(("/besparen/", "0.9"))
     print("/besparen/:", len(_huis_vb), "huismerkvergelijkingen, mediaan", round(med * 100), "%")
@@ -1065,6 +1153,36 @@ if _wm and len(_wk_rij) >= 3:
     schrijf("/boodschappen-per-week/", page("/boodschappen-per-week/", f"Wat kosten boodschappen per week? Vanaf {eur(bedrag(1, lo[1]))} per persoon ({MAAND})", f"Hoeveel geld kwijt aan boodschappen per week of maand? Met de echte prijzen van vandaag: ongeveer {eur(bedrag(1, lo[1]))} per persoon per week, {eur(bedrag(4, lo[1]))} voor 4 personen. Zo is het berekend.", head, body, [cld, faq_ld(faq)]))
     made.append(("/boodschappen-per-week/", "0.8"))
     print("/boodschappen-per-week/:", eur(bedrag(1, lo[1])), "pp")
+    # Budgetpagina's: eten voor 50 euro per week en studentenboodschappen (zelfde rekenvoorbeeld, echte prijzen van vandaag)
+    _wm_si = _wm[1]
+    _tips = ('<h2>Zo blijf je binnen je budget</h2><ul><li><b>Kook met een weekmenu</b> en koop alles in één keer: ingrediënten die in meer gerechten zitten koop je maar één keer. <a href="/maaltijden/weekmenu/">Bekijk het goedkope weekmenu met boodschappenlijst</a>.</li>'
+             '<li><b>Kies huismerken</b>: die zijn vaak een derde goedkoper. <a href="/huismerk-of-a-merk/">Huismerk of A-merk per product</a>.</li>'
+             '<li><b>Kook voor meer dagen</b> en vries porties in; dat scheelt geld en tijd.</li>'
+             '<li><b>Let op de prijs per kilo</b>, niet op de prijs van het pak. En check of een aanbieding echt goedkoper is: daarvoor tonen we bij elk product of de prijs lager of hoger is dan normaal.</li>'
+             '<li><b>Vergelijk je eigen lijst</b>: in de app zie je in één keer welke supermarkt voor jouw boodschappen het goedkoopst is.</li></ul>')
+    b1, b2 = bedrag(1, lo[1]), bedrag(2, lo[1])
+    past = "past" if b2 <= 50 else "past net niet"
+    ch, cld = crumbs(("Besparen", "/besparen/"), ("Eten voor 50 euro per week", None))
+    faq = [("Kun je met 2 personen eten voor 50 euro per week?", f"Ja, als je zuinig kookt: met de prijzen van {DATUM} kost ons rekenvoorbeeld voor 2 personen {eur(b2)} per week bij {nm(lo[0])}. Dat is ontbijt, lunch en 7 avondmaaltijden."),
+           ("Hoeveel kost eten per persoon per week?", f"Ongeveer {eur(b1)} per persoon per week bij de goedkoopste supermarkt, met het goedkope weekmenu als avondeten."),
+           ("Wat is het goedkoopste avondeten?", f"Bekijk de 10 goedkoopste maaltijden: die kosten soms minder dan 2 euro per persoon.")]
+    head = ch + f'<h1>Eten voor 50 euro per week: zo doe je het</h1><p class="lead">Met de echte prijzen van vandaag kost zuinig eten voor <b>2 personen {eur(b2)} per week</b> bij {esc(nm(lo[0]))}: ontbijt, lunch en 7 avondmaaltijden. Dat {past} binnen 50 euro.</p>'
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Huishouden</th><th style="text-align:right">Per week</th></tr></thead><tbody>'
+            + "".join(f'<tr><td><b>{n} {"persoon" if n == 1 else "personen"}</b></td><td class="p">{eur(bedrag(n, lo[1]))}{" ✓ onder € 50" if bedrag(n, lo[1]) <= 50 else ""}</td></tr>' for n in (1, 2, 3, 4))
+            + f'</tbody></table></div><p class="note">Ontbijt en lunch: een vast weekpakket (brood, melk, yoghurt, kaas, pindakaas, boter, eieren, fruit en koffie) bij {esc(nm(lo[0]))}. Avondeten: het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a>, {eur(_wm[0] / 20)} per persoon per maaltijd. Prijzen van {DATUM}.</p>'
+            + _tips + faq_html(faq) + '<p><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a> · <a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a> · <a href="/studentenboodschappen/">Studentenboodschappen</a></p>')
+    schrijf("/eten-voor-50-euro-per-week/", page("/eten-voor-50-euro-per-week/", f"Eten voor 50 euro per week (2 personen): kan dat? ({MAAND})", f"Boodschappen voor 50 euro per week: met de echte prijzen van vandaag kost zuinig eten voor 2 personen {eur(b2)} per week. Met weekmenu, boodschappenlijst en tips.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/eten-voor-50-euro-per-week/", "0.7"))
+    ch, cld = crumbs(("Besparen", "/besparen/"), ("Studentenboodschappen", None))
+    faq = [("Hoeveel geeft een student uit aan boodschappen?", f"Met ons rekenvoorbeeld kost zuinig eten voor 1 persoon {eur(b1)} per week, ongeveer {eur(b1 * 52 / 12)} per maand, bij {nm(lo[0])}."),
+           ("Welke supermarkt is het goedkoopst voor studenten?", f"Voor dit weekpakket is {nm(lo[0])} nu het goedkoopst. Voor je eigen lijst kan het anders uitvallen; vergelijk die in de app."),
+           ("Hoe kook je goedkoop voor 1 persoon?", "Kook voor 4 porties en vries de rest in, of eet het de volgende dag. Een weekmenu voor 4 personen is voor 1 persoon goed voor bijna 3 weken avondeten uit de vriezer.")]
+    head = ch + f'<h1>Studentenboodschappen: goedkoop eten op kamers</h1><p class="lead">Zuinig eten kost met de prijzen van vandaag ongeveer <b>{eur(b1)} per week</b> ({eur(b1 * 52 / 12)} per maand) bij {esc(nm(lo[0]))}. Zo houd je geld over.</p>'
+    body = (f'<h2>Wat kost het?</h2><ul class="links"><li>Ontbijt en lunch: {eur(lo[1])} per week</li><li>7 avondmaaltijden uit het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a>: {eur(avond_pp)} per week</li></ul>'
+            + '<h2>Goedkope studentenmaaltijden</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/vegan/">🌱 Vegan maaltijden</a> (vaak extra goedkoop)</li><li><a href="/maaltijden/eiwitrijk/">💪 Eiwitrijk voor sporters</a></li><li><a href="/maaltijden/pasta/">Pasta</a> en <a href="/maaltijden/rijst-en-noedels/">rijst en noedels</a></li></ul>'
+            + _tips + faq_html(faq) + '<p><a href="/eten-voor-50-euro-per-week/">Eten voor 50 euro per week</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></p>')
+    schrijf("/studentenboodschappen/", page("/studentenboodschappen/", f"Studentenboodschappen: goedkoop eten vanaf {eur(b1)} per week ({MAAND})", f"Goedkoop eten als student: met de echte prijzen van vandaag ongeveer {eur(b1)} per week bij {nm(lo[0])}. Met goedkope maaltijden, weekmenu en bespaartips.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/studentenboodschappen/", "0.7"))
 
 # ---------- Prijsindex: worden boodschappen duurder? (uit data/historie.json) ----------
 def pct_nl(x, d=1): return (f"{x:+.{d}f}".replace(".", ",")) + "%"
@@ -1123,6 +1241,64 @@ try:
 except Exception as e:
     print("prijsindex overgeslagen:", e)
 
+# ---------- Prijsrapport van de maand: wat werd de afgelopen 30 dagen duurder en goedkoper? ----------
+try:
+    _dg = HIST.get("dagen", []); _tm = HIST.get("termen", {})
+    if len(_dg) >= 40:
+        _nu_d = datetime.date.fromisoformat(_dg[-1])
+        _i0 = max(i for i, d in enumerate(_dg) if datetime.date.fromisoformat(d) <= _nu_d - datetime.timedelta(days=30))
+        def _venster(r, i, n=5):
+            v = [x for x in r[max(0, i - n + 1):i + 1] if x]
+            return statistics.median(v) if len(v) >= 3 else None
+        bew, perw = [], {}
+        for t, st_ in _tm.items():
+            if t not in PICKED or len(st_) < 4: continue
+            r = _dagmed(t); a0, a1 = _venster(r, _i0), _venster(r, len(_dg) - 1)
+            if a0 and a1:
+                c = a1 / a0 - 1
+                if abs(c) < .4: bew.append((t, c, a0, a1))
+        # per winkel: het vaste mandje (zelfde producten als de prijsindex) toen en nu
+        for w_ in {w for t, _ in _bt for w in _tm.get(t, {})}:
+            s0 = s1 = 0; ok = True
+            for t, q in _bt:
+                r = _tm.get(t, {}).get(w_) or []
+                v0, v1 = _venster(r, _i0), _venster(r, len(_dg) - 1)
+                if not v0 or not v1: ok = False; break
+                s0 += v0 * q; s1 += v1 * q
+            if ok and s0: perw[w_] = (s0, s1)
+        if len(bew) >= 20:
+            stijg = sorted([b_ for b_ in bew if b_[1] > .02], key=lambda x: -x[1])[:12]
+            daal = sorted([b_ for b_ in bew if b_[1] < -.02], key=lambda x: x[1])[:12]
+            gem = statistics.median(c for _, c, _, _ in bew) * 100
+            n_op = sum(1 for b_ in bew if b_[1] > .02); n_af = sum(1 for b_ in bew if b_[1] < -.02)
+            MN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
+            mnd_naam = f"{MN[_nu_d.month - 1]} {_nu_d.year}"
+            van = kortdatum(_dg[_i0]); tot = kortdatum(_dg[-1])
+            rij = lambda xs: "".join(f'<tr><td><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></td><td class="p">{eur(a0)}</td><td class="p">{eur(a1)}</td><td class="p"><b>{pct_nl(c * 100, 0)}</b></td></tr>' for t, c, a0, a1 in xs)
+            tab = lambda xs: f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th style="text-align:right">{van}</th><th style="text-align:right">{tot}</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{rij(xs)}</tbody></table></div>'
+            wr = sorted(perw.items(), key=lambda kv: kv[1][1] / kv[1][0])
+            wtab = ("<h2>Per supermarkt: het vaste mandje</h2><div class=\"tblwrap\"><table class=\"ptable\"><thead><tr><th>Supermarkt</th><th style=\"text-align:right\">Verschil</th></tr></thead><tbody>"
+                    + "".join(f'<tr><td>{esc(NAMEN.get(w_, w_))}</td><td class="p"><b>{pct_nl((v[1] / v[0] - 1) * 100)}</b></td></tr>' for w_, v in wr)
+                    + "</tbody></table></div><p class=\"note\">Zelfde vaste boodschappen als in de <a href=\"/prijsindex/\">prijsindex</a>, per winkel het voordeligste vergelijkbare product.</p>") if len(perw) >= 3 else ""
+            lead = (f"Hoe veranderden de boodschappenprijzen de afgelopen 30 dagen ({van} tot {tot})? Van {len(bew)} producten werden er <b>{n_op} duurder</b> en <b>{n_af} goedkoper</b>; "
+                    f"de middelste verandering is {pct_nl(gem)}.")
+            body = (f'<h2>Duurder geworden</h2>{tab(stijg)}' if stijg else "") + (f'<h2>Goedkoper geworden</h2>{tab(daal)}' if daal else "") + wtab + (
+                f'<p class="note">Per product de middelste prijs per kilo, liter of stuk van alle supermarkten (het voordeligste vergelijkbare product per winkel), gemiddeld over een paar meetdagen om toevallige uitschieters weg te halen. '
+                f'Aanbiedingen tellen mee. Bijgewerkt op {DATUM}. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
+                '<h2>Meer</h2><ul class="links"><li><a href="/prijsindex/">Prijsindex: worden boodschappen duurder?</a></li><li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/besparen/">Besparen op boodschappen</a></li></ul>'
+                '<p class="note">Je mag dit rapport vrij overnemen met een bronvermelding en link naar boodschappenvergelijk.nl.</p>')
+            faq = [("Werden boodschappen de afgelopen maand duurder?", f"Van {len(bew)} vergeleken producten werden er {n_op} duurder en {n_af} goedkoper; de middelste verandering is {pct_nl(gem)}."),
+                   ("Wat werd het meest duurder?", f"{cap(stijg[0][0])}: {pct_nl(stijg[0][1] * 100, 0)}." if stijg else "Geen product werd duidelijk duurder."),
+                   ("Wat werd het meest goedkoper?", f"{cap(daal[0][0])}: {pct_nl(daal[0][1] * 100, 0)}." if daal else "Geen product werd duidelijk goedkoper.")]
+            ch, cld = crumbs(("Prijsindex", "/prijsindex/"), (f"Prijsrapport {mnd_naam}", None))
+            schrijf("/prijsrapport/", page("/prijsrapport/", f"Prijsrapport {mnd_naam}: wat werd duurder en goedkoper?",
+                    f"Boodschappen in {mnd_naam}: {n_op} producten duurder, {n_af} goedkoper (middelste verandering {pct_nl(gem)}). De grootste stijgers en dalers bij 11 supermarkten.",
+                    ch + f"<h1>Prijsrapport {esc(mnd_naam)}: wat werd duurder?</h1><p class=\"lead\">{lead}</p>", body + faq_html(faq), [cld, faq_ld(faq)], og_title=f"Prijsrapport {mnd_naam}"))
+            made.append(("/prijsrapport/", "0.7"))
+            print("/prijsrapport/:", len(bew), "producten,", n_op, "duurder,", n_af, "goedkoper")
+except Exception as e:
+    print("prijsrapport overgeslagen:", e)
+
 # ---------- Seizoen: Sinterklaas en kerst ----------
 def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     ts = [t for t in termen if t in PICKED]
@@ -1139,19 +1315,32 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
         return sorted(arr, key=lambda p: eff(p))[:2]
     def _vtxt(arr): return "".join(f'<span class="sub">{esc(p[1])} · {esc(nm(p[0]))} · {eur(eff(p))}</span>{addbtn(p, p[1])}' for p in arr) or '<span class="sub">nog niet gevonden</span>'
     arij, alle_v = "", {}
+    class _VGZ:  # zelfde vorm als een regex: .search(naam)
+        search = staticmethod(lambda n: is_vegan(n))
     for t in ts:
         kws = [w for w in norm(t) if len(w) > 3 and w not in ("gevulde", "roomboter", "naturel")] or norm(t)[:1]
         def _var2(rx): 
             arr = [p for p in prods if stores[p[0]].get("count") and rx.search(p[1]) and all(re.search(r"\b" + re.escape(w), p[1].lower()) for w in kws) and not re.search(r"\bfish\b|\bburger\b", p[1].lower())]
             return sorted(arr, key=lambda p: eff(p))[:2]
-        g_, l_ = _var2(GV_RE), _var2(LV_RE)
-        for p in g_ + l_: alle_v[id(p)] = p
-        if g_ or l_: arij += f'<tr><td><b>{esc(cap(t))}</b></td><td>🌾 {_vtxt(g_)}</td><td>🥛 {_vtxt(l_)}</td></tr>'
-    extra_v = [p for p in prods if stores[p[0]].get("count") and (GV_RE.search(p[1]) or LV_RE.search(p[1])) and any(re.search(r"\b" + w, p[1].lower()) for w in woorden) and id(p) not in alle_v][:30]
-    allerg = ((f'<h2>Glutenvrij of lactosevrij vieren</h2><p class="note">Per product een glutenvrije (🌾) of lactosevrije (🥛) variant, de goedkoopste eerst. Controleer bij een allergie altijd het etiket.</p>'
-               f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Glutenvrij</th><th>Lactosevrij</th></tr></thead><tbody>{arij}</tbody></table></div>' if arij else "")
-              + (f'<h3>Meer glutenvrije en lactosevrije feestproducten</h3><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td>{labels(p[1])}<b>{esc(p[1])}</b><span class="sub">{esc(nm(p[0]))} · {esc(p[4] or "")}</span>{addbtn(p, p[1])}</td><td class="p">{tag(eff(p))}</td></tr>' for p in sorted(extra_v, key=eff)) + '</tbody></table></div>' if extra_v else "")
-              + '<p><a href="/glutenvrij/">Alle glutenvrije boodschappen</a> · <a href="/lactosevrij/">Alle lactosevrije boodschappen</a> · <a href="/maaltijden/weekmenu-glutenvrij/">Glutenvrij weekmenu</a></p>')
+        g_, l_, v_ = _var2(GV_RE), _var2(LV_RE), _var2(_VGZ)
+        for p in g_ + l_ + v_: alle_v[id(p)] = p
+        if g_ or l_ or v_: arij += f'<tr><td><b>{esc(cap(t))}</b></td><td>🌾 {_vtxt(g_)}</td><td>🥛 {_vtxt(l_)}</td><td>🌱 {_vtxt(v_)}</td></tr>'
+    # Hoofdgerechten voor wie geen vlees, zuivel of gluten eet: complete maaltijden met prijs per supermarkt.
+    def _mli(m): return f'<li><a href="/maaltijden/{m["slug"]}/"><b>{esc(m["naam"])}</b></a> <span class="sub">{eur(m["rang"][0][1]["tot"])} voor 4 personen bij {esc(nm(m["rang"][0][0]))} · {m["kcal"]} kcal p.p.</span></li>'
+    _feestvoorkeur = ("stoof", "curry", "massaman", "shepherd", "linzenstoof", "ratatouille", "aubergine", "risotto", "paella", "lasagne", "jachtschotel", "ovenschotel", "zalm", "bolognese", "puttanesca", "quinoa", "pompoen")
+    _fv = lambda m: (0 if any(w in m["slug"] for w in _feestvoorkeur) else 1, m["rang"][0][1]["tot"])
+    _vgm = sorted([m for m in MAAL if m.get("vegan")], key=_fv)[:5]
+    _lvm = sorted([m for m in MAAL if m.get("lactosevrij") and not m.get("vegan")], key=_fv)[:5]
+    _gvm = sorted([m for m in MAAL if m.get("glutenvrij") and m not in _vgm and m not in _lvm], key=_fv)[:4]
+    _feestmaal = ((f'<h3>Een feestelijk hoofdgerecht zonder vlees, zuivel of gluten</h3>'
+                   + (f'<p><b>🌱 Vegan</b> <a href="/maaltijden/vegan/">alle vegan maaltijden</a></p><ul class="links">' + "".join(_mli(m) for m in _vgm) + '</ul>' if _vgm else "")
+                   + (f'<p><b>🥛 Lactosevrij</b> <a href="/maaltijden/lactosevrij/">alle lactosevrije maaltijden</a></p><ul class="links">' + "".join(_mli(m) for m in _lvm) + '</ul>' if _lvm else "")
+                   + (f'<p><b>🌾 Glutenvrij</b> <a href="/maaltijden/glutenvrij/">alle glutenvrije maaltijden</a></p><ul class="links">' + "".join(_mli(m) for m in _gvm) + '</ul>' if _gvm else "")))
+    extra_v = [p for p in prods if stores[p[0]].get("count") and (GV_RE.search(p[1]) or LV_RE.search(p[1]) or is_vegan(p[1])) and any(re.search(r"\b" + w, p[1].lower()) for w in woorden) and id(p) not in alle_v][:30]
+    allerg = ((f'<h2>Glutenvrij, lactosevrij of vegan vieren</h2><p class="note">Per product een glutenvrije (🌾), lactosevrije (🥛) of vegan (🌱) variant, de goedkoopste eerst. Controleer bij een allergie altijd het etiket.</p>'
+               f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Glutenvrij</th><th>Lactosevrij</th><th>Vegan</th></tr></thead><tbody>{arij}</tbody></table></div>' if arij else "")
+              + (f'<h3>Meer glutenvrije, lactosevrije en vegan feestproducten</h3><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td>{labels(p[1])}<b>{esc(p[1])}</b><span class="sub">{esc(nm(p[0]))} · {esc(p[4] or "")}</span>{addbtn(p, p[1])}</td><td class="p">{tag(eff(p))}</td></tr>' for p in sorted(extra_v, key=eff)) + '</tbody></table></div>' if extra_v else "")
+              + _feestmaal + '<p><a href="/glutenvrij/">Alle glutenvrije boodschappen</a> · <a href="/lactosevrij/">Alle lactosevrije boodschappen</a> · <a href="/vegan/">Alle vegan boodschappen</a></p>')
     body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}' + allerg
             + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="offers" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
             + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
@@ -1183,17 +1372,73 @@ seizoenpagina("/oud-en-nieuw/", "Oud en nieuw", "Oud en nieuw: oliebollen, champ
     [("Waar koop je oliebollen het goedkoopst?", "Oliebollen uit de supermarkt verschillen veel in prijs per stuk. Hierboven zie je per supermarkt de voordeligste zak; vlak voor oud en nieuw komen er vaak extra acties bij."),
      ("Wanneer zijn de oud-en-nieuwacties?", "De meeste supermarkten hebben hun oud-en-nieuwacties in de laatste week van december. Deze pagina werkt dagelijks bij.")])
 
+seizoenpagina("/ramadan/", "Ramadan", "Ramadan en Suikerfeest: iftar-boodschappen vergelijken",
+    f"Ramadan boodschappen: dadels, linzen en halal vlees goedkoop ({MAAND})",
+    "Dadels, linzen, kikkererwten, bulgur, couscous, lamsvlees, merguez, hummus, Turks brood, filodeeg en noten voor de iftar en het Suikerfeest, bij alle supermarkten naast elkaar.",
+    ["dadels", "medjoul dadels", "rode linzen", "kikkererwten", "bulgur", "couscous", "vermicelli", "lamsrack", "lamskotelet", "merguez", "hummus", "tahin", "olijven",
+     "turks brood", "filodeeg", "griekse yoghurt", "verse munt", "honing", "pistachenoten", "amandelen", "walnoten", "rozijnen"],
+    ["dadel", "linzen", "kikkererwt", "bulgur", "couscous", "lams", "merguez", "halal", "hummus", "tahin", "filo", "turks", "pistache", "baklava"],
+    [("Wanneer is de Ramadan in 2027?", "De Ramadan begint naar verwachting rond 8 februari 2027 en duurt ongeveer 30 dagen; het Suikerfeest valt dan rond 10 maart 2027. De precieze data hangen af van de maan."),
+     ("Waar koop je halal vlees in de supermarkt?", "Halal kip, gehakt en vleeswaren vind je onder andere bij Albert Heijn, Jumbo, Lidl, Dirk en PLUS. Op onze pagina halal boodschappen staan ze naast elkaar."),
+     ("Wat eet je bij de iftar?", "Traditioneel breek je het vasten met dadels en water, gevolgd door soep (zoals linzensoep of harira) en een hoofdgerecht. Hierboven zie je waar de ingrediënten het goedkoopst zijn.")],
+    extra='<h2>Halal koken tijdens de Ramadan</h2><ul class="links"><li><a href="/halal/">Halal boodschappen vergelijken</a></li><li><a href="/maaltijden/halal/">Halal maaltijden met prijs per supermarkt</a></li><li><a href="/maaltijden/weekmenu-halal/">📅 Halal weekmenu met boodschappenlijst</a></li><li><a href="/maaltijden/turkse-linzensoep/">Turkse linzensoep</a> · <a href="/maaltijden/linzendahl/">Dahl met rode linzen</a></li></ul>')
+seizoenpagina("/chanoeka/", "Chanoeka", "Chanoeka: donuts, latkes en feestboodschappen vergelijken",
+    f"Chanoeka boodschappen: donuts, rösti en appelmoes goedkoop ({MAAND})",
+    "Voor Chanoeka eet je traditioneel gerechten met olie: sufganiot (donuts) en latkes (aardappelkoekjes) met appelmoes of zure room. Alle producten bij de supermarkten naast elkaar.",
+    ["donuts", "rösti", "aardappelen", "uien", "eieren", "zonnebloemolie", "appelmoes", "zure room", "kaas", "zalmfilet"],
+    ["donut", "rösti", "rosti", "appelmoes", "zure room"],
+    [("Wanneer is Chanoeka in 2026?", "Chanoeka begint in 2026 op de avond van 4 december en duurt acht dagen, tot en met 12 december."),
+     ("Wat eet je met Chanoeka?", "Gerechten die in olie gebakken zijn, als herinnering aan het wonder van de olie: sufganiot (gevulde donuts) en latkes (aardappelkoekjes), vaak met appelmoes of zure room.")],
+    extra='<h2>Koosjer koken</h2><p><a href="/koosjer/">Koosjer boodschappen en maaltijden</a> · <a href="/maaltijden/koosjer/">Koosjere maaltijden met prijs per supermarkt</a> · <a href="/maaltijden/weekmenu-koosjer/">Koosjer weekmenu</a></p>')
+seizoenpagina("/pesach/", "Pesach", "Pesach: matzes en seiderboodschappen vergelijken",
+    f"Pesach boodschappen: matzes en meer goedkoop ({MAAND})",
+    "Matzes, eieren, aardappelen, appels, walnoten en kip voor de seideravond en de week van Pesach, bij alle supermarkten naast elkaar.",
+    ["matzes", "matze crackers", "eieren", "aardappelen", "appels", "walnoten", "hele kip", "kippensoep", "zalmfilet", "uien", "winterpeen"],
+    ["matze", "matzes", "matzo"],
+    [("Wanneer is Pesach in 2027?", "Pesach begint in 2027 op de avond van 21 april (seideravond) en duurt tot en met 29 april."),
+     ("Welke matzes zijn koosjer voor Pesach?", "Voor Pesach heb je matzes nodig met een hechsjer voor Pesach. Kijk op de verpakking; gewone matzes en matzecrackers zijn dat niet altijd.")],
+    extra='<h2>Koosjer koken</h2><p><a href="/koosjer/">Koosjer boodschappen en maaltijden</a> · <a href="/maaltijden/koosjer/">Koosjere maaltijden</a> · <a href="/maaltijden/weekmenu-koosjer/">Koosjer weekmenu</a></p>')
+seizoenpagina("/pasen/", "Pasen", "Pasen: paasontbijt en paasbrunch vergelijken",
+    f"Paasontbijt goedkoop: eieren, croissants en meer ({MAAND})",
+    "Eieren, croissants, krentenbollen, roomboter, jus d'orange, zalm, kaas, asperges en lamsvlees voor het paasontbijt en paasdiner, bij alle supermarkten naast elkaar.",
+    ["eieren", "croissants", "krentenbollen", "roomboter", "sinaasappelsap", "zalmfilet", "jong belegen kaas", "hagelslag", "asperges", "lamsrack", "volkoren brood"],
+    ["paas", "pasen", "eitjes", "croissant", "asperge"],
+    [("Wanneer is Pasen in 2027?", "Eerste paasdag valt in 2027 op zondag 28 maart, tweede paasdag op maandag 29 maart."),
+     ("Wanneer komen de paasaanbiedingen?", "De meeste supermarkten starten hun paasacties in de twee weken voor Pasen. Deze pagina werkt dagelijks bij.")])
+seizoenpagina("/bbq/", "Barbecue", "Barbecue: BBQ-vlees, worstjes en houtskool vergelijken",
+    f"BBQ goedkoop: vlees, worstjes en houtskool per supermarkt ({MAAND})",
+    "Hamburgers, spareribs, saté, spiesjes, worstjes, stokbrood, kruidenboter, sauzen en houtskool voor de barbecue, bij alle supermarkten naast elkaar.",
+    ["hamburgers", "spareribs", "kipsaté", "kipspiesjes", "braadworst", "merguez", "stokbrood", "kruidenboter", "maiskolven", "knoflooksaus", "barbecuesaus", "satesaus", "houtskool", "chips naturel"],
+    ["bbq", "barbecue", "spies", "saté", "sate", "burger", "spareribs", "worst", "houtskool", "briket"],
+    [("Wat kost een barbecue per persoon?", "Met vlees, stokbrood, sauzen en salade ben je in de supermarkt meestal 6 tot 10 euro per persoon kwijt. Hierboven zie je per product waar het het goedkoopst is."),
+     ("Is een BBQ-pakket goedkoper?", "Niet altijd. Vergelijk de prijs per kilo: losse hamburgers, worstjes en saté zijn vaak voordeliger dan een kant-en-klaar pakket.")],
+    extra='<h2>Vegan of halal barbecueën</h2><p><a href="/vegan/vlees/">🌱 Vegan burgers en worstjes</a> · <a href="/halal/">Halal vlees</a></p>')
+seizoenpagina("/lunchtrommel/", "Lunchtrommel", "Lunchtrommel en schoolontbijt: goedkoop en gezond",
+    f"Lunchtrommel goedkoop: brood, beleg en fruit vergeleken ({MAAND})",
+    "Volkoren brood, krentenbollen, kaas, pindakaas, fruit, komkommer, rijstwafels en drinken voor het schoolontbijt en de lunchtrommel, bij alle supermarkten naast elkaar.",
+    ["volkoren brood", "krentenbollen", "jong belegen kaas", "pindakaas", "hagelslag", "appels", "bananen", "komkommer", "halfvolle melk", "ontbijtkoek", "rijstwafels", "capri sun", "fruitbiscuit"],
+    ["lunch", "ontbijt", "krentenbol", "rijstwafel", "capri", "brood"],
+    [("Wanneer is het Nationaal Schoolontbijt?", "Het Nationaal Schoolontbijt is elk jaar begin november. Basisscholen in heel Nederland ontbijten dan samen in de klas."),
+     ("Wat is een gezonde lunchtrommel?", "Volgens het Voedingscentrum: volkoren brood met mager beleg, een stuk groente of fruit en water of melk. Zoete drinkpakjes en koek kun je beter af en toe geven.")])
+
 # ---------- Feestdagen: overzicht van de seizoenspagina's, het huidige feest bovenaan ----------
 _md = int(VANDAAG[5:7]) * 100 + int(VANDAAG[8:10])
 FEESTEN = [("/sinterklaas/", "🎁", "Sinterklaas", "Pepernoten, kruidnoten, chocoladeletters, speculaas, marsepein en taai taai per supermarkt.", 1001 <= _md <= 1205),
            ("/kerst/", "🎄", "Kerst", "Gourmetschotels, rollade, hertenbiefstuk, kaasfondue, zalm en bubbels voor het kerstdiner.", 1115 <= _md <= 1226),
-           ("/oud-en-nieuw/", "🎆", "Oud en nieuw", "Oliebollen, appelflappen, champagne, krat bier en borrelhapjes.", _md >= 1210 or _md <= 101)]
+           ("/oud-en-nieuw/", "🎆", "Oud en nieuw", "Oliebollen, appelflappen, champagne, krat bier en borrelhapjes.", _md >= 1210 or _md <= 101),
+           ("/chanoeka/", "🕎", "Chanoeka", "Donuts, latkes (rösti), appelmoes en zure room voor het lichtjesfeest.", 1115 <= _md <= 1213),
+           ("/ramadan/", "🌙", "Ramadan en Suikerfeest", "Dadels, linzen, halal vlees, Turks brood en noten voor de iftar.", 115 <= _md <= 312),
+           ("/pasen/", "🐣", "Pasen", "Eieren, croissants, zalm en asperges voor het paasontbijt en paasdiner.", 301 <= _md <= 406),
+           ("/pesach/", "🫓", "Pesach", "Matzes, eieren, appels en walnoten voor de seideravond.", 401 <= _md <= 430),
+           ("/bbq/", "🍖", "Barbecue", "Hamburgers, spareribs, saté, worstjes en houtskool.", 501 <= _md <= 831),
+           ("/lunchtrommel/", "🍎", "Lunchtrommel en schoolontbijt", "Brood, beleg, fruit en drinken voor school.", 815 <= _md <= 915 or 1015 <= _md <= 1110)]
+FEESTEN = [f for f in FEESTEN if os.path.exists(os.path.join(OUT, f[0].strip("/"), "index.html"))]
 FEESTEN.sort(key=lambda f: not f[4])
 ch, cld = crumbs(("Feestdagen", None))
 head = ch + '<h1>Feestdagen: waar zijn de feestboodschappen het goedkoopst?</h1><p class="lead">Per feest de producten die je nodig hebt, bij alle supermarkten naast elkaar, met de acties die nu lopen. Elke dag bijgewerkt.</p>'
 body = ('<ul class="feesten">' + "".join(f'<li class="{"nu" if f[4] else ""}"><a href="{f[0]}"><span class="fi">{f[1]}</span><b>{esc(f[2])}</b>{"<span class=pill>nu</span>" if f[4] else ""}<span class="sub">{esc(f[3])}</span></a></li>' for f in FEESTEN) + "</ul>"
         + '<h2>Ook handig</h2><ul class="links"><li><a href="/maaltijden/weekmenu/">Goedkoop weekmenu met boodschappenlijst</a></li><li><a href="/aanbieding/krat-bier/">Krat bier aanbieding</a></li><li><a href="/aanbiedingen/">Alle aanbiedingen van deze week</a></li><li><a href="/goedkoopste-supermarkt/">De goedkoopste supermarkt</a></li></ul>')
-schrijf("/feestdagen/", page("/feestdagen/", f"Feestdagen: Sinterklaas, kerst en oud en nieuw goedkoop ({MAAND})", "Sinterklaas, kerst en oud en nieuw: per feest de boodschappen bij alle supermarkten naast elkaar, met de acties van nu. Elke dag bijgewerkt.", head, body, [cld], actief="/feestdagen/"))
+schrijf("/feestdagen/", page("/feestdagen/", f"Feestdagen: Sinterklaas, kerst, Ramadan, Pasen en meer goedkoop ({MAAND})", "Sinterklaas, kerst, oud en nieuw, Chanoeka, Ramadan, Pasen, Pesach en de barbecue: per feest de boodschappen bij alle supermarkten naast elkaar, met de acties van nu. Elke dag bijgewerkt.", head, body, [cld], actief="/feestdagen/"))
 made.append(("/feestdagen/", "0.8"))
 
 # ---------- 404, sitemap, robots ----------

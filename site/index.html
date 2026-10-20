@@ -414,9 +414,9 @@ function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a
 // Merkkeuze: "alle", "zonder" (zonder huismerken) of "huis" (alleen huismerken). Producten zonder merk tellen altijd mee.
 const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
 // Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
-const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.vg||isVegan(naam))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
-function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
-const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Alleen vegan</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
+const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.vg||isVegan(naam))&&(!S.dieet.hl||HALAL_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
+function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
+const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Alleen vegan</button><button type="button" class="chip" data-dieet="hl" aria-pressed="${!!S.dieet.hl}">Alleen halal</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.hl?"Alleen producten met halal in de naam (vooral vlees en kip); groente, fruit en andere producten zonder vlees zie je dan niet. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
 function matches0(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
@@ -468,9 +468,10 @@ const EIWIT={{EIWIT}};
 const LV_RE=/lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei|\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b/i;
 const VG_RE=/\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs|burger|gehakt|stukjes|balletjes|schnitzel|worst|kipstukjes|reepjes)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b|\b(?:tofu|tempeh|seitan)\b/i, VG_NIET=/gyoza|dumpling|loempia|niet vegan|aftersun|zonnebrand|spray|vitamine|supplement|capsule|tablet|shampoo|zeep|douche|creme voor|tandpasta|deodorant|lippen|nagel|make-up|mascara|\bmet (?:kip|ei|kaas|vlees)\b/i;
 const isVegan=n=>!!n&&VG_RE.test(n)&&!VG_NIET.test(n);
+const HALAL_RE=/\bhalal\b/i;
 // EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en minstens 5 g per 100 g).
 function eiwitrijk(t,kt){const g=EIWIT[(t||"").toLowerCase()];if(!g||g<5)return false;const m=/^(\d+(?:[.,]\d+)?) kcal per 100/.exec(kt||"");const k=m?parseFloat(m[1].replace(",",".")):0;return k>0?g*4/k>=.2:g>=10}
-const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(isVegan(naam)?'<span class="lbl vg">🌱 Vegan</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
+const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(isVegan(naam)?'<span class="lbl vg">🌱 Vegan</span>':"")+(HALAL_RE.test(naam||"")?'<span class="lbl hl">Halal</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
 function rowHtml(p,i,term){
@@ -558,13 +559,19 @@ function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
     seizoenTegels()+`<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu's</a>`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
-    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/vegan/"><span class="ic">🌱</span>Vegan</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
+    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/vegan/"><span class="ic">🌱</span>Vegan</a><a class="chip" href="/halal/"><span class="ic">🍗</span>Halal</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
 function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
   if(md>=1001&&md<=1205)t.push(["/sinterklaas/","🎁","Sinterklaas"]);
   if(md>=1115&&md<=1226)t.push(["/kerst/","🎄","Kerst"]);
   if(md>=1210||md<=101)t.push(["/oud-en-nieuw/","🎆","Oud en nieuw"]);
+  if(md>=1115&&md<=1213)t.push(["/chanoeka/","🕎","Chanoeka"]);
+  if(md>=115&&md<=312)t.push(["/ramadan/","🌙","Ramadan"]);
+  if(md>=301&&md<=406)t.push(["/pasen/","🐣","Pasen"]);
+  if(md>=401&&md<=430)t.push(["/pesach/","🫓","Pesach"]);
+  if(md>=501&&md<=831)t.push(["/bbq/","🍖","Barbecue"]);
+  if((md>=815&&md<=915)||(md>=1015&&md<=1110))t.push(["/lunchtrommel/","🍎","Lunchtrommel"]);
   return t.map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}</a>`).join("")}
 // Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
 const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
@@ -670,7 +677,7 @@ function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
   return `<li class="offer"><span class="top2"><span class="shop">${esc(STORENAMES[o.s]||o.s)}</span>${o.lbl?`<span class="pill">${esc(o.lbl)}</span>`:""}${o.v&&o.v>today?`<span class="soon">vanaf ${dagKort(o.v)}</span>`:""}</span>
   <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}${labels(o.n,o.kc,o.tm)}
-  <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>${o.ds?`<span class="oordeel ${o.ds}">${o.ds==="top"?"🔥":o.ds==="ok"?"👍":"⚠️"} ${esc(o.dt)}</span>`:""}
+  <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>${o.ds?`<span class="oordeel ${o.ds}">${o.ds==="top"?"🔥":o.ds==="ok"?"👍":o.ds==="let"?"ℹ️":"⚠️"} ${esc(o.dt)}</span>`:""}
   ${o.t?`<span class="till">t/m ${dagKort(o.t)}</span>`:""}
   ${added?'<span class="add on">✓ Op je lijst</span>':`<button type="button" class="add" data-offer="${o.i}">+ Op mijn lijst</button>`}</li>`;
 }
@@ -711,7 +718,7 @@ function renderList(){
     return `<li class="it${x.done&&!S.edit?" done":""}${sel?" sel":""}">${S.edit?`<input type="checkbox" class="chk selbox" data-pick="${i}"${sel?" checked":""} aria-label="${esc(x.term)} selecteren om te verwijderen">`:`<input type="checkbox" class="chk" data-done="${i}"${x.done?" checked":""} aria-label="${esc(x.term)} afvinken">`}
     <div><div class="t">${esc(x.term)}</div><div class="p"><span class="shop">${esc(STORENAMES[x.s]||x.s)}</span> <a href="${esc(x.link)}" target="_blank" rel="noopener" data-out="${esc(x.s)}">${esc(x.name)}</a></div></div>
     <div class="pq">${tag(c*q)}${q>1?`<span class="each">${q} × ${eur(c)}</span>`:""}${ch}<span class="qty"><button type="button" data-q="${i}" data-d="-1" aria-label="Eén minder ${esc(x.term)}">−</button><span aria-label="Aantal">${q}</span><button type="button" data-q="${i}" data-d="1" aria-label="Eén meer ${esc(x.term)}">+</button></span></div><button type="button" class="del" data-del="${i}" aria-label="${esc(x.term)} verwijderen" title="Verwijderen">×</button></li>`}).join(""):
-    `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<ul><li>Je lijst blijft vanzelf bewaard.</li><li>Kom je terug, dan zie je meteen wat goedkoper is geworden.</li><li>Wat er van je lijst in de aanbieding is, zie je hier ook.</li></ul></li>`;
+    `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<p style="margin:10px 0 4px"><button type="button" class="btn" data-startlijst>🛒 Start met 15 gewone weekboodschappen</button></p><p class="hint" style="margin:0 0 8px">Melk, brood, eieren, kaas, groente en fruit: je ziet meteen welke winkel voor jou het goedkoopst is. Daarna kun je alles aanpassen.</p><ul><li>Je lijst blijft vanzelf bewaard.</li><li>Kom je terug, dan zie je meteen wat goedkoper is geworden.</li><li>Wat er van je lijst in de aanbieding is, zie je hier ook.</li></ul></li>`;
   renderBar();
   renderMaal();
   renderForList();
@@ -761,6 +768,10 @@ function renderWhere(){
   if(full.length>1){const w=full.at(-1).sum-full[0].sum,pc=Math.round(w/full.at(-1).sum*100);
     if(w>=.5) html+=`<div class="bespaard"><span class="bb">💰 ${eur(w)}</span><span>bespaar je bij <b>${esc(sname(full[0].si))}</b> ten opzichte van ${esc(sname(full.at(-1).si))}${pc>=3?` (${pc}% goedkoper)`:""}.</span></div>`;
     else html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(w)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`}
+  // Waarom staat deze winkel bovenaan? Zuiver uitgerekend: per artikel welke winkel het goedkoopst is.
+  if(rows.length>1&&n>=2){const w0=rows[0];let wint=0,teller=0;
+    S.list.forEach((x,i)=>{const pr=rows.map(r=>r.items[i]?.price).filter(v=>v!=null);if(pr.length<2)return;teller++;if(w0.items[i]&&w0.items[i].price<=Math.min(...pr)+.004)wint++});
+    if(teller) html+=`<p class="hint waarom">ℹ️ <b>Waarom ${esc(sname(w0.si))} bovenaan?</b> Puur uitgerekend: daar zijn de meeste artikelen te koop en is het totaal het laagst. ${esc(sname(w0.si))} is bij ${wint} van je ${teller} artikelen de goedkoopste winkel. Geen winkel betaalt voor een plek. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>`}
   // Mijn vaste winkel tegenover de goedkoopste
   if(S.mijn&&full.length){const rm=rows.find(r=>isMijn(r.si)&&!r.miss),b0=full[0];
     if(rm&&rm.si!==b0.si&&rm.sum-b0.sum>=.5) html+=`<p class="mijnblok">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> betaal je ${eur(rm.sum)}. Bij <b>${esc(sname(b0.si))}</b> is je lijst <b>${eur(rm.sum-b0.sum)}</b> goedkoper.</p>`;
@@ -1083,6 +1094,7 @@ document.addEventListener("erbij",()=>{if(!S.list)return;if(erbijLaden()){save()
 function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
+  if(e.target.closest("[data-startlijst]")){startLijst();return}
   if(e.target.closest("[data-mijnwijzig]")){const d=$("mystores");if(d){d.open=true;jump("mystores");setTimeout(()=>$("mijnsel")?.focus(),400)}return}
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
   const hd=e.target.closest("[data-handig]"); if(hd){const k=hd.dataset.handig;gc("handig/"+k,"Handig: "+k);
@@ -1141,6 +1153,12 @@ document.addEventListener("submit",async e=>{const f=e.target.closest("form[data
 document.addEventListener("submit",e=>{if(e.target.id==="mailf"){e.preventDefault();const b=e.target.querySelector("button");b.disabled=true;b.textContent="Even geduld…";mailAan($("mailin").value.trim())}});
 $("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
+// Snelle start: 15 gewone weekboodschappen in één keer op de lijst, zodat je meteen ziet waar je lijst het goedkoopst is.
+const STARTLIJST=["halfvolle melk","volkoren brood","eieren","jong belegen kaas","roomboter","pindakaas","bananen","appels","aardappelen","uien","winterpeen","komkommer","tomaten","spaghetti","halfvolle yoghurt"];
+function startLijst(){let n=0;for(const t of STARTLIJST){if(S.list.some(x=>norm(x.term)===norm(t)))continue;
+    const b=[...pick(t).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0];if(!b)continue;
+    S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b)});n++}
+  gc("lijst-start/"+n,"Startlijst gebruikt");after();jump("lijst")}
 function bulkAdd(){
   const regels=$("bulkt").value.split(/[\n,;]+/).map(t=>t.trim()).filter(Boolean).slice(0,80);
   let ok=0;const mis=[];

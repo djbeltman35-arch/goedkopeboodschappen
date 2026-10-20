@@ -41,6 +41,10 @@ jobs:
           git config user.name "prijzen-bot"
           git config user.email "prijzen-bot@users.noreply.github.com"
           git add data
-          git diff --cached --quiet || git commit -m "Prijzen bijgewerkt $(date -u +%F)"
+          # Netlify rekent per publicatie (gratis: 20 per maand). Daarom alleen op even dagen publiceren;
+          # op oneven dagen wordt de data wel opgeslagen, maar met [skip netlify] niet gepubliceerd.
+          MSG="Prijzen bijgewerkt $(date -u +%F)"
+          if [ $(( 10#$(date -u +%j) % 2 )) -eq 1 ]; then MSG="$MSG [skip netlify]"; fi
+          git diff --cached --quiet || git commit -m "$MSG"
           git pull --rebase -X theirs origin main
           git push
