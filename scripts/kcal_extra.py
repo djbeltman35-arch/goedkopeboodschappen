@@ -5,6 +5,8 @@ G, ML, KOP = "100 g", "100 ml", "kopje"
 def _ml(**kw): return {k.replace("_", " "): (v, ML) for k, v in kw.items()}
 
 K2 = {
+ # sinterklaas en kerst
+ "taai taai": 360, "amandelstaaf": 440, "gemberkoek": 330, "oliebollen": 300, "kerststol": 380, "chocolade munten": 540, "borstplaat": 390, "speculaaspasta": 580, "hertenbiefstuk": 120, "kaasfondue": 230,
  # aardappelen, uien, groente
  "aardappelschijfjes": 80, "aardappelpartjes": 110, "rösti": 160, "gebakken aardappelen": 120, "aardappelkroketjes": 200, "opperdoezer": 77,
  "zilveruitjes": 30, "gebakken uitjes": 560, "knoflook": 149, "rode pepers": 40,

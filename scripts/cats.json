@@ -449,7 +449,8 @@
    "chocopasta",
    "fruitbeleg",
    "cashewpasta",
-   "pistachepasta"
+   "pistachepasta",
+   "speculaaspasta"
   ],
   "Broodbeleg"
  ],
@@ -903,7 +904,8 @@
    "varkensreepjes",
    "pulled pork",
    "buikspek",
-   "lamsrack"
+   "lamsrack",
+   "hertenbiefstuk"
   ],
   "Vlees en vis"
  ],
@@ -2111,7 +2113,8 @@
    "merci",
    "celebrations",
    "after eight",
-   "chocolade multipack"
+   "chocolade multipack",
+   "chocolade munten"
   ],
   "Koek en snoep"
  ],
@@ -2165,7 +2168,8 @@
    "turks fruit",
    "snoep uitdeel",
    "uitdeelzakjes",
-   "kauwgomballen"
+   "kauwgomballen",
+   "borstplaat"
   ],
   "Koek en snoep"
  ],
@@ -2242,7 +2246,12 @@
    "cakejes",
    "rozijnencake",
    "citroencake",
-   "worteltaart"
+   "worteltaart",
+   "taai taai",
+   "amandelstaaf",
+   "gemberkoek",
+   "oliebollen",
+   "kerststol"
   ],
   "Koek en snoep"
  ],

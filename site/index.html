@@ -701,7 +701,9 @@ function renderWhere(){
   const full=rows.filter(r=>!r.miss);
   const k=winkelsAan().length,tot=new Set(S.stores.filter(s=>s.count).map(s=>s.id)).size;
   let html=`<h3>Waar is je lijst het goedkoopst?</h3><p class="hint" style="margin:0">${k===tot?`Vergeleken bij alle ${tot} supermarkten.`:`Vergeleken bij jouw ${k} supermarkten.`} <button type="button" class="kies" data-kies>Mijn supermarkten kiezen</button></p>`+top.map((r,i)=>`<button type="button" class="store${i===0?" best":""}" data-si="${r.si}" aria-pressed="${r.si===sel}"><span class="n">${esc(sname(r.si))}</span>${tag(r.sum,"big")}<span class="s">${n-r.miss} van ${n} artikelen${r.miss?` · <span class="miss">${r.miss} niet te koop</span>`:""}</span></button>`).join("");
-  if(full.length>1) html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(full.at(-1).sum-full[0].sum)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`;
+  if(full.length>1){const w=full.at(-1).sum-full[0].sum,pc=Math.round(w/full.at(-1).sum*100);
+    if(w>=.5) html+=`<div class="bespaard"><span class="bb">💰 ${eur(w)}</span><span>bespaar je bij <b>${esc(sname(full[0].si))}</b> ten opzichte van ${esc(sname(full.at(-1).si))}${pc>=3?` (${pc}% goedkoper)`:""}.</span></div>`;
+    else html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(w)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`}
   // Twee winkels combineren: loont het om een deel elders te halen?
   if(n>=3&&rows.length>1){
     const base=rows[0];let best=null;
@@ -722,6 +724,13 @@ function renderWhere(){
   const r=rows.find(r=>r.si===sel), rid=sid(sel), rv=S.buurt?.[rid]?.[0];
   html+=`<p class="naar"><a class="route" href="${esc(routeUrl(rid,rv))}" target="_blank" rel="noopener" data-route="${esc(rid)}">📍 Route naar ${esc(sname(sel))}${rv?` (${String(rv.km).replace(".",",")} km)`:""}</a>${rv?.open&&openNu(rv.open)?` <span class="${openNu(rv.open).startsWith("Nu open")?"opennu":"dicht"}">${esc(openNu(rv.open))}</span>`:""}</p>`;
   html+=`<div class="detail"><ul>${r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener" data-out="${esc(sid(sel))}">${it.q>1?it.q+" × ":""}${esc(it.name)}</a><span>${it.deal?'<span class="pill">actie</span> ':""}${eur(it.price)}${it.conv?`<br><span class="muted" style="font-size:12px">voor ${esc(it.conv)}</span>`:""}</span></li>`:`<li><span class="miss">${esc(S.list[i].term)}: niet te koop bij ${esc(sname(sel))}</span><span></span></li>`).join("")}</ul></div>`;
+  // Bespaartips: koos je zelf een product bij deze winkel, en is daar een vergelijkbaar product voor dezelfde hoeveelheid duidelijk goedkoper?
+  const tips=[];
+  S.list.forEach((x,i)=>{if(x.si==null||x.offerTill||!on(x.si))return;const p=pick(x.term).get(x.si);if(!p||p.bad||link(p)===x.link)return;
+    const p0=S.byLink.get(x.link),q=x.q||1;const qq=p0&&!p0.bad&&p0[5]>0&&p0[6]===p[6]&&effUnit(p)!=null?p0[3]/p0[5]:null;if(!qq)return;
+    const nu=priceOf(x)*q,alt=effUnit(p)*qq*q,win=nu-alt;if(win>=.3&&win>=nu*.1)tips.push({i,x,p,win})});
+  if(tips.length){const som=tips.reduce((a,t)=>a+t.win,0);
+    html+=`<div class="tips"><p><b>💡 Bespaartip${tips.length>1?"s":""}</b>: in dezelfde winkel een vergelijkbaar product, samen ongeveer <b>${eur(som)}</b> minder voor dezelfde hoeveelheid.</p><ul>${tips.sort((a,b)=>b.win-a.win).map(t=>`<li><span><span class="shop">${esc(sname(t.x.si))}</span> Neem <b>${esc(t.p[1])}</b> ${esc(sizeTxt(t.p))} in plaats van ${esc(t.x.name)}</span><span class="tw">−${eur(t.win)} <button type="button" class="wissel" data-wissel="${t.i}" data-p="${t.p.i}">Wissel</button></span></li>`).join("")}</ul></div>`}
   $("where").innerHTML=html; S.printRow=r;
 }
 // Aanbiedingen die passen bij wat er op je lijst staat.
@@ -932,6 +941,7 @@ function renderAll(){renderList();renderWhere();if(S.view)renderView();else sear
 
 document.addEventListener("click",e=>{
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
+  const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
   const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
