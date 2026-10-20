@@ -311,8 +311,10 @@ def _merkkaart():
 MERKKAART = _merkkaart()
 
 PICKED = {}
+KERN = set()  # alle producten die bij een categorie-soort horen: de app laadt die eerst (producten-kern.json)
 for t in TERMS:
-    rows = sorted(per_store(matches(t)).items(), key=lambda kv: rank(kv[1]))
+    _m = matches(t); KERN.update(map(id, _m))
+    rows = sorted(per_store(_m).items(), key=lambda kv: rank(kv[1]))
     if rows: PICKED[t] = rows
 
 def term_offers(t, n=6):

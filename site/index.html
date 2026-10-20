@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <link rel="stylesheet" href="/stijl.css?v={{VERSIE}}"><script src="/fout.js?v={{VERSIE}}" defer></script>
-<link rel="preload" href="/producten.json" as="fetch" crossorigin>
+<link rel="preload" href="/producten-kern.json" as="fetch" crossorigin>
 <script type="application/ld+json">{{LDJSON}}</script>
 <style>
 /* Alleen voor de app op de startpagina */
@@ -916,9 +916,18 @@ $("bulkgo").addEventListener("click",bulkAdd);
 $("share").addEventListener("click",shareList);
 $("print").addEventListener("click",printList);
 
+// De rest van de prijslijst (producten buiten de categorieën) op de achtergrond erbij laden.
+async function laadRest(){
+  let j=null; try{j=await (await fetch("/producten-rest.json")).json()}catch(e){return}
+  if(!j?.products) return;
+  for(const p of j.products){p.i=S.prods.length;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);p.merk=merkVan(p[1],sid(p[0]));S.byLink.set(p.lk,p);S.prods.push(p);if(S.stores[p[0]])S.stores[p[0]].count++}
+  pickCache.clear(); S.restGeladen=true;
+  // Alleen opnieuw tekenen wat er nu staat (zoeken, je lijst); zonder te verspringen.
+  renderList();renderWhere();if(!S.view&&S.lastQ)search();
+}
 async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cache:"no-cache"});if(r.ok)return await r.json()}catch(e){}}return null}
 fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste=j;if(S.prods.length){if(S.view)renderView();else search()}}}).catch(()=>{});
-Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
+Promise.all([fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("/producten.json").then(r=>r.json())),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
   S.stores=d.stores; S.prods=d.products;
   // Aldi staat altijd achteraan in de winkellijst.
   const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
@@ -927,6 +936,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   S.byLink=new Map();
   S.prods.forEach((p,i)=>{p.i=i;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);S.byLink.set(p.lk,p)});
   merkenBepalen();
+  if(d.totaal) setTimeout(laadRest,0);
   // Door 3 of meer bezoekers als "klopt niet" gemeld: tijdelijk weglaten (zie netlify/functions/betwist.mjs).
   fetch("/api/betwist").then(r=>r.ok?r.json():null).then(j=>{if(j?.links?.length){S.betwist=new Set(j.links);pickCache.clear();renderAll()}}).catch(()=>{});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);

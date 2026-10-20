@@ -465,6 +465,15 @@ ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope B
       {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me"},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
+# Prijslijst in twee delen, zodat de app snel start: eerst alle producten die bij een categorie horen (ongeveer de helft),
+# daarna op de achtergrond de rest (voor zoeken naar bijzondere producten). producten.json zelf blijft ook bestaan.
+_pd = json.load(open(os.path.join(OUT, "producten.json")))
+_n = len(_pd["products"]); _kern = {i for i in range(_n) if id(prods[i]) in KERN}
+json.dump({"stores": _pd["stores"], "products": [p_ for i, p_ in enumerate(_pd["products"]) if i in _kern], "totaal": _n},
+          open(os.path.join(OUT, "producten-kern.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+json.dump({"products": [p_ for i, p_ in enumerate(_pd["products"]) if i not in _kern]},
+          open(os.path.join(OUT, "producten-rest.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+print(len(_kern), "van", _n, "producten in producten-kern.json")
 # A-merken voor de app: eerste woord van de productnaam, bij minstens 3 supermarkten, en meestal vooraan (niet een gewoon woord).
 _eerst, _overal, _win = {}, {}, {}
 for _p in prods:
