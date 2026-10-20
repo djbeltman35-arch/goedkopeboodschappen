@@ -16,7 +16,7 @@ def header(actief=""):
     links = "".join(f'<a href="{h}"{" class=" + c if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/glutenvrij/">Glutenvrij</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/glutenvrij/">Glutenvrij</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -314,6 +314,8 @@ for o in OFFERS: per_winkel.setdefault(o["s"], []).append(o)
 winkels_o = sorted(per_winkel, key=lambda s: NAMEN[s])
 def chips_o(cur):
     return '<nav class="chips" aria-label="Supermarkten">' + f'<a class="chip{" on" if not cur else ""}" href="/aanbiedingen/">Alle winkels</a>' + "".join(f'<a class="chip{" on" if cur == s else ""}" href="/aanbiedingen/{s}/">{esc(NAMEN[s])}</a>' for s in winkels_o) + "</nav>"
+AP_LINKS = [("krat-bier", "Krat bier"), ("pils", "Bier"), ("gehakt", "Gehakt"), ("kipfilet", "Kipfilet"), ("koffie", "Koffie"), ("wasmiddel", "Wasmiddel"), ("luiers", "Luiers"),
+            ("cola", "Cola en frisdrank"), ("toiletpapier", "Toiletpapier"), ("kaas", "Kaas"), ("eieren", "Eieren"), ("chips", "Chips"), ("wijn", "Wijn"), ("boter", "Boter")]
 def offers_page(cur, lst):
     nu_ = [o for o in lst if not o.get("v") or o["v"] <= VANDAAG]; straks = [o for o in lst if o.get("v") and o["v"] > VANDAAG]
     nu_.sort(key=lambda o: (-o["pct"], o["p"])); straks.sort(key=lambda o: (o["v"], -o["pct"]))
@@ -325,12 +327,13 @@ def offers_page(cur, lst):
     beste = nu_[0] if nu_ else None
     if cur:
         nm = NAMEN[cur]; naam_actie = "Bonus" if cur == "ah" else "aanbiedingen"
-        title = f"{'AH Bonus' if cur == 'ah' else nm + ' aanbiedingen'} deze week: {len(nu_)} acties" + (f" t/m {kortdag(eind)}" if eind else "")
+        _wk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1]
+        title = (f"AH Bonus week {_wk}: {len(nu_)} aanbiedingen" if cur == "ah" else f"{nm} folder week {_wk}: {len(nu_)} aanbiedingen") + (f" t/m {kortdag(eind)}" if eind else "")
         desc = f"Alle {len(nu_)} {naam_actie} van {nm} op een rij, de grootste korting eerst" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Elke dag bijgewerkt, met directe links naar het product."
-        h1 = f"{'AH Bonus' if cur == 'ah' else nm + ' aanbiedingen'} deze week"
+        h1 = f"{'AH Bonus' if cur == 'ah' else nm + ' aanbiedingen'} deze week (week {_wk})"
         lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {esc(nm)}, de grootste korting eerst." + (f" Plus {len(straks)} acties die binnenkort beginnen." if straks else "")
     else:
-        title = f"Alle supermarktaanbiedingen deze week: {len(nu_)} acties bij {len(winkels_o)} winkels"
+        title = f"Supermarkt aanbiedingen week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]}: {len(nu_)} acties bij {len(winkels_o)} winkels"
         desc = f"De aanbiedingen van {', '.join(NAMEN[s] for s in winkels_o[:-1])} en {NAMEN[winkels_o[-1]]} op één plek, de grootste korting eerst. Elke dag bijgewerkt." if winkels_o else "Supermarktaanbiedingen van deze week."
         h1 = "Alle supermarktaanbiedingen van deze week"
         lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {len(winkels_o)} supermarkten, de grootste korting eerst. Zet ze op je lijst en zie waar je het goedkoopst uit bent."
@@ -352,6 +355,7 @@ def offers_page(cur, lst):
             '<p class="note">Vomar, SPAR, Jan Linders en Nettorama zetten hun acties alleen in een folder of per winkel online. <a href="https://www.vomar.nl/folders" rel="nofollow noopener" target="_blank">Vomar-folder</a> · <a href="https://www.nettorama.nl/actiefolder" rel="nofollow noopener" target="_blank">Nettorama-folder</a></p>'
             + OFFJS)
     ld = [cld, {"@context": "https://schema.org", "@type": "CollectionPage", "name": h1, "url": BASE + path, "dateModified": VANDAAG}]
+    body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>"
     schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>", body, ld, actief="/aanbiedingen/"))
     made.append((path, "0.8"))
 if OFFERS:
@@ -372,7 +376,7 @@ def nm(si): return NAMEN.get(stores[si]["id"], stores[si]["name"])
 if PAK:
     w, l = PAK[0], PAK[-1]
     verschil = l["tot"] - w["tot"]
-    title = f"Goedkoopste supermarkt van Nederland: {nm(w['si'])} ({MAAND})"
+    title = f"Goedkoopste supermarkt {VANDAAG[:4]}: {nm(w['si'])} (update {MAAND.split()[0]}) – ranglijst {len(PAK)} supermarkten"
     desc = f"We vergeleken {len(PAKTERMEN)} vaste boodschappen bij {len(PAK)} supermarkten. {nm(w['si'])} is het goedkoopst met {eur(w['tot'])}, bij {nm(l['si'])} betaal je {eur(verschil)} meer. Elke dag bijgewerkt."
     trs = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. <a href="/supermarkt/{stores[r["si"]]["id"]}/">{esc(nm(r["si"]))}</a></b>{"<span class=sub>" + str(r["mist"]) + " niet gevonden, gerekend met de middenprijs</span>" if r["mist"] else ""}</td><td class="p">{tag(r["tot"])}</td><td class="p">{"" if i == 0 else "+ " + eur(r["tot"] - w["tot"])}<br><span class="unit">{"" if i == 0 else "+" + str(round((r["tot"] / w["tot"] - 1) * 100)) + "%"}</span></td></tr>' for i, r in enumerate(PAK))
     mand = "".join(f"<li>{esc(cap(t))} ({esc(str(q).replace('.', ','))} {esc({'l': 'liter', 'kg': 'kilo', 'st': 'stuks'}[u])})</li>" for t, q, u in PAKKET if t in PAKTERMEN)
@@ -609,6 +613,59 @@ if GV_LIJST:
     made.append(("/glutenvrij/", "0.8"))
     print(len(GV_LIJST), "glutenvrij-pagina's,", totaal, "producten")
 
+# ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
+AANB_PRODUCT = [  # (slug, naam, zoekpatroon in de actienaam, uitsluiten, vaste soorten om te vergelijken)
+    ("krat-bier", "Krat bier", r"\bkrat\b|24 ?x ?30 ?cl|24 flesjes", r"alcoholvrij|0[.,]0|radler", ["pils krat 24 flesjes", "pils blikjes 33 cl tray 24", "pils blikken 50 cl tray 24"]),
+    ("pils", "Bier", r"\bpils|\bbier\b|heineken|grolsch|hertog jan|amstel|bavaria|jupiler|brand\b", r"alcoholvrij|0[.,]0|radler|krat|glas|kaas", ["pils flesjes 6 pack", "pils blikjes 33 cl tray 24", "pils krat 24 flesjes"]),
+    ("gehakt", "Gehakt", r"gehakt", r"vega|plantaardig|balletjes|gehaktbal|roasted|rode biet|kruim|soep|saus|pizza|lasagne|ovenschotel|burger|slavink|frikandel|kroket|nasi|bami|maaltijd", ["gehakt", "rundergehakt", "kipgehakt"]),
+    ("kipfilet", "Kipfilet", r"kipfilet|kipdij", r"vega|beleg|plakjes|gerookt|salade|soep|wrap|kat|hond|krokant|schnitzel|burger|nugget|cordon|gepaneerd|spies|saté|sate", ["kipfilet", "kipdijfilet", "kipfiletblokjes"]),
+    ("koffie", "Koffie", r"koffie|douwe egberts|nespresso|senseo|dolce gusto|lavazza|jacobs|cups|pads|bonen", r"koffiemelk|koffiecreamer|ijskoffie|koek|chocolade|zetapparaat|machine|filters?\b|ontkalker", ["koffiebonen", "filterkoffie", "koffiepads", "koffiecups"]),
+    ("wasmiddel", "Wasmiddel", r"wasmiddel|waspoeder|wascapsules|caps\b|pods|ariel|persil|omo|robijn|dreft", r"afwas|vaatwas|hand|wasverzachter|wasparfum|parfum|droogtrommel|doekjes|vlekverwijderaar|spray|reiniger|toilet|kalk", ["wasmiddel vloeibaar", "waspoeder", "wascapsules", "wasmiddel"]),
+    ("luiers", "Luiers", r"luier|pampers|huggies|billendoekjes", r"zalf|crème|creme|tas|wasverzachter", ["luiers", "billendoekjes"]),
+    ("cola", "Cola en frisdrank", r"\bcola\b|coca|pepsi|fanta|sprite|7up|frisdrank|\bsinas\b|fernandes|ice tea|lipton", r"cola ?kaas|snoep|drop|zuurtjes|gum|chips|cookie|bakery|water|kies & mix|kies en mix|vla\b|ijs\b|yoghurt|dubbelfris|chocolade", ["coca-cola", "cola", "fanta", "sinas", "ice tea"]),
+    ("toiletpapier", "Toiletpapier", r"toiletpapier|wc-?papier|keukenpapier|edet|page\b|lotus", r"reiniger|blok|eend|houder", ["toiletpapier", "keukenpapier"]),
+    ("kaas", "Kaas", r"\bkaas\b|belegen|jong belegen|gouda|leerdammer|old amsterdam|beemster|milner|parrano", r"kaasstengels|kaasbroodje|chips|saus|stengels|croissant|soep|pizza|salade|snack|soufflé|souffle|kroket|tosti", ["jong belegen kaas", "belegen kaas", "oude kaas", "geraspte kaas"]),
+    ("eieren", "Eieren", r"\beieren\b|scharrelei|vrije uitloop", r"chocolade|paas|salade|gekookt|gevuld|noedel|spread", ["eieren", "scharreleieren"]),
+    ("chips", "Chips", r"chips|lay'?s|pringles|doritos|croky|smiths|hamka", r"stokbrood|chocolade", ["chips naturel", "chips paprika", "chips"]),
+    ("wijn", "Wijn", r"\bwijn\b|rode wijn|witte wijn|rosé|merlot|chardonnay|sauvignon|cabernet|prosecco|cava", r"azijn|saus|glas|kurk", ["rode wijn", "witte wijn", "rosé"]),
+    ("boter", "Boter en margarine", r"roomboter|boter\b|margarine|blue band|becel|halvarine|bak en braad", r"pinda|koek|cake|croissant|ham|sprits|speculaas|taart|brood", ["roomboter", "margarine", "halvarine"]),
+]
+def _o_unit(o):
+    return o.get("pp") if o.get("pp") else None
+_wk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1]
+AP_LIJST = []
+for sl, naam_, pat, uit, termen in AANB_PRODUCT:
+    rx, rxu = re.compile(pat, re.I), re.compile(uit, re.I)
+    acts = [o for o in OFFERS if rx.search(o["n"]) and not rxu.search(o["n"])]
+    ts = [t for t in termen if t in PICKED]
+    if len(acts) < 3 and not ts: continue
+    nu_ = [o for o in acts if not o.get("v") or o["v"] <= VANDAAG]; straks = [o for o in acts if o.get("v") and o["v"] > VANDAAG]
+    met_eh = [o for o in nu_ if _o_unit(o)]
+    nu_.sort(key=lambda o: (_o_unit(o) if _o_unit(o) else 1e9, o["p"]))
+    winkels_ = sorted({o["s"] for o in nu_}, key=lambda w: NAMEN.get(w, w))
+    path = f"/aanbieding/{sl}/"
+    goed = nu_[0] if nu_ else None
+    title = f"{naam_} aanbieding deze week (week {_wk}): " + (f"{len(nu_)} acties, goedkoopst bij {NAMEN.get(goed['s'], goed['s'])}" if goed else "prijzen per supermarkt")
+    desc = (f"Alle {len(nu_)} {naam_.lower()}-aanbiedingen van {', '.join(NAMEN.get(w, w) for w in winkels_)} naast elkaar" + (f", op prijs per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'}" if met_eh else "")
+            + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + ". Elke dag bijgewerkt.")
+    ch, cld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (f"{naam_} aanbieding", None))
+    head = ch + (f'<h1>{esc(naam_)} aanbieding deze week</h1><p class="lead">Week {_wk}: <b>{len(nu_)}</b> acties bij {len(winkels_)} supermarkten'
+                 + (f", de voordeligste per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'} eerst" if met_eh else ", de goedkoopste eerst") + ". Elke dag bijgewerkt met de nieuwe acties.</p>")
+    faq = []
+    if goed: faq.append((f"Waar is {naam_.lower()} deze week in de aanbieding?", f"In week {_wk} hebben {', '.join(NAMEN.get(w, w) for w in winkels_)} {naam_.lower()} in de aanbieding. Het voordeligst is nu {goed['n']} bij {NAMEN.get(goed['s'], goed['s'])} voor {eur(goed['p'])}" + (f" ({goed['lbl']})" if goed.get('lbl') else "") + "."))
+    if ts:
+        top_, n_ = winnaar(ts)
+        faq.append((f"Waar is {naam_.lower()} zonder aanbieding het goedkoopst?", f"Zonder actie is {nm(top_)} bij {n_} van de {len(ts)} vergeleken soorten het goedkoopst. Zie de tabel op deze pagina."))
+    faq.append(("Hoe vaak wordt dit bijgewerkt?", "Elke ochtend, met de acties van de webshops en folders van de supermarkten. De meeste weekacties lopen van maandag of woensdag tot en met zondag of dinsdag."))
+    body = ((f'<h2>Aanbiedingen deze week</h2><ul class="offers" id="grid">' + "".join(offer_card(o) for o in nu_[:60]) + "</ul>" if nu_ else '<p class="note">Op dit moment zijn er geen acties. Hieronder de vaste prijzen.</p>')
+            + (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in straks[:20]) + "</ul>" if straks else "")
+            + (f'<h2>Vaste prijzen: waar is {esc(naam_.lower())} altijd het goedkoopst?</h2>{cat_tabel(ts)}' if ts else "")
+            + '<h2>Meer aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s2}/">{esc(n2)} aanbieding</a></li>' for s2, n2, *_ in AANB_PRODUCT if s2 != sl)
+            + '<li><a href="/aanbiedingen/">Alle aanbiedingen van deze week</a></li></ul>' + faq_html(faq))
+    schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/aanbiedingen/", og_title=f"{naam_} aanbieding week {_wk}"))
+    made.append((path, "0.8")); AP_LIJST.append((sl, naam_, len(nu_)))
+print(len(AP_LIJST), "aanbieding-per-productpagina's:", ", ".join(f"{a} ({c})" for a, _, c in AP_LIJST))
+
 # ---------- Seizoen: Sinterklaas en kerst ----------
 def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     ts = [t for t in termen if t in PICKED]
@@ -642,6 +699,13 @@ seizoenpagina("/kerst/", "Kerst", "Kerst: kerstdiner en kersthapjes per supermar
     [("Wat kost gourmetten per persoon?", "Een gourmetschotel kost bij de supermarkt meestal tussen de 4 en 8 euro per persoon. Hierboven zie je per supermarkt de voordeligste schotel."),
      ("Wanneer komen de kerstaanbiedingen?", "De meeste supermarkten starten de kerstacties in de weken voor kerst; de grootste kortingen op vlees, vis en drank zie je meestal in de laatste week. Deze pagina werkt dagelijks bij.")],
     extra='<h2>Kerstmenu met prijs per supermarkt</h2><p>Liever een compleet menu? Bekijk de <a href="/maaltijden/">complete maaltijden</a> of het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a> met boodschappenlijst.</p>')
+seizoenpagina("/oud-en-nieuw/", "Oud en nieuw", "Oud en nieuw: oliebollen, champagne en krat bier vergelijken",
+    f"Oliebollen, champagne en krat bier: waar het goedkoopst? ({MAAND})",
+    "Oliebollen, appelflappen, champagne, cava, prosecco, krat bier, chips en borrelhapjes bij alle supermarkten naast elkaar.",
+    ["oliebollen", "appelflappen", "champagne", "cava", "prosecco", "pils krat 24 flesjes", "pils blikjes 33 cl tray 24", "chips naturel", "chips paprika", "nootjes", "bitterballen", "kaasstengels", "advocaat"],
+    ["oliebol", "appelflap", "champagne", "cava", "prosecco", "krat", "bitterbal", "kaasstengel", "borrel"],
+    [("Waar koop je oliebollen het goedkoopst?", "Oliebollen uit de supermarkt verschillen veel in prijs per stuk. Hierboven zie je per supermarkt de voordeligste zak; vlak voor oud en nieuw komen er vaak extra acties bij."),
+     ("Wanneer zijn de oud-en-nieuwacties?", "De meeste supermarkten hebben hun oud-en-nieuwacties in de laatste week van december. Deze pagina werkt dagelijks bij.")])
 
 # ---------- 404, sitemap, robots ----------
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
