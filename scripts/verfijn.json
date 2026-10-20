@@ -606,7 +606,11 @@
   "salade",
   "sint",
   "soep",
-  "stamppot"
+  "stamppot",
+  "plantaardige",
+  "terra",
+  "vega",
+  "vegan"
  ],
  "spek": [
   "bami",
@@ -794,5 +798,1051 @@
  ],
  "appelsap": [
   "sinaas"
+ ],
+ "rode biet": [
+  "smoothie",
+  "sap",
+  "salade",
+  "hummus",
+  "chips",
+  "appel"
+ ],
+ "kersen": [
+  "yoghurt",
+  "jam",
+  "vlaai",
+  "sap",
+  "siroop",
+  "bonbon",
+  "likeur",
+  "bier",
+  "compote",
+  "drop",
+  "snoep",
+  "thee",
+  "taart",
+  "chocolade",
+  "dessertsaus",
+  "kwark",
+  "ijs",
+  "vla",
+  "toetje",
+  "alpro",
+  "kriek",
+  "cake",
+  "muffin",
+  "rastervlaai",
+  "cola",
+  "lolly"
+ ],
+ "passievrucht": [
+  "schweppes",
+  "smaak",
+  "sap",
+  "siroop",
+  "limonade",
+  "yoghurt",
+  "thee",
+  "drank",
+  "ijs",
+  "sinaasappel"
+ ],
+ "paddenstoelen": [
+  "risotto",
+  "soep",
+  "saus",
+  "roomsaus",
+  "pizza",
+  "quiche",
+  "ravioli",
+  "tortellini",
+  "mix"
+ ],
+ "asperges": [
+  "pot",
+  "glas",
+  "soep",
+  "saus",
+  "blik",
+  "groene"
+ ],
+ "vijgen": [
+  "gedroogd",
+  "gedroogde",
+  "jam",
+  "brood",
+  "koek"
+ ],
+ "krenten": [
+  "brood",
+  "bollen",
+  "bol",
+  "koek",
+  "cake",
+  "rozijnenbrood"
+ ],
+ "frikandel speciaal": [
+  "chips",
+  "croky",
+  "snackbar"
+ ],
+ "eiersalade": [
+  "baguette",
+  "broodje",
+  "sandwich",
+  "wrap",
+  "bol",
+  "pistolet",
+  "croissant"
+ ],
+ "tonijnsalade": [
+  "baguette",
+  "broodje",
+  "sandwich",
+  "wrap",
+  "bol",
+  "pistolet",
+  "croissant"
+ ],
+ "zalmsalade": [
+  "baguette",
+  "broodje",
+  "sandwich",
+  "wrap",
+  "bol"
+ ],
+ "krabsalade": [
+  "baguette",
+  "broodje",
+  "sandwich",
+  "wrap",
+  "bol"
+ ],
+ "kipkerriesalade": [
+  "baguette",
+  "broodje",
+  "sandwich",
+  "wrap",
+  "bol"
+ ],
+ "amandelmelk": [
+  "palmolive",
+  "douche",
+  "zeep",
+  "creme",
+  "crème",
+  "bodylotion",
+  "shampoo",
+  "handzeep",
+  "bad",
+  "naturals"
+ ],
+ "melkpoeder": [
+  "chocolademelkpoeder",
+  "chocolade"
+ ],
+ "volle yoghurt": [
+  "halfvolle"
+ ],
+ "plantaardige yoghurt": [
+  "drink",
+  "drinkyoghurt"
+ ],
+ "yoghurt aardbei": [
+  "drink",
+  "drinkyoghurt"
+ ],
+ "yoghurt perzik": [
+  "drink",
+  "drinkyoghurt"
+ ],
+ "kruidenboter": [
+  "brood",
+  "baguette",
+  "stokbrood",
+  "breekbrood",
+  "stokjes",
+  "bol",
+  "stengels",
+  "champignons",
+  "boboli",
+  "rolletjes"
+ ],
+ "knoflookboter": [
+  "brood",
+  "baguette",
+  "stokbrood",
+  "breekbrood",
+  "stokjes",
+  "bol",
+  "stengels",
+  "champignons",
+  "queens"
+ ],
+ "roomboter gezouten": [
+  "ongezouten"
+ ],
+ "ontbijtkoek gesneden": [
+  "ongesneden"
+ ],
+ "peperkoek": [
+  "muffin"
+ ],
+ "gouda": [
+  "halvarine",
+  "glorie",
+  "margarine",
+  "bak",
+  "braad"
+ ],
+ "kaas plakken belegen": [
+  "jong"
+ ],
+ "kruidenroomkaas": [
+  "ovenschotel",
+  "schotel",
+  "zalm",
+  "wrap",
+  "kip",
+  "kipfilet"
+ ],
+ "roomkaas naturel": [
+  "zalmrolletjes",
+  "zalm",
+  "rolletjes",
+  "wrap"
+ ],
+ "burrata": [
+  "pizza",
+  "salade"
+ ],
+ "raclette": [
+  "ambiano",
+  "duo",
+  "grill",
+  "set",
+  "apparaat"
+ ],
+ "serranoham": [
+  "wraphapje",
+  "wrap",
+  "hapje",
+  "stokjes",
+  "broodje"
+ ],
+ "bacon": [
+  "tuc",
+  "chips",
+  "crackers",
+  "saus",
+  "smaak",
+  "burger",
+  "kaas",
+  "snack",
+  "lu",
+  "bites"
+ ],
+ "kalkoen": [
+  "olvarit",
+  "maanden",
+  "stamppot",
+  "hapje",
+  "kattenvoer",
+  "hondenvoer",
+  "sheba",
+  "gourmet",
+  "whiskas",
+  "felix",
+  "baby"
+ ],
+ "kipfilet gemarineerd": [
+  "vegetarische",
+  "vegetarisch",
+  "vega",
+  "vegan"
+ ],
+ "kipspies": [
+  "vegan",
+  "vegetarisch",
+  "vega"
+ ],
+ "biologische kip": [
+  "eieren",
+  "eitjes"
+ ],
+ "gehaktballetjes": [
+  "airfryermaaltijd",
+  "maaltijd",
+  "saus",
+  "soep",
+  "tomatensoep",
+  "zoetzure"
+ ],
+ "varkensfilet": [
+  "cordon",
+  "bleu",
+  "rollade"
+ ],
+ "procureur": [
+  "hutspot",
+  "stamppot",
+  "maaltijd"
+ ],
+ "varkensoester": [
+  "ovenschotel",
+  "schotel"
+ ],
+ "draadjesvlees": [
+  "kroketten",
+  "kroket",
+  "vegetarische",
+  "vega"
+ ],
+ "lamsvlees": [
+  "edgard",
+  "cooper",
+  "hondenvoer",
+  "kattenvoer",
+  "grasgevoerd",
+  "onweerstaanbaar"
+ ],
+ "gyros": [
+  "verspakket",
+  "pita",
+  "kruiden",
+  "kruidenmix",
+  "saus",
+  "mix"
+ ],
+ "runderreepjes": [
+  "maaltijdpannetje",
+  "aviko",
+  "pannetje",
+  "maaltijd"
+ ],
+ "konijn": [
+  "voer",
+  "konijnenvoer",
+  "snack"
+ ],
+ "bratwurst": [
+  "impossible",
+  "vegan",
+  "vegetarisch"
+ ],
+ "schol": [
+  "vitakraft",
+  "jelly",
+  "kattenvoer",
+  "kat",
+  "lovers"
+ ],
+ "krab": [
+  "ipa",
+  "bier",
+  "brouwerij",
+  "salade",
+  "schelde"
+ ],
+ "lekkerbek": [
+  "plantaard",
+  "plantaardig",
+  "vegan",
+  "vega"
+ ],
+ "rode rijst": [
+  "bowl",
+  "kidneybonen",
+  "bonduelle"
+ ],
+ "ramen": [
+  "bramen"
+ ],
+ "burrito": [
+  "kruidenmix",
+  "kruiden",
+  "mix"
+ ],
+ "fajita": [
+  "kruidenmix",
+  "kruiden",
+  "mix"
+ ],
+ "witte bonen": [
+  "tomaten",
+  "tomatens",
+  "tomatensaus",
+  "saus"
+ ],
+ "volkorenmeel": [
+  "crackers"
+ ],
+ "cacao": [
+  "boterhampasta",
+  "pasta",
+  "hagelslag",
+  "vlokken",
+  "drink",
+  "melk",
+  "chocolade",
+  "reep",
+  "koek",
+  "orinoko",
+  "ontbijt"
+ ],
+ "chocolate chips": [
+  "doritos",
+  "tortilla",
+  "nacho",
+  "hot"
+ ],
+ "amandelspijs": [
+  "speculaas",
+  "koek",
+  "staaf",
+  "croissant",
+  "broodje",
+  "piccolo",
+  "letter"
+ ],
+ "hollandaisesaus": [
+  "vis",
+  "maaltijd",
+  "vers aan tafel",
+  "bieten"
+ ],
+ "zoetzure saus": [
+  "gehaktballetjes",
+  "balletjes",
+  "kip",
+  "maaltijd",
+  "mora"
+ ],
+ "jachtsaus": [
+  "dagschotel",
+  "sperziebonen",
+  "maaltijd"
+ ],
+ "chocoladesaus": [
+  "pudding",
+  "yoghurt",
+  "toetje",
+  "vla",
+  "dame",
+  "blanche",
+  "duo",
+  "mona"
+ ],
+ "karamelsaus": [
+  "pudding",
+  "yoghurt",
+  "toetje",
+  "vla",
+  "duo",
+  "danio"
+ ],
+ "aardbeiensaus": [
+  "pudding",
+  "yoghurt",
+  "toetje",
+  "vla",
+  "vanillepudding",
+  "duo",
+  "mona"
+ ],
+ "teriyakisaus": [
+  "bonen",
+  "zwarte"
+ ],
+ "sukiyaki": [
+  "noedels",
+  "noodles",
+  "soba",
+  "instant"
+ ],
+ "yakitori": [
+  "noedels",
+  "noodles",
+  "soba",
+  "instant",
+  "nissin"
+ ],
+ "kaneel": [
+  "appelmoes",
+  "koek",
+  "koekjes",
+  "thee",
+  "brood",
+  "yoghurt",
+  "muesli",
+  "granola",
+  "cruesli",
+  "chips",
+  "rozijnen",
+  "broodjes",
+  "rol",
+  "rolls",
+  "snoep",
+  "kauwgom",
+  "stokjes",
+  "suiker"
+ ],
+ "komijn": [
+  "plak",
+  "plantaardige",
+  "kaas",
+  "melkan",
+  "gouda",
+  "komijnekaas"
+ ],
+ "rozemarijn": [
+  "grissini",
+  "olie",
+  "aardappel",
+  "friet",
+  "chips",
+  "crackers",
+  "brood",
+  "zout"
+ ],
+ "bieslook": [
+  "zuivelspread",
+  "spread",
+  "roomkaas",
+  "kaas",
+  "saus",
+  "dressing",
+  "dip"
+ ],
+ "decaf": [
+  "ice",
+  "latte",
+  "ijs",
+  "ijskoffie",
+  "cappuccino"
+ ],
+ "kamille": [
+  "fuze",
+  "ice",
+  "ijsthee",
+  "drank",
+  "mango",
+  "honing"
+ ],
+ "matcha": [
+  "perfectted",
+  "apple",
+  "raspberry",
+  "drink",
+  "ijs",
+  "latte"
+ ],
+ "diksap": [
+  "bonbébé",
+  "bonbebe",
+  "maanden",
+  "baby"
+ ],
+ "sourcy": [
+  "vitaminwater",
+  "vitamin"
+ ],
+ "volvic": [
+  "vitamine",
+  "peach",
+  "juicy",
+  "smaak"
+ ],
+ "tequila": [
+  "bier",
+  "desperados"
+ ],
+ "porter": [
+  "piesporter",
+  "michelsberg",
+  "moselland",
+  "wijn",
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "estrella": [
+  "finca",
+  "crianza",
+  "wijn",
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "lager": [
+  "slager",
+  "vegetarische",
+  "kipstuckjes",
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "bordeaux": [
+  "keukenset",
+  "ruit",
+  "handdoek",
+  "theedoek",
+  "doek",
+  "set",
+  "ddddd"
+ ],
+ "whisky": [
+  "infused",
+  "bier",
+  "cola",
+  "carolus"
+ ],
+ "gin": [
+  "tonic"
+ ],
+ "safari": [
+  "nuggets"
+ ],
+ "witte chocolade": [
+  "roomijsjes",
+  "ijs",
+  "ijsjes",
+  "yoghurt",
+  "koek",
+  "koekjes",
+  "hagelslag",
+  "vlokken",
+  "mousse",
+  "muffin",
+  "cookies",
+  "snoep",
+  "pasta"
+ ],
+ "bonbons": [
+  "hoest"
+ ],
+ "gummies": [
+  "biotine",
+  "care",
+  "hair",
+  "vitamine",
+  "multivitamine",
+  "magnesium",
+  "vitamines"
+ ],
+ "krakelingen": [
+  "grissini",
+  "zoute"
+ ],
+ "wokkels": [
+  "aanmaak",
+  "pitmaster",
+  "aanmaakwokkels"
+ ],
+ "partymix": [
+  "fruitgom",
+  "snoep",
+  "gom"
+ ],
+ "hazelnoten": [
+  "gechocolateerde",
+  "chocolade",
+  "pasta",
+  "koek",
+  "reep"
+ ],
+ "gemengde noten": [
+  "kruidnoten",
+  "chocolade"
+ ],
+ "noten gebrand": [
+  "ongebrand"
+ ],
+ "chiazaad": [
+  "sap",
+  "appel",
+  "mango",
+  "drank",
+  "pudding"
+ ],
+ "kokosnoot": [
+  "alpro",
+  "barista",
+  "drink",
+  "yoghurt"
+ ],
+ "wasmachine reiniger": [
+  "vaatwas",
+  "vaatwasmachine"
+ ],
+ "parfum": [
+  "wasparfum",
+  "robijn"
+ ],
+ "emmer": [
+  "diarree",
+  "remmer",
+  "diarreeremmer"
+ ],
+ "kauwgom suikervrij": [
+  "rennie",
+  "calcium",
+  "calciumcarbonaat"
+ ],
+ "thermometer": [
+  "vlees",
+  "vleesthermometer"
+ ],
+ "verband": [
+  "incontinentie",
+  "incontinentieverband",
+  "maandverband"
+ ],
+ "speen": [
+  "bospeen"
+ ],
+ "meergranen brood": [
+  "broodmix",
+  "mix",
+  "bakmix"
+ ],
+ "weidemelk": [
+  "koffiemelk",
+  "koffie"
+ ],
+ "witbier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "weizen": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "ipa": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "tripel": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "blond bier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "bokbier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "radler": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "cider": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "rose bier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "speciaalbier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "amber bier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "stout": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "saison": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "lentebok": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "herfstbok": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "quadrupel": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "kriek": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "fruitbier": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "heineken": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "grolsch": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "bavaria": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "amstel": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "hertog jan": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "jupiler": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "la chouffe": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "leffe": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "duvel": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "affligem": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "grimbergen": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "texels": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "brand weizen": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "warsteiner": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "carlsberg": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "corona": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "desperados": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "gulpener": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "hoegaarden": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "westmalle": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "chimay": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "karmeliet": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "la trappe": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "brugse zot": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "kasteel": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "peroni": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "birra moretti": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "pilsner urquell": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
+ ],
+ "lindemans": [
+  "0.0",
+  "0,0",
+  "alcoholvrij",
+  "alcoholvrije",
+  "alkoholfrei"
  ]
 }
