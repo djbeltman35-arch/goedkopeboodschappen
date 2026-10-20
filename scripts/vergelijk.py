@@ -265,15 +265,50 @@ for _c in CATS:
         for _z in (VARNORM[_k]["zoek"] if _k in VARNORM else [_t]):
             _w = tuple(norm(_z))
             if _w: _SUBTERMEN.append((_c, _w, [n for n in VERFIJN.get(" ".join(_w), []) if not any(n in x for x in _w)], _t))
+# Index: per woord (en per woorddeel van 5+ letters aan het eind) de zoektermen die met dat woord beginnen. Veel sneller dan alles langslopen.
+_SUBIDX = {}
+for _i, (_c, _w, _n, _t) in enumerate(_SUBTERMEN): _SUBIDX.setdefault(_w[0], []).append(_i)
+def _kandidaten(ws):
+    ids = set()
+    for x in ws:
+        ids.update(_SUBIDX.get(x, ()))
+        for k in range(1, len(x) - 4): ids.update(_SUBIDX.get(x[k:], ()))  # samengestelde woorden: "tomatensoep" vindt "soep"
+    return [_SUBTERMEN[i] for i in sorted(ids)]
 def subcat_van(naam, groep):
     """Beste subcategorie voor een aanbieding: (categorie, aantal woorden, zoekterm) van de meest specifieke zoekterm die past, binnen de eigen hoofdgroep."""
     ws = set(norm(naam)); beste = None
     pas = lambda w: w in ws or (len(w) >= 5 and any(x.endswith(w) for x in ws))
-    for c, tw, niet, term in _SUBTERMEN:
+    for c, tw, niet, term in _kandidaten(ws):
         if groep != "Overig" and c[3] != groep: continue
         if not all(pas(w) for w in tw) or any(n in x for x in ws for n in niet): continue
         if beste is None or len(tw) > beste[1]: beste = (c, len(tw), term)
     return beste
+
+# Merk naar categorie, geleerd uit de producten: van een merk (eerste woord, bij minstens 3 winkels) de soort waar het meestal onder valt.
+# Zo komt een aanbieding als "Ritter Sport Wit hazelnoot" bij Chocolade, ook als de naam geen soortwoord bevat.
+HUISMERK_W = {"ah", "jumbo", "jumbo's", "plus", "pcd", "1", "g'woon", "gwoon", "dekavers", "dekamarkt", "hoogvliet", "spar", "poiesz", "vomar", "lidl", "aldi",
+              "melkan", "zuivelmeester", "bio+", "smaakt", "daily", "derlon", "bonbébé", "bonbebe", "uit", "boerentrots", "euroshopper"}
+def eerste_woord(naam):
+    m = re.findall(r"[a-z0-9à-ÿ'&+-]+", str(naam).lower()); return m[0] if m else ""
+def _merkkaart():
+    per, win = {}, {}
+    for p in prods:
+        f = eerste_woord(p[1])
+        if len(f) < 2 or f in HUISMERK_W or f[0].isdigit(): continue
+        per.setdefault(f, []).append(p); win.setdefault(f, set()).add(p[0])
+    kaart = {}
+    for f, lst in per.items():
+        if len(lst) < 6 or len(win[f]) < 3: continue
+        tel = {}
+        for p in lst[:40]:
+            r = subcat_van(p[1], "Overig")
+            if r: tel[r[0][0]] = tel.get(r[0][0], 0) + 1
+        n = sum(tel.values())
+        if n >= 5 and n / min(len(lst), 40) >= .4:  # het merk moet voor een flink deel in soorten vallen, anders liever geen keuze
+            c, k = max(tel.items(), key=lambda kv: kv[1])
+            if k / n >= .6: kaart[f] = next(x for x in CATS if x[0] == c)
+    return kaart
+MERKKAART = _merkkaart()
 
 PICKED = {}
 for t in TERMS:

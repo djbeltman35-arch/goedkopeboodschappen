@@ -150,7 +150,7 @@ for t, rows in PICKED.items():
     trs = ""
     for i, (si, p) in enumerate(rows):
         o = offer_of(p)
-        unit = "" if id(p) in BAD else per(*toon_unit(p))
+        unit = "" if id(p) in BAD else (per(*toon_unit(p)) or "inhoud onbekend")
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
                 f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
@@ -186,7 +186,7 @@ def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
     return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
-            + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)))}</span></td></tr>')
+            + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)) or "inhoud onbekend")}</span></td></tr>')
 # Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
 PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Andere soorten"]
 PAKSTART = re.compile(r"\b(fles|flesje|flesjes|flessen|beugelflessen|kinderflesjes|los|sixpack|blikjes|blikken|krat|mini|\d+ x)\b")
@@ -275,9 +275,11 @@ made.append(("/vergelijk/", "0.6"))
 def _deel_in(o):
     naam = o["n"] + " " + (o.get("sz") or "")
     c = subcat_van(naam, o.get("c") or "Overig")  # zonder groep ("Overig") wordt in alle groepen gezocht
+    if not c and eerste_woord(o["n"]) in MERKKAART:  # geen soort gevonden: dan de soort die bij het merk hoort
+        k = MERKKAART[eerste_woord(o["n"])]; c = (k, 0, None)
     if c:
         o["sc"], o["c"] = c[0][0], c[0][3]
-        k = kcal_txt(c[2])
+        k = kcal_txt(c[2]) if c[2] else None
         if k: o["kc"] = k  # calorieën van de productsoort
     return bool(c)
 _od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
@@ -463,6 +465,15 @@ ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope B
       {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me"},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
+# A-merken voor de app: eerste woord van de productnaam, bij minstens 3 supermarkten, en meestal vooraan (niet een gewoon woord).
+_eerst, _overal, _win = {}, {}, {}
+for _p in prods:
+    _w = re.findall(r"[a-z0-9à-ÿ'&+-]+", _p[1].lower())
+    if not _w: continue
+    _eerst[_w[0]] = _eerst.get(_w[0], 0) + 1; _win.setdefault(_w[0], set()).add(stores[_p[0]]["id"])
+    for _x in set(_w): _overal[_x] = _overal.get(_x, 0) + 1
+AMERK = sorted(f for f, ws in _win.items() if not f[0].isdigit() and len(f) > 1 and len(ws) >= 3 and _eerst[f] / _overal[f] >= .7)
+app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
 app = (app.replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
           .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))

@@ -30,7 +30,11 @@ for si,s in enumerate(d):
         # Staat er in de naam een andere hoeveelheid dan in de maat ("Kipfilet 1000 g" met maat "150 g"), dan klopt een van beide niet:
         # dan geen prijs per kilo/liter, zodat het product niet onterecht als goedkoopste bovenaan komt.
         vn,un=parse(p['n']); vs,us=parse(p.get('s',''))
-        if vn and vs and un==us and max(vn,vs)/min(vn,vs)>1.25: v=None; conflict+=1
+        if vn and vs and un==us and max(vn,vs)/min(vn,vs)>1.25:
+            # Uitzondering: "12x0,33 l" in de naam met als maat "0,33 l" (één blikje): dan klopt de naam (12 x 0,33 = 3,96 liter).
+            mm=rx.search(p['n'].lower()); stuks=int(mm.group(1)) if mm and mm.group(1) else 0
+            if stuks>1 and abs(vn/stuks-vs)<=vs*.02: v,u=vn,un
+            else: v=None; conflict+=1
         up=None
         if v:
             ok+=1
