@@ -57,6 +57,7 @@ def offer_card(o):
     t = f'<span class="till">t/m {kortdag(o["t"])}</span>' if o.get("t") else ""
     return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span></span>'
+            + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>{t}{offerbtn(o)}</li>')
 
 
@@ -270,7 +271,10 @@ made.append(("/vergelijk/", "0.6"))
 def _deel_in(o):
     naam = o["n"] + " " + (o.get("sz") or "")
     c = subcat_van(naam, o.get("c") or "Overig")  # zonder groep ("Overig") wordt in alle groepen gezocht
-    if c: o["sc"], o["c"] = c[0], c[3]
+    if c:
+        o["sc"], o["c"] = c[0][0], c[0][3]
+        k = kcal_txt(c[2])
+        if k: o["kc"] = k  # calorieën van de productsoort
     return bool(c)
 _od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 _n = sum(_deel_in(o) for o in _od.get("offers", []))

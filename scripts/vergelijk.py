@@ -264,16 +264,16 @@ for _c in CATS:
         _k = " ".join(norm(_t))
         for _z in (VARNORM[_k]["zoek"] if _k in VARNORM else [_t]):
             _w = tuple(norm(_z))
-            if _w: _SUBTERMEN.append((_c, _w, [n for n in VERFIJN.get(" ".join(_w), []) if not any(n in x for x in _w)]))
+            if _w: _SUBTERMEN.append((_c, _w, [n for n in VERFIJN.get(" ".join(_w), []) if not any(n in x for x in _w)], _t))
 def subcat_van(naam, groep):
-    """Beste subcategorie voor een aanbieding: de meest specifieke zoekterm die past, binnen de eigen hoofdgroep."""
+    """Beste subcategorie voor een aanbieding: (categorie, aantal woorden, zoekterm) van de meest specifieke zoekterm die past, binnen de eigen hoofdgroep."""
     ws = set(norm(naam)); beste = None
     pas = lambda w: w in ws or (len(w) >= 5 and any(x.endswith(w) for x in ws))
-    for c, tw, niet in _SUBTERMEN:
+    for c, tw, niet, term in _SUBTERMEN:
         if groep != "Overig" and c[3] != groep: continue
         if not all(pas(w) for w in tw) or any(n in x for x in ws for n in niet): continue
-        if beste is None or len(tw) > beste[1]: beste = (c, len(tw))
-    return beste[0] if beste else None
+        if beste is None or len(tw) > beste[1]: beste = (c, len(tw), term)
+    return beste
 
 PICKED = {}
 for t in TERMS:
