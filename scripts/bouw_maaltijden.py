@@ -232,7 +232,7 @@ if MAAL:
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span> voor het hele gerecht.</p><p class=\"note mkeus\" hidden></p><p class=\"feiten\">{sprong}</p>"
             f'<div class="mfbalk" id="mfbalk"><p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p></div>')
-    themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
+    themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/weekmenu/">📅 Goedkoop weekmenu met boodschappenlijst</a></li><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
                   + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
     body = (secties + themalinks + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM} voor hele verpakkingen, zoals aan de kassa, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq) + MKJS)
     il = {"@context": "https://schema.org", "@type": "ItemList", "name": "Complete maaltijden met prijs per supermarkt",
@@ -305,4 +305,76 @@ if MAAL:
         if len(ms) < 2: continue
         themapagina(sl_, kort, f"{kort}: goedkope maaltijden per supermarkt", f"Goedkope {kort.lower()}: prijs per supermarkt ({MAAND})",
                     f"{len(ms)} gewone {kort.lower()} voor 4 personen, met calorieën en de supermarkt waar je het minst betaalt. Vanaf <span data-vanaf><b>{eur(pprs(ms[0]))}</b></span> voor het hele gerecht.", ms)
+# ---------- Weekmenu: 5 goedkope avondmaaltijden, samen ingekocht ----------
+from maaltijd_kosten import ingredient_prijzen as _ingprijs
+def _weekmenu_kies(pool):
+    gekozen, gezien = [], set()
+    for soort in ("aardappel", "pasta", "rijst", "oven", "wereld", "soep", "salade"):
+        if len(gekozen) == 5: break
+        c = sorted([m for m in pool if m["soort"] == soort and m["slug"] not in gezien], key=pprs)
+        if c: gekozen.append(c[0]); gezien.add(c[0]["slug"])
+    for m in sorted(pool, key=pprs):
+        if len(gekozen) == 5: break
+        if m["slug"] not in gezien: gekozen.append(m); gezien.add(m["slug"])
+    return gekozen
+def _weekmenu_samen(ms):
+    """Alle ingrediënten van de 5 maaltijden bij elkaar opgeteld en per winkel als hele verpakkingen ingekocht."""
+    som, namen = {}, {}
+    for m in ms:
+        schaal = 4 / m.get("porties", 4)
+        for r in m["ing"]:
+            extra = r[3] if len(r) > 3 else ""
+            if extra in ("v", "o"): continue
+            som[r[0]] = som.get(r[0], 0) + r[1] * schaal
+            namen.setdefault(r[0], r[2].split(" (")[0])
+    prijzen = {k: _ingprijs(k, q) for k, q in som.items()}
+    uit = []
+    for si, st_ in enumerate(stores):
+        if not st_.get("count") or not all(si in prijzen[k] for k in som): continue
+        regels = [(namen[k], som[k], *prijzen[k][si]) for k in som]
+        uit.append((si, sum(r[2] for r in regels), regels))
+    return sorted(uit, key=lambda x: x[1]), som
+def weekmenu(slug_, kort, h1, lead_extra, pool):
+    ms = _weekmenu_kies(pool)
+    if len(ms) < 5: return
+    rang, som = _weekmenu_samen(ms)
+    if len(rang) < 3: return
+    path = f"/maaltijden/{slug_}/"
+    si0, tot0, regels0 = rang[0]
+    los = sum(pprs(m) for m in ms)
+    ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), (kort, None))
+    kcal_gem = round(sum(m["kcal"] for m in ms) / 5 / 5) * 5
+    lead = (f"5 avondmaaltijden voor 4 personen, van maandag tot en met vrijdag. Alles samen kost bij <b>{esc(wnaam(si0))}</b> <b>{eur(tot0)}</b>, "
+            f"dat is {pp(tot0 / 5)} per persoon per maaltijd. {lead_extra}")
+    dagen = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]
+    menu = "".join(f'<li><span class="rk">{d}</span> <a href="/maaltijden/{m["slug"]}/"><b>{esc(m["naam"])}</b></a>{mlabels(m)}<span class="sub">{m["kcal"]} kcal p.p. · {m["tijd"]} min · los vanaf {eur(pprs(m))}</span></li>' for d, m in zip(dagen, ms))
+    def os_van(si, regels):
+        return ([{"s": stores[si]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": n.lower(), "m": slug_, **({"q": nn} if nn > 1 else {})} for n, q, k, p, nn, gb in regels]
+                + [{"u": "maal:" + m["slug"], "maal": {"slug": m["slug"], "n": m["naam"], "k": m["kcal"], "pp": 4}} for m in ms])
+    tops = "".join(f'<li class="{"w" if i == 0 else ""}"><span class="rk">{i + 1}e goedkoopst</span><b style="font-size:19px">{esc(wnaam(si))}</b>{tag(t, "big" if i == 0 else "")}'
+                   f'<span class="muted">{pp(t / 5)} per persoon per maaltijd</span>'
+                   f'<button type="button" class="add addall" data-m="{slug_}" data-os="{esc(json.dumps(os_van(si, rg), ensure_ascii=False))}">+ Hele weekmenu op mijn lijst</button></li>' for i, (si, t, rg) in enumerate(rang[:3]))
+    lijst = "".join(f'<tr><td>{esc(n)}<span class="sub">{esc(p[1])}{" · " + str(nn) + "x" if nn > 1 else ""}</span></td><td class="p">{eur(k)}</td></tr>' for n, q, k, p, nn, gb in sorted(regels0, key=lambda r: -r[2]))
+    allew = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. {esc(wnaam(si))}</b></td><td class="p">{tag(t)}</td><td class="p">{"" if i == 0 else "+ " + eur(t - tot0)}</td></tr>' for i, (si, t, rg) in enumerate(rang))
+    faq = [(f"Wat kost dit weekmenu?", f"Op {DATUM} kost het hele weekmenu voor 4 personen {eur(tot0)} bij {wnaam(si0)}, voor 5 avondmaaltijden. Bij {wnaam(rang[-1][0])} betaal je {eur(rang[-1][1] - tot0)} meer."),
+           ("Waarom is samen inkopen goedkoper?", f"Ingrediënten die in meer gerechten zitten, zoals uien of knoflook, koop je maar één keer. Los gekocht kosten deze 5 maaltijden samen ongeveer {eur(los)}; samen ingekocht {eur(tot0)}."),
+           ("Wat zit er niet bij?", "Olie, zout, peper, kruiden en bouillon uit de voorraadkast tellen niet mee in de prijs. Die staan wel bij elk recept.")]
+    body = (f'<h2>Het menu</h2><ul class="links weekmenu">{menu}</ul>'
+            f'<h2>Waar koop je alles het goedkoopst?</h2><ol class="mtop">{tops}</ol>'
+            f'<h2>Boodschappenlijst bij {esc(wnaam(si0))}</h2><div class="tblwrap"><table class="ptable"><tbody>{lijst}</tbody><tfoot><tr><td><b>Totaal</b></td><td class="p"><b>{eur(tot0)}</b></td></tr></tfoot></table></div>'
+            f'<p class="note">Hele verpakkingen, zoals aan de kassa. Prijzen van {DATUM}; lopende aanbiedingen tellen mee. Het menu wordt elke dag opnieuw gekozen op basis van de prijzen.</p>'
+            f'<h2>Alle supermarkten</h2><div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th style="text-align:right">Weekmenu</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{allew}</tbody></table></div>'
+            + faq_html(faq) + '<h2>Meer weekmenu\'s</h2><ul class="links">'
+            + "".join(f'<li><a href="/maaltijden/{x}/">{t}</a></li>' for x, t in [("weekmenu", "Goedkoop weekmenu"), ("weekmenu-glutenvrij", "Glutenvrij weekmenu"), ("weekmenu-caloriearm", "Caloriearm weekmenu")] if x != slug_)
+            + '<li><a href="/maaltijden/">Alle complete maaltijden</a></li></ul>' + MJS)
+    il = {"@context": "https://schema.org", "@type": "ItemList", "name": h1, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/maaltijden/{m['slug']}/", "name": m["naam"]} for i, m in enumerate(ms)]}
+    title = f"{h1}: 5 avondmaaltijden voor {eur(tot0)} ({MAAND})"
+    desc = f"5 avondmaaltijden voor 4 personen, samen ingekocht voor {eur(tot0)} bij {wnaam(si0)} ({pp(tot0 / 5)} p.p. per maaltijd). Met boodschappenlijst en prijs per supermarkt, elke dag bijgewerkt."
+    schrijf(path, page(path, title, desc, crumbs_head(ch, h1, lead), body, [cld, il, faq_ld(faq)], actief="/maaltijden/", og_title=f"{h1} voor {eur(tot0)}"))
+    made.append((path, "0.8"))
+    return tot0
+if MAAL:
+    weekmenu("weekmenu", "Goedkoop weekmenu", "Goedkoop weekmenu", "Elke dag wat anders: aardappels, pasta, rijst, een ovenschotel en wereldkeuken.", MAAL)
+    weekmenu("weekmenu-glutenvrij", "Glutenvrij weekmenu", "Glutenvrij weekmenu", "Alle gerechten zonder ingrediënten met gluten; controleer bij bouillon en kruidenmixen wel het etiket.", [m for m in MAAL if m["glutenvrij"]])
+    weekmenu("weekmenu-caloriearm", "Caloriearm weekmenu", "Caloriearm weekmenu", f"Elke maaltijd hoogstens {KCAL_ARM} kcal per persoon.", [m for m in MAAL if m["kcal"] <= KCAL_ARM])
 print(len(MAAL), "maaltijdpagina's")
