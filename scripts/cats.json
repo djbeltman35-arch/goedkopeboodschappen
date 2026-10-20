@@ -1,40 +1,90 @@
 [
  [
-  "Groente en aardappelen",
-  "🥦",
+  "Aardappelen",
+  "🥔",
   [
+   "aardappelen kruimig",
+   "aardappelen vastkokend",
    "aardappelen",
    "krieltjes",
-   "aardappelpuree",
-   "uien",
-   "rode uien",
-   "knoflook",
-   "tomaten",
-   "cherrytomaten",
-   "komkommer",
-   "paprika",
-   "wortels",
-   "broccoli",
-   "bloemkool",
-   "sperziebonen",
-   "spinazie",
-   "andijvie",
-   "boerenkool",
-   "zuurkool",
-   "sla",
-   "ijsbergsla",
-   "champignons",
-   "courgette",
-   "prei",
-   "witlof",
-   "spruitjes",
-   "rode kool",
-   "pompoen"
-  ]
+   "zoete aardappel",
+   "aardappelpuree"
+  ],
+  "Groente en aardappelen"
  ],
  [
-  "Fruit",
-  "🍎",
+  "Uien en knoflook",
+  "🧅",
+  [
+   "uien",
+   "rode uien",
+   "sjalotten",
+   "knoflook bollen",
+   "gehakte knoflook"
+  ],
+  "Groente en aardappelen"
+ ],
+ [
+  "Verse groente",
+  "🥕",
+  [
+   "tomaten",
+   "trostomaten",
+   "cherrytomaten",
+   "komkommer",
+   "paprika rood",
+   "paprika mix",
+   "puntpaprika",
+   "winterpeen",
+   "broccoli vers",
+   "bloemkool vers",
+   "sperziebonen vers",
+   "spinazie vers",
+   "andijvie",
+   "boerenkool vers",
+   "zuurkool",
+   "prei",
+   "witlof",
+   "spruitjes vers",
+   "rode kool vers",
+   "courgette",
+   "aubergine",
+   "champignons vers",
+   "pompoen",
+   "bosui",
+   "wokgroente vers"
+  ],
+  "Groente en aardappelen"
+ ],
+ [
+  "Sla en rauwkost",
+  "🥬",
+  [
+   "sla",
+   "ijsbergsla",
+   "rucola",
+   "veldsla",
+   "worteltjes geraspt"
+  ],
+  "Groente en aardappelen"
+ ],
+ [
+  "Groente in pot en blik",
+  "🫙",
+  [
+   "sperziebonen in pot",
+   "rode kool in pot",
+   "erwten en wortelen in pot",
+   "champignons in pot",
+   "mais",
+   "spinazie in pot",
+   "rode bieten"
+  ],
+  "Groente en aardappelen"
+ ],
+ [
+  "Vers fruit",
+  "🍌",
   [
    "bananen",
    "appels",
@@ -42,39 +92,124 @@
    "sinaasappels",
    "mandarijnen",
    "druiven",
-   "aardbeien",
-   "blauwe bessen",
+   "aardbeien vers",
+   "blauwe bessen vers",
    "kiwi",
    "citroenen",
    "avocado",
-   "mango"
-  ]
+   "mango",
+   "ananas",
+   "meloen"
+  ],
+  "Fruit"
  ],
  [
-  "Brood en ontbijt",
+  "Diepvriesgroente",
+  "🥦",
+  [
+   "spinazie diepvries",
+   "broccoli diepvries",
+   "sperziebonen diepvries",
+   "doperwten diepvries",
+   "bloemkool diepvries",
+   "boerenkool diepvries",
+   "wokgroente diepvries"
+  ],
+  "Diepvries"
+ ],
+ [
+  "Diepvriessnacks",
+  "🍟",
+  [
+   "friet",
+   "kroketten",
+   "frikandellen",
+   "bitterballen",
+   "kipnuggets",
+   "loempia",
+   "kaassoufflés",
+   "mexicano"
+  ],
+  "Diepvries"
+ ],
+ [
+  "Pizza",
+  "🍕",
+  [
+   "pizza"
+  ],
+  "Diepvries"
+ ],
+ [
+  "Diepvriesvis",
+  "🐟",
+  [
+   "vissticks",
+   "lekkerbekjes",
+   "kibbeling"
+  ],
+  "Diepvries"
+ ],
+ [
+  "Diepvriesfruit",
+  "🍓",
+  [
+   "aardbeien diepvries",
+   "blauwe bessen diepvries",
+   "frambozen diepvries"
+  ],
+  "Diepvries"
+ ],
+ [
+  "IJs",
+  "🍦",
+  [
+   "ijs in bak",
+   "ijsjes multipack"
+  ],
+  "Diepvries"
+ ],
+ [
+  "Brood",
   "🍞",
   [
    "volkoren brood",
    "wit brood",
    "bruin brood",
+   "stokbrood",
    "krentenbollen",
    "croissants",
+   "pannenkoeken"
+  ],
+  "Brood en ontbijt"
+ ],
+ [
+  "Crackers, beschuit en ontbijtkoek",
+  "🍘",
+  [
    "beschuit",
    "crackers",
    "knackebrod",
-   "ontbijtkoek",
+   "rijstwafels",
+   "ontbijtkoek"
+  ],
+  "Brood en ontbijt"
+ ],
+ [
+  "Ontbijtgranen",
+  "🥣",
+  [
    "cornflakes",
    "havermout",
    "muesli",
    "cruesli",
-   "granola",
-   "pannenkoeken",
-   "tortilla wraps"
-  ]
+   "granola"
+  ],
+  "Brood en ontbijt"
  ],
  [
-  "Broodbeleg",
-  "🥜",
+  "Zoet beleg",
+  "🍯",
   [
    "pindakaas",
    "hagelslag",
@@ -86,10 +221,11 @@
    "hazelnootpasta",
    "speculoospasta",
    "honing"
-  ]
+  ],
+  "Broodbeleg"
  ],
  [
-  "Zuivel en eieren",
+  "Melk",
   "🥛",
   [
    "halfvolle melk",
@@ -98,23 +234,52 @@
    "karnemelk",
    "chocolademelk",
    "havermelk",
-   "sojamelk",
+   "sojamelk"
+  ],
+  "Zuivel en eieren"
+ ],
+ [
+  "Yoghurt, kwark en vla",
+  "🥣",
+  [
    "yoghurt",
    "griekse yoghurt",
    "kwark",
    "skyr",
-   "vla",
-   "slagroom",
-   "kookroom",
-   "creme fraiche",
-   "roomboter",
-   "margarine",
-   "halvarine",
-   "eieren"
-  ]
+   "vla"
+  ],
+  "Zuivel en eieren"
  ],
  [
-  "Kaas",
+  "Room",
+  "🍶",
+  [
+   "slagroom",
+   "kookroom",
+   "creme fraiche"
+  ],
+  "Zuivel en eieren"
+ ],
+ [
+  "Boter en margarine",
+  "🧈",
+  [
+   "roomboter",
+   "margarine",
+   "halvarine"
+  ],
+  "Zuivel en eieren"
+ ],
+ [
+  "Eieren",
+  "🥚",
+  [
+   "eieren"
+  ],
+  "Zuivel en eieren"
+ ],
+ [
+  "Hollandse kaas",
   "🧀",
   [
    "jonge kaas",
@@ -122,19 +287,34 @@
    "belegen kaas",
    "oude kaas",
    "plakken kaas",
-   "geraspte kaas",
+   "geraspte kaas"
+  ],
+  "Kaas"
+ ],
+ [
+  "Smeer- en roomkaas",
+  "🫕",
+  [
    "smeerkaas",
-   "roomkaas",
+   "roomkaas"
+  ],
+  "Kaas"
+ ],
+ [
+  "Buitenlandse kaas",
+  "🧀",
+  [
    "mozzarella",
    "feta",
    "brie",
    "parmigiano",
    "grana padano"
-  ]
+  ],
+  "Kaas"
  ],
  [
-  "Vleeswaren en tapas",
-  "🥓",
+  "Vleeswaren",
+  "🥪",
   [
    "ham",
    "kipfilet beleg",
@@ -143,77 +323,155 @@
    "boterhamworst",
    "cervelaat",
    "filet americain",
-   "rookvlees",
-   "olijven",
-   "hummus"
-  ]
+   "rookvlees"
+  ],
+  "Vleeswaren en tapas"
  ],
  [
-  "Vlees en vis",
+  "Tapas",
+  "🫒",
+  [
+   "olijven",
+   "hummus"
+  ],
+  "Vleeswaren en tapas"
+ ],
+ [
+  "Kip",
   "🍗",
   [
    "kipfilet",
    "kipdijfilet",
    "kippendijen",
    "kipdrumsticks",
+   "kipgehakt"
+  ],
+  "Vlees en vis"
+ ],
+ [
+  "Gehakt en burgers",
+  "🍔",
+  [
    "gehakt",
    "rundergehakt",
    "half om half gehakt",
    "gehaktballen",
-   "hamburgers",
-   "speklapjes",
+   "hamburgers"
+  ],
+  "Vlees en vis"
+ ],
+ [
+  "Varken en rund",
+  "🥩",
+  [
+   "speklappen",
    "spekreepjes",
+   "spekblokjes",
    "varkenshaas",
    "biefstuk",
+   "shoarma"
+  ],
+  "Vlees en vis"
+ ],
+ [
+  "Worst",
+  "🌭",
+  [
    "rookworst",
-   "braadworst",
-   "shoarma",
-   "zalm",
-   "tonijn",
+   "braadworst"
+  ],
+  "Vlees en vis"
+ ],
+ [
+  "Vis",
+  "🐟",
+  [
+   "zalmfilet",
+   "gerookte zalm",
+   "tonijn in water",
+   "tonijn in olie",
    "kabeljauw",
    "garnalen",
    "haring",
    "makreel"
-  ]
+  ],
+  "Vlees en vis"
  ],
  [
-  "Pasta, rijst en wereldkeuken",
-  "🍝",
+  "Rijst",
+  "🍚",
   [
    "rijst",
    "basmati rijst",
    "pandan rijst",
-   "zilvervliesrijst",
+   "zilvervliesrijst"
+  ],
+  "Pasta, rijst en wereldkeuken"
+ ],
+ [
+  "Pasta",
+  "🍝",
+  [
    "spaghetti",
    "macaroni",
    "penne",
    "fusilli",
-   "lasagne",
-   "noedels",
-   "mie",
-   "couscous"
-  ]
+   "lasagne"
+  ],
+  "Pasta, rijst en wereldkeuken"
  ],
  [
-  "Soep, conserven en bakken",
-  "🥫",
+  "Wereldkeuken",
+  "🌍",
   [
-   "soep",
+   "noedels",
+   "mie",
+   "couscous",
+   "tortilla wraps"
+  ],
+  "Pasta, rijst en wereldkeuken"
+ ],
+ [
+  "Soep",
+  "🍲",
+  [
+   "soep"
+  ],
+  "Soep, conserven en bakken"
+ ],
+ [
+  "Tomaat in blik en pak",
+  "🍅",
+  [
    "tomatenpuree",
    "passata",
-   "tomatenblokjes",
+   "tomatenblokjes"
+  ],
+  "Soep, conserven en bakken"
+ ],
+ [
+  "Peulvruchten en appelmoes",
+  "🫘",
+  [
    "kidneybonen",
    "kikkererwten",
    "linzen",
-   "mais",
-   "appelmoes",
-   "tarwebloem",
-   "suiker"
-  ]
+   "appelmoes"
+  ],
+  "Soep, conserven en bakken"
  ],
  [
-  "Sauzen, olie en kruiden",
-  "🧂",
+  "Bakken",
+  "🧁",
+  [
+   "tarwebloem",
+   "suiker"
+  ],
+  "Soep, conserven en bakken"
+ ],
+ [
+  "Sauzen",
+  "🥫",
   [
    "pastasaus",
    "pesto",
@@ -223,163 +481,460 @@
    "curry",
    "mosterd",
    "satesaus",
-   "sambal",
-   "ketjap",
-   "sojasaus",
    "knoflooksaus",
    "barbecuesaus",
-   "slasaus",
+   "slasaus"
+  ],
+  "Sauzen, olie en kruiden"
+ ],
+ [
+  "Oosterse sauzen",
+  "🌶️",
+  [
+   "sambal",
+   "ketjap",
+   "sojasaus"
+  ],
+  "Sauzen, olie en kruiden"
+ ],
+ [
+  "Olie en bakboter",
+  "🫒",
+  [
    "olijfolie",
    "zonnebloemolie",
-   "bakboter",
+   "bakboter"
+  ],
+  "Sauzen, olie en kruiden"
+ ],
+ [
+  "Kruiden en bouillon",
+  "🧂",
+  [
    "keukenzout",
    "peper",
    "bouillonblokjes"
-  ]
+  ],
+  "Sauzen, olie en kruiden"
  ],
  [
-  "Diepvries",
-  "❄️",
-  [
-   "pizza",
-   "friet",
-   "kroketten",
-   "frikandellen",
-   "vissticks",
-   "diepvries spinazie",
-   "diepvries erwten",
-   "ijs"
-  ]
- ],
- [
-  "Koffie en thee",
+  "Koffie",
   "☕",
   [
    "koffiebonen",
+   "filterkoffie",
    "koffiepads",
    "koffiecups",
-   "filterkoffie",
-   "oploskoffie",
-   "espresso",
-   "thee",
+   "koffiecups dolce gusto",
+   "oploskoffie"
+  ],
+  "Koffie en thee"
+ ],
+ [
+  "Thee",
+  "🍵",
+  [
+   "zwarte thee",
    "groene thee",
    "rooibos thee",
-   "muntthee"
-  ]
+   "pepermuntthee",
+   "kamillethee",
+   "vruchtenthee"
+  ],
+  "Koffie en thee"
  ],
  [
-  "Frisdrank en sap",
+  "Cola",
   "🥤",
   [
-   "coca cola",
-   "coca cola zero",
-   "pepsi",
-   "cola",
-   "sinaasappelsap",
-   "appelsap",
-   "multivitaminesap",
-   "spa",
-   "bronwater",
-   "mineraalwater",
-   "bruisend water",
-   "ice tea",
-   "limonade siroop",
-   "energiedrank"
-  ]
+   "Coca-Cola fles 1,5 liter",
+   "Coca-Cola fles 1 liter",
+   "Coca-Cola flesje 0,5 liter",
+   "Coca-Cola los blikje 33 cl",
+   "Coca-Cola los blikje 25 cl",
+   "Coca-Cola sixpack blikjes 33 cl",
+   "Coca-Cola blikjes 33 cl 8- tot 12-pack",
+   "Coca-Cola blikjes 33 cl tray (24)",
+   "Coca-Cola blikjes 25 cl 4- tot 12-pack",
+   "Coca-Cola blikjes 25 cl tray (20 of 24)",
+   "Coca-Cola mini blikjes (15 cl)",
+   "Coca-Cola flesjes 4-pack 0,5 liter",
+   "Coca-Cola flessen 4- of 6-pack 1,5 liter",
+   "Pepsi fles 1,5 liter",
+   "Pepsi fles 1 liter",
+   "Pepsi flesje 0,5 liter",
+   "Pepsi los blikje 33 cl",
+   "Pepsi los blikje 25 cl",
+   "Pepsi sixpack blikjes 33 cl",
+   "Pepsi blikjes 33 cl 8- tot 12-pack",
+   "Pepsi blikjes 33 cl tray (24)",
+   "Pepsi blikjes 25 cl 4- tot 12-pack",
+   "Pepsi blikjes 25 cl tray (20 of 24)",
+   "Pepsi mini blikjes (15 cl)",
+   "Pepsi flesjes 4-pack 0,5 liter",
+   "Pepsi flessen 4- of 6-pack 1,5 liter",
+   "Cola (alle merken) fles 1,5 liter",
+   "Cola (alle merken) fles 1 liter",
+   "Cola (alle merken) flesje 0,5 liter",
+   "Cola (alle merken) los blikje 33 cl",
+   "Cola (alle merken) los blikje 25 cl",
+   "Cola (alle merken) sixpack blikjes 33 cl",
+   "Cola (alle merken) blikjes 33 cl 8- tot 12-pack",
+   "Cola (alle merken) blikjes 33 cl tray (24)",
+   "Cola (alle merken) blikjes 25 cl 4- tot 12-pack",
+   "Cola (alle merken) blikjes 25 cl tray (20 of 24)",
+   "Cola (alle merken) mini blikjes (15 cl)",
+   "Cola (alle merken) flesjes 4-pack 0,5 liter",
+   "Cola (alle merken) flessen 4- of 6-pack 1,5 liter"
+  ],
+  "Frisdrank en sap"
  ],
  [
-  "Bier en wijn",
+  "Cola zero en light",
+  "🥤",
+  [
+   "Coca-Cola Zero fles 1,5 liter",
+   "Coca-Cola Zero fles 1 liter",
+   "Coca-Cola Zero flesje 0,5 liter",
+   "Coca-Cola Zero los blikje 33 cl",
+   "Coca-Cola Zero los blikje 25 cl",
+   "Coca-Cola Zero sixpack blikjes 33 cl",
+   "Coca-Cola Zero blikjes 33 cl 8- tot 12-pack",
+   "Coca-Cola Zero blikjes 33 cl tray (24)",
+   "Coca-Cola Zero blikjes 25 cl 4- tot 12-pack",
+   "Coca-Cola Zero blikjes 25 cl tray (20 of 24)",
+   "Coca-Cola Zero mini blikjes (15 cl)",
+   "Coca-Cola Zero flesjes 4-pack 0,5 liter",
+   "Coca-Cola Zero flessen 4- of 6-pack 1,5 liter",
+   "Cola zero en light (alle merken) fles 1,5 liter",
+   "Cola zero en light (alle merken) fles 1 liter",
+   "Cola zero en light (alle merken) flesje 0,5 liter",
+   "Cola zero en light (alle merken) los blikje 33 cl",
+   "Cola zero en light (alle merken) los blikje 25 cl",
+   "Cola zero en light (alle merken) sixpack blikjes 33 cl",
+   "Cola zero en light (alle merken) blikjes 33 cl 8- tot 12-pack",
+   "Cola zero en light (alle merken) blikjes 33 cl tray (24)",
+   "Cola zero en light (alle merken) blikjes 25 cl 4- tot 12-pack",
+   "Cola zero en light (alle merken) blikjes 25 cl tray (20 of 24)",
+   "Cola zero en light (alle merken) mini blikjes (15 cl)",
+   "Cola zero en light (alle merken) flesjes 4-pack 0,5 liter",
+   "Cola zero en light (alle merken) flessen 4- of 6-pack 1,5 liter"
+  ],
+  "Frisdrank en sap"
+ ],
+ [
+  "Overige frisdrank",
+  "🍊",
+  [
+   "Sinas fles 1,5 liter",
+   "Sinas fles 1 liter",
+   "Sinas flesje 0,5 liter",
+   "Sinas los blikje 33 cl",
+   "Sinas los blikje 25 cl",
+   "Sinas sixpack blikjes 33 cl",
+   "Sinas blikjes 33 cl 8- tot 12-pack",
+   "Sinas blikjes 33 cl tray (24)",
+   "Sinas blikjes 25 cl 4- tot 12-pack",
+   "Sinas blikjes 25 cl tray (20 of 24)",
+   "Sinas mini blikjes (15 cl)",
+   "Sinas flesjes 4-pack 0,5 liter",
+   "Sinas flessen 4- of 6-pack 1,5 liter",
+   "7up en Sprite fles 1,5 liter",
+   "7up en Sprite fles 1 liter",
+   "7up en Sprite flesje 0,5 liter",
+   "7up en Sprite los blikje 33 cl",
+   "7up en Sprite los blikje 25 cl",
+   "7up en Sprite sixpack blikjes 33 cl",
+   "7up en Sprite blikjes 33 cl 8- tot 12-pack",
+   "7up en Sprite blikjes 33 cl tray (24)",
+   "7up en Sprite blikjes 25 cl 4- tot 12-pack",
+   "7up en Sprite blikjes 25 cl tray (20 of 24)",
+   "7up en Sprite mini blikjes (15 cl)",
+   "7up en Sprite flesjes 4-pack 0,5 liter",
+   "7up en Sprite flessen 4- of 6-pack 1,5 liter",
+   "Ice tea fles 1,5 liter",
+   "Ice tea fles 1 liter",
+   "Ice tea flesje 0,5 liter",
+   "Ice tea los blikje 33 cl",
+   "Ice tea los blikje 25 cl",
+   "Ice tea sixpack blikjes 33 cl",
+   "Ice tea blikjes 33 cl 8- tot 12-pack",
+   "Ice tea blikjes 33 cl tray (24)",
+   "Ice tea blikjes 25 cl 4- tot 12-pack",
+   "Ice tea blikjes 25 cl tray (20 of 24)",
+   "Ice tea flesjes 4-pack 0,5 liter",
+   "Ice tea flessen 4- of 6-pack 1,5 liter",
+   "limonade siroop"
+  ],
+  "Frisdrank en sap"
+ ],
+ [
+  "Water",
+  "💧",
+  [
+   "Spa Reine (zonder prik) fles 1,5 liter",
+   "Spa Reine (zonder prik) 6 x 1,5 liter",
+   "Spa Reine (zonder prik) flesje 0,5 liter",
+   "Spa Reine (zonder prik) flesjes 6 x 0,5 liter",
+   "Spa Reine (zonder prik) flesjes 24 x 0,5 liter",
+   "Spa Reine (zonder prik) kinderflesjes (33 cl)",
+   "Spa Intens (met prik) fles 1,5 liter",
+   "Spa Intens (met prik) 6 x 1,5 liter",
+   "Spa Intens (met prik) flesje 0,5 liter",
+   "Spa Intens (met prik) flesjes 6 x 0,5 liter",
+   "Spa Intens (met prik) flesjes 24 x 0,5 liter",
+   "Spa Intens (met prik) kinderflesjes (33 cl)",
+   "Bruisend water fles 1,5 liter",
+   "Bruisend water 6 x 1,5 liter",
+   "Bruisend water flesje 0,5 liter",
+   "Bruisend water flesjes 6 x 0,5 liter",
+   "Bruisend water flesjes 24 x 0,5 liter",
+   "Bruisend water kinderflesjes (33 cl)",
+   "Water zonder prik (alle merken) fles 1,5 liter",
+   "Water zonder prik (alle merken) 6 x 1,5 liter",
+   "Water zonder prik (alle merken) flesje 0,5 liter",
+   "Water zonder prik (alle merken) flesjes 6 x 0,5 liter",
+   "Water zonder prik (alle merken) flesjes 24 x 0,5 liter",
+   "Water zonder prik (alle merken) kinderflesjes (33 cl)"
+  ],
+  "Frisdrank en sap"
+ ],
+ [
+  "Sap",
+  "🧃",
+  [
+   "sinaasappelsap",
+   "appelsap",
+   "multivitaminesap"
+  ],
+  "Frisdrank en sap"
+ ],
+ [
+  "Energiedrank",
+  "⚡",
+  [
+   "Energiedrank los blikje 25 cl",
+   "Energiedrank los blik 50 cl",
+   "Energiedrank blikjes multipack",
+   "Energiedrank suikervrij los blikje"
+  ],
+  "Frisdrank en sap"
+ ],
+ [
+  "Bier",
+  "🍺",
+  [
+   "Pils krat 24 flesjes",
+   "Pils flesjes 6-pack",
+   "Pils flesjes 12-pack",
+   "Pils los blikje 33 cl",
+   "Pils sixpack blikjes 33 cl",
+   "Pils blikjes 33 cl 10- of 12-pack",
+   "Pils blikjes 33 cl tray (24)",
+   "Pils los blik 50 cl",
+   "Pils blikken 50 cl 4- of 6-pack",
+   "Pils blikken 50 cl tray (24)",
+   "Pils beugelflessen"
+  ],
+  "Bier en wijn"
+ ],
+ [
+  "Alcoholvrij bier",
+  "🍺",
+  [
+   "Alcoholvrij bier krat 24 flesjes",
+   "Alcoholvrij bier flesjes 6-pack",
+   "Alcoholvrij bier los blikje 33 cl",
+   "Alcoholvrij bier sixpack blikjes 33 cl",
+   "Alcoholvrij bier blikjes 12-pack",
+   "Alcoholvrij bier los blik 50 cl"
+  ],
+  "Bier en wijn"
+ ],
+ [
+  "Wijn",
   "🍷",
   [
-   "bier",
-   "alcoholvrij bier",
    "rode wijn",
    "witte wijn",
    "rose"
-  ]
+  ],
+  "Bier en wijn"
  ],
  [
-  "Koek en snoep",
+  "Chocolade",
   "🍫",
   [
    "chocolade reep",
    "melkchocolade",
-   "pure chocolade",
+   "pure chocolade"
+  ],
+  "Koek en snoep"
+ ],
+ [
+  "Snoep en drop",
+  "🍬",
+  [
    "drop",
    "winegums",
-   "snoep",
+   "snoep"
+  ],
+  "Koek en snoep"
+ ],
+ [
+  "Koek",
+  "🍪",
+  [
    "eierkoeken",
    "stroopwafels",
    "koekjes",
    "speculaas",
    "biscuits"
-  ]
+  ],
+  "Koek en snoep"
  ],
  [
-  "Chips en noten",
-  "🥨",
+  "Chips en popcorn",
+  "🥔",
   [
-   "chips",
-   "paprika chips",
    "naturel chips",
+   "paprika chips",
+   "chips",
    "tortilla chips",
+   "popcorn"
+  ],
+  "Chips en noten"
+ ],
+ [
+  "Noten",
+  "🥜",
+  [
    "pinda",
    "nootjes",
-   "cashewnoten",
-   "popcorn"
-  ]
+   "cashewnoten"
+  ],
+  "Chips en noten"
  ],
  [
-  "Huishouden",
+  "Wassen",
+  "🧺",
+  [
+   "wasmiddel vloeibaar",
+   "waspoeder",
+   "wascapsules",
+   "wasverzachter"
+  ],
+  "Huishouden"
+ ],
+ [
+  "Afwassen",
+  "🍽️",
+  [
+   "vaatwastabletten",
+   "afwasmiddel"
+  ],
+  "Huishouden"
+ ],
+ [
+  "Schoonmaken",
+  "🧽",
+  [
+   "allesreiniger",
+   "wc reiniger",
+   "schoonmaakazijn"
+  ],
+  "Huishouden"
+ ],
+ [
+  "Papier",
   "🧻",
   [
    "toiletpapier",
    "keukenrol",
-   "tissues",
-   "wasmiddel",
-   "wasverzachter",
-   "vaatwastabletten",
-   "afwasmiddel",
-   "allesreiniger",
-   "wc reiniger",
-   "schoonmaakazijn",
+   "tissues"
+  ],
+  "Huishouden"
+ ],
+ [
+  "Zakken, folie en batterijen",
+  "🗑️",
+  [
    "vuilniszakken",
    "aluminiumfolie",
    "vershoudfolie",
    "batterijen"
-  ]
+  ],
+  "Huishouden"
  ],
  [
-  "Verzorging en baby",
-  "🧴",
+  "Mond",
+  "🪥",
   [
    "tandpasta",
-   "tandenborstel",
+   "tandenborstel"
+  ],
+  "Verzorging en baby"
+ ],
+ [
+  "Haar",
+  "🧴",
+  [
    "shampoo",
-   "conditioner",
+   "conditioner"
+  ],
+  "Verzorging en baby"
+ ],
+ [
+  "Lichaam",
+  "🧼",
+  [
    "douchegel",
    "zeep",
    "handzeep",
    "deodorant",
-   "scheermesjes",
-   "maandverband",
-   "tampons",
-   "zonnebrand",
    "bodylotion",
-   "luiers",
-   "billendoekjes"
-  ]
+   "zonnebrand",
+   "scheermesjes"
+  ],
+  "Verzorging en baby"
  ],
  [
-  "Huisdieren",
-  "🐾",
+  "Maandverband en tampons",
+  "🩸",
+  [
+   "maandverband",
+   "tampons",
+   "inlegkruisjes"
+  ],
+  "Verzorging en baby"
+ ],
+ [
+  "Baby",
+  "👶",
+  [
+   "luiers",
+   "billendoekjes"
+  ],
+  "Verzorging en baby"
+ ],
+ [
+  "Kat",
+  "🐈",
   [
    "kattenvoer",
    "kattenbrokken",
-   "kattenbakvulling",
+   "kattenbakvulling"
+  ],
+  "Huisdieren"
+ ],
+ [
+  "Hond",
+  "🐕",
+  [
    "hondenvoer",
    "hondenbrokken",
    "hondensnacks"
-  ]
+  ],
+  "Huisdieren"
  ]
 ]

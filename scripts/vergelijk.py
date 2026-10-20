@@ -113,9 +113,78 @@ VERFIJN = {k: v for k, v in json.load(open(os.path.join(ROOT, "scripts", "verfij
 def _verfijn(m, t):
     niet = [n for n in VERFIJN.get(" ".join(t), []) if not any(n in w for w in t)]
     return [p for p in m if not any(n in x for x in p[7] for n in niet)] if niet else m
-def matches(term):
+
+# ---------- verpakking: blik of fles, inhoud per stuk en aantal (zelfde logica als pakInfo in de app) ----------
+_MAAT = {"ml": 1, "milliliter": 1, "cl": 10, "l": 1000, "liter": 1000, "ltr": 1000, "g": 1, "gr": 1, "gram": 1, "kg": 1000, "kilo": 1000}
+_MAATRE = r"(\d+(?:\.\d+)?)\s*(ml|milliliter|cl|ltr|liter|l|gram|gr|g|kg|kilo)\b"
+_DRANK = {"fris", "water", "bier", "wijn"}
+# Totale inhoud zonder aantal: welke verpakking is het meestal? (per soort drank)
+_TOT = {"fris": {1800: (12, 150), 3960: (12, 330), 7920: (24, 330), 5000: (20, 250), 6000: (4, 1500), 9000: (6, 1500), 3000: (2, 1500)},
+        "water": {9000: (6, 1500), 3000: (6, 500), 6000: (4, 1500), 4500: (3, 1500)},
+        "bier": {7200: (24, 300), 6000: (24, 250), 7920: (24, 330), 12000: (24, 500), 1800: (6, 300), 1980: (6, 330), 3000: (6, 500),
+                 3960: (12, 330), 3600: (12, 300), 2000: (4, 500), 2640: (6, 440), 1500: (6, 250), 1320: (4, 330), 4260: (12, 355)}}
+def pakinfo(naam, eenh, soort):
+    """Geeft (pak, ml per stuk, aantal) of None als de verpakking niet te bepalen is."""
+    n_ = str(naam or "").lower().replace(",", "."); u_ = str(eenh or "").lower().replace(",", ".")
+    s = n_ + " | " + u_
+    m = re.search(r"(?:(\d+)\s*x\s*)?(\d+)\s*x\s*" + _MAATRE, s)
+    if m:
+        n = int(m.group(2)) * (int(m.group(1)) if m.group(1) else 1); ml = float(m.group(3)) * _MAAT[m.group(4)]
+    else:
+        c = re.search(r"\b(\d+)\s*[- ]?\s*(pack|pak|fles|flessen|flesjes|blikken|blikjes|st\.?|stuks)\b", n_)
+        n = int(c.group(1)) if c else None
+        mm = re.search(_MAATRE, u_) or re.search(_MAATRE, n_)
+        if not mm:
+            st = re.search(r"\b(\d+)\s*(st\.?|stuks|stuk|rollen|rol|pads|cups|capsules|zakjes|tabletten|wasbeurten|scoops|eieren)\b", u_ + " " + n_)
+            return ("", 0, int(st.group(1))) if st else None
+        ml = float(mm.group(1)) * _MAAT[mm.group(2)]
+        if soort not in _DRANK: n = n or 1
+        elif n and n > 1:
+            if ml >= 900 and ml / n >= 150: ml = ml / n
+        else:
+            t = _TOT.get(soort, {}).get(round(ml))
+            if t: n, ml = t
+            elif ml > 2000 or re.search(r"\b(krat|tray|multipack|sixpack|voordeelpack)\b", n_): return None
+            else: n = n or 1
+    ml = round(ml)
+    if soort not in _DRANK: pak = ""
+    elif re.search(r"\b(blik|blikje|blikjes|blikken|can|cans)\b", n_): pak = "blik"
+    elif re.search(r"\b(fles|flesje|flesjes|flessen|beugel|draaidop|twist|mono|bottle)\b", n_) or (soort == "bier" and "krat" in n_): pak = "fles"
+    elif re.search(r"\b(pak|wijntap|tap|box|bag)\b", n_): pak = "pak"
+    elif soort == "fris": pak = "blik" if ml <= 355 else "fles"
+    elif soort == "bier": pak = "blik" if ml in (330, 355, 440, 500, 568) else "fles"
+    elif soort == "wijn": pak = "fles" if ml <= 1000 else "pak"
+    else: pak = "fles"
+    return pak, ml, n
+def is_alcoholvrij(naam):
+    return bool(re.search(r"\b0[.,]0\b|alcoholvrij|alkoholfrei|alcohol ?free|\bmalt\b", str(naam).lower()))
+LITERS = {}  # liters per verpakking, voor varianten: dan vergelijken we altijd per liter
+VARIANT = json.load(open(os.path.join(ROOT, "scripts", "varianten.json")))
+VARNORM = {" ".join(norm(k)): v for k, v in VARIANT.items()}
+def _variant(v):
+    seen, uit = set(), []
+    for z in v["zoek"]:
+        for p in matches(z, basis=True):
+            if id(p) in seen: continue
+            seen.add(id(p)); w = p[7]
+            if any(x == n or (len(n) >= 4 and n in x) for x in w for n in v["niet"]): continue
+            if v.get("wel") and not any(x == n or (len(n) >= 4 and n in x) for x in w for n in v["wel"]): continue
+            if v.get("alc") == "vrij" and not is_alcoholvrij(p[1]): continue
+            if v.get("alc") == "met" and is_alcoholvrij(p[1]): continue
+            if v.get("ml") or v.get("n") or v.get("pak"):
+                info = pakinfo(p[1], p[4], v.get("soort"))
+                if not info: continue
+                pak, ml, n = info
+                if v.get("pak") and pak != v["pak"]: continue
+                if v.get("ml") and not v["ml"][0] <= ml <= v["ml"][1]: continue
+                if v.get("n") and not v["n"][0] <= n <= v["n"][1]: continue
+                if v.get("soort") in _DRANK: LITERS[id(p)] = ml * n / 1000
+            uit.append(p)
+    return uit
+def matches(term, basis=False):
     t = tuple(norm(term))
     if not t: return []
+    if not basis and " ".join(t) in VARNORM: return _variant(VARNORM[" ".join(t)])
     sets = []
     for w in t:
         # Een woord past als heel woord of als eind van een samengesteld woord (scharreleieren, roomboter).
@@ -139,17 +208,42 @@ def per_store(m):
         res[si] = sorted([p for p in arr if words(p) <= mn + 1], key=rank)[0]
     return res
 BAD = set()
+from kcal import kcal_van
+def kcal_txt(t):
+    k = kcal_van(t)
+    if not k: return ""
+    return f"{k[0]} kcal per {k[1]}"
+def kcal_pak(t, p):
+    """Ongeveer aantal kcal in de hele verpakking (als we de inhoud kennen)."""
+    k = kcal_van(t)
+    if not k or k[1] == "kopje" or not k[0]: return None
+    l = LITERS.get(id(p))
+    if l: tot = l * 1000
+    else:
+        i = pakinfo(p[1], p[4], None)
+        if not i or not i[1]: return None
+        tot = i[1] * i[2]
+    if tot <= 0 or tot > 25000: return None
+    return round(k[0] * tot / 100 / 10) * 10
+def toon_unit(p):
+    """Prijs per eenheid zoals we die tonen: bij drankverpakkingen altijd per liter."""
+    l = LITERS.get(id(p))
+    return (eff(p) / l, "l") if l else (eff_unit(p), p[6])
+def vgl_unit(p):
+    l = LITERS.get(id(p))
+    return eff(p) / l if l else eff_unit(p)
 def mark_bad(arr):
     # Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
-    u = sorted(v for v in (eff_unit(p) for p in arr) if v is not None)
+    u = sorted(v for v in (vgl_unit(p) for p in arr) if v is not None)
     if len(u) < 3: return
     med = u[len(u) // 2]
     for p in arr:
-        v = eff_unit(p)
+        v = vgl_unit(p)
         if v is not None and (v > med * 3 or v < med / 3): BAD.add(id(p))
 def rank(p):
     if id(p) in BAD: return 1e6 + eff(p)
-    return eff_unit(p) if eff_unit(p) is not None else eff(p) * 1000
+    u = vgl_unit(p)
+    return u if u is not None else eff(p) * 1000
 
 CATS = json.load(open(os.path.join(ROOT, "scripts", "cats.json")))
 TERMS = []
@@ -159,6 +253,9 @@ for c in CATS:
 CATOF = {}
 for c in CATS:
     for t in c[2]: CATOF.setdefault(t, c)
+GROEPEN = json.load(open(os.path.join(ROOT, "scripts", "groepen.json")))
+GROEPICOON = {g: i for g, i in GROEPEN}
+SUBS = {g: [c for c in CATS if c[3] == g] for g, _ in GROEPEN}
 
 PICKED = {}
 for t in TERMS:

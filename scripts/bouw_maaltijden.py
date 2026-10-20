@@ -89,8 +89,8 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest(".maddkaa
   b.textContent=`✓ Op je lijst (${N[s]})`;b.classList.add("on");window.mark&&mark();document.dispatchEvent(new Event("erbij"));
   try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,title:"Maaltijd op lijst",event:true})}catch(x){}
  }catch(x){b.disabled=false;b.textContent="Probeer opnieuw"}});
-const kb=document.getElementById("karm");if(kb)kb.addEventListener("click",()=>{const aan=kb.getAttribute("aria-pressed")!=="true";kb.setAttribute("aria-pressed",aan);kb.textContent=aan?"Toon alle maaltijden":"Alleen caloriearm (tot 550 kcal)";
- document.querySelectorAll(".msoort").forEach(sec=>{let n=0;sec.querySelectorAll("[data-kcal]").forEach(c=>{const h=aan&&+c.dataset.kcal>550;c.hidden=h;if(!h)n++});sec.hidden=!n})});
+const flt={arm:false,gv:false};function filter(){document.querySelectorAll(".msoort").forEach(sec=>{let n=0;sec.querySelectorAll("[data-kcal]").forEach(c=>{const h=(flt.arm&&+c.dataset.kcal>550)||(flt.gv&&!c.dataset.gv);c.hidden=h;if(!h)n++});sec.hidden=!n})}
+document.querySelectorAll("[data-flt]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.flt;flt[k]=!flt[k];b.setAttribute("aria-pressed",flt[k]);filter()}));
 alles();document.addEventListener("winkels",alles);window.addEventListener("storage",ev=>{if(ev.key==="winkels-uit")alles()})})()</script>""")
 MJS = """<script>document.addEventListener("click",e=>{const b=e.target.closest(".addall");if(!b)return;let q=[];try{q=JSON.parse(localStorage.getItem("lijst-erbij")||"[]")}catch(x){}
 const os=JSON.parse(b.dataset.os);for(const o of os)if(!q.some(x=>x.u===o.u))q.push(o);try{localStorage.setItem("lijst-erbij",JSON.stringify(q));b.textContent="✓ Klaar voor je lijst";b.classList.add("on");window.mark&&mark();
@@ -99,14 +99,14 @@ try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,ti
 def wnaam(si): return NAMEN.get(stores[si]["id"], stores[si]["name"])
 def kaart(m):
     si, r = m["rang"][0]
-    return (f'<li class="mcard" data-kcal="{m["kcal"]}" data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
+    return (f'<li class="mcard" data-kcal="{m["kcal"]}"{' data-gv="1"' if m.get("glutenvrij") else ""} data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
             f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span>'
             f'<button type="button" class="add maddkaart" data-m="{m["slug"]}">+ Op mijn lijst</button></li>')
 def prijzen_json(m): return json.dumps({stores[si]["id"]: round(r["tot"], 2) for si, r in m["rang"]}, separators=(",", ":"))
 
 KCAL_ARM = 550  # caloriearm: hoogstens zoveel kcal per persoon
-SOORT_PAD = {"aardappel": ("aardappelgerechten", "Aardappelgerechten"), "pasta": ("pasta", "Pasta"), "rijst": ("rijst-en-noedels", "Rijst en noedels"), "salade": ("salades", "Salades")}
+SOORT_PAD = {"aardappel": ("aardappelgerechten", "Aardappelgerechten"), "oven": ("ovenschotels", "Ovenschotels"), "pasta": ("pasta", "Pasta"), "rijst": ("rijst-en-noedels", "Rijst en noedels"), "wereld": ("wereldkeuken", "Wereldkeuken"), "salade": ("salades", "Salades")}
 maal_paden = []
 for m in MAAL:
     path = f"/maaltijden/{m['slug']}/"
@@ -153,18 +153,23 @@ for m in MAAL:
     alle = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. {esc(wnaam(si))}</b></td><td class="p">{tag(r["tot"])}</td><td class="p">{pp(r["tot"])}</td></tr>' for i, (si, r) in enumerate(m["rang"]))
     bnaam, burl = m["bron"]
     noot = NOTITIE.get(m["slug"], "")
+    gvnoot = ""
+    if m["glutenvrij"]:
+        gvnoot = ("<p class=\"note\"><b>Glutenvrij:</b> in dit recept zitten geen ingrediënten met gluten."
+                  + (f" Kies wel een glutenvrije variant van: {esc(', '.join(m['gv_let']))}." if m["gv_let"] else "")
+                  + " Controleer bij coeliakie altijd het etiket.</p>")
     faq = [(f"Wat kost {kl}?", f"{naam} voor 4 personen kost nu {eur(r1['tot'])} bij {wnaam(s1)}, dat is {pp(r1['tot'])} per persoon. Bij {wnaam(sN)} betaal je {eur(rN['tot'])}."),
            (f"Waar is {kl} het goedkoopst?", f"De ingrediënten zijn samen het goedkoopst bij {wnaam(s1)} ({eur(r1['tot'])}), gevolgd door {wnaam(top3[1][0])} ({eur(top3[1][1]['tot'])}) en {wnaam(top3[2][0])} ({eur(top3[2][1]['tot'])})."),
            (f"Hoeveel calorieën heeft {kl}?", f"Ongeveer {m['kcal']} kcal per persoon, berekend uit de ingrediënten van het recept voor 4 personen."),
            ("Hoe wordt de prijs berekend?", "Per supermarkt zoeken we voor elk ingrediënt de goedkoopste verpakking waar genoeg in zit, en tellen we de prijzen op zoals je ze aan de kassa betaalt. Aanbiedingen die nu lopen tellen mee. We laten ook zien hoeveel daarvan je in het recept gebruikt; de rest houd je over. Olie, zout, kruiden en andere voorraadkastspullen tellen niet mee.")]
     head = (ch + f"<h1>{esc(naam)}: waar is het goedkoopst?</h1><p class=\"lead\" id=\"mlead\">Alle ingrediënten voor 4 personen kosten nu <b>{eur(r1['tot'])}</b> bij <b>{esc(wnaam(s1))}</b>. Daarvan gebruik je {eur(r1['gebruik'])} in dit recept; de rest houd je over. "
             f"Bij {esc(wnaam(sN))} betaal je {eur(rN['tot'] - r1['tot'])} meer.</p>"
-            f'<p class="feiten"><span><b>{m["kcal"]}</b> kcal per persoon{" · <a href=/maaltijden/caloriearm/>caloriearm</a>" if m["kcal"] <= KCAL_ARM else ""}</span><span><b>{m["tijd"]}</b> minuten</span><span><b>4</b> personen</span><span>Recept: <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a></span></p>')
+            f'<p class="feiten"><span><b>{m["kcal"]}</b> kcal per persoon{" · <a href=/maaltijden/caloriearm/>caloriearm</a>" if m["kcal"] <= KCAL_ARM else ""}{" · <a href=/maaltijden/glutenvrij/>glutenvrij</a>" if m["glutenvrij"] else ""}</span><span><b>{m["tijd"]}</b> minuten</span><span><b>4</b> personen</span><span>Recept: <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a></span></p>')
     andere = [x for x in MAAL if x["soort"] == m["soort"] and x is not m] + [x for x in MAAL if x["soort"] != m["soort"]]
     body = (foto_html(m) + f'<p class="note" id="mkeus" hidden></p><h2 id="mtoph">De 3 goedkoopste supermarkten</h2><ul class="mtop" id="mtop">{tops}</ul>'
             f'<h2>Wat heb je nodig?</h2><div class="tblwrap"><table class="ptable" id="mtab"><thead><tr><th>Ingrediënt</th>{kop}</tr></thead><tbody>{rijen}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM} voor hele verpakkingen, zoals je ze aan de kassa betaalt en zoals ze op je lijst komen. Per supermarkt kiezen we de goedkoopste verpakking waar genoeg in zit. Tik op een prijs voor het product. {esc(noot)}</p>'
-            f'<h2>Bereiding</h2><p>De bereiding staat in het originele recept op <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a>. Daar vind je ook de stappen en tips.</p>'
+            + gvnoot + f'<h2>Bereiding</h2><p>De bereiding staat in het originele recept op <a href="{esc(burl)}" rel="noopener" target="_blank">{esc(bnaam)}</a>. Daar vind je ook de stappen en tips.</p>'
             f'<h2>Alle supermarkten</h2><div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th style="text-align:right">4 personen</th><th style="text-align:right">Per persoon</th></tr></thead><tbody id="malle">{alle}</tbody></table></div>'
             f'<p class="note">Supermarkten waar we een ingrediënt niet online vinden, staan niet in de lijst.</p>'
             + faq_html(faq).replace(f"<p>{esc(faq[0][1])}</p>", f'<p id="mfaq1">{esc(faq[0][1])}</p>').replace(f"<p>{esc(faq[1][1])}</p>", f'<p id="mfaq2">{esc(faq[1][1])}</p>') + '<h2>Meer complete maaltijden</h2><ul class="mgrid">' + "".join(kaart(x) for x in andere[:6]) + '</ul><a class="cta" href="/maaltijden/">Alle complete maaltijden</a>' + MJS
@@ -176,6 +181,8 @@ for m in MAAL:
               "isBasedOn": burl, "author": {"@type": "Organization", "name": bnaam},
               "image": beeld_objecten(m),
               "datePublished": "2026-10-19", "dateModified": VANDAAG,
+              **({"suitableForDiet": [d for d, ok in (("https://schema.org/GlutenFreeDiet", m["glutenvrij"]), ("https://schema.org/LowCalorieDiet", m["kcal"] <= KCAL_ARM)) if ok]}
+                 if (m["glutenvrij"] or m["kcal"] <= KCAL_ARM) else {}),
               "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
               "keywords": f"{kl}, goedkoop, prijs, {', '.join(wnaam(si) for si, _ in top3)}",
               "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{r1['tot']:.2f}", "highPrice": f"{rN['tot']:.2f}", "offerCount": len(m["rang"])}}
@@ -207,8 +214,8 @@ if MAAL:
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span> voor het hele gerecht.</p><p class=\"note mkeus\" hidden></p><p class=\"feiten\">{sprong}</p>"
-            f'<p><button type="button" class="btn btn-line" id="karm" aria-pressed="false">Alleen caloriearm (tot {KCAL_ARM} kcal)</button></p>')
-    themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
+            f'<p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p>')
+    themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
                   + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
     body = (secties + themalinks + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM} voor hele verpakkingen, zoals aan de kassa, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq) + MKJS)
     il = {"@context": "https://schema.org", "@type": "ItemList", "name": "Complete maaltijden met prijs per supermarkt",
@@ -237,7 +244,7 @@ def themapagina(slug_, kort, h1, title, lead, ms, faq_extra=()):
     g = ms[0]
     faq = [(f"Wat is de goedkoopste uit deze lijst?", f"{g['naam']}: {eur(g['rang'][0][1]['tot'])} voor 4 personen bij {wnaam(g['rang'][0][0])}, {pp(g['rang'][0][1]['tot'])} per persoon."), *faq_extra,
            ("Hoe actueel zijn de prijzen?", f"De prijzen worden elke dag bijgewerkt met de prijzen en aanbiedingen van de supermarkten. Deze pagina is van {DATUM}.")]
-    andere = [(f"/maaltijden/{x}/", t) for x, t in [("goedkoop-avondeten", "De 10 goedkoopste maaltijden"), ("caloriearm", "Caloriearme maaltijden"), ("stamppot", "Goedkope stamppotten"), *SOORT_PAD.values()] if x != slug_]
+    andere = [(f"/maaltijden/{x}/", t) for x, t in [("goedkoop-avondeten", "De 10 goedkoopste maaltijden"), ("caloriearm", "Caloriearme maaltijden"), ("glutenvrij", "Glutenvrije maaltijden"), ("stamppot", "Goedkope stamppotten"), *SOORT_PAD.values()] if x != slug_]
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Maaltijd (4 personen)</th><th style="text-align:right">Goedkoopst</th></tr></thead><tbody data-sorteer="1">{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM} voor alle ingrediënten in hele verpakkingen, zoals aan de kassa. Tik op een maaltijd voor de 3 goedkoopste supermarkten en wat elk ingrediënt kost.</p>'
             + re.sub(r'<p>((?:Nu is |[^<]*: )[^<]*? bij [^<]*?)</p>', r'<p class="tfaqz">\1</p>', faq_html(faq), count=2) + '<h2>Meer overzichten</h2><ul class="links">' + "".join(f'<li><a href="{h}">{esc(t)}</a></li>' for h, t in andere) + '<li><a href="/maaltijden/">Alle complete maaltijden</a></li></ul>' + MKJS)
@@ -263,6 +270,14 @@ if MAAL:
                     sorted(arm, key=pprs),
                     [("Hoeveel calorieën heeft een caloriearme maaltijd?", f"Wij noemen een avondmaaltijd caloriearm bij hoogstens {KCAL_ARM} kcal per persoon. Voor de meeste volwassenen is dat ongeveer een kwart van wat je op een dag nodig hebt. De calorieën zijn berekend uit de ingrediënten van het recept."),
                      ("Welke maaltijd heeft de minste calorieën?", f"{arm[0]['naam']}, met ongeveer {arm[0]['kcal']} kcal per persoon.")])
+    gvm = [m for m in MAAL if m["glutenvrij"]]
+    if len(gvm) >= 3:
+        themapagina("glutenvrij", "Glutenvrij", "Glutenvrije maaltijden: zonder tarwe, met prijs per supermarkt",
+                    f"Glutenvrije maaltijden: {len(gvm)} recepten met prijs per supermarkt",
+                    f"{len(gvm)} gewone avondmaaltijden zonder ingrediënten met gluten: met aardappel, rijst of groente in plaats van pasta, brood of bloem. Met de supermarkt waar je ze het goedkoopst kookt, al vanaf <span data-vanaf><b>{eur(min(pprs(m) for m in gvm))}</b></span> voor 4 personen.",
+                    sorted(gvm, key=pprs),
+                    [("Zijn deze maaltijden echt glutenvrij?", "In de recepten zitten geen ingrediënten met gluten, zoals pasta, brood, bloem, mie, paneermeel of sojasaus. Bij sommige producten, zoals bouillon, rookworst en kruidenmixen, zit soms wel tarwe; kies daarvan een glutenvrije variant. Bij elke maaltijd staat waar je op moet letten. Controleer bij coeliakie altijd het etiket."),
+                     ("Wat is de goedkoopste glutenvrije maaltijd?", f"{min(gvm, key=pprs)['naam']}: {eur(pprs(min(gvm, key=pprs)))} voor 4 personen.")])
     st = sorted([m for m in MAAL if any(w in m["slug"] for w in ("stamppot", "hutspot", "boerenkool"))], key=pprs)
     if len(st) >= 2:
         themapagina("stamppot", "Stamppot", "Goedkope stamppot: wat kost het per supermarkt?", f"Goedkope stamppot: prijs per supermarkt ({MAAND})",

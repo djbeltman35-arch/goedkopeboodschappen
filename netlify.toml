@@ -90,3 +90,189 @@
   from = "/vergelijk/parmezaan/"
   to = "/vergelijk/parmigiano/"
   status = 301
+[[redirects]]
+  from = "/vergelijk/wortels/"
+  to = "/vergelijk/winterpeen/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/speklapjes/"
+  to = "/vergelijk/speklappen/"
+  status = 301
+
+# Subcategorieën per soort, verpakking en inhoud (oktober 2026)
+[[redirects]]
+  from = "/vergelijk/knoflook/"
+  to = "/vergelijk/knoflook-bollen/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/paprika/"
+  to = "/vergelijk/paprika-rood/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/broccoli/"
+  to = "/vergelijk/broccoli-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/bloemkool/"
+  to = "/vergelijk/bloemkool-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/sperziebonen/"
+  to = "/vergelijk/sperziebonen-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/spinazie/"
+  to = "/vergelijk/spinazie-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/boerenkool/"
+  to = "/vergelijk/boerenkool-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/champignons/"
+  to = "/vergelijk/champignons-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/spruitjes/"
+  to = "/vergelijk/spruitjes-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/rode-kool/"
+  to = "/vergelijk/rode-kool-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/aardbeien/"
+  to = "/vergelijk/aardbeien-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/blauwe-bessen/"
+  to = "/vergelijk/blauwe-bessen-vers/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/havermelk/"
+  to = "/categorie/melk/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/sojamelk/"
+  to = "/categorie/melk/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/kipfilet-beleg/"
+  to = "/categorie/vleeswaren/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/kippendijen/"
+  to = "/vergelijk/kipdijfilet/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/zalm/"
+  to = "/vergelijk/zalmfilet/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/tonijn/"
+  to = "/vergelijk/tonijn-in-water/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/bakboter/"
+  to = "/categorie/olie-en-bakboter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/diepvries-spinazie/"
+  to = "/categorie/diepvries/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/diepvries-erwten/"
+  to = "/categorie/diepvries/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/ijs/"
+  to = "/categorie/ijs/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/espresso/"
+  to = "/vergelijk/koffiecups/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/thee/"
+  to = "/categorie/thee/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/muntthee/"
+  to = "/vergelijk/pepermuntthee/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/coca-cola/"
+  to = "/vergelijk/coca-cola-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/coca-cola-zero/"
+  to = "/vergelijk/coca-cola-zero-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/pepsi/"
+  to = "/vergelijk/pepsi-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/cola/"
+  to = "/categorie/cola/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/multivitaminesap/"
+  to = "/categorie/sap/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/spa/"
+  to = "/vergelijk/spa-reine-zonder-prik-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/bronwater/"
+  to = "/vergelijk/water-zonder-prik-alle-merken-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/mineraalwater/"
+  to = "/vergelijk/water-zonder-prik-alle-merken-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/bruisend-water/"
+  to = "/vergelijk/bruisend-water-fles-1-5-liter/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/ice-tea/"
+  to = "/categorie/overige-frisdrank/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/limonade-siroop/"
+  to = "/categorie/overige-frisdrank/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/energiedrank/"
+  to = "/categorie/energiedrank/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/bier/"
+  to = "/categorie/bier/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/alcoholvrij-bier/"
+  to = "/categorie/alcoholvrij-bier/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/wasmiddel/"
+  to = "/categorie/wassen/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/wc-reiniger/"
+  to = "/categorie/schoonmaken/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/zonnebrand/"
+  to = "/categorie/lichaam/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/kattenbrokken/"
+  to = "/categorie/kat/"
+  status = 301
+[[redirects]]
+  from = "/vergelijk/hondenbrokken/"
+  to = "/categorie/hond/"
+  status = 301

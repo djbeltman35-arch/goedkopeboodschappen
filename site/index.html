@@ -261,6 +261,10 @@
 
 <script>
 const CATS={{CATS}};
+// Hoofdgroepen; elke subcategorie in CATS heeft als 4e veld de hoofdgroep.
+const GROEPEN={{GROEPEN}};
+// Calorieën per product (gemiddelde richtwaarde), bijvoorbeeld "46 kcal per 100 ml".
+const KCAL={{KCAL}};
 const PAGINAS=new Map(CATS.flatMap(c=>c[2]).map(t=>[t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9,.]+/g," ").trim(),t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")]));
 const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
 const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
@@ -308,12 +312,66 @@ const nu=o=>(!o.v||o.v<=today)&&(!o.t||o.t>=today);
 function offerOf(p){if(p.o===undefined){const k=pkey(p);const o=k?S.okey.get(sid(p[0])+"|"+k):null;p.o=o&&o.p<p[3]-.004?o:null}return p.o&&nu(p.o)?p.o:null}
 const eff=p=>offerOf(p)?.p??p[3];
 const effUnit=p=>p[5]!=null?p[5]*eff(p)/p[3]:null;
+// Bij drankverpakkingen (blikjes, kratten) vergelijken we altijd per liter.
+const vglUnit=p=>p.lit?eff(p)/p.lit:effUnit(p);
 const sizeTxt=p=>{const z=String(p[4]||"").trim();return z&&norm(p[1]).includes(norm(z))?"":z};
 const unitTxt=(v,u)=>v!=null&&u?`${eur(v)} per ${u==="st"?"stuk":u==="l"?"liter":"kilo"}`:"";
 
 /* Zoeken */
-function matches(q,prefix=true,pool=S.prods){
+// Varianten: subcategorieën per soort, verpakking en inhoud (zelfde logica als pakinfo in scripts/vergelijk.py).
+const VARIANT={{VARIANT}};
+const VARNORM=new Map(Object.entries(VARIANT).map(([k,v])=>[norm(k),v]));
+const MAAT={ml:1,milliliter:1,cl:10,l:1000,liter:1000,ltr:1000,g:1,gr:1,gram:1,kg:1000,kilo:1000}, MAATRE="(\\d+(?:\\.\\d+)?)\\s*(ml|milliliter|cl|ltr|liter|l|gram|gr|g|kg|kilo)\\b";
+const TOT={fris:{1800:[12,150],3960:[12,330],7920:[24,330],5000:[20,250],6000:[4,1500],9000:[6,1500],3000:[2,1500]},
+  water:{9000:[6,1500],3000:[6,500],6000:[4,1500],4500:[3,1500]},
+  bier:{7200:[24,300],6000:[24,250],7920:[24,330],12000:[24,500],1800:[6,300],1980:[6,330],3000:[6,500],3960:[12,330],3600:[12,300],2000:[4,500],2640:[6,440],1500:[6,250],1320:[4,330],4260:[12,355]}};
+const DRANK=new Set(["fris","water","bier","wijn"]);
+function pakInfo(naam,eenh,soort){
+  const n_=String(naam||"").toLowerCase().replace(/,/g,"."), u_=String(eenh||"").toLowerCase().replace(/,/g,"."), s=n_+" | "+u_;
+  let n,ml; const m=s.match(new RegExp("(?:(\\d+)\\s*x\\s*)?(\\d+)\\s*x\\s*"+MAATRE));
+  if(m){n=+m[2]*(m[1]?+m[1]:1);ml=parseFloat(m[3])*MAAT[m[4]]}
+  else{
+    const c=n_.match(/\b(\d+)\s*[- ]?\s*(pack|pak|fles|flessen|flesjes|blikken|blikjes|st\.?|stuks)\b/); n=c?+c[1]:null;
+    const mm=u_.match(new RegExp(MAATRE))||n_.match(new RegExp(MAATRE));
+    if(!mm){const st=(u_+" "+n_).match(/\b(\d+)\s*(st\.?|stuks|stuk|rollen|rol|pads|cups|capsules|zakjes|tabletten|wasbeurten|scoops|eieren)\b/); return st?["",0,+st[1]]:null}
+    ml=parseFloat(mm[1])*MAAT[mm[2]];
+    if(!DRANK.has(soort)) n=n||1;
+    else if(n&&n>1){if(ml>=900&&ml/n>=150)ml=ml/n}
+    else{const t=(TOT[soort]||{})[Math.round(ml)];
+      if(t){[n,ml]=t}else if(ml>2000||/\b(krat|tray|multipack|sixpack|voordeelpack)\b/.test(n_)) return null; else n=n||1}
+  }
+  ml=Math.round(ml); let pak="";
+  if(!DRANK.has(soort)) pak="";
+  else if(/\b(blik|blikje|blikjes|blikken|can|cans)\b/.test(n_)) pak="blik";
+  else if(/\b(fles|flesje|flesjes|flessen|beugel|draaidop|twist|mono|bottle)\b/.test(n_)||(soort==="bier"&&n_.includes("krat"))) pak="fles";
+  else if(/\b(pak|wijntap|tap|box|bag)\b/.test(n_)) pak="pak";
+  else if(soort==="fris") pak=ml<=355?"blik":"fles";
+  else if(soort==="bier") pak=[330,355,440,500,568].includes(ml)?"blik":"fles";
+  else pak="fles";
+  return [pak,ml,n];
+}
+const alcVrij=n=>/\b0[.,]0\b|alcoholvrij|alkoholfrei|alcohol ?free|\bmalt\b/.test(String(n).toLowerCase());
+function variant(v,pool){
+  const seen=new Set(), uit=[];
+  for(const z of v.zoek) for(const p of matches(z,false,pool,true)){
+    if(seen.has(p)) continue; seen.add(p);
+    if(p.hay.some(x=>v.niet.some(n=>x===n||(n.length>=4&&x.includes(n))))) continue;
+    if(v.wel&&!p.hay.some(x=>v.wel.some(n=>x===n||(n.length>=4&&x.includes(n))))) continue;
+    if(v.alc==="vrij"&&!alcVrij(p[1])) continue; if(v.alc==="met"&&alcVrij(p[1])) continue;
+    p.lit=0;
+    if(v.ml||v.n||v.pak){
+      const i=pakInfo(p[1],p[4],v.soort); if(!i) continue; const [pak,ml,n]=i;
+      if(v.pak&&pak!==v.pak) continue;
+      if(v.ml&&!(v.ml[0]<=ml&&ml<=v.ml[1])) continue; if(v.n&&!(v.n[0]<=n&&n<=v.n[1])) continue;
+      if(DRANK.has(v.soort)) p.lit=ml*n/1000;
+    }
+    uit.push(p);
+  }
+  return uit;
+}
+function matches(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
+  if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
   // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
   const fit=(x,w,last)=>x===w||(w.length>=5&&x.endsWith(w))||(prefix&&last&&x.startsWith(w));
   const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
@@ -326,9 +384,9 @@ const verfijn=(m,t)=>{const niet=(VERFIJN[t.join(" ")]||[]).filter(n=>!t.some(w=
 // Woord dat laat zien dat het om een ander product of een variant gaat.
 const vreemd=(x,t)=>!t.includes(x)&&!t.some(w=>w.length>=5&&x.endsWith(w))&&(EXCL.has(x)||ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e)));
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
-const rank=p=>p.bad?1e6+eff(p):effUnit(p)??(eff(p)*1000);
+const rank=p=>p.bad?1e6+eff(p):vglUnit(p)??(eff(p)*1000);
 // Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
-function markBad(arr){const u=arr.map(effUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=effUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
+function markBad(arr){const u=arr.map(vglUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=vglUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
 // Per supermarkt het best passende goedkoopste product: alleen producten die ongeveer even kort benoemd zijn als de beste treffer.
 function perStore(m){
   if(!m.length) return new Map();
@@ -378,18 +436,21 @@ function search(fromUser){
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}">🔥 Aanbiedingen${n?` (${n})`:""}</button>`+
-    CATS.map((c,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}">${c[1]} ${esc(c[0])}</button>`).join("");
+    GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}">${g[1]} ${esc(g[0])}</button>`).join("");
 }
 function renderView(){
   quick();
   if(S.view==="deals") return renderOffers();
-  const c=CATS[+S.view];
-  const rows=c[2].map(t=>({t,b:[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]})).filter(r=>r.b);
-  $("results").innerHTML=`<h2>${c[1]} ${esc(c[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
-  <ul class="rows">${rows.map(({t,b})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
-    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span></div>
-    <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${esc(unitTxt(effUnit(b),b[6]))}</span></div>
-    ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}</ul>`;
+  const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
+  const blok=c=>{const rows=c[2].map(t=>({t,b:[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]})).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}<ul class="rows">${rijen(rows)}</ul>`:""};
+  $("results").innerHTML=`<h2>${g[1]} ${esc(g[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
+  ${subs.length>1?`<div class="chips subchips">${subs.map(c=>`<a class="chip" href="#sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</a>`).join("")}</div>`:""}${subs.map(blok).join("")}`;
+}
+function rijen(rows){
+  return `${rows.map(({t,b})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}</div>
+    <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6]))}</span></div>
+    ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
 function renderOffers(){
   const all=S.offers.filter(o=>!S.off.has(o.s));
@@ -402,12 +463,12 @@ function renderOffers(){
   const cats=new Map(); for(const o of pool) if(S.ofs==="alle"||o.s===S.ofs){const c=o.c||"Overig";cats.set(c,(cats.get(c)||0)+1)}
   const sorters={korting:(a,b)=>(b.pct-a.pct)||a.p-b.p,prijs:(a,b)=>a.p-b.p,eenheid:(a,b)=>(a.pp??1e9)-(b.pp??1e9)||a.p-b.p};
   const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofn);
-  const order=[...CATS.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
+  const order=[...GROEPEN.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
   $("results").innerHTML=`<h2>🔥 Aanbiedingen</h2>
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
   <div class="tools"><label><span class="sr">Zoek in aanbiedingen</span><input type="search" id="ofq" placeholder="Zoek in de aanbiedingen" value="${esc(S.ofq)}"></label>
-  <label><span class="sr">Categorie</span><select id="ofcat"><option value="alle">Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((CATS.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
+  <label><span class="sr">Categorie</span><select id="ofcat"><option value="alle">Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
   <label><span class="sr">Sorteren</span><select id="ofsort"><option value="korting"${S.ofsort==="korting"?" selected":""}>Grootste korting eerst</option><option value="prijs"${S.ofsort==="prijs"?" selected":""}>Laagste prijs eerst</option><option value="eenheid"${S.ofsort==="eenheid"?" selected":""}>Laagste prijs per kilo of liter</option></select></label></div>
   <p class="meta" style="margin-top:10px">${f.length} aanbiedingen. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut.</p>
   ${list.length?`<ul class="offers">${list.map(offerCard).join("")}</ul>`:`<div class="empty">Geen aanbiedingen gevonden. Probeer een ander woord of kies “Alle winkels”.</div>`}
@@ -639,7 +700,7 @@ document.addEventListener("click",e=>{
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
-  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":CATS[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
+  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
   const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel");return}
   const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}

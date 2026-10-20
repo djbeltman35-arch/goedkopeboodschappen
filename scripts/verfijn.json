@@ -38,22 +38,23 @@
   "aard"
  ],
  "tomaten": [
-  "ketchup",
-  "gezeefd",
+  "blik",
   "blokjes",
-  "puree",
-  "soep",
-  "saus",
   "cherry",
-  "snoep",
-  "pomodori",
-  "gepeld",
+  "frito",
   "gedroogd",
-  "polpa",
+  "gepeld",
+  "gezeefd",
+  "ketchup",
+  "mozzarella",
   "passata",
   "pelati",
-  "frito",
-  "mozzarella"
+  "polpa",
+  "pomodori",
+  "puree",
+  "saus",
+  "snoep",
+  "soep"
  ],
  "cherrytomaten": [
   "blik",
@@ -65,52 +66,63 @@
   "zuur",
   "augurk",
   "sandwich",
-  "spread"
+  "spread",
+  "snoep",
+  "snack",
+  "mini",
+  "rauwkost",
+  "bieze",
+  "slaschotel",
+  "gesneden",
+  "salade"
  ],
  "paprika": [
+  "baktat",
+  "cheetos",
+  "chio",
   "chips",
-  "poeder",
+  "chorizo",
+  "cracker",
+  "croky",
+  "dip",
+  "doritos",
+  "epixs",
+  "falafel",
+  "flipits",
+  "focaccia",
+  "friet",
+  "frites",
+  "fuet",
   "gegrild",
   "geroost",
-  "reepjes",
-  "frites",
-  "sticks",
-  "lay",
-  "croky",
-  "chio",
-  "doritos",
-  "cheetos",
-  "tuc",
-  "zoutjes",
-  "cracker",
-  "olijven",
-  "focaccia",
-  "wavy",
-  "worst",
   "gyros",
-  "kronkels",
-  "krokant",
-  "friet",
-  "flipits",
   "hula",
-  "pom",
-  "fuet",
-  "falafel",
-  "mix",
-  "pot",
-  "baktat",
+  "krokant",
+  "kronkels",
   "kruiden",
-  "pinda",
+  "lay",
+  "mix",
   "noten",
-  "smaak",
-  "saus",
-  "chorizo",
+  "olijven",
+  "pinda",
+  "piquillo",
+  "poeder",
+  "pom",
+  "pot",
+  "reepjes",
+  "rolnik",
   "salami",
   "salsa",
-  "rolnik",
-  "piquillo",
+  "saus",
+  "smaak",
+  "soep",
   "spread",
-  "dip"
+  "sticks",
+  "tomatensoep",
+  "tuc",
+  "wavy",
+  "worst",
+  "zoutjes"
  ],
  "courgette": [
   "ovengroente",
@@ -129,17 +141,23 @@
  ],
  "bananen": [
   "bak",
+  "chips",
+  "choco",
   "gedroogd",
-  "chips"
+  "gesuikerd",
+  "snoep"
  ],
  "druiven": [
-  "sap",
-  "siroop",
+  "confituur",
   "cool",
   "drink",
   "gedroogd",
+  "jam",
+  "limonade",
   "rozijn",
-  "limonade"
+  "sap",
+  "siroop",
+  "suiker"
  ],
  "aardbeien": [
   "siroop",
@@ -157,35 +175,36 @@
   "thee"
  ],
  "mango": [
-  "nectar",
-  "sap",
-  "drink",
-  "maaza",
   "chutney",
-  "gedroogd",
-  "siroop",
-  "smoothie",
-  "lassi",
-  "ijs",
-  "thee",
-  "limonade",
-  "water",
-  "vitamin",
-  "o2life",
-  "sourcy",
-  "fanta",
-  "dream",
-  "sisi",
   "coolbest",
+  "danio",
+  "drank",
+  "dream",
+  "drink",
+  "dubbeldr",
+  "fanta",
+  "frizzante",
+  "gedroogd",
+  "ijs",
+  "juice",
+  "lassi",
+  "limonade",
+  "loco",
+  "maaza",
   "ml",
   "mogu",
   "monster",
-  "danio",
-  "loco",
-  "passie",
-  "juice",
   "nectar",
-  "frizzante"
+  "o2life",
+  "passie",
+  "sap",
+  "siroop",
+  "sisi",
+  "smoothie",
+  "sourcy",
+  "thee",
+  "vitamin",
+  "water"
  ],
  "avocado": [
   "friet",
@@ -195,11 +214,13 @@
   "guacamole"
  ],
  "peren": [
-  "stoof",
-  "pot",
   "blik",
+  "fruitijsjes",
+  "ijs",
+  "pot",
   "sap",
-  "siroop"
+  "siroop",
+  "stoof"
  ],
  "beschuit": [
   "paneermeel",
@@ -531,5 +552,247 @@
   "saus",
   "pesto",
   "chips"
+ ],
+ "zuurkool": [
+  "kerrie",
+  "ananas",
+  "wijn"
+ ],
+ "sla": [
+  "babyleaf",
+  "rucola",
+  "lidlmini"
+ ],
+ "snoep": [
+  "autosnoep",
+  "bedankt",
+  "cadeau",
+  "hond",
+  "kat",
+  "katten",
+  "komkommer"
+ ],
+ "winterpeen": [
+  "snack",
+  "mini",
+  "geraspt",
+  "julienne",
+  "doperwten",
+  "soep"
+ ],
+ "speklappen": [
+  "kruidenmix",
+  "verstegen",
+  "silvo",
+  "gemarineerd",
+  "gemar"
+ ],
+ "spekreepjes": [
+  "gebakken",
+  "gerijpt",
+  "kalkoen",
+  "plantaardig",
+  "vegan",
+  "vivera",
+  "xxl"
+ ],
+ "spekjes": [
+  "boerenkool",
+  "mosterd",
+  "paas",
+  "pastasaus",
+  "quiche",
+  "rookworst",
+  "salade",
+  "sint",
+  "soep",
+  "stamppot"
+ ],
+ "spek": [
+  "bami",
+  "gebakken",
+  "gerijpt",
+  "javaans",
+  "kalkoen",
+  "lap",
+  "maaltijd",
+  "medaillons",
+  "mosterd",
+  "ovenschotel",
+  "paas",
+  "pastasaus",
+  "plantaardig",
+  "potatoes",
+  "quiche",
+  "rollade",
+  "rookworst",
+  "rosti",
+  "rub",
+  "rösti",
+  "salade",
+  "sint",
+  "soep",
+  "sous",
+  "spekken",
+  "stamppot",
+  "stukje",
+  "terra",
+  "vivera",
+  "zeeuws"
+ ],
+ "ontbijtspek": [
+  "gebakken",
+  "stukje"
+ ],
+ "spekblokjes": [
+  "vet"
+ ],
+ "appels": [
+  "appelsap",
+  "chips",
+  "flap",
+  "gedroogd",
+  "moes",
+  "pers",
+  "sinaas",
+  "stroop",
+  "taart"
+ ],
+ "sinaasappels": [
+  "sap",
+  "siroop"
+ ],
+ "kiwi": [
+  "drank",
+  "sap"
+ ],
+ "volkoren brood": [
+  "knackebrod",
+  "knackebrood",
+  "libanees",
+  "mix",
+  "party",
+  "pita",
+  "rogge",
+  "souq",
+  "stokbrood",
+  "vloerbrood"
+ ],
+ "wit brood": [
+  "broodmix",
+  "desem",
+  "mix",
+  "party",
+  "pita",
+  "stokbrood",
+  "tosti"
+ ],
+ "bruin brood": [
+  "mix",
+  "stokbrood"
+ ],
+ "stokbrood": [
+  "afbak",
+  "garlic",
+  "knoflook",
+  "kruiden",
+  "mini",
+  "pizza"
+ ],
+ "pizza": [
+  "broodje",
+  "deeg",
+  "focaccia",
+  "kruiden",
+  "lahmacun",
+  "mini",
+  "saus",
+  "snack"
+ ],
+ "trostomaten": [
+  "gedroogd",
+  "ketchup",
+  "saus",
+  "soep"
+ ],
+ "bitterballen": [
+  "mosterd",
+  "saus",
+  "vega"
+ ],
+ "kipnuggets": [
+  "saus",
+  "vega"
+ ],
+ "rucola": [
+  "kaas",
+  "pesto",
+  "pizza",
+  "saus"
+ ],
+ "veldsla": [
+  "salade"
+ ],
+ "ananas": [
+  "bananas",
+  "blik",
+  "gedroogd",
+  "haribo",
+  "sap",
+  "schijven",
+  "siroop",
+  "snoep",
+  "stukjes"
+ ],
+ "meloen": [
+  "ham",
+  "roomyoghurt",
+  "sap",
+  "snoep",
+  "sorbet",
+  "waterijs",
+  "yoghurt"
+ ],
+ "sjalotten": [
+  "gebakken",
+  "gedroogd",
+  "poeder"
+ ],
+ "bosui": [
+  "gratin",
+  "kruiden",
+  "saus"
+ ],
+ "aubergine": [
+  "dip",
+  "gegrild",
+  "saus",
+  "soep"
+ ],
+ "zoete aardappel": [
+  "chips",
+  "friet",
+  "partjes",
+  "puree",
+  "soep"
+ ],
+ "rode bieten": [
+  "chips",
+  "salade",
+  "sap",
+  "soep"
+ ],
+ "kibbeling": [
+  "saus"
+ ],
+ "lekkerbekjes": [],
+ "mexicano": [
+  "chips",
+  "croky",
+  "mais",
+  "maïs"
+ ],
+ "appelsap": [
+  "sinaas"
  ]
 }

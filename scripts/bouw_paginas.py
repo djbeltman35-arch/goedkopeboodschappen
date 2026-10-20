@@ -121,6 +121,11 @@ for _m in MAAL:
         if len(_r) > 3 and _r[3] == "v": continue
         for _t in {_r[0], *MAAL_ING.get(_r[0], ([],))[0]}:
             if _t in PICKED and _m not in MAAL_PER_TERM.get(_t, []): MAAL_PER_TERM.setdefault(_t, []).append(_m)
+for _t in PICKED:
+    if _t in VARIANT and _t not in MAAL_PER_TERM:
+        for _z in VARIANT[_t]["zoek"]:
+            for _m in MAAL_PER_TERM.get(_z, []) or [m for m in MAAL if any(r[0] == _z for r in m["ing"])]:
+                if _m not in MAAL_PER_TERM.get(_t, []): MAAL_PER_TERM.setdefault(_t, []).append(_m)
 
 # ---------- productpagina's ----------
 for t, rows in PICKED.items():
@@ -128,34 +133,37 @@ for t, rows in PICKED.items():
     goed = [r for r in rows if id(r[1]) not in BAD] or rows
     (si0, p0), (siN, pN) = goed[0], goed[-1]
     win, loser = NAMEN.get(stores[si0]["id"], stores[si0]["name"]), NAMEN.get(stores[siN]["id"], stores[siN]["name"])
-    u0, uN = eff_unit(p0), eff_unit(pN)
-    eh = eenheid(p0[6])
+    (u0, e0), (uN, eN) = toon_unit(p0), toon_unit(pN)
+    eh = eenheid(e0)
     vanaf = f"{eur(u0)} per {eh}" if u0 is not None and eh else eur(eff(p0))
     besp = round((1 - u0 / uN) * 100) if u0 and uN and uN > u0 else 0
     title = f"{name}: vanaf {vanaf} bij {win} ({MAAND})"
-    desc = (f"{name} kost {vanaf} bij {win}" + (f" en {per(uN, pN[6])} bij {loser}" if uN and u0 and uN > u0 * 1.02 else "") +
-            f". Vergelijk {len(rows)} supermarkten" + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + ". Elke dag bijgewerkt.")
+    desc = (f"{name} kost {vanaf} bij {win}" + (f" en {per(uN, eN)} bij {loser}" if uN and u0 and uN > u0 * 1.02 else "") +
+            f". Vergelijk {len(rows)} supermarkten" + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + ". Elke dag bijgewerkt." + (f" Ongeveer {kcal_txt(t)}." if kcal_txt(t) else ""))
     c = CATOF.get(t)
-    ch, cld = crumbs(*([(c[0], f"/categorie/{slug(c[0])}/")] if c else [("Alle producten", "/vergelijk/")]), (name, None))
+    ch, cld = crumbs(*([(c[3], f"/categorie/{slug(c[3])}/"), (c[0], f"/categorie/{slug(c[0])}/")] if c else [("Alle producten", "/vergelijk/")]), (name, None))
     trs = ""
     for i, (si, p) in enumerate(rows):
         o = offer_of(p)
-        unit = "" if id(p) in BAD else per(eff_unit(p), p[6])
+        unit = "" if id(p) in BAD else per(*toon_unit(p))
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
                 f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
     acties = term_offers(t)
     actie_html = (f'<h2>{esc(name)} in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in acties) + "</ul>") if acties else ""
-    faq = [(f"Waar is {t} het goedkoopst?", f"{name} is nu het goedkoopst bij {win}: {p0[1]} kost {eur(eff(p0))}" + (f", dat is {per(u0, p0[6])}" if u0 else "") + "."),
+    faq = [(f"Waar is {t} het goedkoopst?", f"{name} is nu het goedkoopst bij {win}: {p0[1]} kost {eur(eff(p0))}" + (f", dat is {per(u0, e0)}" if u0 else "") + "."),
            (f"Wat kost {t} bij de supermarkt?", f"Bij {len(rows)} supermarkten kost het voordeligste product tussen {eur(min(eff(p) for _, p in rows))} en {eur(max(eff(p) for _, p in rows))}, afhankelijk van merk en verpakking.")]
-    if besp >= 5: faq.append((f"Hoeveel bespaar je op {t}?", f"Per {eh} is {win} {besp}% goedkoper dan {loser} ({per(u0, p0[6])} tegen {per(uN, pN[6])})."))
+    kt = kcal_txt(t); kp = kcal_pak(t, p0)
+    if kt: faq.append((f"Hoeveel calorieën zitten er in {t}?", f"{name} bevat gemiddeld ongeveer {kt}" + (f". Het goedkoopste product, {p0[1]} ({p0[4] or 'per stuk'}), is in totaal ongeveer {format(kp, ',').replace(',', '.')} kcal" if kp else "") + ". Dat is een richtwaarde; de precieze waarde staat op de verpakking."))
+    if besp >= 5: faq.append((f"Hoeveel bespaar je op {t}?", f"Per {eh} is {win} {besp}% goedkoper dan {loser} ({per(u0, e0)} tegen {per(uN, eN)})."))
     rel = [x for x in (c[2] if c else []) if x != t and x in PICKED][:24]
     mm = MAAL_PER_TERM.get(t, [])[:6]
     maalhtml = (f'<h2>Complete maaltijden met {esc(t)}</h2><ul class="links">' + "".join(f'<li><a href="/maaltijden/{x["slug"]}/">{esc(x["naam"])}</a></li>' for x in mm) + '</ul>') if mm else ""
-    relhtml = (f"<h2>Meer {esc(c[0].lower())} vergelijken</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk/{slug(x)}/">{esc(cap(x))}</a></li>' for x in rel) + "</ul>") if rel else ""
+    relhtml = (f"<h2>Meer uit {esc(c[0].lower())}</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk/{slug(x)}/">{esc(cap(x))}</a></li>' for x in rel) + "</ul>") if rel else ""
     head = ch + f"<h1>{esc(name)}: waar is het goedkoopst?</h1><p class=\"lead\">{esc(name)} koop je nu het voordeligst bij <b>{esc(win)}</b>" + (f": {esc(vanaf)}" if vanaf else "") + (f", {besp}% goedkoper dan bij {esc(loser)}." if besp >= 5 else ".") + "</p>"
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
+            + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
             f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and id(p) not in BAD), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "ItemList", "name": f"{name} prijzen per supermarkt", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "item": {"@type": "Product", "name": p[1], "offers": {"@type": "Offer", "price": f"{eff(p):.2f}", "priceCurrency": "EUR", "url": plink(p), "availability": "https://schema.org/InStock",
@@ -164,31 +172,67 @@ for t, rows in PICKED.items():
     made.append((path, "0.7"))
 print(len(PICKED), "productpagina's")
 
-# ---------- categorieën ----------
-catpaths = []
-for c in CATS:
-    items = [t for t in c[2] if t in PICKED]
-    if not items: continue
-    cs = slug(c[0]); path = f"/categorie/{cs}/"
+# ---------- categorieën: hoofdgroepen met subcategorieën ----------
+def cat_rij(t):
+    si, p = PICKED[t][0]
+    kt = kcal_txt(t)
+    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + f'{addbtn(p, t)}</td>'
+            + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)))}</span></td></tr>')
+def cat_tabel(items):
+    return ('<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>'
+            + "".join(cat_rij(t) for t in items) + '</tbody></table></div>')
+def winnaar(items):
     winst = {}
     for t in items: winst[PICKED[t][0][0]] = winst.get(PICKED[t][0][0], 0) + 1
-    top = max(winst, key=winst.get)
-    trs = "".join(f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(PICKED[t][0][1][1])}</span>{addbtn(PICKED[t][0][1], t)}</td><td><b>{esc(NAMEN.get(stores[PICKED[t][0][0]]["id"]))}</b></td><td class="p">{tag(eff(PICKED[t][0][1]))}<br><span class="unit">{esc(per(eff_unit(PICKED[t][0][1]), PICKED[t][0][1][6]))}</span></td></tr>' for t in items)
-    ch, cld = crumbs(("Categorieën", "/categorie/"), (c[0], None))
-    title = f"{c[0]}: goedkoopste supermarkt per product ({MAAND})"
-    desc = f"Waar koop je {c[0].lower()} het goedkoopst? {len(items)} producten vergeleken bij {AANTAL} supermarkten. {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt."
-    head = ch + f"<h1>{c[1]} {esc(c[0])} vergelijken</h1><p class=\"lead\">Per product de goedkoopste supermarkt. {esc(NAMEN[stores[top]['id']])} is bij {winst[top]} van de {len(items)} producten het voordeligst.</p>"
+    top = max(winst, key=winst.get); return top, winst[top]
+def maal_links(items, kop):
     cm = []
     for t_ in items:
         for m_ in MAAL_PER_TERM.get(t_, []):
             if m_ not in cm: cm.append(m_)
-    cmhtml = (f'<h2>Complete maaltijden met {esc(c[0].lower())}</h2><ul class="links">' + "".join(f'<li><a href="/maaltijden/{m_["slug"]}/">{esc(m_["naam"])}</a></li>' for m_ in cm[:9]) + '</ul>') if cm else ""
-    body = f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div><h2>Andere categorieën</h2><ul class="links">' + "".join(f'<li><a href="/categorie/{slug(x[0])}/">{x[1]} {esc(x[0])}</a></li>' for x in CATS if x is not c) + f'</ul>{cmhtml}<a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>'
-    schrijf(path, page(path, title, desc, head, body, [cld], actief="/categorie/"))
-    catpaths.append((c, path, items)); made.append((path, "0.7"))
+    return (f'<h2>{esc(kop)}</h2><ul class="links">' + "".join(f'<li><a href="/maaltijden/{m_["slug"]}/">{esc(m_["naam"])}</a></li>' for m_ in cm[:9]) + '</ul>') if cm else ""
+GROEP_ITEMS = {}
+catpaths = []
+for g, gic in GROEPEN:
+    subs = [(c, [t for t in c[2] if t in PICKED]) for c in SUBS[g]]
+    subs = [(c, it) for c, it in subs if it]
+    if not subs: continue
+    alle = [t for _, it in subs for t in it]; GROEP_ITEMS[g] = (subs, alle)
+    gpath = f"/categorie/{slug(g)}/"
+    for c, items in subs:
+        if slug(c[0]) == slug(g): continue
+        path = f"/categorie/{slug(c[0])}/"
+        top, n = winnaar(items)
+        ch, cld = crumbs(("Categorieën", "/categorie/"), (g, gpath), (c[0], None))
+        title = f"{c[0]}: goedkoopste supermarkt per product ({MAAND})"
+        desc = (f"Waar koop je {c[0].lower()} het goedkoopst? {len(items)} producten vergeleken bij {AANTAL} supermarkten: " + ", ".join(items[:4]) +
+                f". {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
+        head = ch + f"<h1>{c[1]} {esc(c[0])} vergelijken</h1><p class=\"lead\">Per product de goedkoopste supermarkt. {esc(NAMEN[stores[top]['id']])} is bij {n} van de {len(items)} producten het voordeligst.</p>"
+        broers = [x for x, _ in subs if x is not c]
+        body = (cat_tabel(items) + (f'<h2>Meer in {esc(g.lower())}</h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(x[0])}/">{x[1]} {esc(x[0])}</a></li>' for x in broers) + "</ul>" if broers else "")
+                + maal_links(items, f"Complete maaltijden met {c[0].lower()}") + f'<p><a href="{gpath}">Alles in {esc(g.lower())}</a> · <a href="/categorie/">Alle categorieën</a></p>'
+                + '<a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>')
+        ld = [cld, {"@context": "https://schema.org", "@type": "ItemList", "name": c[0], "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/vergelijk/{slug(t)}/", "name": cap(t)} for i, t in enumerate(items)]}]
+        schrijf(path, page(path, title, desc, head, body, ld, actief="/categorie/"))
+        catpaths.append((c, path, items)); made.append((path, "0.7"))
+    # hoofdgroep: alle subcategorieën onder elkaar
+    top, n = winnaar(alle)
+    ch, cld = crumbs(("Categorieën", "/categorie/"), (g, None))
+    title = f"{g}: goedkoopste supermarkt per product ({MAAND})"
+    desc = (f"{g} vergelijken: " + ", ".join(c[0].lower() for c, _ in subs[:5]) + f". {len(alle)} producten bij {AANTAL} supermarkten, "
+            f"{NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
+    head = (ch + f"<h1>{gic} {esc(g)} vergelijken</h1><p class=\"lead\">{len(alle)} producten in {len(subs)} groepen. {esc(NAMEN[stores[top]['id']])} is bij {n} producten het voordeligst.</p>"
+            + ('<ul class="chips">' + "".join(f'<li><a href="#{slug(c[0])}">{c[1]} {esc(c[0])}</a></li>' for c, _ in subs) + "</ul>" if len(subs) > 1 else ""))
+    body = "".join((f'<h2 id="{slug(c[0])}">{c[1]} <a href="/categorie/{slug(c[0])}/">{esc(c[0])}</a></h2>' if len(subs) > 1 else "") + cat_tabel(items) for c, items in subs)
+    body += (maal_links(alle, f"Complete maaltijden met {g.lower()}") + '<h2>Andere categorieën</h2><ul class="links">' +
+             "".join(f'<li><a href="/categorie/{slug(x)}/">{xi} {esc(x)}</a></li>' for x, xi in GROEPEN if x != g) + '</ul><a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>')
+    ld = [cld, {"@context": "https://schema.org", "@type": "ItemList", "name": g, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/vergelijk/{slug(t)}/", "name": cap(t)} for i, t in enumerate(alle)]}]
+    schrijf(gpath, page(gpath, title, desc, head, body, ld, actief="/categorie/"))
+    made.append((gpath, "0.8"))
 head = crumbs(("Categorieën", None))[0] + "<h1>Boodschappen vergelijken per categorie</h1><p class=\"lead\">Kies een categorie en zie per product welke supermarkt het goedkoopst is.</p>"
-body = '<ul class="links" style="columns:2 280px">' + "".join(f'<li style="padding:8px 0"><a href="{p}">{c[1]} {esc(c[0])}</a><br><span class="muted">{esc(", ".join(items[:5]))}</span></li>' for c, p, items in catpaths) + '</ul>'
-schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} veelgekochte boodschappen per categorie bij {AANTAL} supermarkten: zuivel, brood, vlees, groente, dranken, huishouden en meer.", head, body, actief="/categorie/"))
+body = "".join(f'<h2><a href="/categorie/{slug(g)}/">{gi} {esc(g)}</a></h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(c[0])}/">{c[1]} {esc(c[0])}</a></li>' for c, _ in GROEP_ITEMS[g][0] if slug(c[0]) != slug(g)) + "</ul>"
+               for g, gi in GROEPEN if g in GROEP_ITEMS)
+schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} boodschappen in {len(catpaths)} categorieën bij {AANTAL} supermarkten: groente, diepvries, zuivel, vlees, frisdrank, bier, huishouden en meer.", head, body, actief="/categorie/"))
 made.append(("/categorie/", "0.6"))
 lis = "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in sorted(PICKED))
 schrijf("/vergelijk/", page("/vergelijk/", f"Alle {len(PICKED)} producten vergelijken bij {AANTAL} supermarkten", f"Van halfvolle melk tot wasmiddel: zie voor {len(PICKED)} producten bij welke supermarkt ze het goedkoopst zijn. Elke dag bijgewerkt.",
@@ -366,8 +410,8 @@ ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope B
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
       {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me"},
       faq_ld(faq)]
-cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED] or c[2][:8]] for c in CATS]
-app = (app.replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False))
+cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
+app = (app.replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
           .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 open(os.path.join(OUT, "index.html"), "w").write(app)

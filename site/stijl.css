@@ -146,3 +146,15 @@ body.hasdock{padding-bottom:84px}
 .mcard{overflow:hidden}.mcard .mimg{display:block;width:calc(100% + 32px);max-width:none;margin:-14px -16px 6px;aspect-ratio:16/9;height:auto;object-fit:cover;background:var(--green-soft)}
 .mfoto{margin:0 0 18px}.mfoto img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r);background:var(--green-soft)}.mfoto figcaption{font-size:13px;color:var(--muted);margin-top:6px}.mfoto figcaption a{color:inherit}
 .mcard .mleeg{display:flex;align-items:center;justify-content:center;font-size:64px;background:var(--green-soft)}
+[data-flt][aria-pressed=true]{background:var(--green-soft);border-color:var(--green);color:var(--green-dark)}.mfilters{display:flex;flex-wrap:wrap;gap:8px}
+/* Subcategorieën */
+ul.chips{list-style:none;margin:0 0 18px;padding:2px;flex-wrap:wrap;overflow:visible}
+ul.chips li{display:contents}
+ul.chips a{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font:700 15px var(--text);color:var(--ink);text-decoration:none}
+ul.chips a:hover{border-color:var(--green)}
+.subchips{flex-wrap:wrap;overflow:visible;margin:4px 0 8px}
+.subkop{margin:22px 0 6px;font-size:18px;scroll-margin-top:80px}
+h2[id]{scroll-margin-top:80px}
+.kc{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.kc::before{content:"🔥 "}
+.kcal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}

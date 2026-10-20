@@ -2,7 +2,7 @@
 Wordt geïmporteerd door bouw_paginas.py na vergelijk.py."""
 from vergelijk import *
 import math
-from maaltijden import I, MAALTIJDEN, SOORTEN, NOTITIE, NIET_ALGEMEEN, BEREIK
+from maaltijden import I, MAALTIJDEN, SOORTEN, NOTITIE, NIET_ALGEMEEN, BEREIK, GLUTEN, LET_OP, GLUTEN_WOORDEN, LET_OP_WOORDEN
 
 def _toegestaan(p, termwoorden, niet):
     for x in p[7]:
@@ -32,11 +32,18 @@ def ingredient_prijzen(sleutel, q):
             return lo <= v <= hi if u in ("kg", "l") else (not stuk or lo <= v / stuk <= hi)
         kand = [p for p in matches(term) if ok(p)]
         if not kand: continue
-        mark_bad(kand)
+        # Uitschieters weghalen op prijs per kilo/liter (stukprijzen omgerekend met het gewicht per stuk).
+        def pkg(p):
+            v, u = eenheidsprijs(p)
+            return v if u in ("kg", "l") else (v / stuk if stuk else None)
+        np_ = sorted(x for x in (pkg(p) for p in kand) if x)
+        if len(np_) >= 3:
+            med = np_[len(np_) // 2]
+            kand = [p for p in kand if pkg(p) is None or med / 4 <= pkg(p) <= med * 4]
         gmin = min(words(p) for p in kand)
         per = {}
         for p in kand:
-            if words(p) <= gmin + 2 and id(p) not in BAD: per.setdefault(p[0], []).append(p)
+            if words(p) <= gmin + 4: per.setdefault(p[0], []).append(p)
         for si, arr in per.items():
             mn = min(words(p) for p in arr)
             for p in arr:
@@ -77,10 +84,23 @@ def bereken(m):
     rang = sorted(winkels.items(), key=lambda kv: kv[1]["tot"])
     return {"kcal": round(kcal / 4 / 5) * 5, "rang": rang, "regels": regels}
 
+def gluten(m):
+    """("vrij" | "bevat", lijst met ingrediënten waarvan je een glutenvrije variant moet kiezen)."""
+    bevat, let = False, []
+    for r in m["ing"]:
+        sleutel, naam, voorraad = r[0], r[2], len(r) > 3 and r[3] == "v"
+        tekst = naam.lower()
+        if (not voorraad and sleutel in GLUTEN) or (voorraad and any(w in tekst for w in GLUTEN_WOORDEN)): bevat = True
+        elif (not voorraad and sleutel in LET_OP): let.append(naam.split(" (")[0].lower())
+        elif voorraad:
+            let += [w for w in LET_OP_WOORDEN if w in tekst]
+    return ("bevat" if bevat else "vrij"), sorted(set(let))
+
 MAAL = []
 for m in MAALTIJDEN:
     b = bereken(m)
-    if len(b["rang"]) >= 3: MAAL.append({**m, **b})
+    gv, gl = gluten(m)
+    if len(b["rang"]) >= 3: MAAL.append({**m, **b, "glutenvrij": gv == "vrij", "gv_let": gl})
 
 if __name__ == "__main__":
     for m in MAAL:
