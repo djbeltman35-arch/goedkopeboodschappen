@@ -249,3 +249,11 @@ body:has(#results nav.terug.app){padding-top:52px}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tips{background:#2a2414;border-color:#6b5420}:root:not([data-theme=light]) .tips li{border-color:#4a3e20}}
 /* Kaarten buiten beeld pas tekenen bij scrollen (snellere opbouw van lange lijsten) */
 ul.offers>li.offer,.rows>li.row{content-visibility:auto;contain-intrinsic-size:auto 170px}
+/* Prijsalarm */
+.alarm{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:10px 0;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:15px}
+.alarm input{width:5.5em;padding:6px 8px;border-radius:8px;border:1px solid var(--line);font:inherit;background:var(--page);color:var(--ink)}
+.alarm .btn-line{padding:6px 12px;width:auto}
+.alarm.on{background:var(--green-soft);border-color:transparent}
+.alarmmsg{flex-basis:100%;font-size:14px;color:var(--muted)}
+.alarmmsg:empty{display:none}
+.alarm.on{display:block;line-height:1.5}

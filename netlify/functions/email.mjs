@@ -1,5 +1,5 @@
 // E-mailmeldingen bij aanbiedingen: aanmelden (met bevestigingsmail), lijst bijwerken, status opvragen en afmelden.
-// Bewaard in Netlify Blobs: het e-mailadres, de woorden op de lijst, de gekozen supermarkten en of je het weekoverzicht wilt. Niets anders.
+// Bewaard in Netlify Blobs: het e-mailadres, de woorden op de lijst, de gekozen supermarkten, of je het weekoverzicht wilt en je prijsalarmen. Niets anders.
 // Onbevestigde aanmeldingen ruimt meldingen-sturen na 7 dagen op.
 import { getStore } from '@netlify/blobs';
 import crypto from 'node:crypto';
@@ -77,9 +77,11 @@ export default async (req, context) => {
     // Alleen het weekoverzicht aan- of uitzetten, of de lijst bijwerken (of allebei).
     if ('week' in body) a.week = !!body.week;
     if (Array.isArray(body.termen)) { a.termen = termen; a.winkels = winkels; }
+    // Prijsalarmen: hoogstens 25, per soort een maximale prijs per kilo, liter of stuk.
+    if (Array.isArray(body.alarm)) a.alarm = body.alarm.slice(0, 25).map(x => ({ t: String(x?.t || '').slice(0, 60).trim(), max: Math.round(+x?.max * 100) / 100, u: ['kg', 'l', 'st'].includes(x?.u) ? x.u : 'kg' })).filter(x => x.t && x.max > 0 && x.max < 1000);
     a.bijgewerkt = new Date().toISOString();
     await store.setJSON('t-' + body.token, a);
-    return json({ status: a.bevestigd ? 'bevestigd' : 'wacht', week: !!a.week });
+    return json({ status: a.bevestigd ? 'bevestigd' : 'wacht', week: !!a.week, alarm: a.alarm || [] });
   }
 
   // Nieuwe aanmelding

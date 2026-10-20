@@ -490,6 +490,16 @@ function verbeter(q){
     if(best){veranderd=true;return best} return w});
   return veranderd?uit.join(" "):"";
 }
+// Prijsalarm: mail als een soort onder een gekozen prijs per kilo, liter of stuk komt (via de e-mailmeldingen).
+const EHN={kg:"kilo",l:"liter",st:"stuk"};
+function alarmHtml(q,lo){
+  if(!PAGINAS.has(norm(q))||!lo||!["kg","l","st"].includes(lo[6])||effUnit(lo)==null)return"";
+  const k=norm(q),a=(store.get("alarmen")||[]).find(x=>x.k===k),eh=EHN[lo[6]];
+  if(a)return`<p class="alarm on">🔔 Prijsalarm staat aan: je krijgt een mail als ${esc(q)} onder <b>${eur(a.max)}</b> per ${EHN[a.u]||eh} komt. <button type="button" class="kies" data-alarm-uit="${esc(k)}">Uitzetten</button></p>`;
+  const voorstel=Math.max(.01,Math.floor(effUnit(lo)*90)/100);
+  return`<form class="alarm" data-alarm="${esc(q)}" data-u="${lo[6]}"><span>🔔 Mail me als ${esc(q)} onder</span> <label>€ <input type="number" name="max" step="0.01" min="0.01" value="${voorstel.toFixed(2)}" inputmode="decimal" aria-label="Maximale prijs per ${eh}"></label> <span>per ${eh} komt (nu ${eur(effUnit(lo))})</span> <button type="submit" class="btn-line">Zet aan</button><span class="alarmmsg" role="status"></span></form>`;
+}
+async function alarmSync(){const t=mailToken();if(!t)return false;try{const r=await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,alarm:(store.get("alarmen")||[]).map(({t,max,u})=>({t,max,u}))})});return r.ok}catch(e){return false}}
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick();
   if(!q){$("results").innerHTML="";return}
@@ -508,7 +518,7 @@ function search(fromUser){
   const kop=bedoeld||q;
   $("results").innerHTML=`${terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${keus}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
+  ${keus}${alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -941,6 +951,7 @@ function renderAll(){renderList();renderWhere();if(S.view)renderView();else sear
 
 document.addEventListener("click",e=>{
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
+  const au=e.target.closest("[data-alarm-uit]"); if(au){store.set("alarmen",(store.get("alarmen")||[]).filter(x=>x.k!==au.dataset.alarmUit));alarmSync();gc("alarm/uit","Prijsalarm uit");search();return}
   const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
@@ -977,6 +988,13 @@ document.addEventListener("change",e=>{
   if(e.target.id==="ofsort"){S.ofsort=e.target.value;renderOffers()}
 });
 document.addEventListener("input",e=>{if(e.target.id==="ofq"){S.ofq=e.target.value;clearTimeout(S.ofqt);S.ofqt=setTimeout(()=>{const pos=e.target.selectionStart;renderOffers();const i=$("ofq");i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}},250)}});
+document.addEventListener("submit",async e=>{const f=e.target.closest("form[data-alarm]");if(!f)return;e.preventDefault();
+  const msg=f.querySelector(".alarmmsg"),max=Math.round(parseFloat(String(f.max.value).replace(",","."))*100)/100;
+  if(!(max>0)){msg.textContent=" Vul een prijs in.";return}
+  if(!mailToken()||S.mail?.status!=="bevestigd"){msg.innerHTML=` Zet eerst de <a href="#notify">e-mailmeldingen</a> aan (onderaan Mijn lijst); daarna kun je een prijsalarm zetten.`;return}
+  const q=f.dataset.alarm,k=norm(q),lst=(store.get("alarmen")||[]).filter(x=>x.k!==k);lst.push({k,t:q,max,u:f.dataset.u});store.set("alarmen",lst.slice(-25));
+  const ok=await alarmSync();if(!ok){msg.textContent=" Opslaan lukte niet, probeer het later nog eens.";return}
+  gc("alarm/aan/"+k,"Prijsalarm aan");search()});
 document.addEventListener("submit",e=>{if(e.target.id==="mailf"){e.preventDefault();const b=e.target.querySelector("button");b.disabled=true;b.textContent="Even geduld…";mailAan($("mailin").value.trim())}});
 $("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
