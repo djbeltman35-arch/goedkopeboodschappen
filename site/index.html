@@ -183,7 +183,7 @@
   body{background:#fff;color:#000}
   body>*:not(#printsheet){display:none!important}
   #printsheet{display:block;font:12pt/1.4 var(--text);color:#000}
-  #printsheet h1{font-size:22pt;margin:0 0 4pt}
+  #printsheet h1,#printsheet h2{font-size:22pt;margin:0 0 4pt}
   #printsheet table{width:100%;border-collapse:collapse}
   #printsheet td,#printsheet th{text-align:left;padding:6pt 4pt;border-bottom:1px solid #ccc}
   #printsheet .pp{text-align:right}
@@ -895,7 +895,7 @@ let pushT; function pushLater(){if(!S.pushOn&&!mailToken())return;clearTimeout(p
 function printList(){
   const r=S.printRow; if(!r) return; gc("print","Lijst geprint");
   const d=new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p>${d} · boodschappenvergelijk.nl</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${(S.list[i].q||1)>1?(S.list[i].q)+" × ":""}${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
+  $("printsheet").innerHTML=`<h2>Boodschappenlijst ${esc(sname(r.si))}</h2><p>${d} · boodschappenvergelijk.nl</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${(S.list[i].q||1)>1?(S.list[i].q)+" × ":""}${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
   window.print();
 }
 // ---- Samen één lijst: gedeeld via /api/samen, zonder account. Wijzigingen worden samengevoegd (toevoegen, wegstrepen, aantallen). ----
