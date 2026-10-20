@@ -355,6 +355,34 @@ def offers_page(cur, lst):
             '<p class="note">Vomar, SPAR, Jan Linders en Nettorama zetten hun acties alleen in een folder of per winkel online. <a href="https://www.vomar.nl/folders" rel="nofollow noopener" target="_blank">Vomar-folder</a> · <a href="https://www.nettorama.nl/actiefolder" rel="nofollow noopener" target="_blank">Nettorama-folder</a></p>'
             + OFFJS)
     ld = [cld, {"@context": "https://schema.org", "@type": "CollectionPage", "name": h1, "url": BASE + path, "dateModified": VANDAAG}]
+    if cur and nu_:
+        # Op welke dag beginnen de nieuwe acties? Afgeleid uit de meest voorkomende einddag (de dag erna begint de nieuwe week).
+        DAGN = ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"]
+        eindd = {}
+        for o in nu_:
+            if o.get("t"): wd = datetime.date.fromisoformat(o["t"]).weekday(); eindd[wd] = eindd.get(wd, 0) + 1
+        nmw = NAMEN[cur]; actie = "Bonus" if cur == "ah" else "aanbiedingen"
+        faq = []
+        if eindd:
+            ed = max(eindd, key=eindd.get)
+            faq.append((f"Op welke dag beginnen de nieuwe {nmw} {actie}?", f"De meeste weekacties van {nmw} lopen tot en met {DAGN[ed]}; de nieuwe {actie} beginnen dus op {DAGN[(ed + 1) % 7]}. Deze pagina werkt elke ochtend bij."))
+        b_ = max(nu_, key=lambda o: o["pct"])
+        faq.append((f"Wat is de grootste korting bij {nmw} deze week?", f"{b_['n']} voor {eur(b_['p'])}" + (f" in plaats van {eur(b_['was'])}" if b_.get('was') else "") + (f" ({round(b_['pct'] * 100)}% korting)." if b_['pct'] else ".")))
+        faq.append((f"Hoeveel aanbiedingen heeft {nmw} deze week?", f"In week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]} heeft {nmw} {len(nu_)} acties" + (f", en {len(straks)} acties die binnenkort beginnen." if straks else ".")))
+        body += faq_html(faq); ld.append(faq_ld(faq))
+        if len(straks) >= 15: body += f'<p><a class="cta" href="/aanbiedingen/{cur}/volgende-week/">{esc(nmw)} aanbiedingen volgende week bekijken</a></p>'
+    if cur and len(straks) >= 15:
+        vpath = f"/aanbiedingen/{cur}/volgende-week/"; vwk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1] % 52 + 1
+        vbeg = min(o["v"] for o in straks)
+        vch, vcld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], path), ("Volgende week", None))
+        vtitle = f"{NAMEN[cur]} folder volgende week (week {vwk}): {len(straks)} aanbiedingen vanaf {kortdag(vbeg)}"
+        vdesc = f"De {len(straks)} aanbiedingen van {NAMEN[cur]} die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst" + (f", zoals {straks[0]['n'][:50]} voor {eur(straks[0]['p'])}" if straks else "") + ". Nu al bekijken en op je lijst zetten."
+        vlijst = sorted(straks, key=lambda o: -o["pct"])
+        vbody = (f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in vlijst[:150])}</ul>'
+                 + f'<p class="note">Acties die bij {esc(NAMEN[cur])} al bekend zijn en binnenkort beginnen. Prijzen kunnen nog wijzigen; elke ochtend bijgewerkt.</p>'
+                 + f'<p><a href="{path}">{esc(NAMEN[cur])} aanbiedingen van deze week</a> · <a href="/aanbiedingen/">Alle supermarkten</a></p>')
+        schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(NAMEN[cur])} aanbiedingen volgende week</h1><p class=\"lead\">Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst.</p>", vbody, [vcld], actief="/aanbiedingen/"))
+        made.append((vpath, "0.7"))
     body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
     schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>", body, ld, actief="/aanbiedingen/"))
     made.append((path, "0.8"))
@@ -715,10 +743,128 @@ if PAK and _huis_vb:
     title = f"Besparen op boodschappen: 8 tips met echte prijzen ({MAAND})"
     desc = f"Hoe bespaar je op boodschappen? Huismerken zijn nu gemiddeld {round(med * 100)}% goedkoper en {nm(w['si'])} scheelt {eur(l['tot'] - w['tot'])} per mandje met {nm(l['si'])}. 8 tips, onderbouwd met de prijzen van vandaag."
     head = ch + f'<h1>Besparen op boodschappen: 8 tips met echte prijzen</h1><p class="lead">Geen algemene tips, maar wat het vandaag écht scheelt, uitgerekend met de prijzen van {len([s_ for s_ in stores if s_.get("count")])} supermarkten. Bijgewerkt op {DATUM}.</p>'
-    body = tiphtml + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
+    body = tiphtml + '<h2>Meer weten</h2><ul class="links"><li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: per product vergeleken</a></li><li><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a></li><li><a href="/prijsindex/">Worden boodschappen duurder? De prijsindex</a></li></ul>' + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
     schrijf("/besparen/", page("/besparen/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Besparen op boodschappen: 8 tips met echte prijzen"))
     made.append(("/besparen/", "0.9"))
     print("/besparen/:", len(_huis_vb), "huismerkvergelijkingen, mediaan", round(med * 100), "%")
+
+# ---------- Huismerk of A-merk ----------
+if _huis_vb:
+    med = statistics.median(v[3] for v in _huis_vb)
+    ch, cld = crumbs(("Besparen", "/besparen/"), ("Huismerk of A-merk", None))
+    rij = "".join(f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">Huismerk: {esc(h[1])} ({esc(nm(h[0]))}), {eur(_unit(h))} per {"liter" if h[6] == "l" else "kilo" if h[6] == "kg" else "stuk"}</span><span class="sub">A-merk: {esc(a_[1])} ({esc(nm(a_[0]))}), {eur(_unit(a_))}</span></td><td class="p"><b>{round(pct * 100)}%</b><span class="sub">goedkoper</span></td></tr>' for t, h, a_, pct in _huis_vb)
+    faq = [("Is een huismerk goedkoper dan een A-merk?", f"Ja, bijna altijd. Bij de {len(_huis_vb)} producten die we vandaag vergeleken is het goedkoopste huismerk gemiddeld {round(med * 100)}% goedkoper dan het goedkoopste A-merk, per kilo of liter."),
+           ("Is een huismerk slechter?", "Niet per se. Huismerken worden vaak in dezelfde fabrieken gemaakt, en de Consumentenbond vindt huismerken in tests regelmatig even goed of beter. Smaak en samenstelling verschillen per product; probeer het gewoon eens."),
+           ("Wat zijn huismerken?", "Producten onder de naam van de supermarkt zelf, zoals AH, Jumbo, PLUS, 1 de Beste (Dirk), G'woon (Hoogvliet, DekaMarkt, SPAR) en de eigen merken van Lidl en Aldi.")]
+    head = ch + f'<h1>Huismerk of A-merk: hoeveel scheelt het?</h1><p class="lead">Het goedkoopste huismerk is vandaag gemiddeld <b>{round(med * 100)}% goedkoper</b> dan het goedkoopste A-merk, per kilo of liter. Hieronder per product.</p>'
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th style="text-align:right">Scheelt</th></tr></thead><tbody>{rij}</tbody></table></div>'
+            f'<p class="note">Vergeleken op {DATUM}: per product het goedkoopste huismerk en het goedkoopste A-merk bij alle supermarkten, op prijs per kilo, liter of stuk. Lopende aanbiedingen tellen mee.</p>'
+            + faq_html(faq) + '<p><a href="/besparen/">Meer bespaartips →</a></p><a class="cta" href="/">Vergelijk je eigen lijst</a>')
+    schrijf("/huismerk-of-a-merk/", page("/huismerk-of-a-merk/", f"Huismerk of A-merk: gemiddeld {round(med * 100)}% goedkoper ({MAAND})", f"Huismerk vs A-merk: bij {len(_huis_vb)} producten is het huismerk vandaag gemiddeld {round(med * 100)}% goedkoper per kilo of liter. Per product vergeleken, elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/huismerk-of-a-merk/", "0.8"))
+
+# ---------- Wat kosten boodschappen per week? ----------
+# Een duidelijk, zelf samengesteld weekpakket per persoon (ontbijt en lunch) plus 7 avondmaaltijden uit het goedkope weekmenu.
+WEEK_PP = [("volkoren brood", 1.5, "st", "Volkorenbrood (1,5 brood)"), ("halfvolle melk", 2, "l", "Halfvolle melk (2 liter)"), ("yoghurt", 1, "l", "Yoghurt (1 liter)"),
+           ("jonge kaas", .15, "kg", "Kaas (150 gram)"), ("pindakaas", .1, "kg", "Pindakaas (100 gram)"), ("roomboter", .1, "kg", "Boter (100 gram)"),
+           ("eieren", 4, "st", "Eieren (4)"), ("appels", 1, "kg", "Appels (1 kilo)"), ("bananen", .7, "kg", "Bananen (700 gram)"), ("filterkoffie", .1, "kg", "Koffie (100 gram)")]
+def _itemprijs(t, q, u, si):
+    rows = PICKED.get(t, [])
+    p = next((p for s_, p in rows if s_ == si), None)
+    if not p: return None, None
+    v = vgl_unit(p) if p[6] == u and vgl_unit(p) else None
+    return (v * q if v else eff(p)), p
+_wk_items = {si: [_itemprijs(t, q, u, si) for t, q, u, _ in WEEK_PP] for si, st_ in enumerate(stores) if st_.get("count")}
+_wk_med = [statistics.median([v[i][0] for v in _wk_items.values() if v[i][0]] or [0]) for i in range(len(WEEK_PP))]
+def _weekprijs(si):
+    """Kosten van het weekpakket per persoon bij winkel si; ontbreken er hoogstens 2 producten, dan telt daarvoor de middenprijs."""
+    it = _wk_items[si]; mist = sum(1 for k, p in it if k is None)
+    if mist > 2: return None, []
+    return sum(k if k is not None else _wk_med[i] for i, (k, p) in enumerate(it)), it
+_wm = WEEKMENU_PRIJS.get("weekmenu")
+_wk_rij = []
+for si, st_ in enumerate(stores):
+    if not st_.get("count"): continue
+    t, r = _weekprijs(si)
+    if t: _wk_rij.append((si, t, r))
+_wk_rij.sort(key=lambda x: x[1])
+print("weekpakket:", "weekmenu" if _wm else "geen weekmenu", len(_wk_rij), "winkels compleet")
+if _wm and len(_wk_rij) >= 3:
+    avond_pp = _wm[0] / 20 * 7  # 7 avondmaaltijden per persoon, uit het weekmenu (5 maaltijden voor 4 personen)
+    lo, hi = _wk_rij[0], _wk_rij[-1]
+    def bedrag(pers, si_t): return si_t * pers + avond_pp * pers
+    rows = "".join(f'<tr><td><b>{n} {"persoon" if n == 1 else "personen"}</b></td><td class="p">{eur(bedrag(n, lo[1]))}<span class="sub">per week</span></td><td class="p">{eur(bedrag(n, lo[1]) * 52 / 12)}<span class="sub">per maand</span></td></tr>' for n in (1, 2, 3, 4))
+    lijst = "".join(f"<li>{esc(lbl)}</li>" for _, _, lbl in [(0, 0, x[3]) for x in WEEK_PP])
+    perw = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. {esc(nm(si))}</b></td><td class="p">{eur(t)}</td></tr>' for i, (si, t, r) in enumerate(_wk_rij))
+    ch, cld = crumbs(("Besparen", "/besparen/"), ("Boodschappen per week", None))
+    faq = [("Hoeveel geef je uit aan boodschappen per week?", f"Kook je zuinig en doe je boodschappen bij de goedkoopste supermarkt, dan kom je met ons rekenvoorbeeld op ongeveer {eur(bedrag(1, lo[1]))} per persoon per week, en {eur(bedrag(4, lo[1]))} voor een gezin van 4 ({DATUM}). Met A-merken, vlees elke dag en snacks ligt het bedrag al snel een stuk hoger."),
+           ("Hoeveel geld voor boodschappen per maand?", f"Volgens hetzelfde voorbeeld ongeveer {eur(bedrag(1, lo[1]) * 52 / 12)} per maand voor 1 persoon en {eur(bedrag(2, lo[1]) * 52 / 12)} voor 2 personen. Het Nibud geeft eigen richtbedragen per huishouden; dit is wat het met de echte prijzen van vandaag kost."),
+           ("Hoe is dit berekend?", f"Per persoon per week: een vast pakket voor ontbijt en lunch (zie de lijst) bij de goedkoopste supermarkt, plus 7 avondmaaltijden van het goedkope weekmenu ({eur(_wm[0] / 20)} per persoon per maaltijd). Drinken, snacks, verzorging en schoonmaakmiddelen tellen niet mee.")]
+    head = ch + f'<h1>Wat kosten boodschappen per week?</h1><p class="lead">Met de echte prijzen van vandaag: zuinig eten kost ongeveer <b>{eur(bedrag(1, lo[1]))} per persoon per week</b>, bij {esc(nm(lo[0]))}. Voor een gezin van 4 is dat {eur(bedrag(4, lo[1]))}.</p>'
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Huishouden</th><th style="text-align:right">Week</th><th style="text-align:right">Maand</th></tr></thead><tbody>{rows}</tbody></table></div>'
+            f'<h2>Wat zit erin?</h2><p>Per persoon per week, voor ontbijt en lunch:</p><ul class="links">{lijst}</ul><p>Plus 7 avondmaaltijden uit het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a> ({eur(avond_pp)} per persoon per week).</p>'
+            f'<h2>Ontbijt en lunch per supermarkt</h2><p class="note">Het weekpakket voor 1 persoon, zonder avondeten.</p><div class="tblwrap"><table class="ptable"><tbody>{perw}</tbody></table></div>'
+            + faq_html(faq) + '<p><a href="/besparen/">Zo bespaar je nog meer →</a></p><a class="cta" href="/">Bereken het voor je eigen lijst</a>')
+    schrijf("/boodschappen-per-week/", page("/boodschappen-per-week/", f"Wat kosten boodschappen per week? Vanaf {eur(bedrag(1, lo[1]))} per persoon ({MAAND})", f"Hoeveel geld kwijt aan boodschappen per week of maand? Met de echte prijzen van vandaag: ongeveer {eur(bedrag(1, lo[1]))} per persoon per week, {eur(bedrag(4, lo[1]))} voor 4 personen. Zo is het berekend.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/boodschappen-per-week/", "0.8"))
+    print("/boodschappen-per-week/:", eur(bedrag(1, lo[1])), "pp")
+
+# ---------- Prijsindex: worden boodschappen duurder? (uit data/historie.json) ----------
+def pct_nl(x, d=1): return (f"{x:+.{d}f}".replace(".", ",")) + "%"
+try:
+    _dg = HIST.get("dagen", []); _tm = HIST.get("termen", {})
+    def _dagmed(t):
+        out = []
+        for i in range(len(_dg)):
+            vals = sorted(v[i] for v in _tm.get(t, {}).values() if i < len(v) and v[i])
+            out.append(statistics.median(vals) if len(vals) >= 3 else None)
+        return out
+    _bt = [(t, q) for t, q, u in PAKKET if t in _tm]
+    _reeks = {t: _dagmed(t) for t, _ in _bt}
+    _bt = [(t, q) for t, q in _bt if any(_reeks[t])]  # producten zonder metingen bij 3+ winkels vallen af
+    _mand = []
+    _laatst = {}
+    for i, d in enumerate(_dg):  # ontbreekt een product op een dag, dan telt de vorige meting
+        for t, _ in _bt:
+            if _reeks[t][i]: _laatst[t] = _reeks[t][i]
+        if len(_laatst) == len(_bt): _mand.append((d, sum(_laatst[t] * q for t, q in _bt)))
+    print("prijsindex:", len(_mand), "dagen;", [t for t, _ in _bt if t not in _laatst])
+    if len(_mand) >= 20:
+        per_m = {}
+        for d, v in _mand: per_m.setdefault(d[:7], []).append(v)
+        mnd = [(m, statistics.mean(v)) for m, v in sorted(per_m.items())]
+        basis = mnd[0][1]; laatst = mnd[-1][1]; verschil = (laatst / basis - 1) * 100
+        # stijgers en dalers per product: eerste 14 meetdagen tegen de laatste 14
+        bew = []
+        for t, st_ in _tm.items():
+            r = _dagmed(t); a0 = [x for x in r[:14] if x]; a1 = [x for x in r[-14:] if x]
+            if len(a0) >= 7 and len(a1) >= 7 and t in PICKED:
+                ch_ = statistics.median(a1) / statistics.median(a0) - 1
+                if abs(ch_) < .4 and len(st_) >= 4: bew.append((t, ch_))
+        stijg = sorted(bew, key=lambda x: -x[1])[:10]; daal = sorted(bew, key=lambda x: x[1])[:10]
+        # grafiek (inline SVG)
+        W, H = 640, 220; vs = [v for _, v in _mand]; lo_, hi_ = min(vs) * .98, max(vs) * 1.02
+        pts = " ".join(f"{20 + i * (W - 40) / (len(_mand) - 1):.1f},{H - 20 - (v - lo_) / (hi_ - lo_) * (H - 40):.1f}" for i, (_, v) in enumerate(_mand))
+        svg = (f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Prijs van het boodschappenmandje per dag" style="max-width:640px;display:block"><polyline fill="none" stroke="#0e7c4a" stroke-width="3" points="{pts}"/>'
+               f'<text x="20" y="14" font-size="13" fill="currentColor">{eur(hi_ / 1.02)}</text><text x="20" y="{H - 4}" font-size="13" fill="currentColor">{kortdag(_mand[0][0])}</text><text x="{W - 20}" y="{H - 4}" font-size="13" text-anchor="end" fill="currentColor">{kortdag(_mand[-1][0])}</text></svg>')
+        MN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
+        mrows = "".join(f'<tr><td>{MN[int(m[5:]) - 1]} {m[:4]}</td><td class="p">{eur(v)}</td><td class="p">{pct_nl((v / basis - 1) * 100)}</td></tr>' for m, v in mnd)
+        lijstje = lambda xs: "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a>: <b>{pct_nl(c * 100, 0)}</b></li>' for t, c in xs)
+        richting = "duurder" if verschil > 0.5 else "goedkoper" if verschil < -0.5 else "ongeveer even duur"
+        ch, cld = crumbs(("Besparen", "/besparen/"), ("Prijsindex", None))
+        faq = [("Worden boodschappen duurder?", f"Ons vaste mandje van {len(_bt)} basisboodschappen kostte in {MN[int(mnd[0][0][5:]) - 1]} gemiddeld {eur(basis)} en in {MN[int(mnd[-1][0][5:]) - 1]} {eur(laatst)}: {pct_nl(verschil)}. Boodschappen zijn in die periode dus {richting} geworden."),
+               ("Hoe meten jullie dit?", "Elke dag slaan we per product de prijs per kilo, liter of stuk op bij alle supermarkten. Voor de index nemen we per product de middelste prijs van alle supermarkten en rekenen we een vast mandje uit. Aanbiedingen tellen niet mee, zodat je de gewone prijzen ziet."),
+               ("Wat zegt het CBS?", "Het CBS meet de inflatie voor alle uitgaven, ook voedsel. Onze index is kleiner (alleen basisboodschappen) maar wordt elke dag bijgewerkt.")]
+        head = ch + f'<h1>Worden boodschappen duurder? Prijsindex {MAAND}</h1><p class="lead">Een vast mandje van {len(_bt)} basisboodschappen kost nu gemiddeld <b>{eur(laatst)}</b>, {pct_nl(verschil)} ten opzichte van {MN[int(mnd[0][0][5:]) - 1]}. Elke dag gemeten bij alle supermarkten.</p>'
+        body = (f'<h2>Het mandje per dag</h2>{svg}<div class="tblwrap"><table class="ptable"><thead><tr><th>Maand</th><th style="text-align:right">Gemiddeld</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{mrows}</tbody></table></div>'
+                f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>'
+                f'<p class="note">Vergelijking van de eerste 14 meetdagen ({kortdag(_dg[0])} en verder) met de laatste 14. Middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.</p>'
+                + faq_html(faq) + '<p><a href="/besparen/">Zo bespaar je toch →</a></p>')
+        schrijf("/prijsindex/", page("/prijsindex/", f"Worden boodschappen duurder? Prijsindex {MAAND}: {pct_nl(verschil)}", f"Onze dagelijkse prijsindex van {len(_bt)} basisboodschappen bij alle supermarkten: nu {eur(laatst)}, {pct_nl(verschil)} sinds {MN[int(mnd[0][0][5:]) - 1]}. Met de grootste stijgers en dalers.", head, body, [cld, faq_ld(faq)]))
+        made.append(("/prijsindex/", "0.8"))
+        print("/prijsindex/:", f"{pct_nl(verschil)}", len(_mand), "dagen")
+except Exception as e:
+    print("prijsindex overgeslagen:", e)
 
 # ---------- Seizoen: Sinterklaas en kerst ----------
 def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
