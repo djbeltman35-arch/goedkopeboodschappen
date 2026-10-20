@@ -207,3 +207,15 @@ a.route{flex:none;display:inline-block;background:var(--green);color:var(--on-gr
 .mfilters .btn-line[aria-pressed=true]::before{content:"✓ "}
 .mfltn{margin:8px 0 0;font-weight:700}
 .msoort{scroll-margin-top:16px}
+/* Terug naar de bovenliggende pagina en naar Home */
+.terug{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.terug .tknop{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:999px;border:2px solid var(--green);background:var(--surface);color:var(--green-dark);font:700 15px var(--text);text-decoration:none;cursor:pointer}
+.terug .tknop:hover{background:var(--green-soft)}
+.terug .tknop.home{border-color:var(--line);color:var(--ink)}
+.terug.onder{margin:24px 0 8px}
+/* Maaltijdfilters blijven bovenaan in beeld, zodat je ziet wat aan staat en het weer uit kunt zetten */
+.mfbalk{position:sticky;top:0;z-index:5;background:var(--page);padding:10px 0;margin:0 0 8px;border-bottom:1px solid var(--line)}
+.mfbalk .mfilters{margin:0}
+.terug .tknop{width:auto;flex:0 0 auto;margin:0}
+.mfbalk .mfilters .btn{padding:8px 12px;font-size:15px;width:auto}
+#results nav.terug,nav.terug{display:flex;margin-left:0;justify-content:flex-start}

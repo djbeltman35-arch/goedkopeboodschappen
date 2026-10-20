@@ -27,6 +27,8 @@ const n=q.length,m=cnt(),d=document.getElementById("dock");if(!d)return;d.hidden
 const gc=(p,t)=>{try{window.goatcounter&&goatcounter.count&&goatcounter.count({path:p,title:t||p,event:true})}catch(e){}};
 document.addEventListener("click",ev=>{const out=ev.target.closest("[data-out]");if(out){gc("naar/"+out.dataset.out,"Doorklik");return}const b=ev.target.closest(".add[data-o]");if(!b)return;const o=JSON.parse(b.dataset.o),q=get();if(!q.some(x=>x.u===o.u)){q.push(o);if(!put(q)){b.textContent="Bewaren lukt niet in deze browser";return}gc("lijst/"+(o.term||o.n).toLowerCase(),"Op lijst")}mark()});mark()})()</script>'''
 def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css="", og_title=None, og_img=None):
+    _t = re.search(r'<nav class="terug".*?</nav>', head_html, re.S)
+    if _t: body_html = body_html + _t.group(0).replace('class="terug"', 'class="terug onder"', 1)
     ldtag = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
     return f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{BASE}{path}"><meta name="robots" content="index,follow,max-image-preview:large">
@@ -37,7 +39,11 @@ def schrijf(path, inhoud):
     p = os.path.join(OUT, path.strip("/"), "index.html") if path.endswith("/") else os.path.join(OUT, path.lstrip("/"))
     os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "w").write(inhoud)
 def crumbs(*items):
-    html_ = '<p class="crumbs"><a href="/">Home</a>' + "".join(f' › <a href="{h}">{esc(t)}</a>' if h else f" › {esc(t)}" for t, h in items) + "</p>"
+    # Duidelijk terug kunnen: een knop naar de bovenliggende pagina en naar Home, met daaronder het kruimelpad.
+    ouder = [(t, h) for t, h in items if h]
+    terug = (f'<a class="tknop" href="{ouder[-1][1]}">← {esc(ouder[-1][0])}</a>' if ouder else "")
+    html_ = (f'<nav class="terug" aria-label="Terug">{terug}<a class="tknop home" href="/">🏠 Home</a></nav>'
+             + '<p class="crumbs"><a href="/">Home</a>' + "".join(f' › <a href="{h}">{esc(t)}</a>' if h else f" › {esc(t)}" for t, h in items) + "</p>")
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": BASE + "/"}] +
           [{"@type": "ListItem", "position": i + 2, "name": t, "item": BASE + (h or "")} for i, (t, h) in enumerate(items) if h]}
     return html_, ld

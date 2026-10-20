@@ -497,7 +497,7 @@ function search(fromUser){
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
-  $("results").innerHTML=`${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${keus}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
@@ -521,12 +521,14 @@ function quick(){
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
     GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("");
 }
+// Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
+const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
 function renderView(){
   quick();
   if(S.view==="deals") return renderOffers();
   const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
   const blok=c=>{const rows=c[2].map(t=>{const v=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b));return {t,b:v[0],v}}).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}${perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("")}`:""};
-  $("results").innerHTML=`<h2>${g[1]} ${esc(g[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
   ${subs.length>1?`<div class="chips subchips">${subs.map(c=>`<a class="chip" href="#sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</a>`).join("")}</div>`:""}${subs.map(blok).join("")}`;
 }
 // Drank per verpakking onder een eigen kopje (krat, flesjes, blikjes), zodat je gelijke verpakkingen naast elkaar ziet.
@@ -572,7 +574,7 @@ function renderOffers(){
   const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofc==="alle"?S.ofn:Math.max(S.ofn,400));
   const order=[...GROEPEN.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
   if(S.ofc!=="alle"&&!cats.has(S.ofc)){S.ofc="alle";return renderOffers()}
-  $("results").innerHTML=`<h2>🔥 Aanbiedingen</h2>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2>
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
   <div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-ofc="alle" aria-pressed="${S.ofc==="alle"}">Alle categorieën</button>${order.map(c=>`<button type="button" class="chip" data-ofc="${esc(c)}" aria-pressed="${S.ofc===c}"><span class="ic">${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])}</span>${esc(c)} (${cats.get(c)})</button>`).join("")}</div>
@@ -940,6 +942,8 @@ document.addEventListener("click",e=>{
   const ro=e.target.closest("[data-route]"); if(ro){gc("route/"+ro.dataset.route,"Route Google Maps")}
   if(e.target.closest("[data-installeer]")){if(installVraag){installVraag.prompt();installVraag.userChoice.then(c=>{gc("installeer/"+c.outcome,"Installeren");if(c.outcome==="accepted")store.set("install-weg",1);installVraag=null;toonInstall()})}return}
   if(e.target.closest("[data-installweg]")){store.set("install-weg",1);$("installeer").hidden=true;gc("installeer/weg","Installatieknop weggeklikt");return}
+  if(e.target.closest("[data-terug]")||e.target.closest("[data-home]")){const home=!!e.target.closest("[data-home]");S.view=null;$("q").value="";S.lastQ="";quick();$("results").innerHTML="";
+    if(home){scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});history.replaceState(null,"","/")}else jump("quick");return}
   if(e.target.closest("[data-buurt]")){winkelsInBuurt();return}
   const mk=e.target.closest("[data-merk]"); if(mk){S.merk=mk.dataset.merk;store.set("merken",S.merk);pickCache.clear();storesUi();renderAll();gc("merken/"+S.merk,"Merkkeuze");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}

@@ -95,7 +95,8 @@ const flt={arm:false,gv:false};function filter(){let tot=0,eerste=null;document.
  const el=document.getElementById("mfltn"),aan=flt.arm||flt.gv;if(el){el.hidden=!aan;el.textContent=aan?`${tot} ${tot===1?"maaltijd":"maaltijden"}${flt.arm?" tot 550 kcal per persoon":""}${flt.gv?(flt.arm?" en":"")+" glutenvrij":""}.`:""}
  return aan?eerste:null}
 document.querySelectorAll("[data-flt]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.flt;flt[k]=!flt[k];b.setAttribute("aria-pressed",flt[k]);const e1=filter();
- if(e1){const sec=e1.closest(".msoort");(sec||e1).scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}}));
+ // De filterbalk blijft bovenaan staan (sticky): naar de balk schuiven, dan staan de knoppen, het aantal en de eerste maaltijd samen in beeld.
+ const bk=document.getElementById("mfbalk");if(e1&&bk&&bk.getBoundingClientRect().top>2||e1&&bk&&e1.getBoundingClientRect().top<bk.getBoundingClientRect().bottom)bk.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}));
 alles();document.addEventListener("winkels",alles);window.addEventListener("storage",ev=>{if(ev.key==="winkels-uit")alles()})})()</script>""")
 MJS = """<script>document.addEventListener("click",e=>{const b=e.target.closest(".addall");if(!b)return;let q=[];try{q=JSON.parse(localStorage.getItem("lijst-erbij")||"[]")}catch(x){}
 const os=JSON.parse(b.dataset.os);for(const o of os)if(!q.some(x=>x.u===o.u))q.push(o);try{localStorage.setItem("lijst-erbij",JSON.stringify(q));b.textContent="✓ Klaar voor je lijst";b.classList.add("on");window.mark&&mark();
@@ -225,7 +226,7 @@ if MAAL:
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span> voor het hele gerecht.</p><p class=\"note mkeus\" hidden></p><p class=\"feiten\">{sprong}</p>"
-            f'<p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p>')
+            f'<div class="mfbalk" id="mfbalk"><p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p></div>')
     themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
                   + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
     body = (secties + themalinks + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM} voor hele verpakkingen, zoals aan de kassa, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq) + MKJS)
