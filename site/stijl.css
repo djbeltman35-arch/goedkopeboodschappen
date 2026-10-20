@@ -229,3 +229,6 @@ td .lbl,.row .lbl{display:inline-block}
 /* In de app schuift de terugbalk mee, zodat je ook diep in een categorie terug kunt */
 #results nav.terug.app{position:sticky;top:0;z-index:6;background:var(--page);padding:8px 0;margin:0 0 6px;box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
 #results nav.terug.app .tknop{padding:6px 12px;font-size:14px}
+/* Terugbalk staat vast bovenaan zolang je in een categorie, de aanbiedingen of zoekresultaten bent */
+#results nav.terug.app{position:fixed;top:0;left:0;right:0;z-index:50;margin:0;padding:8px max(16px,calc((100vw - 760px)/2));background:var(--page)}
+body:has(#results nav.terug.app){padding-top:52px}
