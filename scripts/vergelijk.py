@@ -10,7 +10,7 @@ import json, re, os, sys, html, unicodedata, datetime, itertools, statistics
 from urllib.parse import quote_plus, quote
 from zoneinfo import ZoneInfo
 
-BASE = "https://goedkopeboodschappen.netlify.app"
+BASE = "https://boodschappenvergelijk.nl"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "public")
 NU = datetime.datetime.now(ZoneInfo("Europe/Amsterdam"))

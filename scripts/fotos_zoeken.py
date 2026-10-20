@@ -46,7 +46,7 @@ Q = {"boerenkool-met-rookworst": ["boerenkool stamppot", "boerenkool met worst",
      "macaroni-ham-kaas": ["macaroni ham cheese casserole", "baked macaroni", "macaroni and cheese ham"],
      "maaltijdsalade-kip-krieltjes": ["chicken salad potatoes", "potato salad chicken egg", "chicken potato salad"]}
 GEDAAN = set(json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "maaltijd_fotos.json"))))
-UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://goedkopeboodschappen.netlify.app; goedkopeboodschappen@proton.me)"}
+UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://boodschappenvergelijk.nl; goedkopeboodschappen@proton.me)"}
 OK = re.compile(r"^(CC0|Public domain|PD|CC BY(-SA)? [0-9.]+|CC BY(-SA)?)", re.I)
 def api(params):
     u = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode({**params, "format": "json"})

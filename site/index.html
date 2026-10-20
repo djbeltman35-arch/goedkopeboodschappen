@@ -6,14 +6,14 @@
 <title>Boodschappen vergelijken bij 11 supermarkten | Goedkope Boodschappen</title>
 <meta name="description" content="Waar zijn je boodschappen het goedkoopst? Vergelijk prijzen en aanbiedingen van Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk, Hoogvliet, DekaMarkt, Vomar, SPAR en Poiesz. Gratis, zonder reclame, elke dag bijgewerkt.">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<link rel="canonical" href="https://goedkopeboodschappen.netlify.app/">
+<link rel="canonical" href="https://boodschappenvergelijk.nl/">
 <meta name="theme-color" content="#0e7c4a">
 <meta name="google-site-verification" content="qW08s7N_6THUJ-zVfpa8KrDFVk6qh4AaJBKK_nKP26c">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen">
-<meta property="og:url" content="https://goedkopeboodschappen.netlify.app/">
+<meta property="og:url" content="https://boodschappenvergelijk.nl/">
 <meta property="og:title" content="Waar zijn je boodschappen het goedkoopst?">
 <meta property="og:description" content="Vergelijk 11 supermarkten in één keer. Gratis, zonder reclame en elke dag bijgewerkt.">
-<meta property="og:image" content="https://goedkopeboodschappen.netlify.app/icons/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://boodschappenvergelijk.nl/icons/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">
@@ -810,7 +810,7 @@ let pushT; function pushLater(){if(!S.pushOn&&!mailToken())return;clearTimeout(p
 function printList(){
   const r=S.printRow; if(!r) return; gc("print","Lijst geprint");
   const d=new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p>${d} · goedkopeboodschappen.netlify.app</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${(S.list[i].q||1)>1?(S.list[i].q)+" × ":""}${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
+  $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p>${d} · boodschappenvergelijk.nl</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${(S.list[i].q||1)>1?(S.list[i].q)+" × ":""}${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
   window.print();
 }
 async function shareList(){

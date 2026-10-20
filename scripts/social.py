@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "social")
-SITE = "https://goedkopeboodschappen.netlify.app"
+SITE = "https://boodschappenvergelijk.nl"
 NU = datetime.datetime.now(ZoneInfo("Europe/Amsterdam"))
 VANDAAG = NU.date().isoformat()
 DAGEN = ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"]
@@ -151,7 +151,7 @@ top = beste(pool, 5)
 posts = []
 if top:
     png = f"aanbiedingen-{VANDAAG}.png"
-    kaart(thema, f"De beste aanbiedingen van {datum}", top, "goedkopeboodschappen.netlify.app", os.path.join(OUT, png))
+    kaart(thema, f"De beste aanbiedingen van {datum}", top, "boodschappenvergelijk.nl", os.path.join(OUT, png))
     regels = "\n".join(f"🛒 {NAMEN[o['s']]}: {o['n']} voor {eur(o['p'])}" + (f" (was {eur(o['was'])})" if o.get("was") else "") for o in top)
     tekst = (f"{thema} 💰\n\nDe beste aanbiedingen van {datum}:\n\n{regels}\n\n"
              f"Bekijk alle {len(nu)} aanbiedingen van {len(set(o['s'] for o in nu))} supermarkten en zie waar jouw boodschappenlijst het goedkoopst is. Gratis en zonder reclame.\n"
@@ -161,7 +161,7 @@ if top:
 avond = beste([o for o in nu if o.get("c") in ETEN - {"Huishouden"} and o not in top], 5)
 if avond:
     png = f"avond-{VANDAAG}.png"
-    kaart("Morgen boodschappen doen?", "Per supermarkt de grootste korting", avond, "goedkopeboodschappen.netlify.app", os.path.join(OUT, png))
+    kaart("Morgen boodschappen doen?", "Per supermarkt de grootste korting", avond, "boodschappenvergelijk.nl", os.path.join(OUT, png))
     regels = "\n".join(f"✅ {NAMEN[o['s']]}: {o['n']} {eur(o['p'])}" for o in avond)
     tekst = (f"Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇\n\n{regels}\n\n"
              f"Zet je boodschappen op een lijst en zie in één keer bij welke supermarkt je het minst betaalt. Je lijst blijft bewaard, en als je terugkomt zie je meteen wat goedkoper is geworden.\n"

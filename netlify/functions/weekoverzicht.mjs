@@ -27,7 +27,7 @@ export function overzicht(prijzen, termen, winkels) {
 }
 
 export default async (req, context) => {
-  const site = Netlify.env.get('URL') || context?.site?.url || 'https://goedkopeboodschappen.netlify.app';
+  const site = Netlify.env.get('URL') || context?.site?.url || 'https://boodschappenvergelijk.nl';
   const user = Netlify.env.get('GMAIL_USER'), pass = Netlify.env.get('GMAIL_APP_PASSWORD');
   if (!user || !pass) return new Response('mail niet ingesteld');
   const prijzen = (await (await fetch(`${site}/data/termprijzen.json`)).json()).soorten || {};

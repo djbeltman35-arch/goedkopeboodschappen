@@ -1,6 +1,6 @@
 # Goedkope Boodschappen
 
-Gratis boodschappenvergelijker zonder reclame: https://goedkopeboodschappen.netlify.app/
+Gratis boodschappenvergelijker zonder reclame: https://boodschappenvergelijk.nl/
 
 ## Hoe het werkt
 

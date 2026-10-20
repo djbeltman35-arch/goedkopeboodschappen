@@ -3,7 +3,7 @@
 import tls from 'node:tls';
 import crypto from 'node:crypto';
 
-export async function verbind({ host = process.env.SMTP_HOST || 'smtp.gmail.com', port = +(process.env.SMTP_PORT || 465), user, pass, naam = 'goedkopeboodschappen.netlify.app', tlsOpties = {} }) {
+export async function verbind({ host = process.env.SMTP_HOST || 'smtp.gmail.com', port = +(process.env.SMTP_PORT || 465), user, pass, naam = 'boodschappenvergelijk.nl', tlsOpties = {} }) {
   const sock = tls.connect({ host, port, servername: host, ...tlsOpties });
   sock.setEncoding('utf8');
   let buf = '', wachter = null;

@@ -74,6 +74,13 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Het oude netlify-adres stuurt door naar de eigen domeinnaam (alle pagina's, met behoud van het pad).
+[[redirects]]
+  from = "https://goedkopeboodschappen.netlify.app/*"
+  to = "https://boodschappenvergelijk.nl/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/aanbiedingen/albert-heijn/*"
   to = "/aanbiedingen/ah/"

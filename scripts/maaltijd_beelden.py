@@ -28,7 +28,7 @@ def maak(m, w, h, naam):
     tw = d.textlength(t, font=tk); ty = h - m_ - int(h * .1)
     d.rounded_rectangle([m_, ty, m_ + tw + 40, ty + int(h * .1)], radius=10, fill=GEEL)
     d.text((m_ + 20, ty + int(h * .02)), t, font=tk, fill=INKT)
-    d.text((m_, ty - int(h * .07)), "goedkopeboodschappen.netlify.app", font=lettertype("tekst-r", int(h * .035)), fill=ZACHT)
+    d.text((m_, ty - int(h * .07)), "boodschappenvergelijk.nl", font=lettertype("tekst-r", int(h * .035)), fill=ZACHT)
     im.save(os.path.join(OUT, naam), optimize=True)
 
 for m in MAALTIJDEN:

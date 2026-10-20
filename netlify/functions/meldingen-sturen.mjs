@@ -9,7 +9,7 @@ const NAMEN = { ah: 'AH', jumbo: 'Jumbo', lidl: 'Lidl', aldi: 'Aldi', plus: 'PLU
 const eur = v => '€ ' + v.toFixed(2).replace('.', ',');
 
 export default async (req, context) => {
-  const site = Netlify.env.get('URL') || context?.site?.url || 'https://goedkopeboodschappen.netlify.app';
+  const site = Netlify.env.get('URL') || context?.site?.url || 'https://boodschappenvergelijk.nl';
   const offers = (await (await fetch(`${site}/data/aanbiedingen.json`)).json()).offers || [];
   try { await pushRonde(site, offers); } catch (e) { console.log('push-ronde fout', e.message); }
   try { await mailRonde(site, offers); } catch (e) { console.log('mail-ronde fout', e.message); }
