@@ -12,6 +12,8 @@ export default async () => {
   // Oude tellers en oude betwiste producten opruimen.
   const teller = getStore('fouten-teller'), gisteren = new Date(Date.now() - 864e5).toISOString().slice(0, 10), weekterug = new Date(Date.now() - 14 * 864e5).toISOString();
   for (const t of (await teller.list()).blobs) if (t.key.slice(0, 10) < gisteren) await teller.delete(t.key);
+  const blokStore = getStore('fouten-blok'), dezeMaand = new Date().toISOString().slice(0, 7);
+  for (const t of (await blokStore.list()).blobs) if (t.key.slice(0, 7) < dezeMaand) await blokStore.delete(t.key);
   for (const { key } of (await betwist.list()).blobs) {
     const b = await betwist.get(key, { type: 'json' }).catch(() => null);
     if (!b || Object.values(b.wie || {}).every(t => t < weekterug)) await betwist.delete(key);

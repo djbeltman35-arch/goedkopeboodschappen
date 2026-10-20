@@ -3,7 +3,8 @@
 // Tegen grapjassen en misbruik:
 // - één melding verandert niets. Pas als 3 verschillende bezoekers binnen een week hetzelfde product melden, wordt het
 //   automatisch tijdelijk verborgen ("betwist", zie /api/betwist) tot de dagelijkse controle;
-// - per bezoeker telt elk product maar één keer, en hooguit 10 meldingen per dag;
+// - per bezoeker telt elk product maar één keer, en hooguit 5 meldingen per dag (waarschuwing bij de 3e);
+// - wie die grens op 3 dagen in een maand haalt, kan de rest van die maand niets meer melden;
 // - bots vallen af via een verborgen veld en een minimale tijd tussen openen en versturen.
 // Een bezoeker herkennen we alleen aan een onomkeerbare code van het IP-adres met een geheime sleutel per week;
 // het IP-adres zelf bewaren we niet en de code verloopt vanzelf.
@@ -13,7 +14,7 @@ import crypto from 'node:crypto';
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const kort = (v, n) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
 const REDENEN = { product: 'Verkeerd product', prijs: 'Prijs klopt niet', anders: 'Iets anders' };
-const DREMPEL = 3, PER_DAG = 10;
+const DREMPEL = 3, PER_DAG = 5, WAARSCHUW = 3, DAGEN_VOL = 3;
 const week = d => { const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7)); return t.getUTCFullYear() + '-' + Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
 const hash = s => crypto.createHash('sha256').update(s).digest('hex').slice(0, 24);
 
@@ -33,10 +34,23 @@ export default async (req, context) => {
   melding.wie = hash(`${context?.ip || '?'}|${geheim}|${week(nu)}`);
   const product = hash(melding.link || melding.naam);
 
-  // Hooguit 10 meldingen per dag per bezoeker.
+  // Maandblokkade: wie op 3 dagen in een maand de daggrens haalde, kan de rest van de maand niets melden.
+  const maand = melding.op.slice(0, 7), mwie = hash(`${context?.ip || '?'}|${geheim}|${maand}`);
+  const blok = getStore('fouten-blok'), bk = maand + '-' + mwie;
+  const vol = (await blok.get(bk, { type: 'json' }).catch(() => null)) || { dagen: [] };
+  const eindMaand = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
+  if (vol.dagen.length >= DAGEN_VOL) return json({ fout: 'Je hebt de meldknop deze maand vaak gebruikt. Je kunt deze maand niets meer melden.', blok: eindMaand }, 429);
+  // Hooguit 5 meldingen per dag per bezoeker.
   const teller = getStore('fouten-teller'), tk = melding.op.slice(0, 10) + '-' + melding.wie;
   const n = +(await teller.get(tk).catch(() => 0) || 0);
-  if (n >= PER_DAG) return json({ fout: 'Je hebt vandaag al veel gemeld. Dank je wel!' }, 429);
+  const morgen = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth(), nu.getUTCDate() + 1)).toISOString().slice(0, 10);
+  if (n >= PER_DAG) {
+    const dag = melding.op.slice(0, 10);
+    if (!vol.dagen.includes(dag)) { vol.dagen.push(dag); await blok.setJSON(bk, vol); }
+    return vol.dagen.length >= DAGEN_VOL
+      ? json({ fout: 'Je hebt de meldknop deze maand vaak gebruikt. Je kunt deze maand niets meer melden.', blok: eindMaand }, 429)
+      : json({ fout: `Je kunt vandaag niets meer melden. Morgen kan het weer. Let op: gebeurt dit ${DAGEN_VOL} keer in een maand, dan kun je de rest van die maand niets melden.`, blok: morgen }, 429);
+  }
 
   // Per bezoeker telt elk product één keer.
   const betwist = getStore('betwist');
@@ -51,6 +65,9 @@ export default async (req, context) => {
   if (aantal >= DREMPEL && !b0.verborgen) b0.verborgen = melding.op;
   await betwist.setJSON(product, b0);
   await getStore('fouten').setJSON(`${melding.op}-${crypto.randomBytes(4).toString('hex')}`, { ...melding, product, aantal });
+  const gedaan = n + 1;
+  if (gedaan >= PER_DAG) return json({ ok: true, melding: 'Bedankt! Dit was je laatste melding voor vandaag.', blok: morgen });
+  if (gedaan >= WAARSCHUW) return json({ ok: true, melding: `Bedankt! Je hebt vandaag ${gedaan} meldingen gedaan. Na ${PER_DAG} meldingen kun je vandaag niets meer melden.` });
   return json({ ok: true });
 };
 
