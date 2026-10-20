@@ -298,3 +298,25 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .handig b{margin-right:2px}
 .hchip{display:inline-flex;align-items:center;gap:4px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px var(--text);text-decoration:none;cursor:pointer}
 .hchip:hover{border-color:var(--green);color:var(--green-dark)}
+/* Twee populaire knoppen in de kopbalk: naast het menu op grote schermen, als tweede rij op de telefoon */
+.bar{flex-wrap:wrap}
+.snel{display:flex;gap:8px;margin-left:8px}
+.snel .sk{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;font:800 14px var(--text);text-decoration:none;white-space:nowrap;border:2px solid transparent}
+.snel .bonus{background:#fff4f1;color:#c2361f;border-color:#f4b3a6}
+.snel .best{background:#fff3d6;color:#7a5200;border-color:#f0d58a}
+.snel .sk:hover{filter:brightness(.97)}
+@media (max-width:900px){.snel{order:3;flex-basis:100%;margin:2px 0 0;justify-content:stretch}.snel .sk{flex:1;justify-content:center;font-size:13.5px;padding:7px 8px}.bar{row-gap:8px;padding-block:10px}}
+@media (max-width:350px){.snel .sk{font-size:12.5px;padding:6px 5px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .snel .bonus{background:#3a1f19;color:#ffb3a3;border-color:#6b3226}:root:not([data-theme=light]) .snel .best{background:#3a2e10;color:#f5d27a;border-color:#6b5420}}
+.brand{flex:none}.nav{flex:1 1 0;min-width:0;justify-content:flex-end}
+.snel .sk{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:440px){.snel .lg2{display:none}}
+.snel .sk{display:inline-block;text-align:center}
+@media (min-width:901px){.bar{flex-wrap:nowrap}.nav{flex:0 1 auto;flex-wrap:nowrap;margin-left:auto}.nav a{white-space:nowrap}.snel{flex:none}}
+@media (max-width:1180px){.brand span{display:none}}
+/* Populaire knoppen altijd als tweede rij in de kopbalk */
+.bar{flex-wrap:wrap!important;row-gap:8px}
+.snel{order:3;flex-basis:100%;margin:0;justify-content:flex-end}
+.nav{flex:1 1 0!important;flex-wrap:nowrap;justify-content:flex-end}
+@media (max-width:900px){.snel{justify-content:stretch}}
+@media (max-width:340px){.nav a.mt{display:none}}
