@@ -212,7 +212,7 @@
     <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Onafhankelijk: geen reclame, ik verdien er niets aan</li></ul>
     <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
-      <div class="in"><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
+      <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
       <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p><div id="buurtlijst"></div></div>
       <div class="sall"><button type="button" class="btn-line" data-sall="1">Alles aan</button><button type="button" class="btn-line" data-sall="0">Alles uit</button></div>
@@ -269,7 +269,7 @@
     </ol>
     <div class="why">
       <div><h3>Kom gerust terug</h3><p>Bij je volgende bezoek zie je meteen of je lijst goedkoper of duurder is geworden, en wat ervan in de aanbieding is.</p></div>
-      <div><h3>Ik verdien er niets aan</h3><p>Geen reclame, geen betaalde plekken en geen commissie van supermarkten. Deze site is gratis en onafhankelijk. <a href="/over/">Over deze site</a></p></div>
+      <div><h3>Ik verdien er niets aan</h3><p>Geen reclame, geen betaalde plekken en geen commissie van supermarkten. Deze site is gratis en onafhankelijk. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p></div>
     </div>
   </section>
   <!--SEO-->
@@ -278,7 +278,7 @@
 <footer class="foot">
   <div class="wrap">
     <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
     <p class="small">Gemaakt door Erik · Versie {{VERSIE}}</p>
     <p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p>
   </div>
@@ -301,7 +301,7 @@ const STARTS=["kat","hond"];
 const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const S={dieet:{gv:false,arm:false,lv:false,eiw:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
+const S={mijn:null,dieet:{gv:false,arm:false,lv:false,eiw:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -476,7 +476,7 @@ const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JS
 function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
-  return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${i>=0?laag(p,term):""}</div>
+  return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${isMijn(p[0])?'<span class="mijnlbl">⭐ Jouw winkel</span>':""}${i>=0?laag(p,term):""}</div>
   <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${labels(p[1],KCAL[(term||"").toLowerCase()],term)}${i>=0?foutKnop(p,term):""}</div>
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":u!=null?esc(unitTxt(u,p[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
@@ -537,7 +537,7 @@ function search(fromUser){
   const kop=bedoeld||q;
   $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${keus}${alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
+  ${mijnBlok(best,kop)}${keus}${alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -599,10 +599,31 @@ function perPak(alle,ts){
   return [...uit.keys()].sort((a,b)=>a-b).map(k=>[PAKGROEP[k],uit.get(k).sort((a,b)=>plek.get(rest(a))-plek.get(rest(b))||alle.indexOf(a)-alle.indexOf(b))]);
 }
 // Bij welke winkels het product te koop is, van goedkoop naar duur.
+// Mijn vaste winkel: prijs daar tonen naast de goedkoopste, met wat je elders bespaart.
+const mijnNaam=()=>S.mijn?(STORENAMES[S.mijn]||S.mijn):"";
+const isMijn=si=>!!S.mijn&&sid(si)===S.mijn;
+function mijnOpties(){const ids=[...new Set(S.stores.filter(s=>s.count).map(s=>s.id))].sort((a,b)=>(STORENAMES[a]||a).localeCompare(STORENAMES[b]||b));
+  return `<option value="">Geen vaste winkel</option>`+ids.map(id=>`<option value="${id}"${id===S.mijn?" selected":""}>${esc(STORENAMES[id]||id)}</option>`).join("")}
+// Hoeveel scheelt het? Voor dezelfde hoeveelheid als het product bij jouw winkel.
+function mijnVerschil(pm,pb){const um=effUnit(pm),ub=effUnit(pb);
+  if(um!=null&&ub!=null&&pm[6]===pb[6]&&!pm.bad&&!pb.bad){const q=eff(pm)/um;return {d:(um-ub)*q,per:true}}
+  return {d:eff(pm)-eff(pb),per:false}}
+function mijnBlok(best,q){
+  if(!S.mijn) return `<p class="mijntip">⭐ Ga je meestal naar dezelfde winkel? <label><span class="sr">Mijn vaste winkel</span><select data-mijn>${mijnOpties()}</select></label></p>`;
+  const pm=best.find(p=>isMijn(p[0])), pb=best.find(p=>!p.bad)||best[0];
+  if(!pm) return `<p class="mijnblok">⭐ Bij <b>${esc(mijnNaam())}</b> vonden we ${esc(q)} niet. Het goedkoopst is het nu bij <b>${esc(sname(pb[0]))}</b>. <button type="button" class="kies" data-mijnwijzig>Andere vaste winkel</button></p>`;
+  if(pm===pb||isMijn(pb[0])) return `<p class="mijnblok goed">⭐ Jouw winkel <b>${esc(mijnNaam())}</b> is hier het goedkoopst: ${eur(eff(pm))}. <button type="button" class="kies" data-mijnwijzig>Wijzigen</button></p>`;
+  const v=mijnVerschil(pm,pb);
+  if(v.d<.05) return `<p class="mijnblok goed">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> kost het ${eur(eff(pm))}, bijna even goedkoop als bij ${esc(sname(pb[0]))}. <button type="button" class="kies" data-mijnwijzig>Wijzigen</button></p>`;
+  return `<p class="mijnblok">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> kost het ${eur(eff(pm))}. Bij <b>${esc(sname(pb[0]))}</b> bespaar je ${v.per?"voor dezelfde hoeveelheid ":""}<b>${eur(v.d)}</b>. <button type="button" class="kies" data-mijnwijzig>Wijzigen</button></p>`;
+}
 const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
+function mijnRij(b,v){if(!S.mijn||isMijn(b[0]))return S.mijn&&isMijn(b[0])?'<span class="mijnlbl">⭐ Jouw winkel is het goedkoopst</span>':"";
+  const pm=(v||[]).find(p=>isMijn(p[0]));if(!pm)return "";const d=mijnVerschil(pm,b).d;
+  return d>=.05?`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: daar betaal je ${eur(d)} meer</span>`:`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: bijna even goedkoop</span>`}
 function rijen(rows){
   return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
-    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t],t)}${winkels(v)}${foutKnop(b,t)}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t],t)}${winkels(v)}${mijnRij(b,v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
@@ -740,6 +761,10 @@ function renderWhere(){
   if(full.length>1){const w=full.at(-1).sum-full[0].sum,pc=Math.round(w/full.at(-1).sum*100);
     if(w>=.5) html+=`<div class="bespaard"><span class="bb">💰 ${eur(w)}</span><span>bespaar je bij <b>${esc(sname(full[0].si))}</b> ten opzichte van ${esc(sname(full.at(-1).si))}${pc>=3?` (${pc}% goedkoper)`:""}.</span></div>`;
     else html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(w)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`}
+  // Mijn vaste winkel tegenover de goedkoopste
+  if(S.mijn&&full.length){const rm=rows.find(r=>isMijn(r.si)&&!r.miss),b0=full[0];
+    if(rm&&rm.si!==b0.si&&rm.sum-b0.sum>=.5) html+=`<p class="mijnblok">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> betaal je ${eur(rm.sum)}. Bij <b>${esc(sname(b0.si))}</b> is je lijst <b>${eur(rm.sum-b0.sum)}</b> goedkoper.</p>`;
+    else if(rm&&rm.si===b0.si) html+=`<p class="mijnblok goed">⭐ Goed nieuws: jouw winkel <b>${esc(mijnNaam())}</b> is voor deze lijst het goedkoopst.</p>`}
   // Twee winkels combineren: loont het om een deel elders te halen?
   if(n>=3&&rows.length>1){
     const base=rows[0];let best=null;
@@ -1038,6 +1063,8 @@ function storesUi(){
   buurtLijst();
   if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"zonder huismerken":"alleen huismerken");
   merkenUi();
+  if($("mijnsel")) $("mijnsel").innerHTML=mijnOpties();
+  if(S.mijn) $("mysub").textContent="⭐ Vaste winkel: "+mijnNaam()+" · "+$("mysub").textContent;
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
@@ -1056,6 +1083,7 @@ document.addEventListener("erbij",()=>{if(!S.list)return;if(erbijLaden()){save()
 function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
+  if(e.target.closest("[data-mijnwijzig]")){const d=$("mystores");if(d){d.open=true;jump("mystores");setTimeout(()=>$("mijnsel")?.focus(),400)}return}
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
   const hd=e.target.closest("[data-handig]"); if(hd){const k=hd.dataset.handig;gc("handig/"+k,"Handig: "+k);
     if(k==="plak"){const d=$("bulk");d.open=true;d.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>$("bulkt").focus(),400)}
@@ -1096,6 +1124,8 @@ document.addEventListener("change",e=>{
   const dn=e.target.closest("[data-done]"); if(dn){const x=S.list[+dn.dataset.done];if(x){x.done=dn.checked;save();renderList()}return}
   if(e.target.matches("[data-weekmail]")){mailWeek(e.target.checked);return}
   const pk=e.target.closest("[data-pick]"); if(pk){const i=+pk.dataset.pick;pk.checked?S.pick.add(i):S.pick.delete(i);renderList();return}
+  const mj=e.target.closest("[data-mijn]"); if(mj){S.mijn=mj.value||null;store.set("mijn-winkel",S.mijn);gc("mijn-winkel/"+(S.mijn||"geen"),"Vaste winkel gekozen");
+    if(S.mijn&&S.off.has(S.mijn)){S.off.delete(S.mijn);winkelsGewijzigd()}else{storesUi();renderAll()}return}
   const st=e.target.closest("[data-store]"); if(st){st.checked?S.off.delete(st.dataset.store):S.off.add(st.dataset.store);winkelsGewijzigd();return}
   if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers()}
   if(e.target.id==="ofsort"){S.ofsort=e.target.value;renderOffers()}
@@ -1155,7 +1185,7 @@ async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cac
 fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste=j;if(S.prods.length){if(S.view)renderView();else search()}}}).catch(()=>{});
 // Opstarten: welke winkels er zijn (winkels.json), daarna alleen de prijzen van de winkels die aan staan.
 async function prijzenLaden(){
-  const uit=new Set(store.get("winkels-uit")||[]);
+  const uit=new Set(store.get("winkels-uit")||[]);{const mw=store.get("mijn-winkel");if(mw)uit.delete(mw)}
   try{const w=await (await fetch("/winkels.json")).json();
     let ids=w.stores.map(s=>s.id).filter(id=>!uit.has(id)); if(!ids.length) ids=w.stores.map(s=>s.id);
     S.prods=[];S.byLink=new Map();S.stores=w.stores;S.winkelN=w.n;S.perWinkel=true;
@@ -1183,6 +1213,7 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
     S.offersUpdated=offers.updated;
   }
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
+  {const mw=store.get("mijn-winkel");S.mijn=mw&&S.sidx.has(mw)?mw:null;if(S.mijn)S.off.delete(S.mijn)}
   S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";{const d=store.get("dieet");if(d&&typeof d==="object")S.dieet={gv:!!d.gv,arm:!!d.arm,lv:!!d.lv,eiw:!!d.eiw}}
   S.buurt=store.get("buurt")||null;
   store.set("bezoeken",(+store.get("bezoeken")||0)+1); toonInstall();
