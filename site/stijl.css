@@ -237,3 +237,13 @@ body:has(#results nav.terug.app){padding-top:52px}
 .chips.dieet .chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--on-green)}
 .dieetuitleg{margin:2px 0 10px}
 .weekmenu .sub,.gvlijst .sub{display:block}.weekmenu li{margin-bottom:10px}
+/* Bespaard-teller en bespaartips in Mijn lijst */
+.bespaard{display:flex;align-items:center;gap:12px;margin:12px 0 4px;padding:12px 14px;border-radius:14px;background:var(--green-soft);font-size:15px;line-height:1.35}
+.bespaard .bb{flex:none;font:800 24px/1 var(--num,inherit);color:var(--green-dark);white-space:nowrap}
+.tips{margin:14px 0 4px;padding:12px 14px;border-radius:14px;border:2px dashed #f0d58a;background:#fffaf0}
+.tips p{margin:0 0 8px;font-size:15px}
+.tips ul{list-style:none;margin:0;padding:0}
+.tips li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #f3e6c0;font-size:14px}
+.tips .tw{flex:none;font-weight:700;color:var(--green-dark);white-space:nowrap}
+.tips .wissel{margin-left:6px;padding:5px 10px;border-radius:999px;border:0;background:var(--green);color:var(--on-green);font:700 13px inherit;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tips{background:#2a2414;border-color:#6b5420}:root:not([data-theme=light]) .tips li{border-color:#4a3e20}}
