@@ -236,3 +236,4 @@ body:has(#results nav.terug.app){padding-top:52px}
 .chips.dieet{margin:6px 0 4px;flex-wrap:wrap}
 .chips.dieet .chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--on-green)}
 .dieetuitleg{margin:2px 0 10px}
+.weekmenu .sub,.gvlijst .sub{display:block}.weekmenu li{margin-bottom:10px}
