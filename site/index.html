@@ -195,21 +195,21 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a class="mt" href="/maaltijden/">Maaltijden</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
-    <nav class="snel" aria-label="Populair"><a class="sk bonus" href="/aanbiedingen/ah/">🔥 AH Bonus<span class="lg2"> deze week</span></a><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a></nav>
+    <nav class="nav" aria-label="Menu"><a class="pill aanb" href="/aanbiedingen/"><span class="ic">🔥 </span>Aanbiedingen</a><a class="pill mt" href="/maaltijden/"><span class="ic">🍽️ </span>Maaltijden</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="snel" aria-label="Populair"><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a><a class="sk wm" href="/maaltijden/weekmenu/">📅 Weekmenu<span class="lg2"> met boodschappenlijst</span></a></nav>
   </div>
 </header>
 
 <main>
   <section class="wrap hero">
-    <h1>Waar zijn je boodschappen het goedkoopst?</h1>
-    <p class="lead">Zoek een product, zet het op je lijst en zie meteen bij welke supermarkt je het minst betaalt.</p>
+    <h1>Boodschappen vergelijken</h1>
+    <p class="lead">Waar zijn je boodschappen het goedkoopst? Zoek een product, zet het op je lijst en zie meteen bij welke supermarkt je het minst betaalt.</p>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn">Zoek</button>
     </form>
-    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Gratis en zonder reclame</li></ul>
+    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Onafhankelijk: geen reclame, ik verdien er niets aan</li></ul>
     <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
@@ -414,9 +414,9 @@ function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a
 // Merkkeuze: "alle", "zonder" (zonder huismerken) of "huis" (alleen huismerken). Producten zonder merk tellen altijd mee.
 const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
 // Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
-const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
-function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
-const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
+const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.vg||isVegan(naam))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
+function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
+const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Alleen vegan</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
 function matches0(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
@@ -466,9 +466,11 @@ const GV_RE=/gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senza glutin
 function kcalArm(kt){const m=/^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$/.exec(kt||"");return !!m&&parseFloat(m[1].replace(",","."))<=(m[2]==="ml"?20:40)}
 const EIWIT={{EIWIT}};
 const LV_RE=/lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei|\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b/i;
+const VG_RE=/\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs|burger|gehakt|stukjes|balletjes|schnitzel|worst|kipstukjes|reepjes)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b|\b(?:tofu|tempeh|seitan)\b/i, VG_NIET=/gyoza|dumpling|loempia|niet vegan|aftersun|zonnebrand|spray|vitamine|supplement|capsule|tablet|shampoo|zeep|douche|creme voor|tandpasta|deodorant|lippen|nagel|make-up|mascara|\bmet (?:kip|ei|kaas|vlees)\b/i;
+const isVegan=n=>!!n&&VG_RE.test(n)&&!VG_NIET.test(n);
 // EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en minstens 5 g per 100 g).
 function eiwitrijk(t,kt){const g=EIWIT[(t||"").toLowerCase()];if(!g||g<5)return false;const m=/^(\d+(?:[.,]\d+)?) kcal per 100/.exec(kt||"");const k=m?parseFloat(m[1].replace(",",".")):0;return k>0?g*4/k>=.2:g>=10}
-const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
+const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(isVegan(naam)?'<span class="lbl vg">🌱 Vegan</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
 function rowHtml(p,i,term){
@@ -556,7 +558,7 @@ function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
     seizoenTegels()+`<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu's</a>`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
-    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
+    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/vegan/"><span class="ic">🌱</span>Vegan</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
 function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];

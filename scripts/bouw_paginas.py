@@ -11,13 +11,13 @@ from vergelijk import json, re, html, datetime, itertools, statistics, quote, qu
 FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">'
 FAV = '<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">'
 GC = '<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
-NAV = [("/aanbiedingen/", "Aanbiedingen", ""), ("/maaltijden/", "Maaltijden", "mt"), ("/feestdagen/", "🎉 Feestdagen", "feest"), ("/categorie/", "Categorieën", "wide")]
+NAV = [("/aanbiedingen/", '<span class="ic">🔥 </span>Aanbiedingen', "pill aanb"), ("/maaltijden/", '<span class="ic">🍽️ </span>Maaltijden', "pill mt"), ("/feestdagen/", "🎉 Feestdagen", "feest"), ("/categorie/", "Categorieën", "wide")]
 def header(actief=""):
-    links = "".join(f'<a href="{h}"{" class=" + c if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
-    return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav><nav class="snel" aria-label="Populair"><a class="sk bonus" href="/aanbiedingen/ah/">🔥 AH Bonus<span class="lg2"> deze week</span></a><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a></nav></div></header>'
+    links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
+    return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav><nav class="snel" aria-label="Populair"><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a><a class="sk wm" href="/maaltijden/weekmenu/">📅 Weekmenu<span class="lg2"> met boodschappenlijst</span></a></nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/lactosevrij/">Lactosevrij</a><a href="/eiwitrijk/">Eiwitrijk</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/lactosevrij/">Lactosevrij</a><a href="/vegan/">Vegan</a><a href="/eiwitrijk/">Eiwitrijk</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -51,6 +51,30 @@ def kcal_arm(kt):
     return bool(m) and float(m.group(1).replace(",", ".")) <= (20 if m.group(2) == "ml" else 40)
 # Lactosevrij: met lactosevrij in de naam, of van nature zonder melk (plantaardige drinks en zuivelvervangers, vegan).
 LV_RE = re.compile(r"lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei|\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b", re.I)
+# Vegan: met vegan of 100% plantaardig in de naam, plantaardige zuivel- en vleesvervangers, tofu/tempeh/seitan en volledig plantaardige merken.
+VG_RE = re.compile(r"\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs|burger|gehakt|stukjes|balletjes|schnitzel|worst|kipstukjes|reepjes)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b|\b(?:tofu|tempeh|seitan)\b", re.I)
+VG_NIET = re.compile(r"gyoza|dumpling|loempia|niet vegan|aftersun|zonnebrand|spray|vitamine|supplement|capsule|tablet|shampoo|zeep|douche|creme voor|tandpasta|deodorant|lippen|nagel|make-up|mascara|\bmet (?:kip|ei|kaas|vlees)\b", re.I)
+def is_vegan(naam): return bool(naam) and bool(VG_RE.search(naam)) and not VG_NIET.search(naam)
+VG_SOORTEN = [  # (slug, naam, icoon, woorden in de productnaam); de eerste soort die past telt
+    ("melk", "Plantaardige melk en drinks", "🥛", ["drink", "drank", "melk", "barista", "latte", "cappuccino", "shake", "calcium", "meal to go", "the original", "oatly haver", "no sugars", "ongezoet 1"]),
+    ("yoghurt", "Plantaardige yoghurt en toetjes", "🥣", ["mild & creamy", "mild&creamy", "m&c", "alpro aardbei", "apple pie", "alpro matcha", "fresh original", "alpro protein", "yoghurt", "kwark", "skyr", "vla", "pudding", "dessert", "toetje", "mousse", "variatie", "griekse stijl"]),
+    ("kaas", "Vegan kaas", "🧀", ["creamy original", "creamy orginal", "creamy strawberry", "greek white", "vioblock", "kaas", "cheese", "plakken", "geraspt", "mozzarella", "feta", "cheddar", "parmesan", "gouda", "smeerkaas", "roomkaas"]),
+    ("vlees", "Vegan vleesvervangers en tofu", "🌱", ["burger", "gehakt", "worst", "schnitzel", "stukjes", "balletjes", "bal", "filet", "nugget", "kip", "shoarma", "kebab", "gyros", "bacon", "spek", "reepjes", "tofu", "tempeh", "seitan", "frikandel", "kroket", "bitterbal", "vegetarisch", "vlees", "slager", "hamburger", "braadworst", "rookworst", "tonijn", "vis", "rauwe ham", "paté", "pate", "kornet", "broodbeleg", "nuggets"]),
+    ("boter", "Plantaardige boter, room en sauzen", "🧈", ["smeren", "smeerbaar", "halvarine", "minarine", "cooking", "olie", "aioli", "dip", "paturain", "cuisine", "kookroom", "bakken en braden", "boter", "room", "slagroom", "creme", "crème", "margarine", "mayo", "saus", "dressing", "pesto", "hummus", "spread"]),
+    ("zoet", "Vegan koek, chocolade en ijs", "🍫", ["gums", "streken", "veters", "regenboog", "marshmallow", "winegum", "koek", "chocolade", "choco", "reep", "ijs", "cake", "wafel", "biscuit", "snoep", "drop", "cookie", "brownie", "hagelslag", "pasta", "taart"]),
+    ("maaltijd", "Vegan maaltijden, soepen en snacks", "🍲", ["risotto", "tikka", "ravioli", "tortelloni", "gnocchi", "moussaka", "empanada", "falafel", "rendang", "roti", "saucijzen", "tenders", "kroepoek", "tortilla", "crackers", "baguet", "omelet", "vermicelli", "pizza", "maaltijd", "soep", "salade", "wrap", "curry", "noodle", "noedel", "snack", "chips", "lasagne", "quiche", "bowl"]),
+]
+def _vg_soort(naam):
+    n = naam.lower()
+    if re.search(r"cheesecake|\bijs\b|ijsje|ijsbeker|sorbet|magnum|cornetto|fruittella|mentos|lolli|pepermunt|wilhelmina|zwartwit|hondenkoppen|leeuwenkoppen|macaroon|tiramisu|treets|look-o-look|snoep|\bdrop|\bchoc\b|bites|repen|\bbar\b|\bdark\b|kitkat|ritter|nutella|praline|\bstol\b", n): return "zoet"
+    if "gurt" in n: return "yoghurt"
+    for sl, _, _, ws in VG_SOORTEN:
+        if any(w in n for w in ws): return sl
+    return "overig"
+VG_PER = {}
+for p in prods:
+    if stores[p[0]].get("count") and is_vegan(p[1]): VG_PER.setdefault(_vg_soort(p[1]), []).append(p)
+VG_LIJST = [(sl, nm_, ic) for sl, nm_, ic, _ in VG_SOORTEN + [("overig", "Overige vegan producten", "🛒", [])] if len({p[0] for p in VG_PER.get(sl, [])}) >= 2 and len(VG_PER.get(sl, [])) >= 5]
 from eiwit import EIWIT
 def eiwitrijk(term, kt=""):
     """EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en hier ook minstens 5 g per 100 g)."""
@@ -61,6 +85,7 @@ def eiwitrijk(term, kt=""):
 def labels(naam, kt="", term=""):
     return (('<span class="lbl gv">🌾 Glutenvrij</span>' if GV_RE.search(naam or "") else "")
             + ('<span class="lbl lv">🥛 Lactosevrij</span>' if LV_RE.search(naam or "") else "")
+            + ('<span class="lbl vg">🌱 Vegan</span>' if is_vegan(naam) else "")
             + ('<span class="lbl arm">🥗 Caloriearm</span>' if kcal_arm(kt) else "")
             + ('<span class="lbl eiw">💪 Eiwitrijk</span>' if eiwitrijk(term, kt) else ""))
 
@@ -305,6 +330,9 @@ for g, gic in GROEPEN:
 head = crumbs(("Categorieën", None))[0] + "<h1>Boodschappen vergelijken per categorie</h1><p class=\"lead\">Kies een categorie en zie per product welke supermarkt het goedkoopst is.</p>"
 body = "".join(f'<h2><a href="/categorie/{slug(g)}/">{gi} {esc(g)}</a></h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(c[0])}/">{c[1]} {esc(c[0])}</a></li>' for c, _ in GROEP_ITEMS[g][0] if slug(c[0]) != slug(g)) + "</ul>"
                for g, gi in GROEPEN if g in GROEP_ITEMS)
+body += ('<h2><a href="/vegan/">🌱 Vegan</a></h2><ul class="chips">' + "".join(f'<li><a href="/vegan/{sl}/">{ic} {esc(nm_)}</a></li>' for sl, nm_, ic in VG_LIJST)
+         + '<li><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden</a></li></ul>'
+         + '<h2>Dieet en leefstijl</h2><ul class="chips"><li><a href="/glutenvrij/">🌾 Glutenvrij</a></li><li><a href="/lactosevrij/">🥛 Lactosevrij</a></li><li><a href="/eiwitrijk/">💪 Eiwitrijk</a></li><li><a href="/vegan/">🌱 Vegan</a></li><li><a href="/maaltijden/caloriearm/">🥗 Caloriearm</a></li></ul>')
 schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} boodschappen in {len(catpaths)} categorieën bij {AANTAL} supermarkten: groente, diepvries, zuivel, vlees, frisdrank, bier, huishouden en meer.", head, body, actief="/categorie/"))
 made.append(("/categorie/", "0.6"))
 lis = "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in sorted(PICKED))
@@ -762,6 +790,54 @@ if _lv_n >= 20:
     schrijf("/lactosevrij/", page("/lactosevrij/", f"Lactosevrij vergelijken: {_lv_n} producten bij {len(winkels_lv)} supermarkten", f"Lactosevrije melk, yoghurt, kaas, boter en meer: {_lv_n} producten bij {len(winkels_lv)} supermarkten naast elkaar op prijs per liter of kilo. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
     made.append(("/lactosevrij/", "0.7"))
     print("/lactosevrij/:", _lv_n, "producten")
+
+# ---------- Vegan: verzamelpagina en per soort een eigen pagina (zoals de gewone categorieën) ----------
+if VG_LIJST:
+    _vg_n = sum(len(VG_PER[sl]) for sl, _, _ in VG_LIJST)
+    def _vrij(p, t):
+        return (f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a>'
+                f'<span class="sub">{esc(p[4] or "")}</span>{fout_knop(t, p[0], p)}{addbtn(p, t)}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>')
+    _vg_maal = '<li><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden met prijs per supermarkt</a></li>'
+    for sl, naam_, ic in VG_LIJST:
+        arr = sorted(VG_PER[sl], key=_gv_sort)
+        best = {}
+        for p in arr: best.setdefault(p[0], p)
+        bestl = sorted(best.values(), key=_gv_sort); w = bestl[0]; n_w = len(best)
+        path = f"/vegan/{sl}/"
+        title = f"{naam_} vergelijken: goedkoopst bij {nm(w[0])} ({MAAND})"
+        desc = f"{len(arr)} producten: {naam_.lower()} bij {n_w} supermarkten naast elkaar, op prijs per kilo of liter. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Elke dag bijgewerkt."
+        ch, cld = crumbs(("Vegan", "/vegan/"), (naam_, None))
+        head = (ch + f'<h1>{ic} {esc(naam_)}: waar is het goedkoopst?</h1><p class="lead">{len(arr)} vegan producten bij {n_w} supermarkten, van goedkoop naar duur op prijs per kilo of liter. Nu het voordeligst: <b>{esc(w[1])}</b> bij <b>{esc(nm(w[0]))}</b>.</p>'
+                + '<ul class="chips">' + "".join(f'<li><a href="/vegan/{s2}/"{" aria-current=\"page\"" if s2 == sl else ""}>{i2} {esc(n2)}</a></li>' for s2, n2, i2 in VG_LIJST) + '</ul>')
+        faq = [(f"Waar koop je {naam_.lower()} het goedkoopst?", f"Op {DATUM} is {w[1]} bij {nm(w[0])} het voordeligst: {eur(eff(w))}" + (f" ({_ut(w)})" if _ut(w) else "") + "."),
+               (f"Welke supermarkten verkopen {naam_.lower()}?", ", ".join(nm(si) for si in sorted(best, key=lambda si: _gv_sort(best[si]))) + "."),
+               ("Hoe weten jullie dat het vegan is?", "We tonen producten met vegan of 100% plantaardig in de naam, plantaardige zuivel- en vleesvervangers, tofu, tempeh en seitan, en merken die alleen plantaardig maken (zoals Alpro, Oatly en Violife). Controleer bij twijfel altijd het etiket.")]
+        body = (f'<h2>Goedkoopst per supermarkt</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(_vrij(p, naam_) for p in bestl) + "</tbody></table></div>"
+                + (f'<h2>Alle {len(arr)} producten</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(_vrij(p, naam_) for p in arr[:100]) + "</tbody></table></div>" if len(arr) > len(bestl) else "")
+                + f'<p class="note">Bijgewerkt op {DATUM}. Prijzen van de webshops; lopende aanbiedingen tellen mee.</p>'
+                + '<h2>Meer vegan</h2><ul class="links">' + "".join(f'<li><a href="/vegan/{s2}/">{i2} {esc(n2)}</a></li>' for s2, n2, i2 in VG_LIJST if s2 != sl) + _vg_maal + '</ul>' + faq_html(faq))
+        schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], og_title=f"{naam_}: goedkoopst bij {nm(w[0])}"))
+        made.append((path, "0.7"))
+    blok = ""
+    for sl, naam_, ic in VG_LIJST:
+        arr = sorted(VG_PER[sl], key=_gv_sort); w = arr[0]
+        blok += f'<li><a href="/vegan/{sl}/"><b>{ic} {esc(naam_)}</b></a> <span class="sub">{len(arr)} producten bij {len({p[0] for p in arr})} supermarkten · voordeligst: {esc(w[1])} bij {esc(nm(w[0]))}, {eur(eff(w))}</span></li>'
+    perwinkel = {}
+    for sl, _, _ in VG_LIJST:
+        for p in VG_PER[sl]: perwinkel[p[0]] = perwinkel.get(p[0], 0) + 1
+    ww = sorted(perwinkel.items(), key=lambda kv: -kv[1])
+    ch, cld = crumbs(("Vegan", None))
+    head = ch + f'<h1>🌱 Vegan boodschappen: waar is het goedkoopst?</h1><p class="lead">{_vg_n} vegan producten bij {len(ww)} supermarkten, ingedeeld in {len(VG_LIJST)} soorten zoals de gewone categorieën. Per soort zie je waar je het minst betaalt.</p>'
+    faq = [("Welke supermarkt heeft de meeste vegan producten?", f"Online vinden we nu de meeste vegan producten bij {nm(ww[0][0])} ({ww[0][1]}), gevolgd door {nm(ww[1][0])} ({ww[1][1]})." if len(ww) > 1 else ""),
+           ("Wat is het verschil tussen vegan en vegetarisch?", "Vegetarisch is zonder vlees en vis. Vegan is helemaal plantaardig: ook zonder melk, kaas, eieren en honing. Niet alle vegetarische vleesvervangers zijn vegan; sommige bevatten ei of melk."),
+           ("Is vegan ook lactosevrij?", "Ja, vegan producten bevatten geen melk en dus geen lactose. Daarom staan ze ook op de pagina lactosevrij."),
+           ("Hoe weten jullie dat het vegan is?", "We kijken naar de productnaam (vegan, 100% plantaardig, plantaardige drink of kaas, tofu, tempeh, seitan) en naar merken die alleen plantaardig maken. Controleer bij twijfel altijd het etiket.")]
+    body = (f'<ul class="links">{blok}</ul>'
+            + '<h2>Vegan koken</h2><p><a href="/maaltijden/weekmenu-vegan/">📅 Vegan weekmenu</a>: 5 plantaardige avondmaaltijden, samen ingekocht, met boodschappenlijst.</p><p><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden met prijs per supermarkt</a>: complete avondmaaltijden zonder vlees, vis, zuivel en ei, met de goedkoopste winkel voor alle ingrediënten. In de app kun je bij elke categorie ook op <b>🌱 Alleen vegan</b> tikken.</p>'
+            + f'<p class="note">Bijgewerkt op {DATUM}.</p>' + faq_html(faq) + '<p><a href="/lactosevrij/">Lactosevrij</a> · <a href="/glutenvrij/">Glutenvrij</a> · <a href="/eiwitrijk/">Eiwitrijk</a></p>')
+    schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen vergelijken: {_vg_n} producten bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
+    made.append(("/vegan/", "0.8"))
+    print("/vegan/:", _vg_n, "producten in", len(VG_LIJST), "soorten:", {sl: len(VG_PER[sl]) for sl, _, _ in VG_LIJST})
 
 # ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
 AANB_PRODUCT = [  # (slug, naam, zoekpatroon in de actienaam, uitsluiten, vaste soorten om te vergelijken)

@@ -46,7 +46,7 @@ I = {
     "knolselderij": (["knolselderij"], 30, .8, ["blokjes"]),
     "prei": (["prei", "prei gesneden"], 30, .25, ["soep", "roerbak"]),
     "paprika": (["rode paprika", "paprika rood", "paprika's", "paprika"], 30, .15, ["poeder", "chips", "gegrild", "gevuld", "mini", "snack", "puntpaprika", "frites", "sticks", "geroost", "rolnik", "papryka", "pot", "glas", "reepjes", "lay", "croky", "chio", "smiths", "bugles", "salto", "gratin", "airfryer", "courget", "ovenschotel", "tuc", "zoutjes", "cracker", "olijven", "focaccia", "wavy", "doritos", "cheetos", "hula", "pom", "fuet", "falafel", "worst", "gyros", "kronkels", "krokant", "friet", "flipits", "tijgernoot", "epixs", "opbak", "champignons", "piquillo"]),
-    "champignons": (["champignons"], 22, None, ["gesneden blik", "pot", "gemarineerd", "kastanje"]),
+    "champignons": (["champignons"], 22, None, ["gesneden blik", "pot", "gemarineerd", "kastanje", "roerbak", "groente", "wok"]),
     "broccoli": (["broccoli"], 34, .5, ["roosjes diepvries", "puree"]),
     "sperziebonen": (["sperziebonen"], 30, None, ["pot", "blik", "potje"]),
     "bladspinazie": (["bladspinazie"], 25, None, ["room", "a la creme"]),
@@ -326,3 +326,7 @@ NOTITIE = {"couscous-kip-dadels": "Het recept van het Voedingscentrum is voor 2 
 from maaltijden_extra import I_EXTRA, MAALTIJDEN_EXTRA, NOTITIE_EXTRA, GLUTEN_EXTRA, LET_OP_EXTRA, LET_OP_WOORDEN_EXTRA
 I.update(I_EXTRA); MAALTIJDEN += MAALTIJDEN_EXTRA; NOTITIE.update(NOTITIE_EXTRA)
 GLUTEN |= GLUTEN_EXTRA; LET_OP |= LET_OP_EXTRA; LET_OP_WOORDEN += LET_OP_WOORDEN_EXTRA
+# Vegan maaltijden die al in de lijst stonden (helemaal plantaardig; bij chili sin carne plantaardig gehakt kiezen).
+VEGAN_BESTAAND = {"linzendahl", "zoete-aardappelcurry", "turkse-linzensoep", "bulgursalade-kisir", "couscoussalade-kikkererwten", "ratatouille", "poke-bowl-tofu", "wraps-guacamole-kidneybonen", "chili-sin-carne"}
+for _m in MAALTIJDEN:
+    if _m["slug"] in VEGAN_BESTAAND: _m["vegan"] = True
