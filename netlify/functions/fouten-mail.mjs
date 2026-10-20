@@ -18,6 +18,14 @@ export default async () => {
     const b = await betwist.get(key, { type: 'json' }).catch(() => null);
     if (!b || Object.values(b.wie || {}).every(t => t < weekterug)) await betwist.delete(key);
   }
+  // Gedeelde lijsten die 60 dagen niet zijn gebruikt, opruimen.
+  try {
+    const samen = getStore('samen'), grens60 = Date.now() - 60 * 864e5;
+    for (const { key } of (await samen.list()).blobs) {
+      const l = await samen.get(key, { type: 'json' }).catch(() => null);
+      if (!l || (l.v || 0) < grens60) await samen.delete(key);
+    }
+  } catch (e) { console.log('samen opruimen mislukt', e.message); }
   const { blobs } = await nieuw.list();
   if (!blobs.length) return new Response('geen meldingen');
   const m = [];

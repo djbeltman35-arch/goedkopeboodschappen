@@ -323,3 +323,8 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 /* Oordeel per actie */
 .oordeel{display:block;margin:6px 0 2px;font-size:13.5px;font-weight:700;line-height:1.35}
 .oordeel.top{color:var(--green-dark)}.oordeel.ok{color:var(--ink)}.oordeel.duur{color:#b5531f}
+/* Samen één lijst en foto-invoer */
+.samenbalk{margin:8px 0 10px;padding:10px 12px;border-radius:12px;background:var(--green-soft);font-size:14px;line-height:1.45}
+.samenbalk .tijd{color:var(--muted);font-size:13px}
+.samenbalk .kies{margin:4px 6px 0 0}
+.fotoknop{display:inline-flex;align-items:center;gap:6px;margin:8px 0 4px;cursor:pointer;width:auto}

@@ -238,16 +238,20 @@
       <h2 id="lh">Mijn lijst <small id="lcount"></small></h2>
       <div id="welcome"></div>
       <div class="lmaal" id="lmaal" hidden></div>
+      <div class="samenbalk" id="samenbalk" hidden></div>
       <ul class="items" id="items"></ul>
       <div class="lbar" id="lbar" hidden></div>
-      <details class="bulk" id="bulk"><summary>Hele boodschappenlijst in één keer invoeren</summary>
+      <details class="bulk" id="bulk"><summary>Hele boodschappenlijst in één keer invoeren of fotograferen</summary>
         <label class="sr" for="bulkt">Je boodschappen, één per regel</label>
         <textarea id="bulkt" rows="5" placeholder="Eén product per regel, bijvoorbeeld:&#10;halfvolle melk&#10;2 pindakaas&#10;eieren, kipfilet, bananen"></textarea>
+        <label class="btn-line fotoknop">📷 Foto van kassabon of lijstje<input type="file" id="fotoin" accept="image/*" hidden></label>
+        <p class="hint" id="fotomsg">De tekst wordt op je eigen telefoon herkend; de foto gaat nergens naartoe.</p>
         <button type="button" class="btn" id="bulkgo">Zet alles op mijn lijst</button><p class="hint" id="bulkmsg"></p></details>
       <div id="forlist"></div>
       <div class="notify" id="notify" hidden></div>
       <div class="where" id="where"></div>
       <div class="ltools" id="ltools" hidden>
+        <button type="button" class="btn-line samenknop" id="samenknop">👨‍👩‍👧 Samen één lijst</button>
         <button type="button" class="btn-line" id="share">Lijst delen</button>
         <button type="button" class="btn-line" id="print">Printen</button>
       </div>
@@ -657,7 +661,7 @@ function addOffer(o){
   gc("lijst-actie/"+o.s,"Actie op lijst"); after();
 }
 function after(){S.sel=null;save();renderList();renderWhere();if(S.view)renderView();else if(S.lastQ)search();dock();renderNotify()}
-function save(){S.maal=S.maal.filter(m=>S.list.some(x=>x.m===m.slug));store.set("lijst-v3",S.list);store.set("maal-v1",S.maal);pushLater()}
+function save(){S.maal=S.maal.filter(m=>S.list.some(x=>x.m===m.slug));store.set("lijst-v3",S.list);store.set("maal-v1",S.maal);pushLater();samenLater()}
 // Maaltijden op je lijst: calorieën per maaltijd en in totaal (blijft staan zolang er ingrediënten van op de lijst staan).
 function renderMaal(){
   const el=$("lmaal"); if(!el) return; const ms=S.maal.filter(m=>S.list.some(x=>x.m===m.slug));
@@ -852,6 +856,86 @@ function printList(){
   $("printsheet").innerHTML=`<h1>Boodschappenlijst ${esc(sname(r.si))}</h1><p>${d} · boodschappenvergelijk.nl</p><table><tbody>${r.items.map((it,i)=>`<tr><td>☐</td><td>${(S.list[i].q||1)>1?(S.list[i].q)+" × ":""}${esc(S.list[i].term)}</td><td>${it?esc(it.name):"niet te koop"}</td><td class="pp">${it?eur(it.price):""}</td></tr>`).join("")}</tbody><tfoot><tr><td></td><td colspan="2"><b>Totaal</b></td><td class="pp"><b>${eur(r.sum)}</b></td></tr></tfoot></table>`;
   window.print();
 }
+// ---- Samen één lijst: gedeeld via /api/samen, zonder account. Wijzigingen worden samengevoegd (toevoegen, wegstrepen, aantallen). ----
+S.samen=null;S.samenV=0;S.samenBasis=new Map();S.samenStil=false;
+const samenGeldig=id=>/^[a-f0-9]{24}$/.test(id||"");
+function samenBasisZet(l){S.samenBasis=new Map(l.map(x=>[x.link,{done:!!x.done,q:x.q||1}]));store.set("samen-basis",[...S.samenBasis])}
+function samenMerge(remote){
+  const B=S.samenBasis,L=new Map(S.list.map(x=>[x.link,x])),R=new Set(remote.map(x=>x.link)),out=[];
+  for(const x of remote){const l=L.get(x.link),b=B.get(x.link);
+    if(l){const done=b&&!!l.done!==b.done?!!l.done:!!x.done,q=b&&(l.q||1)!==b.q?(l.q||1):(x.q||1);out.push({...x,...(done?{done:true}:{done:false}),...(q>1?{q}:{q:undefined})})}
+    else if(!b) out.push(x)}            // nieuw bij de ander
+  for(const l of S.list) if(!R.has(l.link)&&!B.has(l.link)) out.push(l);  // nieuw bij mij
+  return out.map(x=>{const y={...x};if(!y.done)delete y.done;if(!(y.q>1))delete y.q;return y});
+}
+let samenBezig=false,samenOpnieuw=false;
+async function samenSync(push){
+  if(!S.samen)return; if(samenBezig){samenOpnieuw=samenOpnieuw||push;return} samenBezig=true;
+  try{
+    const r=await fetch("/api/samen?id="+S.samen,{cache:"no-store"});
+    if(r.status===404){samenStop("Deze gedeelde lijst bestaat niet meer.");return}
+    const j=r.ok?await r.json():null; if(!j)return;
+    const lijst=(j.lijst||[]).map(x=>({...x,si:S.sidx.get(x.s)??0})).filter(x=>S.sidx.has(x.s));
+    const nieuw=j.v>S.samenV?samenMerge(lijst):S.list;
+    const sleutel=l=>JSON.stringify(l.map(x=>[x.link,!!x.done,x.q||1]));
+    const anders=sleutel(nieuw)!==sleutel(lijst);
+    if(j.v>S.samenV||anders){S.list=nieuw;const sl=new Set(S.list.map(x=>x.m).filter(Boolean));const mm=new Map([...(j.maal||[]),...S.maal].map(m=>[m.slug,m]));S.maal=[...mm.values()].filter(m=>sl.has(m.slug))}
+    if(push||anders){const w=await fetch("/api/samen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:S.samen,lijst:S.list,maal:S.maal})});const k=w.ok?await w.json():null;if(k)S.samenV=k.v}
+    else S.samenV=j.v;
+    store.set("samen-v",S.samenV);samenBasisZet(S.list);
+    S.samenStil=true;save();S.samenStil=false;renderList();renderWhere();if(S.view)renderView();dock();samenUi(true);
+  }catch(e){}finally{samenBezig=false;if(samenOpnieuw){samenOpnieuw=false;samenSync(true)}}
+}
+let samenT;function samenLater(){if(!S.samen||S.samenStil)return;clearTimeout(samenT);samenT=setTimeout(()=>samenSync(true),900)}
+async function samenStart(){
+  if(S.samen){samenDeel();return}
+  const b=$("samenknop");b.disabled=true;b.textContent="Even geduld…";
+  try{const r=await fetch("/api/samen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({lijst:S.list,maal:S.maal})});const j=await r.json();
+    if(!samenGeldig(j.id))throw 0; S.samen=j.id;S.samenV=j.v;store.set("samen-id",S.samen);store.set("samen-v",S.samenV);samenBasisZet(S.list);gc("samen/start","Samen-lijst gestart");samenUi();samenDeel()}
+  catch(e){$("samenbalk").hidden=false;$("samenbalk").textContent="Delen lukte niet. Probeer het later nog eens."}
+  finally{b.disabled=false;samenUi()}
+}
+async function samenDeel(){
+  const url=location.origin+"/?samen="+S.samen;
+  try{if(navigator.share){await navigator.share({title:"Onze boodschappenlijst",text:"Doe je mee met onze boodschappenlijst? Wat jij toevoegt of wegstreept, zie ik ook.",url});return}
+    await navigator.clipboard.writeText(url);$("samenbalk").querySelector(".sm")?.replaceChildren("Link gekopieerd ✓ Stuur hem naar je huisgenoot.")}catch(e){prompt("Kopieer deze link:",url)}
+}
+function samenStop(msg){S.samen=null;store.set("samen-id",null);store.set("samen-basis",null);samenUi();if(msg){const b=$("samenbalk");b.hidden=false;b.innerHTML=`<span class="sm">${esc(msg)}</span>`}}
+function samenUi(net){
+  const b=$("samenbalk"),k=$("samenknop");if(!b||!k)return;
+  k.textContent=S.samen?"👨‍👩‍👧 Link opnieuw delen":"👨‍👩‍👧 Samen één lijst";
+  if(!S.samen){if(!b.querySelector(".sm"))b.hidden=true;return}
+  const oud=store.get("samen-eigen");
+  b.hidden=false;b.innerHTML=`<span class="sm">👨‍👩‍👧 <b>Gedeelde lijst</b>: wat jullie toevoegen of wegstrepen, zien jullie allebei.${net?` <span class="tijd">Bijgewerkt ${new Date().toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}</span>`:""}</span> <button type="button" class="kies" data-samen="deel">Link delen</button> <button type="button" class="kies" data-samen="stop">Stoppen</button>${oud&&oud.length?` <button type="button" class="kies" data-samen="eigen">Mijn eigen lijst (${oud.length}) erbij</button>`:""}`;
+}
+setInterval(()=>{if(S.samen&&document.visibilityState==="visible")samenSync(false)},15000);
+document.addEventListener("visibilitychange",()=>{if(S.samen&&document.visibilityState==="visible")samenSync(false)});
+
+// ---- Foto van kassabon of lijstje: tekst herkennen op het toestel zelf (Tesseract), daarna in het invoervak zetten ----
+const BON_WEG=/^(totaal|subtotaal|te betalen|btw|pin|pinnen|contant|wisselgeld|bonus|korting|kassa|bon|datum|tijd|bedankt|tot ziens|aantal|artikelen|statiegeld|emballage|zegels|spaarpunten|airmiles|klantenkaart|transactie|terminal|kaart|maestro|vpay|visa|mastercard|filiaal|tel|www|kvk|btw-nr)\b/i;
+const BON_AFK={"halfv":"halfvolle","volk":"volkoren","vk":"volkoren","kipf":"kipfilet","kipfil":"kipfilet","gem":"gemengd","geh":"gehakt","rundergeh":"rundergehakt","aardapp":"aardappelen","aardap":"aardappelen","pindak":"pindakaas","hagels":"hagelslag","boter":"roomboter","yogh":"yoghurt","choc":"chocolade","komk":"komkommer","tom":"tomaten","bloemk":"bloemkool","wcpap":"toiletpapier","toiletp":"toiletpapier","wasm":"wasmiddel","afwasm":"afwasmiddel","eier":"eieren","sinaasap":"sinaasappels","mandar":"mandarijnen"};
+function bonRegels(tekst){
+  const uit=[];
+  for(let r of tekst.split(/\n+/)){
+    r=r.replace(/[€$]/g," ").replace(/\b\d+[.,]\d{2}\b/g," ").replace(/\b\d+\s*(x|st|stuks?)\b/gi," ").replace(/[^A-Za-zÀ-ÿ'&\- ]/g," ").replace(/\s+/g," ").trim();
+    if(r.length<3||BON_WEG.test(r))continue;
+    let w=r.toLowerCase().split(" ").filter(x=>x.length>1&&!["ah","albert","heijn","jumbo","plus","lidl","aldi","dirk","hoogvliet","dekamarkt","vomar","spar","poiesz","supermarkt","supermarkten","g'woon","gwoon","beste","de","het","van"].includes(x)).map(x=>BON_AFK[x]||x);
+    const t=w.join(" ").trim(); if(t.length>=3&&!uit.includes(t)) uit.push(t);
+  }
+  return uit.slice(0,60);
+}
+let tesseractLaden=null;
+async function fotoLezen(file){
+  const msg=$("fotomsg");msg.textContent="Tekst herkennen… dit kan de eerste keer een halve minuut duren.";gc("foto/start","Foto lijst");
+  try{
+    if(!window.Tesseract){tesseractLaden=tesseractLaden||new Promise((ok,nee)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";sc.onload=ok;sc.onerror=nee;document.head.appendChild(sc)});await tesseractLaden}
+    const w=await Tesseract.createWorker("nld");const {data}=await w.recognize(file);await w.terminate();
+    const r=bonRegels(data.text||"");
+    if(!r.length){msg.textContent="Er is geen tekst gevonden. Probeer een scherpere foto, recht van boven en met genoeg licht.";return}
+    const t=$("bulkt");t.value=(t.value.trim()?t.value.trim()+"\n":"")+r.join("\n");t.focus();
+    msg.textContent=`${r.length} regels gevonden. Kijk ze even na (haal weg wat niet klopt) en tik dan op "Zet alles op mijn lijst".`;gc("foto/ok/"+r.length,"Foto gelezen");
+  }catch(e){msg.textContent="Tekst herkennen lukte niet op dit toestel. Typ je lijst dan hierboven in."}
+}
 async function shareList(){
   const url=location.origin+"/?lijst="+encodeURIComponent(S.list.map(x=>((x.q||1)>1?x.q+" ":"")+x.term).join("~"));
   gc("deel","Lijst gedeeld");
@@ -974,6 +1058,7 @@ document.addEventListener("click",e=>{
     else if(k==="alarm"){$("q").focus();$("q").scrollIntoView({behavior:"smooth",block:"center"});const r=$("results");if(r&&!r.querySelector(".alarm"))r.insertAdjacentHTML("afterbegin",'<p class="alarm on">⏰ <b>Prijsalarm</b>: zoek een product (bijvoorbeeld koffiebonen) en tik bij de resultaten op <b>Zet aan</b>. Je krijgt een mail als de prijs per kilo onder jouw grens komt.</p>')}
     return}
   const au=e.target.closest("[data-alarm-uit]"); if(au){store.set("alarmen",(store.get("alarmen")||[]).filter(x=>x.k!==au.dataset.alarmUit));alarmSync();gc("alarm/uit","Prijsalarm uit");search();return}
+  const sb=e.target.closest("[data-samen]"); if(sb){const k=sb.dataset.samen;if(k==="deel")samenDeel();else if(k==="stop"){samenStop("Je lijst is niet meer gedeeld. Hij staat nog wel op dit toestel.");gc("samen/stop","Samen gestopt")}else if(k==="eigen"){const oud=store.get("samen-eigen")||[];for(const x of oud)if(!S.list.some(y=>y.link===x.link))S.list.push({...x,si:S.sidx.get(x.s)??x.si});store.set("samen-eigen",null);after()}return}
   const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
@@ -1029,6 +1114,7 @@ function bulkAdd(){
     const had=S.list.find(x=>norm(x.term)===norm(t)); if(had){had.q=(had.q||1)+(m?q:0)||had.q;ok++;continue}
     let b=[...pick(t).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0];
     if(!b){const mm=matches(t);b=[...perStore(mm).values()].sort((a,b)=>rank(a)-rank(b))[0]}
+    if(!b){const alt=verbeter(t);if(alt)b=[...pick(alt).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0]}  // tikfout of kassabon-afkorting
     if(!b){mis.push(t);continue}
     S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b),...(q>1?{q}:{})});ok++;
   }
@@ -1038,6 +1124,8 @@ function bulkAdd(){
 }
 $("bulkgo").addEventListener("click",bulkAdd);
 $("share").addEventListener("click",shareList);
+$("samenknop").addEventListener("click",samenStart);
+$("fotoin").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)fotoLezen(f);e.target.value=""});
 $("print").addEventListener("click",printList);
 
 // De rest van de prijslijst (producten buiten de categorieën) op de achtergrond erbij laden.
@@ -1106,6 +1194,11 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
     if(S.list.some(x=>norm(x.term)===norm(t))) continue;
     const b=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]; if(b){S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b),...(q>1?{q}:{})});added++}
   }
+  // Samen één lijst: meedoen via een link (?samen=...) of de bewaarde code gebruiken.
+  {const sid_=sp.get("samen");
+   if(samenGeldig(sid_)){if(sid_!==store.get("samen-id")){if(S.list.length)store.set("samen-eigen",S.list);S.list=[];S.samenV=0;store.set("samen-basis",null)}S.samen=sid_;store.set("samen-id",sid_);gc("samen/mee","Samen-lijst meedoen");sp.delete("samen");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+"#lijst")}
+   else if(samenGeldig(store.get("samen-id"))){S.samen=store.get("samen-id");S.samenV=+store.get("samen-v")||0}
+   if(S.samen){S.samenBasis=new Map(store.get("samen-basis")||[]);setTimeout(()=>{samenUi();samenSync(false)},50)}}
   added+=erbijLaden();
   if(added) save();
   // De gedeelde link uit de adresbalk halen, anders komen verwijderde artikelen terug bij opnieuw laden.
