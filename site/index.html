@@ -211,7 +211,7 @@
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
-      <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p></div>
+      <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p><div id="buurtlijst"></div></div>
       <div class="sall"><button type="button" class="btn-line" data-sall="1">Alles aan</button><button type="button" class="btn-line" data-sall="0">Alles uit</button></div>
       <p class="hint" style="margin-top:14px"><b>Merken</b>: vergelijk alles, of laat huismerken (zoals AH, Jumbo en 1 de Beste) juist weg of alleen zien. Groente en fruit zonder merk blijven altijd zichtbaar.</p>
       <div class="chips merken" role="group" aria-label="Merken" id="merken"></div></div></details>
@@ -669,7 +669,8 @@ function renderWhere(){
       <details><summary>Wat haal ik waar?</summary><ul>${best.split.map(s=>`<li><span>${esc(s.term)}</span><span><span class="shop">${esc(sname(s.si))}</span> ${eur(s.price)}</span></li>`).join("")}</ul></details></div>`;
     }
   }
-  const r=rows.find(r=>r.si===sel);
+  const r=rows.find(r=>r.si===sel), rid=sid(sel), rv=S.buurt?.[rid]?.[0];
+  html+=`<p class="naar"><a class="route" href="${esc(routeUrl(rid,rv))}" target="_blank" rel="noopener" data-route="${esc(rid)}">📍 Route naar ${esc(sname(sel))}${rv?` (${String(rv.km).replace(".",",")} km)`:""}</a>${rv?.open&&openNu(rv.open)?` <span class="${openNu(rv.open).startsWith("Nu open")?"opennu":"dicht"}">${esc(openNu(rv.open))}</span>`:""}</p>`;
   html+=`<div class="detail"><ul>${r.items.map((it,i)=>it?`<li><a href="${esc(it.link)}" target="_blank" rel="noopener" data-out="${esc(sid(sel))}">${it.q>1?it.q+" × ":""}${esc(it.name)}</a><span>${it.deal?'<span class="pill">actie</span> ':""}${eur(it.price)}${it.conv?`<br><span class="muted" style="font-size:12px">voor ${esc(it.conv)}</span>`:""}</span></li>`:`<li><span class="miss">${esc(S.list[i].term)}: niet te koop bij ${esc(sname(sel))}</span><span></span></li>`).join("")}</ul></div>`;
   $("where").innerHTML=html; S.printRow=r;
 }
@@ -775,6 +776,38 @@ async function shareList(){
 function merkenUi(){const el=$("merken");if(!el)return;el.innerHTML=[["alle","Alle merken"],["zonder","Zonder huismerken"],["huis","Alleen huismerken"]].map(([k,t])=>`<button type="button" class="chip" data-merk="${k}" aria-pressed="${S.merk===k}">${t}</button>`).join("")}
 // Winkels in de buurt via OpenStreetMap (Overpass). De locatie gaat alleen daarheen; we bewaren hem niet.
 const OSM_MERK=[[/albert heijn|\bah\b/,"ah"],[/jumbo/,"jumbo"],[/lidl/,"lidl"],[/aldi/,"aldi"],[/^plus\b|\bplus$/,"plus"],[/dirk/,"dirk"],[/dekamarkt/,"dekamarkt"],[/hoogvliet/,"hoogvliet"],[/poiesz/,"poiesz"],[/spar/,"spar"],[/vomar/,"vomar"]];
+const afstand=(a1,o1,a2,o2)=>{const r=Math.PI/180,x=(o2-o1)*r*Math.cos((a1+a2)/2*r),y=(a2-a1)*r;return Math.sqrt(x*x+y*y)*6371};
+// Route in Google Maps: naar een bekende vestiging, of laat Google Maps de dichtstbijzijnde zoeken.
+const routeUrl=(id,v)=>v?`https://www.google.com/maps/dir/?api=1&destination=${v.lat},${v.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((STORENAMES[id]||id)+" supermarkt")}`;
+// Openingstijden uit OpenStreetMap ("Mo-Sa 08:00-22:00; Su 10:00-20:00"). Vertaald naar het Nederlands, plus of de winkel nu open is.
+const OSMDAG=["Mo","Tu","We","Th","Fr","Sa","Su"], NLDAG=["ma","di","wo","do","vr","za","zo"];
+function tijdenNl(oh){return String(oh).replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su)\b/g,d=>NLDAG[OSMDAG.indexOf(d)]).replace(/\bPH\b/g,"feestdagen").replace(/\boff\b/g,"gesloten").replace(/;\s*/g," · ")}
+function openNu(oh,nu=new Date()){
+  if(!oh) return null; if(/24\/7/.test(oh)) return "Altijd open";
+  const dag=(nu.getDay()+6)%7, min=nu.getHours()*60+nu.getMinutes(), perDag=Array.from({length:7},()=>null);
+  for(const regel of String(oh).split(";").map(x=>x.trim()).filter(Boolean)){
+    const m=regel.match(/^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?,?)+)\s+(.+)$/); if(!m) { if(/^PH/.test(regel)) continue; return null }
+    const dagen=new Set();
+    for(const deel of m[1].split(",").filter(Boolean)){const [a,b]=deel.split("-").map(d=>OSMDAG.indexOf(d));if(a<0)return null;
+      if(b==null||b<0)dagen.add(a);else for(let i=a;;i=(i+1)%7){dagen.add(i);if(i===b)break}}
+    let tijden=[];
+    if(m[2]!=="off"&&m[2]!=="closed") for(const tr of m[2].split(",")){const t=tr.trim().match(/^(\d\d):(\d\d)-(\d\d):(\d\d)$/);if(!t)return null;tijden.push([+t[1]*60+ +t[2],+t[3]*60+ +t[4]])}
+    for(const d of dagen) perDag[d]=tijden;
+  }
+  const hm=x=>`${Math.floor(x/60)}:${String(x%60).padStart(2,"0")}`;
+  // Dagen die niet genoemd worden, is de winkel dicht.
+  if(perDag.every(d=>d===null)) return null; for(let i=0;i<7;i++) if(perDag[i]===null) perDag[i]=[];
+  const vandaag=perDag[dag];
+  for(const [a,b] of vandaag) if(min>=a&&min<b) return `Nu open tot ${hm(b)}`;
+  for(const [a] of vandaag) if(min<a) return `Gesloten, opent om ${hm(a)}`;
+  for(let i=1;i<=7;i++){const d=perDag[(dag+i)%7];if(d&&d.length) return `Gesloten, opent ${i===1?"morgen":NLDAG[(dag+i)%7]} om ${hm(d[0][0])}`}
+  return "Gesloten";
+}
+function buurtLijst(){
+  const el=$("buurtlijst"); if(!el) return;
+  const rij=Object.entries(S.buurt||{}).filter(([id])=>!S.off.has(id)).map(([id,v])=>[id,v[0]]).sort((a,b)=>a[1].km-b[1].km);
+  el.innerHTML=rij.length?`<p class="hint" style="margin:10px 0 4px"><b>Dichtstbijzijnde winkels</b></p><ul class="buurtlijst">${rij.map(([id,v])=>`<li><span><b>${esc(STORENAMES[id]||id)}</b> · ${String(v.km).replace(".",",")} km${v.adres?`<br><span class="muted">${esc(v.adres)}</span>`:""}${v.open?(o=>`<br><span class="${o&&o.startsWith("Nu open")||o==="Altijd open"?"opennu":"dicht"}">${esc(o||"")}</span>${o?" · ":"<br>"}<span class="muted">${esc(tijdenNl(v.open))}</span>`)(openNu(v.open)):""}</span><a class="route" href="${esc(routeUrl(id,v))}" target="_blank" rel="noopener" data-route="${esc(id)}">Route</a></li>`).join("")}</ul><p class="hint" style="margin:4px 0 0;font-size:12px">Adressen en openingstijden volgens OpenStreetMap. Kijk bij twijfel even op de site van de winkel.</p>`:"";
+}
 async function winkelsInBuurt(){
   const msg=$("buurtmsg"),km=+($("buurtkm")?.value||5);
   if(!navigator.geolocation){msg.textContent="Je browser kan je locatie niet doorgeven.";return}
@@ -782,19 +815,28 @@ async function winkelsInBuurt(){
   let pos; try{pos=await new Promise((ok,fout)=>navigator.geolocation.getCurrentPosition(ok,fout,{enableHighAccuracy:false,timeout:15000,maximumAge:6e5}))}
   catch(e){msg.textContent=e&&e.code===1?"Je hebt geen toestemming gegeven voor je locatie. Je kunt de winkels ook hierboven zelf aanvinken.":"Je locatie ophalen lukte niet. Probeer het nog eens of vink de winkels zelf aan.";return}
   msg.textContent="Supermarkten in de buurt zoeken…";
-  const {latitude:la,longitude:lo}=pos.coords, q=`[out:json][timeout:25];nwr["shop"="supermarket"](around:${km*1000},${la.toFixed(4)},${lo.toFixed(4)});out tags;`;
+  const {latitude:la,longitude:lo}=pos.coords, q=`[out:json][timeout:25];nwr["shop"="supermarket"](around:${km*1000},${la.toFixed(4)},${lo.toFixed(4)});out center tags;`;
   let data=null;
   for(const u of ["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"]){
     try{const r=await fetch(u,{method:"POST",body:"data="+encodeURIComponent(q),headers:{"Content-Type":"application/x-www-form-urlencoded"}});if(r.ok){data=await r.json();break}}catch(e){}}
   if(!data){msg.textContent="OpenStreetMap is nu niet bereikbaar. Probeer het later nog eens of vink de winkels zelf aan.";return}
   const ids=new Set(S.stores.filter(s=>s.count).map(s=>s.id)), gevonden=new Map();
+  const vest={};
   for(const el of data.elements||[]){const t=el.tags||{},n=((t.brand||"")+" | "+(t.name||"")).toLowerCase();
-    for(const [re,id] of OSM_MERK) if(re.test(n)&&ids.has(id)){gevonden.set(id,(gevonden.get(id)||0)+1);break}}
+    for(const [re,id] of OSM_MERK) if(re.test(n)&&ids.has(id)){gevonden.set(id,(gevonden.get(id)||0)+1);
+      const lat=el.lat??el.center?.lat, lon=el.lon??el.center?.lon;
+      if(lat!=null) (vest[id]||(vest[id]=[])).push({lat:+lat.toFixed(5),lon:+lon.toFixed(5),km:Math.round(afstand(la,lo,lat,lon)*10)/10,
+        adres:[[t["addr:street"],t["addr:housenumber"]].filter(Boolean).join(" "),t["addr:city"]].filter(Boolean).join(", "),open:t.opening_hours||""});
+      break}}
+  // Alleen de winkels zelf bewaren (niet je eigen locatie), in je eigen browser.
+  S.buurt=Object.fromEntries(Object.entries(vest).map(([id,v])=>[id,v.sort((a,b)=>a.km-b.km).slice(0,3)]));
+  store.set("buurt",S.buurt);
   if(!gevonden.size){msg.textContent=`Binnen ${km} km vonden we geen van onze supermarkten. Kies een grotere afstand.`;return}
   S.off=new Set([...ids].filter(id=>!gevonden.has(id)));
   winkelsGewijzigd();
   const namen=[...gevonden.keys()].map(id=>STORENAMES[id]||id).sort((a,b)=>a.localeCompare(b));
   $("buurtmsg").textContent=`Binnen ${km} km: ${namen.join(", ")}. De andere winkels staan uit; je kunt ze hierboven weer aanvinken.`;
+  buurtLijst();
   gc("buurt/"+gevonden.size,"Winkels in de buurt");
 }
 function storesUi(){
@@ -803,6 +845,7 @@ function storesUi(){
   $("mysum").textContent=`Mijn supermarkten: ${k===ids.length?"alle "+k:k+" van "+ids.length}`;
   const aan=ids.filter(id=>!S.off.has(id)).map(id=>STORENAMES[id]||id);
   $("mysub").textContent=k===ids.length?"Kom je niet overal? Kies hier je eigen winkels.":k?aan.join(", "):"Kies minstens één supermarkt";
+  buurtLijst();
   if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"zonder huismerken":"alleen huismerken");
   merkenUi();
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
@@ -838,6 +881,7 @@ document.addEventListener("click",e=>{
   const pu=e.target.closest("[data-push]"); if(pu){pu.disabled=true;pu.dataset.push==="aan"?pushAan():pushUit();return}
   const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
   const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
+  const ro=e.target.closest("[data-route]"); if(ro){gc("route/"+ro.dataset.route,"Route Google Maps")}
   if(e.target.closest("[data-buurt]")){winkelsInBuurt();return}
   const mk=e.target.closest("[data-merk]"); if(mk){S.merk=mk.dataset.merk;store.set("merken",S.merk);pickCache.clear();storesUi();renderAll();gc("merken/"+S.merk,"Merkkeuze");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
@@ -894,6 +938,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   }
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
   S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";
+  S.buurt=store.get("buurt")||null;
   // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.
   let list=store.get("lijst-v3");
   if(!Array.isArray(list)){const old=store.get("lijst-v2")||store.get("lijst-bewaard-v2")?.list;list=Array.isArray(old)?old.map(x=>({...x,s:S.stores[x.si]?.id})):[]}
