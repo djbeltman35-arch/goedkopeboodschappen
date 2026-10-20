@@ -22,7 +22,30 @@ Q = {"boerenkool-met-rookworst": ["boerenkool stamppot", "boerenkool met worst",
      "pastasalade-pesto-kip": ["pasta salad pesto mozzarella", "pesto pasta salad", "pasta salad tomatoes mozzarella"],
      "pastasalade-tonijn": ["tuna pasta salad", "pasta salad tuna egg"],
      "erwtensoep": ["erwtensoep", "snert", "split pea soup sausage"],
-     "pannenkoeken": ["pannenkoeken", "dutch pancakes stroop", "pannenkoek"]}
+     "pannenkoeken": ["pannenkoeken", "dutch pancakes stroop", "pannenkoek"],
+     "chili-sin-carne": ["vegetarian chili beans rice", "chili sin carne", "bean chili"],
+     "frittata-aardappel-ui": ["potato frittata", "spanish omelette tortilla de patatas", "frittata"],
+     "zalm-broccoli-krieltjes": ["salmon broccoli potatoes", "baked salmon broccoli", "salmon fillet potatoes"],
+     "groentesoep-met-balletjes": ["groentesoep balletjes", "vegetable soup meatballs", "groentesoep"],
+     "gevulde-paprika": ["stuffed peppers", "gevulde paprika", "stuffed bell peppers minced meat"],
+     "kip-kerrie-kokos": ["chicken curry coconut rice", "chicken curry rice", "kip kerrie"],
+     "risotto-champignons-spinazie": ["mushroom risotto", "risotto funghi", "mushroom spinach risotto"],
+     "wraps-met-kip": ["chicken wrap", "chicken tortilla wrap", "wrap kip"],
+     "bloemkool-ovenschotel-gehakt": ["cauliflower casserole", "cauliflower gratin", "cauliflower cheese"],
+     "griekse-salade-kip": ["greek salad chicken", "greek salad feta", "horiatiki"],
+     "tomatensoep-met-balletjes": ["tomatensoep balletjes", "tomato soup meatballs", "tomato soup"],
+     "kip-teriyaki": ["chicken teriyaki rice", "teriyaki chicken", "chicken teriyaki"],
+     "kipcurry-peultjes": ["chicken curry snow peas", "chicken curry vegetables rice", "chicken curry"],
+     "shakshuka-met-balletjes": ["shakshuka", "shakshouka eggs tomato", "shakshuka pan"],
+     "thaise-groene-curry": ["thai green curry chicken", "green curry", "gaeng keow wan"],
+     "linzendahl": ["dal red lentils", "masoor dal", "lentil dahl"],
+     "couscous-kip-dadels": ["couscous chicken vegetables", "couscous chicken", "couscous dish"],
+     "pad-thai": ["pad thai chicken", "pad thai"],
+     "burrito-bowl": ["burrito bowl", "mexican rice bowl", "burrito bowl chicken"],
+     "gehaktbal-aardappelen-sperziebonen": ["meatball potatoes green beans", "gehaktbal", "meatballs boiled potatoes"],
+     "macaroni-ham-kaas": ["macaroni ham cheese casserole", "baked macaroni", "macaroni and cheese ham"],
+     "maaltijdsalade-kip-krieltjes": ["chicken salad potatoes", "potato salad chicken egg", "chicken potato salad"]}
+GEDAAN = set(json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "maaltijd_fotos.json"))))
 UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://goedkopeboodschappen.netlify.app; goedkopeboodschappen@proton.me)"}
 OK = re.compile(r"^(CC0|Public domain|PD|CC BY(-SA)? [0-9.]+|CC BY(-SA)?)", re.I)
 def api(params):
@@ -32,6 +55,7 @@ os.makedirs("fotos-kandidaten", exist_ok=True)
 alle = {}
 for m in MAALTIJDEN:
     slug = m["slug"]; gezien = set(); kand = []
+    if slug in GEDAAN: continue
     for q in Q.get(slug, [m["naam"]]):
         try:
             r = api({"action": "query", "generator": "search", "gsrsearch": f"{q} filetype:bitmap", "gsrnamespace": 6, "gsrlimit": 12,
