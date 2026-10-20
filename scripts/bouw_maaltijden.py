@@ -407,6 +407,14 @@ def weekmenu(slug_, kort, h1, lead_extra, pool):
     if slug_ == "weekmenu": WM_GEBRUIKT.update(m["slug"] for m in ms)
     if len(ms) < 5: return
     rang, som = _weekmenu_samen(ms)
+    # Lukt het niet om alles bij minstens 3 winkels samen te kopen? Dan het gerecht met de minste winkels vervangen.
+    weg = set()
+    while len(rang) < 3 and len(weg) < 12:
+        slechtst = min(ms, key=lambda m: len(m["rang"])); weg.add(slechtst["slug"])
+        rest = [m for m in pool if m["slug"] not in weg]
+        ms = _weekmenu_kies(rest, frozenset(WM_GEBRUIKT) if slug_ != "weekmenu" else frozenset())
+        if len(ms) < 5: return
+        rang, som = _weekmenu_samen(ms)
     if len(rang) < 3: return
     path = f"/maaltijden/{slug_}/"
     si0, tot0, regels0 = rang[0]

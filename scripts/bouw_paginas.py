@@ -331,7 +331,8 @@ for g, gic in GROEPEN:
                 f". {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
         head = ch + f"<h1>{c[1]} {esc(c[0])} vergelijken</h1><p class=\"lead\">Per product de goedkoopste supermarkt. {esc(NAMEN[stores[top]['id']])} is bij {n} van de {len(items)} producten het voordeligst.</p>"
         broers = [x for x, _ in subs if x is not c]
-        body = (cat_tabel(items) + (f'<h2>Meer in {esc(g.lower())}</h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(x[0])}/">{x[1]} {esc(x[0])}</a></li>' for x in broers) + "</ul>" if broers else "")
+        _ct = cat_tabel(items)
+        body = (('<h2>Prijzen per verpakking</h2>' if _ct.startswith('<h3') else '') + _ct + (f'<h2>Meer in {esc(g.lower())}</h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(x[0])}/">{x[1]} {esc(x[0])}</a></li>' for x in broers) + "</ul>" if broers else "")
                 + maal_links(items, f"Complete maaltijden met {c[0].lower()}") + f'<p><a href="{gpath}">Alles in {esc(g.lower())}</a> · <a href="/categorie/">Alle categorieën</a></p>'
                 + '<a class="cta" href="/aanbiedingen/">Bekijk de aanbiedingen van deze week</a>')
         ld = [cld, {"@context": "https://schema.org", "@type": "ItemList", "name": c[0], "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/vergelijk/{slug(t)}/", "name": cap(t)} for i, t in enumerate(items)]}]
