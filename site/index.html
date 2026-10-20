@@ -195,7 +195,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste<span class=lg> supermarkt</span></a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Maaltijden</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
   </div>
 </header>
 
@@ -501,7 +501,7 @@ function alarmHtml(q,lo){
 }
 async function alarmSync(){const t=mailToken();if(!t)return false;try{const r=await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,alarm:(store.get("alarmen")||[]).map(({t,max,u})=>({t,max,u}))})});return r.ok}catch(e){return false}}
 function search(fromUser){
-  const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick();
+  const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick(); if(fromUser||q!=="halfvolle melk") S.demo=false;
   if(!q){$("results").innerHTML="";return}
   let m=matches(q,false); if(!m.length) m=matches(q);
   if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
@@ -516,7 +516,7 @@ function search(fromUser){
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
-  $("results").innerHTML=`${terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
+  $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${keus}${alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
@@ -538,8 +538,15 @@ function kiesPrecies(q){
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
-    GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("");
+    seizoenTegels()+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
+    `<a class="chip" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
 }
+// Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
+function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
+  if(md>=1001&&md<=1205)t.push(["/sinterklaas/","🎁","Sinterklaas"]);
+  if(md>=1115&&md<=1226)t.push(["/kerst/","🎄","Kerst"]);
+  if(md>=1210||md<=101)t.push(["/oud-en-nieuw/","🎆","Oud en nieuw"]);
+  return t.map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}</a>`).join("")}
 // Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
 const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
 function renderView(){
@@ -1090,7 +1097,7 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
   if(shared){sp.delete("lijst");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+location.hash)}
   S.snap=store.get("lijst-vorige");
   storesUi(); quick();
-  $("q").value=sp.get("q")||(S.list.length?"":"halfvolle melk");
+  $("q").value=sp.get("q")||(S.list.length?"":"halfvolle melk");S.demo=!sp.get("q")&&!S.list.length;
   if(sp.get("q")) gc("zoek/"+norm(sp.get("q")),"Zoekt: "+sp.get("q"));
   if(sp.get("v")==="aanbiedingen"){S.view="deals";renderView()} else search();
   renderList(); renderWhere(); welcome(); dock(); if(!S.list.length&&matchMedia("(min-width:921px)").matches) $("bulk").open=true;

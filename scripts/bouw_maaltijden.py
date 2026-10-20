@@ -334,6 +334,7 @@ def _weekmenu_samen(ms):
         regels = [(namen[k], som[k], *prijzen[k][si]) for k in som]
         uit.append((si, sum(r[2] for r in regels), regels))
     return sorted(uit, key=lambda x: x[1]), som
+WEEKMENU_PRIJS = {}
 def weekmenu(slug_, kort, h1, lead_extra, pool):
     ms = _weekmenu_kies(pool)
     if len(ms) < 5: return
@@ -372,6 +373,7 @@ def weekmenu(slug_, kort, h1, lead_extra, pool):
     desc = f"5 avondmaaltijden voor 4 personen, samen ingekocht voor {eur(tot0)} bij {wnaam(si0)} ({pp(tot0 / 5)} p.p. per maaltijd). Met boodschappenlijst en prijs per supermarkt, elke dag bijgewerkt."
     schrijf(path, page(path, title, desc, crumbs_head(ch, h1, lead), body, [cld, il, faq_ld(faq)], actief="/maaltijden/", og_title=f"{h1} voor {eur(tot0)}"))
     made.append((path, "0.8"))
+    WEEKMENU_PRIJS[slug_] = (tot0, si0)
     return tot0
 if MAAL:
     weekmenu("weekmenu", "Goedkoop weekmenu", "Goedkoop weekmenu", "Elke dag wat anders: aardappels, pasta, rijst, een ovenschotel en wereldkeuken.", MAAL)

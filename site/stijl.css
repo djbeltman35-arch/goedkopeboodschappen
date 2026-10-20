@@ -257,3 +257,20 @@ ul.offers>li.offer,.rows>li.row{content-visibility:auto;contain-intrinsic-size:a
 .alarmmsg{flex-basis:100%;font-size:14px;color:var(--muted)}
 .alarmmsg:empty{display:none}
 .alarm.on{display:block;line-height:1.5}
+/* Tegels die naar een pagina gaan (weekmenu, glutenvrij, seizoen) */
+#quick a.chip{text-decoration:none;color:inherit}
+#quick a.chip.seizoen{border-color:#e0472f;background:#fff4f1}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #quick a.chip.seizoen{background:#3a1f19}}
+/* Feestdagen-overzicht */
+.feesten{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:12px}
+.feesten a{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--surface);border:2px solid var(--line);text-decoration:none;color:var(--ink)}
+.feesten .fi{grid-row:span 2;font-size:34px}
+.feesten b{font-size:20px}
+.feesten .sub{grid-column:2;color:var(--muted);font-size:14px}
+.feesten .pill{margin-left:8px;font-size:12px;vertical-align:middle}
+.feesten li.nu a{border-color:#e0472f;background:#fff4f1}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .feesten li.nu a{background:#3a1f19}}
+/* Duidelijke knop Feestdagen rechtsboven */
+.nav a.feest,.nav a.feest:hover,.nav a.feest[aria-current=page]{background:#e0472f;color:#fff;border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #b8341f}
+.nav a.feest:hover{background:#c93c25}
+.feesten .pill{justify-self:start;margin:2px 0 0}
