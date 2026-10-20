@@ -48,7 +48,8 @@ const best=(p,off)=>{let b=null;for(const [s,v] of Object.entries(p))if(!off.has
 function kaarten(off){document.querySelectorAll("[data-p]").forEach(el=>{const p=JSON.parse(el.dataset.p),b=best(p,off);el.dataset.best=b?b[1]:1e9;el.dataset.bs=b?b[0]:"";
  const k=el.querySelector(".kp"),w=el.querySelector(".kw"),q=el.querySelector(".kpp");if(!k)return;
  if(!b){k.innerHTML="";w.textContent="geen van jouw winkels";if(q)q.textContent="niet alle ingrediënten gevonden";return}
- k.innerHTML=tg(b[1]);w.textContent=N[b[0]]||b[0];if(q)q.textContent=e(b[1]/4)+(q.dataset.kort?" p.p.":" per persoon")});
+ k.innerHTML=tg(b[1]);w.textContent=N[b[0]]||b[0];if(q)q.textContent=e(b[1]/4)+(q.dataset.kort?" p.p.":" per persoon");
+ const ws=el.querySelector(".mws");if(ws){const r=Object.entries(p).filter(([s])=>!off.has(s)).sort((a,c)=>a[1]-c[1]);ws.textContent=r.length===1?`🏪 Alleen bij ${K[r[0][0]]||N[r[0][0]]} ${e(r[0][1])}`:`🏪 Bij ${r.length} ${off.size?"van jouw ":""}winkels: `+r.map(([s,v])=>`${K[s]||N[s]} ${e(v)}`).join(", ")}});
  document.querySelectorAll("[data-sorteer]").forEach(tb=>{const rs=[...tb.children].sort((a,b)=>a.dataset.best-b.dataset.best);rs.forEach((r,i)=>{tb.appendChild(r);r.classList.toggle("win",i===0);const n=r.querySelector(".rn");if(n)n.textContent=(i+1)+"."})})}
 function maaltijd(off){const el=document.getElementById("mdata");if(!el)return;const D=JSON.parse(el.textContent),ban=document.getElementById("mkeus");
  const ord=Object.keys(D.st).filter(s=>!off.has(s)).sort((a,b)=>D.st[a].t-D.st[b].t);const n=Object.keys(N).filter(s=>!off.has(s)).length;
@@ -89,8 +90,12 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest(".maddkaa
   b.textContent=`✓ Op je lijst (${N[s]})`;b.classList.add("on");window.mark&&mark();document.dispatchEvent(new Event("erbij"));
   try{window.goatcounter&&goatcounter.count({path:"maaltijd/lijst/"+b.dataset.m,title:"Maaltijd op lijst",event:true})}catch(x){}
  }catch(x){b.disabled=false;b.textContent="Probeer opnieuw"}});
-const flt={arm:false,gv:false};function filter(){document.querySelectorAll(".msoort").forEach(sec=>{let n=0;sec.querySelectorAll("[data-kcal]").forEach(c=>{const h=(flt.arm&&+c.dataset.kcal>550)||(flt.gv&&!c.dataset.gv);c.hidden=h;if(!h)n++});sec.hidden=!n})}
-document.querySelectorAll("[data-flt]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.flt;flt[k]=!flt[k];b.setAttribute("aria-pressed",flt[k]);filter()}));
+const flt={arm:false,gv:false};function filter(){let tot=0,eerste=null;document.querySelectorAll(".msoort").forEach(sec=>{let n=0;sec.querySelectorAll("[data-kcal]").forEach(c=>{const h=(flt.arm&&+c.dataset.kcal>550)||(flt.gv&&!c.dataset.gv);c.hidden=h;if(!h){n++;if(!eerste)eerste=c}});sec.hidden=!n;tot+=n});
+ // Laten zien wat er gebeurde: hoeveel maaltijden er over zijn, en naar de eerste schuiven.
+ const el=document.getElementById("mfltn"),aan=flt.arm||flt.gv;if(el){el.hidden=!aan;el.textContent=aan?`${tot} ${tot===1?"maaltijd":"maaltijden"}${flt.arm?" tot 550 kcal per persoon":""}${flt.gv?(flt.arm?" en":"")+" glutenvrij":""}.`:""}
+ return aan?eerste:null}
+document.querySelectorAll("[data-flt]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.flt;flt[k]=!flt[k];b.setAttribute("aria-pressed",flt[k]);const e1=filter();
+ if(e1){const sec=e1.closest(".msoort");(sec||e1).scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}}));
 alles();document.addEventListener("winkels",alles);window.addEventListener("storage",ev=>{if(ev.key==="winkels-uit")alles()})})()</script>""")
 MJS = """<script>document.addEventListener("click",e=>{const b=e.target.closest(".addall");if(!b)return;let q=[];try{q=JSON.parse(localStorage.getItem("lijst-erbij")||"[]")}catch(x){}
 const os=JSON.parse(b.dataset.os);for(const o of os)if(!q.some(x=>x.u===o.u))q.push(o);try{localStorage.setItem("lijst-erbij",JSON.stringify(q));b.textContent="✓ Klaar voor je lijst";b.classList.add("on");window.mark&&mark();
@@ -102,7 +107,12 @@ def kaart(m):
     return (f'<li class="mcard" data-kcal="{m["kcal"]}"{' data-gv="1"' if m.get("glutenvrij") else ""} data-p="{esc(prijzen_json(m))}">{kaartbeeld(m)}<a class="mt" href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a>'
             f'<span class="mm">{m["kcal"]} kcal per persoon · {m["tijd"]} min · 4 personen</span>'
             f'<span class="mw"><span class="kp">{tag(r["tot"])}</span><span>bij <b class="kw">{esc(wnaam(si))}</b><br><span class="mm kpp">{pp(r["tot"])} per persoon</span></span></span>'
+            + f'<span class="wk mws">{esc(winkelregel(m))}</span>'
             f'<button type="button" class="add maddkaart" data-m="{m["slug"]}">+ Op mijn lijst</button></li>')
+def winkelregel(m):
+    """Bij welke winkels de maaltijd te koop is, met de prijs voor 4 personen, van goedkoop naar duur."""
+    r = m["rang"]
+    return f'🏪 Bij {len(r)} winkels: ' + ", ".join(f'{KORT.get(stores[si]["id"], wnaam(si))} {eur(x["tot"])}' for si, x in r)
 def prijzen_json(m): return json.dumps({stores[si]["id"]: round(r["tot"], 2) for si, r in m["rang"]}, separators=(",", ":"))
 
 KCAL_ARM = 550  # caloriearm: hoogstens zoveel kcal per persoon
@@ -215,7 +225,7 @@ if MAAL:
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span> voor het hele gerecht.</p><p class=\"note mkeus\" hidden></p><p class=\"feiten\">{sprong}</p>"
-            f'<p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p>')
+            f'<p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p>')
     themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
                   + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
     body = (secties + themalinks + f'<p class="note" style="margin-top:20px">Prijzen van {DATUM} voor hele verpakkingen, zoals aan de kassa, aanbiedingen inbegrepen. Olie, zout en kruiden uit de voorraadkast tellen niet mee.</p>' + faq_html(faq) + MKJS)

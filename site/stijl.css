@@ -202,3 +202,8 @@ a.route{flex:none;display:inline-block;background:var(--green);color:var(--on-gr
 .installeer{display:flex;align-items:center;gap:10px;margin:12px 0 0;padding:12px 14px;border-radius:var(--r);background:var(--green-soft);font-size:15px;line-height:1.35}
 .installeer>span{flex:1}.installeer .btn{flex:none;padding:10px 14px;font-size:15px}
 .installeer .weg{flex:none;background:none;border:0;font-size:22px;line-height:1;color:var(--muted);cursor:pointer;padding:4px}
+/* Filterknoppen bij maaltijden: duidelijk zien dat ze aan staan */
+.mfilters .btn-line[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.mfilters .btn-line[aria-pressed=true]::before{content:"✓ "}
+.mfltn{margin:8px 0 0;font-weight:700}
+.msoort{scroll-margin-top:16px}
