@@ -31,7 +31,7 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
     return f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{BASE}{path}"><meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{esc(og_title or title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:image" content="{BASE}{og_img or "/icons/og.png"}"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0e7c4a">
-{FAV}{FONT}<link rel="stylesheet" href="/stijl.css?v={quote(VERSIE)}">{f"<style>{extra_css}</style>" if extra_css else ""}{ldtag}{GC}</head><body>
+{FAV}{FONT}<link rel="stylesheet" href="/stijl.css?v={quote(VERSIE)}"><script src="/fout.js?v={quote(VERSIE)}" defer></script>{f"<style>{extra_css}</style>" if extra_css else ""}{ldtag}{GC}</head><body>
 {header(actief)}<main><div class="wrap pagehead">{head_html}</div><div class="wrap content">{body_html}</div></main>{FOOTER}{LISTJS}</body></html>'''
 def schrijf(path, inhoud):
     p = os.path.join(OUT, path.strip("/"), "index.html") if path.endswith("/") else os.path.join(OUT, path.lstrip("/"))
@@ -59,6 +59,10 @@ def offer_card(o):
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span></span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>{t}{offerbtn(o)}</li>')
+def fout_knop(t, si, p):
+    """Knopje "Klopt niet?" (afgehandeld in /fout.js)."""
+    d = {"term": t, "winkel": NAMEN.get(stores[si]["id"], stores[si]["name"]), "naam": p[1] + (" " + p[4] if p[4] else ""), "link": plink(p), "prijs": eur(eff(p))}
+    return f'<button type="button" class="fout" data-fout="{esc(json.dumps(d, ensure_ascii=False))}">Klopt niet?</button>'
 
 
 # ---------- prijsgeschiedenis ----------
@@ -148,7 +152,7 @@ for t, rows in PICKED.items():
         o = offer_of(p)
         unit = "" if id(p) in BAD else per(*toon_unit(p))
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
-                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, t)}</td>'
+                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
     acties = term_offers(t)
     actie_html = (f'<h2>{esc(name)} in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in acties) + "</ul>") if acties else ""
@@ -181,7 +185,7 @@ def winkels_txt(t):
 def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
-    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + winkels_txt(t) + f'{addbtn(p, t)}</td>'
+    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
             + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)))}</span></td></tr>')
 # Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
 PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Andere soorten"]
@@ -426,6 +430,8 @@ schrijf("/over/", page("/over/", "Over Goedkope Boodschappen: gratis, onafhankel
 privacy = '''<h2>Je boodschappenlijst</h2><p>Je lijst en je gekozen supermarkten worden alleen in je eigen browser bewaard. Ze worden niet naar ons verstuurd. Wis je je browsergegevens, dan is je lijst weg.</p>
 <h2>Meldingen</h2><p>Zet je meldingen aan, dan bewaren we alleen wat nodig is om je een bericht te sturen: het anonieme adres dat je browser daarvoor maakt, de productnamen op je lijst en je gekozen supermarkten. Geen naam, geen e-mailadres. Zet je meldingen uit, dan wissen we dit meteen.</p>
 <h2>E-mail bij aanbiedingen</h2><p>Meld je je aan voor e-mail, dan bewaren we je e-mailadres, de productnamen op je lijst en je gekozen supermarkten. Je krijgt eerst een mail om te bevestigen; zonder bevestiging sturen we niets en wissen we je adres na 7 dagen. Je krijgt hoogstens één mail per dag, en alleen als er iets nieuws in de aanbieding is. Elke mail heeft een afmeldlink; afmelden wist je adres meteen. We gebruiken je adres nergens anders voor en geven het aan niemand.</p>
+<h2>Supermarkten in de buurt</h2><p>Tik je op "Zoek winkels bij mij in de buurt", dan vraagt je browser eerst toestemming voor je locatie. Je locatie gaat dan alleen naar <a href="https://www.openstreetmap.org/" rel="noopener">OpenStreetMap</a> (via de openbare Overpass-dienst) om de supermarkten in de buurt op te zoeken. Wij krijgen je locatie niet en bewaren hem nergens; alleen de winkels die je daarna aan hebt staan, worden in je eigen browser onthouden.</p>
+<h2>"Klopt niet?"</h2><p>Meld je dat een product of prijs niet klopt, dan bewaren we alleen het product, de winkel, wat er niet klopt en je toelichting. Om te zorgen dat één persoon niet steeds hetzelfde kan melden, maken we van je internetadres een onomkeerbare code die na hooguit een maand verloopt; je internetadres zelf bewaren we niet. Je kunt hooguit 5 meldingen per dag doen; wie die grens op 3 dagen in een maand haalt, kan de rest van die maand niets melden. Melden drie verschillende mensen hetzelfde product, dan laten we het tijdelijk weg tot we het hebben gecontroleerd. We gebruiken de meldingen alleen om fouten te verbeteren.</p>
 <h2>Bezoekersstatistieken</h2><p>We tellen bezoeken met <a href="https://www.goatcounter.com/" rel="noopener">GoatCounter</a>. Dat gebruikt geen cookies en slaat geen persoonsgegevens op. We zien bijvoorbeeld hoeveel mensen de site bezoeken, welke pagina's populair zijn en naar welke producten wordt gezocht, maar nooit wie jij bent. Daarom hoef je ook geen cookiemelding weg te klikken.</p>
 <h2>Cookies</h2><p>Deze site plaatst geen cookies. Klik je door naar een supermarkt, dan gelden daar de regels van die supermarkt.</p>
 <h2>Vragen</h2><p>Mail naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'''
