@@ -506,17 +506,34 @@ function renderOffers(){
   const f=pool.filter(o=>(S.ofs==="alle"||o.s===S.ofs)&&(S.ofc==="alle"||(o.c||"Overig")===S.ofc)&&(!qw.length||qw.every(w=>o.hay.some(x=>x.startsWith(w)))));
   const cats=new Map(); for(const o of pool) if(S.ofs==="alle"||o.s===S.ofs){const c=o.c||"Overig";cats.set(c,(cats.get(c)||0)+1)}
   const sorters={korting:(a,b)=>(b.pct-a.pct)||a.p-b.p,prijs:(a,b)=>a.p-b.p,eenheid:(a,b)=>(a.pp??1e9)-(b.pp??1e9)||a.p-b.p};
-  const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofn);
+  const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofc==="alle"?S.ofn:Math.max(S.ofn,400));
   const order=[...GROEPEN.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
+  if(S.ofc!=="alle"&&!cats.has(S.ofc)){S.ofc="alle";return renderOffers()}
   $("results").innerHTML=`<h2>🔥 Aanbiedingen</h2>
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
+  <div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-ofc="alle" aria-pressed="${S.ofc==="alle"}">Alle categorieën</button>${order.map(c=>`<button type="button" class="chip" data-ofc="${esc(c)}" aria-pressed="${S.ofc===c}"><span class="ic">${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])}</span>${esc(c)} (${cats.get(c)})</button>`).join("")}</div>
   <div class="tools"><label><span class="sr">Zoek in aanbiedingen</span><input type="search" id="ofq" placeholder="Zoek in de aanbiedingen" value="${esc(S.ofq)}"></label>
-  <label><span class="sr">Categorie</span><select id="ofcat"><option value="alle">Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label>
+
   <label><span class="sr">Sorteren</span><select id="ofsort"><option value="korting"${S.ofsort==="korting"?" selected":""}>Grootste korting eerst</option><option value="prijs"${S.ofsort==="prijs"?" selected":""}>Laagste prijs eerst</option><option value="eenheid"${S.ofsort==="eenheid"?" selected":""}>Laagste prijs per kilo of liter</option></select></label></div>
   <p class="meta" style="margin-top:10px">${f.length} aanbiedingen. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut.</p>
-  ${list.length?`<ul class="offers">${list.map(offerCard).join("")}</ul>`:`<div class="empty">Geen aanbiedingen gevonden. Probeer een ander woord of kies “Alle winkels”.</div>`}
+  ${list.length?ofSecties(list,f):`<div class="empty">Geen aanbiedingen gevonden. Probeer een ander woord of kies “Alle winkels”.</div>`}
   ${f.length>list.length?`<button type="button" class="btn-line" data-ofmore style="margin-top:12px">Meer aanbiedingen tonen (${f.length-list.length})</button>`:""}`;
+  for(const b of $("results").querySelectorAll('[data-ofc][aria-pressed="true"],[data-ofs][aria-pressed="true"]')){const r=b.parentElement;r.scrollLeft=b.offsetLeft-r.offsetLeft-16}
+}
+// Aanbiedingen in dezelfde indeling als de producten: per hoofdgroep, en binnen een groep per categorie (Bier, Wijn ...).
+function ofSecties(list,f){
+  const groep=S.ofc!=="alle", subs=groep?CATS.filter(c=>c[3]===S.ofc):[];
+  const sleutel=o=>groep?(o.sc&&subs.some(c=>c[0]===o.sc)?o.sc:"Overig"):(o.c||"Overig");
+  const volg=groep?[...subs.map(c=>c[0]),"Overig"]:[...GROEPEN.map(g=>g[0]),"Overig"];
+  const ic=k=>groep?(subs.find(c=>c[0]===k)||["","🛒"])[1]:(GROEPEN.find(g=>g[0]===k)||["","🛒"])[1];
+  const naam=k=>k==="Overig"?(groep?"Overige aanbiedingen":"Overig"):k;
+  const per=new Map(); for(const o of list){const k=sleutel(o);(per.get(k)||per.set(k,[]).get(k)).push(o)}
+  const tel=new Map(); for(const o of f){const k=sleutel(o);tel.set(k,(tel.get(k)||0)+1)}
+  const keys=volg.filter(k=>per.has(k));
+  if(keys.length<2) return `<ul class="offers">${list.map(offerCard).join("")}</ul>`;
+  return (groep?`<div class="chips subchips">${keys.map(k=>`<a class="chip" href="#ofsub-${volg.indexOf(k)}"><span class="ic">${ic(k)}</span>${esc(naam(k))} (${tel.get(k)})</a>`).join("")}</div>`:"")+
+    keys.map(k=>`<h3 class="subkop" id="ofsub-${volg.indexOf(k)}">${ic(k)} ${esc(naam(k))}</h3><ul class="offers">${per.get(k).map(offerCard).join("")}</ul>`).join("");
 }
 function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
@@ -758,6 +775,7 @@ document.addEventListener("click",e=>{
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
   const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
   const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel");return}
+  const fc=e.target.closest("[data-ofc]"); if(fc){S.ofc=fc.dataset.ofc;S.ofn=60;renderOffers();gc("aanbiedingen/categorie/"+S.ofc,"Aanbiedingen per categorie");return}
   const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
   if(e.target.closest("[data-ofmore]")){S.ofn+=60;renderOffers();return}
   const d=e.target.closest("[data-del]"); if(d){S.list.splice(+d.dataset.del,1);S.edit=false;after();return}

@@ -266,7 +266,18 @@ schrijf("/vergelijk/", page("/vergelijk/", f"Alle {len(PICKED)} producten vergel
 made.append(("/vergelijk/", "0.6"))
 
 # ---------- aanbiedingen ----------
-OFFJS = '''<script>document.addEventListener("change",e=>{if(e.target.id!=="fcat")return;const v=e.target.value;let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&li.dataset.c!==v;li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
+# Elke aanbieding krijgt de subcategorie (sc) van de producten, zodat ze dezelfde indeling hebben. De app leest data/aanbiedingen.json.
+def _deel_in(o):
+    naam = o["n"] + " " + (o.get("sz") or "")
+    c = subcat_van(naam, o.get("c") or "Overig")  # zonder groep ("Overig") wordt in alle groepen gezocht
+    if c: o["sc"], o["c"] = c[0], c[3]
+    return bool(c)
+_od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
+_n = sum(_deel_in(o) for o in _od.get("offers", []))
+for o in OFFERS: _deel_in(o)
+json.dump(_od, open(os.path.join(OUT, "data", "aanbiedingen.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+print(_n, "van", len(_od.get("offers", [])), "aanbiedingen in een subcategorie ingedeeld")
+OFFJS = '''<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&li.dataset.c!==v;li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
 per_winkel = {}
 for o in OFFERS: per_winkel.setdefault(o["s"], []).append(o)
 winkels_o = sorted(per_winkel, key=lambda s: NAMEN[s])
@@ -294,11 +305,16 @@ def offers_page(cur, lst):
         lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {len(winkels_o)} supermarkten, de grootste korting eerst. Zet ze op je lijst en zie waar je het goedkoopst uit bent."
     cnt = {}
     for o in nu_: cnt[o.get("c") or "Overig"] = cnt.get(o.get("c") or "Overig", 0) + 1
-    order = [c[0] for c in CATS if c[0] in cnt] + (["Overig"] if "Overig" in cnt else [])
-    icon = {c[0]: c[1] for c in CATS}
-    sel = ('<div class="tools"><label><span class="sr">Categorie</span><select id="fcat"><option value="">Alle categorieën</option>' + "".join(f'<option value="{esc(c)}">{icon.get(c, "🛒")} {esc(c)} ({cnt[c]})</option>' for c in order) + "</select></label></div>") if len(order) > 1 else ""
+    # De aanbiedingen zijn ingedeeld in de hoofdgroepen (groepen.json), niet in de subcategorieën.
+    order = [g for g, _ in GROEPEN if g in cnt] + (["Overig"] if "Overig" in cnt else [])
+    icon = dict(GROEPEN)
+    sel = ('<div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-fc="" aria-pressed="true">Alle categorieën</button>' + "".join(f'<button type="button" class="chip" data-fc="{esc(c)}" aria-pressed="false"><span class="ic">{icon.get(c, "🛒")}</span>{esc(c)} ({cnt[c]})</button>' for c in order) + "</div>") if len(order) > 1 else ""
+    # De 240 grootste kortingen, plus per categorie de beste 30, zodat elke categorieknop genoeg laat zien.
+    toon = set(map(id, nu_[:240]))
+    for c in order: toon |= set(map(id, [o for o in nu_ if (o.get("c") or "Overig") == c][:30]))
+    toon = [o for o in nu_ if id(o) in toon]
     ch, cld = crumbs(*([("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], None)] if cur else [("Aanbiedingen", None)]))
-    body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in nu_[:240])}</ul>' +
+    body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' +
             (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">{"".join(offer_card(o) for o in straks[:120])}</ul>' if straks else "") +
             '<a class="cta" href="/?v=aanbiedingen">Zoek en filter in alle aanbiedingen</a>'
             '<p class="note">Actieprijzen zoals de supermarkt ze online toont. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut. De prijs aan de kassa is leidend.</p>'

@@ -1818,11 +1818,15 @@
   "alkoholfrei"
  ],
  "peroni": [
-  "0.0",
   "0,0",
+  "0.0",
   "alcoholvrij",
   "alcoholvrije",
-  "alkoholfrei"
+  "alkoholfrei",
+  "pasta",
+  "peperoni",
+  "pepperoni",
+  "pesto"
  ],
  "birra moretti": [
   "0.0",
