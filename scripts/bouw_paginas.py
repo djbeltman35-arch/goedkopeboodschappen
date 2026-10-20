@@ -16,10 +16,11 @@ def header(actief=""):
     links = "".join(f'<a href="{h}"{" class=" + c if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
+<nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
 <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
-LISTJS = '''<div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
+LISTJS = '''<script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
 <script>(()=>{const K="lijst-erbij",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []}},put=v=>{try{localStorage.setItem(K,JSON.stringify(v));return true}catch(e){return false}},
 cnt=()=>{try{return (JSON.parse(localStorage.getItem("lijst-v3")||"[]")||[]).length}catch(e){return 0}};
 window.mark=()=>{const q=get(),u=new Set(q.map(x=>x.u));document.querySelectorAll(".add[data-o]").forEach(b=>{const o=JSON.parse(b.dataset.o);if(u.has(o.u)){b.textContent="✓ Klaar voor je lijst";b.classList.add("on")}});
@@ -27,6 +28,11 @@ const n=q.length,m=cnt(),d=document.getElementById("dock");if(!d)return;d.hidden
 const gc=(p,t)=>{try{window.goatcounter&&goatcounter.count&&goatcounter.count({path:p,title:t||p,event:true})}catch(e){}};
 document.addEventListener("click",ev=>{const out=ev.target.closest("[data-out]");if(out){gc("naar/"+out.dataset.out,"Doorklik");return}const b=ev.target.closest(".add[data-o]");if(!b)return;const o=JSON.parse(b.dataset.o),q=get();if(!q.some(x=>x.u===o.u)){q.push(o);if(!put(q)){b.textContent="Bewaren lukt niet in deze browser";return}gc("lijst/"+(o.term||o.n).toLowerCase(),"Op lijst")}mark()});mark()})()</script>'''
 def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css="", og_title=None, og_img=None):
+    # Google toont ongeveer 60 tekens titel en 155 tekens omschrijving: te lange titels zonder maand/jaar, omschrijvingen netjes inkorten.
+    if len(title) > 65: title = re.sub(r"\s*\((januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) \d{4}\)$", "", title)
+    if len(title) > 65: title = re.sub(r"\s*\|\s*Goedkope Boodschappen$", "", title)
+    if len(title) > 65: title = title.replace(" (alle merken)", "").replace(": vanaf ", ": ")
+    if len(desc) > 160: desc = desc[:desc.rfind(" ", 0, 155)].rstrip(",;:") + "…"
     _t = re.search(r'<nav class="terug".*?</nav>', head_html, re.S)
     if _t: body_html = body_html + _t.group(0).replace('class="terug"', 'class="terug onder"', 1)
     ldtag = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
@@ -207,7 +213,7 @@ def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
     return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + labels(p[1], kt) + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
-            + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)) or "inhoud onbekend")}</span></td></tr>')
+            + f'<td class="wcol"><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p"><span class="wnm">{esc(NAMEN.get(stores[si]["id"]))}</span>{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)) or "inhoud onbekend")}</span></td></tr>')
 # Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
 PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Andere soorten"]
 PAKSTART = re.compile(r"\b(fles|flesje|flesjes|flessen|beugelflessen|kinderflesjes|los|sixpack|blikjes|blikken|krat|mini|\d+ x)\b")
@@ -231,7 +237,7 @@ def per_pak(items):
     for t in items: uit.setdefault(6 if g[t] < 0 else g[t], []).append(t)
     return [(PAKGROEP[k], sorted(uit[k], key=lambda t: (plek[rest(t)], items.index(t)))) for k in sorted(uit)]
 def cat_tabel(items):
-    kop = '<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>'
+    kop = '<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th class="wcol">Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>'
     return "".join((f'<h3 class="pakkop">{esc(k)}</h3>' if k else "") + kop + "".join(cat_rij(t) for t in ts) + '</tbody></table></div>' for k, ts in per_pak(items))
 def winnaar(items):
     winst = {}
@@ -673,7 +679,7 @@ for sl, naam_, pat, uit, termen in AANB_PRODUCT:
     winkels_ = sorted({o["s"] for o in nu_}, key=lambda w: NAMEN.get(w, w))
     path = f"/aanbieding/{sl}/"
     goed = nu_[0] if nu_ else None
-    title = f"{naam_} aanbieding deze week (week {_wk}): " + (f"{len(nu_)} acties, goedkoopst bij {NAMEN.get(goed['s'], goed['s'])}" if goed else "prijzen per supermarkt")
+    title = f"{naam_} aanbieding week {_wk}: " + (f"{len(nu_)} acties, goedkoopst bij {NAMEN.get(goed['s'], goed['s'])}" if goed else "prijzen per supermarkt")
     desc = (f"Alle {len(nu_)} {naam_.lower()}-aanbiedingen van {', '.join(NAMEN.get(w, w) for w in winkels_)} naast elkaar" + (f", op prijs per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'}" if met_eh else "")
             + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + ". Elke dag bijgewerkt.")
     ch, cld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (f"{naam_} aanbieding", None))
@@ -872,12 +878,12 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     if len(ts) < 4: return
     acties = sorted([o for o in OFFERS if any(re.search(r"\b" + w, o["n"].lower()) for w in woorden)], key=lambda o: -o.get("pct", 0))[:24]
     top, n_top = winnaar(ts)
-    ch, cld = crumbs((kort, None))
+    ch, cld = crumbs(("Feestdagen", "/feestdagen/"), (kort, None))
     head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead} Per product de goedkoopste supermarkt, elke dag bijgewerkt. <b>{esc(nm(top))}</b> is nu bij {n_top} van de {len(ts)} producten het goedkoopst.</p>'
     faq = [(f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
            ("Hoe actueel zijn de prijzen?", "Elke dag bijgewerkt met de prijzen en aanbiedingen van de webshops van de supermarkten.")]
     body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}'
-            + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="cards" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
+            + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="offers" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
             + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
     schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)], og_title=h1))
     made.append((path, "0.8"))
