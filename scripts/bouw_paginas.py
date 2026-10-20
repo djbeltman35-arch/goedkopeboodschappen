@@ -17,7 +17,7 @@ def header(actief=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav><nav class="snel" aria-label="Populair"><a class="sk bonus" href="/aanbiedingen/ah/">🔥 AH Bonus<span class="lg2"> deze week</span></a><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a></nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/glutenvrij/">Glutenvrij</a><a href="/lactosevrij/">Lactosevrij</a><a href="/eiwitrijk/">Eiwitrijk</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -49,9 +49,19 @@ GV_RE = re.compile(r"gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senz
 def kcal_arm(kt):
     m = re.match(r"^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$", kt or "")
     return bool(m) and float(m.group(1).replace(",", ".")) <= (20 if m.group(2) == "ml" else 40)
-def labels(naam, kt=""):
+LV_RE = re.compile(r"lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei", re.I)
+from eiwit import EIWIT
+def eiwitrijk(term, kt=""):
+    """EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en hier ook minstens 5 g per 100 g)."""
+    g = EIWIT.get((term or "").lower())
+    if not g or g < 5: return False
+    m = re.match(r"^(\d+(?:[.,]\d+)?) kcal per 100", kt or "")
+    return g * 4 / float(m.group(1).replace(",", ".")) >= .2 if m and float(m.group(1).replace(",", ".")) > 0 else g >= 10
+def labels(naam, kt="", term=""):
     return (('<span class="lbl gv">🌾 Glutenvrij</span>' if GV_RE.search(naam or "") else "")
-            + ('<span class="lbl arm">🥗 Caloriearm</span>' if kcal_arm(kt) else ""))
+            + ('<span class="lbl lv">🥛 Lactosevrij</span>' if LV_RE.search(naam or "") else "")
+            + ('<span class="lbl arm">🥗 Caloriearm</span>' if kcal_arm(kt) else "")
+            + ('<span class="lbl eiw">💪 Eiwitrijk</span>' if eiwitrijk(term, kt) else ""))
 
 def crumbs(*items):
     # Duidelijk terug kunnen: een knop naar de bovenliggende pagina en naar Home, met daaronder het kruimelpad.
@@ -79,7 +89,7 @@ def offer_card(o):
     pp = f'<span class="unit">{esc(per(o.get("pp"), o.get("eh")))}</span>' if o.get("pp") else ""
     t = f'<span class="till">t/m {kortdag(o["t"])}</span>' if o.get("t") else ""
     return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
-            f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"))}</span>'
+            f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"), o.get("tm", ""))}</span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>'
             + (f'<span class="oordeel {o["ds"]}">{"🔥" if o["ds"] == "top" else "👍" if o["ds"] == "ok" else "⚠️"} {esc(o["dt"])}</span>' if o.get("ds") else "")
@@ -183,7 +193,7 @@ for t, rows in PICKED.items():
         o = offer_of(p)
         unit = "" if id(p) in BAD else (per(*toon_unit(p)) or "inhoud onbekend")
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
-                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{labels(p[1], kcal_txt(t))}{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
+                f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{labels(p[1], kcal_txt(t), t)}{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
     acties = term_offers(t)
     actie_html = (f'<h2>{esc(name)} in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in acties) + "</ul>") if acties else ""
@@ -216,7 +226,7 @@ def winkels_txt(t):
 def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
-    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + labels(p[1], kt) + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
+    return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + labels(p[1], kt, t) + winkels_txt(t) + fout_knop(t, si, p) + f'{addbtn(p, t)}</td>'
             + f'<td class="wcol"><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p"><span class="wnm">{esc(NAMEN.get(stores[si]["id"]))}</span>{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)) or "inhoud onbekend")}</span></td></tr>')
 # Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
 PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Andere soorten"]
@@ -312,7 +322,7 @@ def _deel_in(o):
         o["sc"], o["c"] = c[0][0], c[0][3]
         k = kcal_txt(c[2]) if c[2] else None
         if k: o["kc"] = k  # calorieën van de productsoort
-        if c[2]: _oordeel(o, c[2])
+        if c[2]: o["tm"] = c[2]; _oordeel(o, c[2])
     return bool(c)
 _TERMPROD = {}
 def _oordeel(o, term):
@@ -596,7 +606,7 @@ for _p in prods:
     for _x in set(_w): _overal[_x] = _overal.get(_x, 0) + 1
 AMERK = sorted(f for f, ws in _win.items() if not f[0].isdigit() and len(f) > 1 and len(ws) >= 3 and _eerst[f] / _overal[f] >= .7)
 app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
-app = (app.replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
+app = (app.replace("{{EIWIT}}", json.dumps(EIWIT, ensure_ascii=False)).replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
           .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 open(os.path.join(OUT, "index.html"), "w").write(app)
@@ -680,6 +690,77 @@ if GV_LIJST:
     schrijf("/glutenvrij/", page("/glutenvrij/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Glutenvrije boodschappen: waar is het goedkoopst?"))
     made.append(("/glutenvrij/", "0.8"))
     print(len(GV_LIJST), "glutenvrij-pagina's,", totaal, "producten")
+
+# ---------- Eiwitrijk: wat kost 10 gram eiwit? ----------
+SPORT = {"protein kwark", "protein yoghurt", "protein pudding", "protein drink", "proteine drink", "protein bar", "proteine reep", "eiwitreep", "whey", "proteine brood"}
+PLANT = {"tofu", "tempeh", "edamame", "linzen", "rode linzen", "kikkererwten", "kidneybonen", "bruine bonen", "witte bonen", "zwarte bonen", "pindakaas", "pinda's", "amandelen",
+         "cashewnoten", "walnoten", "sojadrink", "havermout", "quinoa", "spliterwten", "vegetarisch gehakt", "volkoren brood"}
+_eiw = []
+for t, g in EIWIT.items():
+    if t not in PICKED: continue
+    si, p = PICKED[t][0]
+    u = vgl_unit(p) or eff_unit(p)
+    if not u or not p[6]: continue
+    pkg = u if p[6] in ("kg", "l") else (u / .06 if t in ("eieren", "scharreleieren", "vrije uitloop eieren") and p[6] == "st" else None)
+    if not pkg: continue
+    _eiw.append((pkg / g, t, g, si, p))  # euro per 10 gram eiwit = prijs per kilo / gram eiwit per 100 g
+_eiw.sort()
+if len(_eiw) >= 10:
+    def _er(rij, i):
+        c, t, g, si, p = rij
+        soort = "sport" if t in SPORT else "plant" if t in PLANT else "dier"
+        return (f'<tr{" class=win" if i == 0 else ""}><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a> <span class="lbl {"eiw" if soort == "sport" else "arm" if soort == "plant" else "gv"}">{"💪 sport" if soort == "sport" else "🌱 plantaardig" if soort == "plant" else "🥩 dierlijk"}</span>'
+                f'<span class="sub">{esc(p[1])} ({esc(nm(si))}) · {str(g).replace(".", ",")} g eiwit per 100 g</span></td><td class="p"><b>{eur(c)}</b><span class="sub">per 10 g eiwit</span></td></tr>')
+    top = _eiw[0]; sport = [r for r in _eiw if r[1] in SPORT]; plant = [r for r in _eiw if r[1] in PLANT]
+    ch, cld = crumbs(("Eiwitrijk", None))
+    faq = [("Wat is de goedkoopste eiwitbron?", f"Op {DATUM} is {top[1]} het voordeligst: {eur(top[0])} per 10 gram eiwit, bij {nm(top[3])}."),
+           ("Zijn proteïneproducten duurder dan gewone eiwitbronnen?", (f"Meestal wel. De goedkoopste proteïne-sportproduct hier is {sport[0][1]} met {eur(sport[0][0])} per 10 gram eiwit; gewone producten als " + ", ".join(r[1] for r in _eiw[:3]) + f" kosten {eur(_eiw[0][0])} tot {eur(_eiw[2][0])}.") if sport else "Gewone producten als kwark, eieren en kipfilet zijn meestal goedkoper per gram eiwit dan speciale proteïneproducten."),
+           ("Hoeveel eiwit heb je nodig?", "Volgens de Gezondheidsraad hebben volwassenen ongeveer 0,8 gram eiwit per kilo lichaamsgewicht per dag nodig. Sporters die spieren willen opbouwen, gebruiken vaak 1,2 tot 1,6 gram per kilo. Uit gewone voeding is dat meestal goed te halen."),
+           ("Wat betekent het label Eiwitrijk?", "Volgens de Europese regels mag een product 'rijk aan eiwitten' heten als minstens 20% van de calorieën uit eiwit komt. Dat label tonen we bij de producten op deze site.")]
+    head = ch + f'<h1>💪 Goedkoopste eiwitten: wat kost 10 gram eiwit?</h1><p class="lead">Voor sporters en iedereen die op eiwit let: per product de prijs voor 10 gram eiwit, met de goedkoopste supermarkt. Nu het voordeligst: <b>{esc(top[1])}</b> voor {eur(top[0])} per 10 gram.</p>'
+    body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>' + "".join(_er(r, i) for i, r in enumerate(_eiw)) + "</tbody></table></div>"
+            + f'<p class="note">Berekend met de goedkoopste verpakking per product op {DATUM} en gemiddelde eiwitwaarden per 100 gram (richtwaarden; per merk iets anders, kijk op het etiket). Eieren gerekend met 60 gram per ei.</p>'
+            + '<h2>Proteïneproducten vergelijken</h2><p>Proteïnekwark, -pudding, -drinks, -repen en whey per supermarkt: <a href="/categorie/proteine-en-sportvoeding/">bekijk de categorie Proteïne en sportvoeding</a>. In de app kun je bij elke categorie op <b>💪 Alleen eiwitrijk</b> tikken.</p>'
+            + faq_html(faq) + '<a class="cta" href="/">Zet eiwitrijke producten op je lijst</a>')
+    schrijf("/eiwitrijk/", page("/eiwitrijk/", f"Goedkoopste eiwitten: prijs per 10 gram eiwit ({MAAND})", f"Wat kost 10 gram eiwit? Kipfilet, kwark, eieren, tonijn, linzen, whey en proteïnerepen vergeleken bij 11 supermarkten. Nu het goedkoopst: {top[1]} voor {eur(top[0])} per 10 g.", head, body, [cld, faq_ld(faq)], og_title="Goedkoopste eiwitten: wat kost 10 gram eiwit?"))
+    made.append(("/eiwitrijk/", "0.8"))
+    print("/eiwitrijk/:", len(_eiw), "producten, goedkoopst", top[1], eur(top[0]))
+
+# ---------- Lactosevrij: alle producten met lactosevrij in de naam, per soort ----------
+LV_SOORTEN = [("melk", "Lactosevrije melk en drinks", "🥛", ["melk", "drink", "chocomel", "karnemelk", "koffiemelk", "optimel", "fristi"]),
+              ("yoghurt", "Lactosevrije yoghurt, kwark en vla", "🥣", ["yoghurt", "kwark", "vla", "skyr", "pudding", "toetje", "dessert", "mousse"]),
+              ("kaas", "Lactosevrije kaas", "🧀", ["kaas", "gouda", "mozzarella", "plakken", "roomkaas", "smeerkaas", "geraspt"]),
+              ("boter", "Lactosevrije boter en room", "🧈", ["boter", "room", "slagroom", "kookroom", "creme", "crème"]),
+              ("zoet", "Lactosevrije koek, chocolade en ijs", "🍫", ["koek", "chocolade", "reep", "ijs", "cake", "wafel", "biscuit", "cereal", "céréal", "hagelslag"])]
+def _lv_soort(naam):
+    n = naam.lower()
+    for sl, _, _, ws in LV_SOORTEN:
+        if any(w in n for w in ws): return sl
+    return "overig"
+LV_PER = {}
+for p in prods:
+    if stores[p[0]].get("count") and LV_RE.search(p[1]): LV_PER.setdefault(_lv_soort(p[1]), []).append(p)
+_lv_n = sum(len(v) for v in LV_PER.values())
+if _lv_n >= 20:
+    ch, cld = crumbs(("Lactosevrij", None))
+    blok = ""
+    for sl, naam_, ic, _ in LV_SOORTEN + [("overig", "Overige lactosevrije producten", "🛒", [])]:
+        arr = sorted(LV_PER.get(sl, []), key=_gv_sort)
+        if not arr: continue
+        best = {}
+        for p in arr: best.setdefault(p[0], p)
+        blok += (f'<h2>{ic} {esc(naam_)}</h2><div class="tblwrap"><table class="ptable"><tbody>'
+                 + "".join(f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, naam_)}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>' for p in arr[:25])
+                 + "</tbody></table></div>")
+    winkels_lv = sorted({p[0] for v in LV_PER.values() for p in v})
+    faq = [("Is lactosevrij hetzelfde als glutenvrij?", "Nee. Lactose is de suiker in melk; gluten is een eiwit uit tarwe, rogge en gerst. Lactosevrij is belangrijk bij lactose-intolerantie, glutenvrij bij coeliakie. Een product kan het een zijn zonder het ander."),
+           ("Welke supermarkten verkopen lactosevrije producten?", ", ".join(nm(si) for si in winkels_lv) + ". Arla, Melkan en de huismerken hebben de meeste."),
+           ("Zit er lactose in kaas?", "Harde, belegen en oude kaas bevatten van nature bijna geen lactose; veel mensen met lactose-intolerantie kunnen die gewoon eten. Bij zachte kaas, melk en yoghurt is lactosevrij wel handig.")]
+    head = ch + f'<h1>🥛 Lactosevrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{_lv_n} lactosevrije producten bij {len(winkels_lv)} supermarkten, per soort van goedkoop naar duur op prijs per kilo of liter.</p>'
+    body = blok + f'<p class="note">Alle producten met lactosevrij in de naam, bijgewerkt op {DATUM}. Controleer bij een allergie altijd het etiket. In de app kun je bij elke categorie op <b>🥛 Alleen lactosevrij</b> tikken.</p>' + faq_html(faq) + '<p><a href="/glutenvrij/">Glutenvrije boodschappen vergelijken →</a></p>'
+    schrijf("/lactosevrij/", page("/lactosevrij/", f"Lactosevrij vergelijken: {_lv_n} producten bij {len(winkels_lv)} supermarkten", f"Lactosevrije melk, yoghurt, kaas, boter en meer: {_lv_n} producten bij {len(winkels_lv)} supermarkten naast elkaar op prijs per liter of kilo. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    made.append(("/lactosevrij/", "0.7"))
+    print("/lactosevrij/:", _lv_n, "producten")
 
 # ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
 AANB_PRODUCT = [  # (slug, naam, zoekpatroon in de actienaam, uitsluiten, vaste soorten om te vergelijken)

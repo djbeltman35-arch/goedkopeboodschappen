@@ -301,7 +301,7 @@ const STARTS=["kat","hond"];
 const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const S={dieet:{gv:false,arm:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
+const S={dieet:{gv:false,arm:false,lv:false,eiw:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -414,9 +414,9 @@ function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a
 // Merkkeuze: "alle", "zonder" (zonder huismerken) of "huis" (alleen huismerken). Producten zonder merk tellen altijd mee.
 const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
 // Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
-const dieetOk=(naam,kt)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt));
-function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()])):r}
-const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button></div>${S.dieet.gv||S.dieet.arm?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
+const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
+function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
+const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten met lactosevrij in de naam. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
 function matches0(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
@@ -464,14 +464,18 @@ function laag(p,term){
 // hooguit 40 kcal per 100 g of 20 kcal per 100 ml).
 const GV_RE=/gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senza glutine/i;
 function kcalArm(kt){const m=/^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$/.exec(kt||"");return !!m&&parseFloat(m[1].replace(",","."))<=(m[2]==="ml"?20:40)}
-const labels=(naam,kt)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"");
+const EIWIT={{EIWIT}};
+const LV_RE=/lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei/i;
+// EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en minstens 5 g per 100 g).
+function eiwitrijk(t,kt){const g=EIWIT[(t||"").toLowerCase()];if(!g||g<5)return false;const m=/^(\d+(?:[.,]\d+)?) kcal per 100/.exec(kt||"");const k=m?parseFloat(m[1].replace(",",".")):0;return k>0?g*4/k>=.2:g>=10}
+const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
 function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
   return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${i>=0?laag(p,term):""}</div>
-  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${labels(p[1],KCAL[(term||"").toLowerCase()])}${i>=0?foutKnop(p,term):""}</div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${labels(p[1],KCAL[(term||"").toLowerCase()],term)}${i>=0?foutKnop(p,term):""}</div>
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":u!=null?esc(unitTxt(u,p[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
@@ -552,7 +556,7 @@ function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
   $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
     seizoenTegels()+`<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu's</a>`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
-    `<a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
+    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
 function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
@@ -596,12 +600,12 @@ function perPak(alle,ts){
 const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
 function rijen(rows){
   return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
-    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t])}${winkels(v)}${foutKnop(b,t)}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t],t)}${winkels(v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
 function renderOffers(){
-  const all=S.offers.filter(o=>!S.off.has(o.s)&&merkOk(o)&&dieetOk(o.n,o.kc));
+  const all=S.offers.filter(o=>!S.off.has(o.s)&&merkOk(o)&&dieetOk(o.n,o.kc,o.tm));
   const pool=all.filter(o=>S.ofsoon?o.v&&o.v>today:nu(o));
   const soonN=all.filter(o=>o.v&&o.v>today).length;
   const by=new Map(); for(const o of pool) by.set(o.s,(by.get(o.s)||0)+1);
@@ -642,7 +646,7 @@ function ofSecties(list,f){
 function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
   return `<li class="offer"><span class="top2"><span class="shop">${esc(STORENAMES[o.s]||o.s)}</span>${o.lbl?`<span class="pill">${esc(o.lbl)}</span>`:""}${o.v&&o.v>today?`<span class="soon">vanaf ${dagKort(o.v)}</span>`:""}</span>
-  <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}${labels(o.n,o.kc)}
+  <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}${labels(o.n,o.kc,o.tm)}
   <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>${o.ds?`<span class="oordeel ${o.ds}">${o.ds==="top"?"🔥":o.ds==="ok"?"👍":"⚠️"} ${esc(o.dt)}</span>`:""}
   ${o.t?`<span class="till">t/m ${dagKort(o.t)}</span>`:""}
   ${added?'<span class="add on">✓ Op je lijst</span>':`<button type="button" class="add" data-offer="${o.i}">+ Op mijn lijst</button>`}</li>`;
@@ -1177,7 +1181,7 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
     S.offersUpdated=offers.updated;
   }
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
-  S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";{const d=store.get("dieet");if(d&&typeof d==="object")S.dieet={gv:!!d.gv,arm:!!d.arm}}
+  S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";{const d=store.get("dieet");if(d&&typeof d==="object")S.dieet={gv:!!d.gv,arm:!!d.arm,lv:!!d.lv,eiw:!!d.eiw}}
   S.buurt=store.get("buurt")||null;
   store.set("bezoeken",(+store.get("bezoeken")||0)+1); toonInstall();
   // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.
