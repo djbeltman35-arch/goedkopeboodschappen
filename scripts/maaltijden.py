@@ -1,7 +1,7 @@
 """Complete maaltijden: gangbare Nederlandse avondeten-recepten voor 4 personen, uit verschillende receptensites.
 
 Per recept staat de bron (Allerhande, Jumbo, Leukerecepten, 24Kitchen, Lekker en Simpel, Eef kookt zo).
-- De prijs is berekend naar gebruikte hoeveelheid: prijs per kilo/liter/stuk bij die winkel x wat in het recept gaat.
+- De prijs is wat je aan de kassa betaalt: per winkel de goedkoopste hele verpakking(en) waar genoeg in zit. Wat je ervan gebruikt staat er apart bij.
 - Voorraadkast (olie, zout, kruiden, mosterd, ketjap, bouillon) telt mee voor de calorieën, niet voor de prijs.
 - Calorieën per persoon zijn berekend uit de ingrediënten (afgeronde waarden per 100 g uit de Nederlandse
   voedingsmiddelentabel NEVO) en vergeleken met de waarde op de receptensite.
