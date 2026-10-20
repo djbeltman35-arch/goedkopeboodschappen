@@ -109,7 +109,9 @@ EIWIT_ING = {"gehakt": 18, "rundergehakt": 20, "kipfilet": 23, "kipdijfilet": 19
     "mie": 11, "rijstnoedels": 6, "woknoedels": 5, "volkoren noedels": 12, "couscous": 12, "bulgur": 12, "aardappelen": 2, "krieltjes": 2,
     "zoete aardappel": 1.6, "aardappelschijfjes": 2, "pindakaas": 25, "pinda": 26, "cashewnoten": 18, "broccoli": 3, "spinazie": 2.5,
     "volkorenbrood": 10, "stokbrood": 9, "pitabroodjes": 9, "volkoren pita": 10, "tortilla wraps": 8, "volkoren wraps": 9, "focaccia": 8,
-    "croutons": 11, "sesamzaad": 18, "pijnboompitten": 14, "amandelschaafsel": 21, "spruitjes": 3.5, "boerenkool": 3, "champignons": 3}
+    "croutons": 11, "sesamzaad": 18, "garnalen": 18, "vissticks": 12, "mosselen": 12, "kibbeling": 14, "varkenshaas": 21, "hamlappen": 20,
+    "gyros": 18, "slavink": 14, "karbonade": 18, "speklapjes": 15, "saucijzen": 14, "varkensreepjes": 21, "schnitzel": 17, "kogelbiefstuk": 22, "tagliatelle": 12,
+    "bladerdeeg": 6, "ovenfriet": 3, "hamburgerbroodjes": 9, "aardappelpuree": 2, "aardappelpartjes": 2, "pijnboompitten": 14, "amandelschaafsel": 21, "spruitjes": 3.5, "boerenkool": 3, "champignons": 3}
 def eiwit(m):
     schaal = 4 / m.get("porties", 4); g = 0
     for r in m["ing"]:
@@ -132,9 +134,9 @@ def lactosevrij(m):
         elif r[0] in ZUIVEL: return False
     return True
 # Halal en koosjer: geen varkensvlees en geen alcohol; koosjer ook geen vlees samen met zuivel. Vlees moet wel halal of koosjer zijn (staat op de pagina).
-VARKEN = {"spekreepjes", "ontbijtspek", "ham", "rookworst"}
+VARKEN = {"spekreepjes", "ontbijtspek", "ham", "rookworst", "varkenshaas", "hamlappen", "gyros", "slavink", "karbonade", "speklapjes", "saucijzen", "varkensreepjes", "schnitzel"}
 VLEES = {"gehakt", "rundergehakt", "kipfilet", "kipdijfilet", "kipfilet stuks", "kipfiletblokjes", "kalkoenfilet", "biefstuk", "runderlappen",
-         "kippenbouten", "gerookte kip", "rookworst", "spekreepjes", "ontbijtspek", "ham"}
+         "kippenbouten", "gerookte kip", "rookworst", "spekreepjes", "ontbijtspek", "ham", "kogelbiefstuk"} | VARKEN
 ALCOHOL = ("wijn", "bier", "rum", "cognac", "port", "sherry")
 def _actief(m):
     for r in m["ing"]:
@@ -153,9 +155,9 @@ def koosjer(m):
     return not (vlees and not lactosevrij(m))
 # Welk vlees of welke vis zit erin? (gemengd gehakt is rund en varken)
 DIERSOORT = {"kip": {"kipfilet", "kipdijfilet", "kipfilet stuks", "kipfiletblokjes", "kalkoenfilet", "kippenbouten", "gerookte kip"},
-             "rund": {"rundergehakt", "biefstuk", "runderlappen", "gehakt"},
-             "varken": {"spekreepjes", "ontbijtspek", "ham", "rookworst", "gehakt"},
-             "vis": {"zalm", "tonijn", "kabeljauw", "gerookte vis"}}
+             "rund": {"rundergehakt", "biefstuk", "runderlappen", "gehakt", "kogelbiefstuk"},
+             "varken": {"spekreepjes", "ontbijtspek", "ham", "rookworst", "gehakt", "varkenshaas", "hamlappen", "gyros", "slavink", "karbonade", "speklapjes", "saucijzen", "varkensreepjes", "schnitzel"},
+             "vis": {"zalm", "tonijn", "kabeljauw", "gerookte vis", "garnalen", "vissticks", "mosselen", "kibbeling"}}
 def diersoorten(m):
     ks = {r[0] for r in _actief(m)}
     uit = {d for d, keys in DIERSOORT.items() if ks & keys}

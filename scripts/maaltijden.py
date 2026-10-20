@@ -51,7 +51,7 @@ I = {
     "sperziebonen": (["sperziebonen"], 30, None, ["pot", "blik", "potje"]),
     "bladspinazie": (["bladspinazie"], 25, None, ["room", "a la creme"]),
     "rode kool": (["rode kool"], 45, None, ["rauw", "salade", "gesneden"]),
-    "appels": (["elstar appels", "appels"], 52, .15, ["sinaas", "pers", "moes", "sap", "stroop", "chips", "gedroogd"]),
+    "appels": (["elstar appels", "appels"], 52, .15, ["sinaas", "pers", "moes", "sap", "stroop", "chips", "gedroogd", "aardappel", "aardappels", "stamppot"]),
     "tomaten": (["trostomaten", "tomaten"], 20, .1, ["cherry", "snoep", "blik", "blokjes", "gepeld", "gezeefd", "puree", "zongedroogd", "pomodori"]),
     "cherrytomaten": (["cherrytomaten", "cherry tomaten", "snoeptomaten", "snoeptomaatjes", "tomaatjes", "trostomaten"], 22, None, ["blik", "gedroogd", "zongedroogd", "pot"]),
     "rucola": (["rucola"], 25, None, ["pesto"]),

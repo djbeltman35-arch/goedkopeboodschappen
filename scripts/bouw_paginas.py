@@ -32,6 +32,11 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
     if len(title) > 65: title = re.sub(r"\s*\((januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) \d{4}\)$", "", title)
     if len(title) > 65: title = re.sub(r"\s*\|\s*Goedkope Boodschappen$", "", title)
     if len(title) > 65: title = title.replace(" (alle merken)", "").replace(": vanaf ", ": ")
+    if len(title) > 65: title = re.sub(r", goedkoopst bij [^,:]+$", "", title)
+    if len(title) > 65: title = re.sub(r"(: € [\d,]+ per \w+) bij [^:]+$", r"\1", title)
+    if len(title) > 65: title = re.sub(r"\s*\([^)]*\)", "", title)
+    if len(title) > 65: title = title.replace(": waar is het goedkoopst?", ": prijs per supermarkt").replace(" vergelijken: goedkoopst bij ", ": goedkoopst bij ")
+    if len(title) > 68: title = title[:title.rfind(" ", 0, 64)].rstrip(",:;–-") + "…"
     if len(desc) > 160: desc = desc[:desc.rfind(" ", 0, 155)].rstrip(",;:") + "…"
     _t = re.search(r'<nav class="terug".*?</nav>', head_html, re.S)
     if _t: body_html = body_html + _t.group(0).replace('class="terug"', 'class="terug onder"', 1)
@@ -1019,7 +1024,10 @@ for sl, naam_, pat, uit, termen, *merk in AANB_PRODUCT:
     path = f"/aanbieding/{sl}/"
     goed = nu_[0] if nu_ else None
     title = f"{naam_} aanbieding week {_wk}: " + (f"{len(nu_)} acties, goedkoopst bij {NAMEN.get(goed['s'], goed['s'])}" if goed else "prijzen per supermarkt")
-    desc = (f"Alle {len(nu_)} {naam_.lower()}-aanbiedingen van {', '.join(NAMEN.get(w, w) for w in winkels_)} naast elkaar" + (f", op prijs per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'}" if met_eh else "")
+    if not nu_:
+        desc = (f"Is {naam_} deze week in de aanbieding? Nu is er geen {naam_.lower()}-actie" + (f"; vanaf {kortdag(straks[0]['v'])} wel bij {NAMEN.get(straks[0]['s'], straks[0]['s'])}" if straks else "")
+                + f". Bekijk de gewone prijzen per supermarkt en zie meteen wanneer er een nieuwe aanbieding is. Elke dag bijgewerkt.")
+    else: desc = (f"Alle {len(nu_)} {naam_.lower()}-aanbiedingen van {', '.join(NAMEN.get(w, w) for w in winkels_)} naast elkaar" + (f", op prijs per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'}" if met_eh else "")
             + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + ". Elke dag bijgewerkt.")
     ch, cld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (f"{naam_} aanbieding", None))
     head = ch + (f'<h1>{esc(naam_)} aanbieding deze week</h1><p class="lead">Week {_wk}: <b>{len(nu_)}</b> acties bij {len(winkels_)} supermarkten'

@@ -439,7 +439,7 @@ def weekmenu(slug_, kort, h1, lead_extra, pool):
             + '<li><a href="/maaltijden/">Alle complete maaltijden</a></li></ul>' + MJS)
     il = {"@context": "https://schema.org", "@type": "ItemList", "name": h1, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/maaltijden/{m['slug']}/", "name": m["naam"]} for i, m in enumerate(ms)]}
     title = f"{h1}: 5 avondmaaltijden voor {eur(tot0)} ({MAAND})"
-    desc = f"5 avondmaaltijden voor 4 personen, samen ingekocht voor {eur(tot0)} bij {wnaam(si0)} ({pp(tot0 / 5)} p.p. per maaltijd). Met boodschappenlijst en prijs per supermarkt, elke dag bijgewerkt."
+    desc = f"{kort}: 5 avondmaaltijden voor 4 personen, samen ingekocht voor {eur(tot0)} bij {wnaam(si0)} ({pp(tot0 / 5)} p.p. per maaltijd). Met boodschappenlijst en prijs per supermarkt, elke dag bijgewerkt."
     schrijf(path, page(path, title, desc, crumbs_head(ch, h1, lead), body, [cld, il, faq_ld(faq)], actief="/maaltijden/", og_title=f"{h1} voor {eur(tot0)}"))
     made.append((path, "0.8"))
     WEEKMENU_PRIJS[slug_] = (tot0, si0)

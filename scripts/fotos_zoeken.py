@@ -3,6 +3,37 @@ import json, os, re, sys, time, urllib.parse, urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from maaltijden import MAALTIJDEN
 Q = {"boerenkool-met-rookworst": ["boerenkool stamppot", "boerenkool met worst", "kale stamppot"],
+     "vispannetje-prei-wortel": ["fish pie puff pastry", "vispannetje", "salmon shrimp leek pie"],
+     "vispannetje-kabeljauw-rijst": ["cod tomato sauce rice", "fish stew vegetables rice"],
+     "broccolistamppot-vissticks": ["fish fingers mashed potatoes", "fish sticks broccoli"],
+     "zalm-teriyaki-rijst": ["salmon teriyaki", "teriyaki salmon rice"],
+     "woknoedels-garnalen": ["shrimp stir fry noodles", "prawn noodles"],
+     "mosselen-met-friet": ["moules frites", "mussels fries"],
+     "pasta-zalm-spinazie": ["salmon spinach pasta", "tagliatelle salmon"],
+     "spaghetti-tonijn-bolognese": ["spaghetti tuna tomato sauce", "tuna pasta tomato"],
+     "kibbeling-ovenfriet": ["kibbeling", "fried fish fries", "kibbeling friet"],
+     "linzen-makreelsalade": ["lentil salad mackerel", "smoked mackerel salad"],
+     "snelle-viscurry": ["fish curry", "green curry fish"],
+     "visstoof-aardappelen-sperziebonen": ["fish stew potatoes", "fish casserole potatoes beans"],
+     "vistacos-mango-avocado": ["fish tacos", "fish taco mango"],
+     "varkenshaas-pasta-pesto": ["pork tenderloin pasta", "pork tenderloin mushrooms"],
+     "babi-pangang": ["babi pangang", "sweet and sour pork"],
+     "schnitzel-friet-witlofsalade": ["schnitzel fries", "pork schnitzel fries salad"],
+     "procureur-stoofschotel": ["pork stew mushrooms peas", "braised pork potatoes"],
+     "pasta-carbonara": ["spaghetti carbonara", "carbonara"],
+     "gyrosschotel-rijst": ["gyros rice", "pork gyros plate"],
+     "herfststamppot-slavink": ["red cabbage mashed potatoes", "rode kool stamppot", "slavink"],
+     "karbonades-sperziebonen-krieltjes": ["pork chops green beans potatoes", "pork chop potatoes"],
+     "zuurkool-mosterdspeklapjes": ["sauerkraut pork belly mashed potatoes", "zuurkool speklap"],
+     "wraps-pulled-pork": ["pulled pork tortilla", "pulled pork wrap"],
+     "spruitjesstamppot-saucijzen": ["brussels sprouts mashed potatoes sausage", "stamppot spruitjes"],
+     "mie-varkensvlees-broccoli": ["pork noodles broccoli", "stir fried noodles pork"],
+     "goulash-met-rijst": ["goulash", "hungarian goulash rice"],
+     "runderstoof-spek-knolselderij": ["beef stew mashed potatoes", "beef stew bacon"],
+     "boeuf-stroganoff": ["beef stroganoff", "stroganoff rice"],
+     "hamburger-verse-friet": ["hamburger fries", "burger and fries"],
+     "kogelbiefstuk-romige-aardappeltjes": ["steak potatoes broccoli", "beef steak broccoli potatoes"],
+     "rijstschotel-gehakt-tauge": ["minced beef rice bean sprouts", "beef fried rice vegetables"],
      "witlof-ovenschotel-gehakt": ["witlof ovenschotel", "chicory gratin", "belgian endive casserole"],
      "zoete-spruitjes-kip-aardappelen": ["brussels sprouts chicken potatoes", "spruitjes", "brussels sprouts"],
      "kokos-kippensoep-rijstnoedels": ["chicken coconut soup noodles", "tom kha gai", "khao soi"],
@@ -132,6 +163,8 @@ Q = {"boerenkool-met-rookworst": ["boerenkool stamppot", "boerenkool met worst",
      "bonensalade-tonijn": ["bean salad tuna", "tuna bean salad", "white bean salad"],
      "quinoasalade-linzen": ["quinoa lentil salad", "quinoa salad corn feta", "lentil salad"]}
 GEDAAN = set(json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "maaltijd_fotos.json"))))
+# Al eerder bekeken zonder geschikte foto: niet opnieuw zoeken (scheelt tijd)
+GEDAAN |= {"bloemkoolrijstbowl-kip-pindasaus", "bruinebonensoep", "courgette-bonensoep-geitenkaas", "indonesische-roerbak-snijbonen", "jachtschotel-bloemkoolpuree", "kabeljauw-wortelpuree", "kalkoenfilet-groene-groenten", "kip-piri-piri-rijst", "kipshoarma-rijst", "krieltjessalade-gerookte-forel", "lamsgehaktballetjes-tomatensaus", "maaltijdsalade-kip-krieltjes", "macaroni-ham-kaas", "mexicaans-eenpansgerecht-rijst", "noedelsoep-kip-groente", "orzo-spinazie-kip", "ovenschotel-aardappel-portobello", "paksoi-kip-rijst", "pasta-boordevol-groente", "preischotel-aardappel", "quinoasalade-tonijn-avocado", "quinoasalade-venkel-wortel", "roerbak-kip-krieltjes", "shepherds-pie-linzen", "traybake-kip-zwarte-bonen", "vegan-aardappelsalade", "vegan-boerenkoolstamppot", "vegan-gehaktbal-aardappel-sperziebonen", "vis-ovenschotel-spinazie", "vis-tapenade-puree-sperziebonen", "visfilet-courgette-tomaat", "volkorenspaghetti-courgette-champignons", "witlof-ovenschotel-gehakt", "wraps-guacamole-kidneybonen", "zuurkoolstamppot-ananas-zalm"}
 UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://boodschappenvergelijk.nl; goedkopeboodschappen@proton.me)"}
 OK = re.compile(r"^(CC0|Public domain|PD|CC BY(-SA)? [0-9.]+|CC BY(-SA)?)", re.I)
 def api(params):
