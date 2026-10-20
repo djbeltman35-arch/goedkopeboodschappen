@@ -56,6 +56,8 @@ def labels(naam, kt=""):
 def crumbs(*items):
     # Duidelijk terug kunnen: een knop naar de bovenliggende pagina en naar Home, met daaronder het kruimelpad.
     ouder = [(t, h) for t, h in items if h]
+    # Geen bovenliggende pagina (bijv. Aanbiedingen of Feestdagen): dan terug naar alle categorieën.
+    if not ouder and not (items and items[-1][0] in ("Categorieën", "Alle categorieën")): ouder = [("Alle categorieën", "/categorie/")]
     terug = (f'<a class="tknop" href="{ouder[-1][1]}">← {esc(ouder[-1][0])}</a>' if ouder else "")
     html_ = (f'<nav class="terug" aria-label="Terug">{terug}<a class="tknop home" href="/">🏠 Home</a></nav>'
              + '<p class="crumbs"><a href="/">Home</a>' + "".join(f' › <a href="{h}">{esc(t)}</a>' if h else f" › {esc(t)}" for t, h in items) + "</p>")
