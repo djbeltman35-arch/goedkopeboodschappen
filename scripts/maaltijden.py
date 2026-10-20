@@ -86,7 +86,7 @@ I = {
     "kokosmelk": (["kokosmelk"], 180, None, ["drink", "light", "yoghurt", "ijs"]),
     "ananas": (["ananas stukjes", "ananas op sap", "ananas"], 60, None, ["sap", "drink", "gedroogd", "chips", "snoep", "pizza", "siroop", "banana", "haribo", "drop"]),
     "risottorijst": (["risottorijst", "risotto rijst", "arborio"], 350, None, ["kant", "maaltijd", "mix", "truffel", "paddenstoel"]),
-    "spinazie": (["spinazie", "verse spinazie"], 23, None, ["diepvries", "a la creme", "room", "blok", "gesneden blik", "pasta"]),
+    "spinazie": (["verse spinazie", "spinazie gewassen", "spinazie"], 23, None, ["hak", "glas", "pot", "diepvries", "a la creme", "room", "blok", "gesneden blik", "pasta"]),
     "tortilla wraps": (["tortilla wraps", "wraps naturel", "tortilla"], 300, .04, ["chips", "volkoren", "glutenvrij", "mais", "mini", "pizza"]),
     "bloemkool": (["bloemkool"], 25, 1.0, ["roosjes diepvries", "rijst", "puree", "soep", "kaas", "gratin"]),
     "feta": (["feta", "fetakaas", "salade blokjes"], 260, None, ["olie", "kruiden", "spread", "olijven", "light"]),
@@ -321,3 +321,8 @@ NOTITIE = {"couscous-kip-dadels": "Het recept van het Voedingscentrum is voor 2 
            "nasi-goreng": "Met kant-en-klare nasigroente in plaats van losse paprika en prei; dat is hoe de meeste mensen het kopen.",
            "erwtensoep": "Het recept is voor 4 tot 6 personen; hier gerekend als 4 flinke borden.",
            "lasagne": "Het recept (12 lasagnebladen) is voor ongeveer 6 personen; prijs en calorieën zijn omgerekend naar 4 personen."}
+
+# Extra recepten (glutenvrij en caloriearm), zie maaltijden_extra.py.
+from maaltijden_extra import I_EXTRA, MAALTIJDEN_EXTRA, NOTITIE_EXTRA, GLUTEN_EXTRA, LET_OP_EXTRA, LET_OP_WOORDEN_EXTRA
+I.update(I_EXTRA); MAALTIJDEN += MAALTIJDEN_EXTRA; NOTITIE.update(NOTITIE_EXTRA)
+GLUTEN |= GLUTEN_EXTRA; LET_OP |= LET_OP_EXTRA; LET_OP_WOORDEN += LET_OP_WOORDEN_EXTRA
