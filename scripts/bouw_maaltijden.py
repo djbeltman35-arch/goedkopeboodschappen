@@ -125,11 +125,12 @@ for m in MAAL:
         stdata[stores[si]["id"]] = {"t": round(r["tot"], 2),
             "g": round(r["gebruik"], 2),
             "c": [[round(k, 2), p[1], plink(p), nn] if p else None for n, k, p, nn, gb in r["regels"]],
-            "os": [{"s": stores[si]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": n.lower(), **({"q": nn} if nn > 1 else {})} for n, k, p, nn, gb in r["regels"] if p]}
+            "os": [{"s": stores[si]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": n.lower(), "m": m["slug"], **({"q": nn} if nn > 1 else {})} for n, k, p, nn, gb in r["regels"] if p]
+                  + [{"u": "maal:" + m["slug"], "maal": {"slug": m["slug"], "n": naam, "k": m["kcal"], "pp": 4}}]}
     mdata = json.dumps({"slug": m["slug"], "ing": ingdata, "st": stdata}, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     tops = ""
     for i, (si, r) in enumerate(top3):
-        os_ = [{"s": stores[si]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": n.lower(), **({"q": nn} if nn > 1 else {})} for n, k, p, nn, gb in r["regels"] if p]
+        os_ = [{"s": stores[si]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": n.lower(), "m": m["slug"], **({"q": nn} if nn > 1 else {})} for n, k, p, nn, gb in r["regels"] if p] + [{"u": "maal:" + m["slug"], "maal": {"slug": m["slug"], "n": naam, "k": m["kcal"], "pp": 4}}]
         tops += (f'<li class="{"w" if i == 0 else ""}"><span class="rk">{i + 1}e goedkoopst</span><b style="font-size:19px">{esc(wnaam(si))}</b>{tag(r["tot"], "big" if i == 0 else "")}'
                  f'<span class="muted">{pp(r["tot"])} per persoon</span>'
                  f'<button type="button" class="add addall" data-m="{m["slug"]}" data-os="{esc(json.dumps(os_, ensure_ascii=False))}">+ Alles op mijn lijst</button></li>')

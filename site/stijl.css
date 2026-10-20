@@ -158,3 +158,12 @@ h2[id]{scroll-margin-top:80px}
 .kc{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .kc::before{content:"🔥 "}
 .kcal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.lmaal{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 12px}
+.lmaal h3{margin:0 0 6px;font-size:17px}
+.lmaal ul{list-style:none;margin:0;padding:0}
+.lmaal li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;padding:6px 0;border-top:1px solid var(--line)}
+.lmaal li:first-child{border-top:0}
+.lmaal li a{font-weight:700}
+.lmaal li span{color:var(--muted);font-size:14px}
+.lmaal li b{color:var(--ink)}
+.lmaal .mtot{margin:8px 0 0;padding-top:8px;border-top:2px solid var(--line)}

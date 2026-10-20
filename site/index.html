@@ -215,6 +215,7 @@
     <aside class="list" id="lijst" aria-labelledby="lh">
       <h2 id="lh">Mijn lijst <small id="lcount"></small></h2>
       <div id="welcome"></div>
+      <div class="lmaal" id="lmaal" hidden></div>
       <ul class="items" id="items"></ul>
       <div class="lbar" id="lbar" hidden></div>
       <details class="bulk" id="bulk"><summary>Hele boodschappenlijst in één keer invoeren</summary>
@@ -274,7 +275,7 @@ const STARTS=["kat","hond"];
 const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const S={edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
+const S={maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -496,7 +497,15 @@ function addOffer(o){
   gc("lijst-actie/"+o.s,"Actie op lijst"); after();
 }
 function after(){S.sel=null;save();renderList();renderWhere();if(S.view)renderView();else if(S.lastQ)search();dock();renderNotify()}
-function save(){store.set("lijst-v3",S.list);pushLater()}
+function save(){S.maal=S.maal.filter(m=>S.list.some(x=>x.m===m.slug));store.set("lijst-v3",S.list);store.set("maal-v1",S.maal);pushLater()}
+// Maaltijden op je lijst: calorieën per maaltijd en in totaal (blijft staan zolang er ingrediënten van op de lijst staan).
+function renderMaal(){
+  const el=$("lmaal"); if(!el) return; const ms=S.maal.filter(m=>S.list.some(x=>x.m===m.slug));
+  if(!ms.length){el.hidden=true;el.innerHTML="";return}
+  const nl=v=>Math.round(v).toLocaleString("nl-NL"), tot=ms.reduce((a,m)=>a+m.k*m.pp,0);
+  el.hidden=false;
+  el.innerHTML=`<h3>🍽️ Maaltijden op je lijst</h3><ul>${ms.map(m=>`<li><a href="/maaltijden/${esc(m.slug)}/">${esc(m.n)}</a><span>${m.pp} personen · <b>${nl(m.k*m.pp)} kcal</b> (${nl(m.k)} per persoon)</span></li>`).join("")}</ul>${ms.length>1?`<p class="mtot">Totaal: <b>${nl(tot)} kcal</b> voor ${ms.length} maaltijden</p>`:""}`;
+}
 // Actuele prijs van het gekozen product, inclusief een lopende aanbieding.
 function cur(x){const p=S.byLink.get(x.link); if(p) return eff(p); if(x.offerTill!==undefined) return (!x.offerTill||x.offerTill>=today)?x.price:null; return null}
 const priceOf=x=>cur(x)??x.price;
@@ -513,6 +522,7 @@ function renderList(){
     <div class="pq">${tag(c*q)}${q>1?`<span class="each">${q} × ${eur(c)}</span>`:""}${ch}<span class="qty"><button type="button" data-q="${i}" data-d="-1" aria-label="Eén minder ${esc(x.term)}">−</button><span aria-label="Aantal">${q}</span><button type="button" data-q="${i}" data-d="1" aria-label="Eén meer ${esc(x.term)}">+</button></span></div><button type="button" class="del" data-del="${i}" aria-label="${esc(x.term)} verwijderen" title="Verwijderen">×</button></li>`}).join(""):
     `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<ul><li>Je lijst blijft vanzelf bewaard.</li><li>Kom je terug, dan zie je meteen wat goedkoper is geworden.</li><li>Wat er van je lijst in de aanbieding is, zie je hier ook.</li></ul></li>`;
   renderBar();
+  renderMaal();
   renderForList();
 }
 // Knoppen onder de lijst: één of meer artikelen verwijderen, afgevinkte weghalen, alles leegmaken.
@@ -689,7 +699,10 @@ function storesUi(){
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
 function winkelsGewijzigd(){store.set("winkels-uit",[...S.off]);document.dispatchEvent(new Event("winkels"));pickCache.clear();storesUi();renderAll();pushLater();gc("winkels/"+winkelsAan().length,"Winkels gekozen")}
 function erbijLaden(){let n=0;const erbij=store.get("lijst-erbij");if(Array.isArray(erbij)){
-    for(const o of erbij) if(S.sidx.has(o.s)&&o.p>0&&!S.list.some(x=>x.link===o.u)){S.list.push({term:o.term||o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(String(o.sz).toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.q>1?{q:Math.min(o.q,99)}:{}),...(o.r?{}:{offerTill:o.t||null})});n++}
+    for(const o of erbij){
+      if(o.maal){if(!S.maal.some(m=>m.slug===o.maal.slug))S.maal.push(o.maal);continue}
+      const d=S.list.find(x=>x.link===o.u); if(d){if(o.m&&!d.m)d.m=o.m;continue}
+      if(S.sidx.has(o.s)&&o.p>0){S.list.push({term:o.term||o.n,s:o.s,si:S.sidx.get(o.s),name:o.n+(o.sz&&!o.n.toLowerCase().includes(String(o.sz).toLowerCase())?" "+o.sz:""),link:o.u,price:o.p,...(o.m?{m:o.m}:{}),...(o.q>1?{q:Math.min(o.q,99)}:{}),...(o.r?{}:{offerTill:o.t||null})});n++}}
     try{localStorage.removeItem("lijst-erbij")}catch(e){}
   }return n}
 // Maaltijden en losse pagina's zetten artikelen klaar in "lijst-erbij"; hier direct op de lijst zetten.
@@ -767,6 +780,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   let list=store.get("lijst-v3");
   if(!Array.isArray(list)){const old=store.get("lijst-v2")||store.get("lijst-bewaard-v2")?.list;list=Array.isArray(old)?old.map(x=>({...x,s:S.stores[x.si]?.id})):[]}
   S.list=list.filter(x=>x&&x.link&&x.s).map(x=>({...x,si:S.sidx.get(x.s)??x.si}));
+  S.maal=(store.get("maal-v1")||[]).filter(m=>m&&m.slug&&m.k>=0);
   for(const x of S.list) if(OLDL.test(x.link)&&SEARCHL[x.s]) x.link=SEARCHL[x.s](x.name);
   const sp=new URLSearchParams(location.search);
   let added=0;
