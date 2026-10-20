@@ -307,3 +307,53 @@
   from = "/vergelijk/hondenbrokken/"
   to = "/categorie/hond/"
   status = 301
+
+# Veel gezocht: "ah folder", "lidl folder" enz.
+[[redirects]]
+  from = "/ah-folder/*"
+  to = "/aanbiedingen/ah/"
+  status = 301
+[[redirects]]
+  from = "/bonus/*"
+  to = "/aanbiedingen/ah/"
+  status = 301
+[[redirects]]
+  from = "/jumbo-folder/*"
+  to = "/aanbiedingen/jumbo/"
+  status = 301
+[[redirects]]
+  from = "/lidl-folder/*"
+  to = "/aanbiedingen/lidl/"
+  status = 301
+[[redirects]]
+  from = "/aldi-folder/*"
+  to = "/aanbiedingen/aldi/"
+  status = 301
+[[redirects]]
+  from = "/plus-folder/*"
+  to = "/aanbiedingen/plus/"
+  status = 301
+[[redirects]]
+  from = "/dirk-folder/*"
+  to = "/aanbiedingen/dirk/"
+  status = 301
+[[redirects]]
+  from = "/hoogvliet-folder/*"
+  to = "/aanbiedingen/hoogvliet/"
+  status = 301
+[[redirects]]
+  from = "/dekamarkt-folder/*"
+  to = "/aanbiedingen/dekamarkt/"
+  status = 301
+[[redirects]]
+  from = "/vomar-folder/*"
+  to = "/aanbiedingen/vomar/"
+  status = 301
+[[redirects]]
+  from = "/spar-folder/*"
+  to = "/aanbiedingen/spar/"
+  status = 301
+[[redirects]]
+  from = "/poiesz-folder/*"
+  to = "/aanbiedingen/poiesz/"
+  status = 301

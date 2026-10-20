@@ -320,3 +320,6 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .nav{flex:1 1 0!important;flex-wrap:nowrap;justify-content:flex-end}
 @media (max-width:900px){.snel{justify-content:stretch}}
 @media (max-width:340px){.nav a.mt{display:none}}
+/* Oordeel per actie */
+.oordeel{display:block;margin:6px 0 2px;font-size:13.5px;font-weight:700;line-height:1.35}
+.oordeel.top{color:var(--green-dark)}.oordeel.ok{color:var(--ink)}.oordeel.duur{color:#b5531f}

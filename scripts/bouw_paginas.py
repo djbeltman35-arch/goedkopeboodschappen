@@ -81,7 +81,9 @@ def offer_card(o):
     return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"))}</span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
-            f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>{t}{offerbtn(o)}</li>')
+            f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>'
+            + (f'<span class="oordeel {o["ds"]}">{"🔥" if o["ds"] == "top" else "👍" if o["ds"] == "ok" else "⚠️"} {esc(o["dt"])}</span>' if o.get("ds") else "")
+            + f'{t}{offerbtn(o)}</li>')
 def fout_knop(t, si, p):
     """Knopje "Klopt niet?" (afgehandeld in /fout.js)."""
     d = {"term": t, "winkel": NAMEN.get(stores[si]["id"], stores[si]["name"]), "naam": p[1] + (" " + p[4] if p[4] else ""), "link": plink(p), "prijs": eur(eff(p))}
@@ -310,7 +312,35 @@ def _deel_in(o):
         o["sc"], o["c"] = c[0][0], c[0][3]
         k = kcal_txt(c[2]) if c[2] else None
         if k: o["kc"] = k  # calorieën van de productsoort
+        if c[2]: _oordeel(o, c[2])
     return bool(c)
+_TERMPROD = {}
+def _oordeel(o, term):
+    """Eerlijk oordeel per actie: vergeleken met de gewone prijs per kilo/liter/stuk van dezelfde soort bij alle supermarkten."""
+    if not o.get("pp") or not o.get("eh") or term not in PICKED: return
+    gewoon = [(p[5], si) for si, p in PICKED[term] if p[6] == o["eh"] and p[5] and id(p) not in BAD]
+    if len(gewoon) < 2: return
+    best, bsi = min(gewoon)
+    if o["pp"] < best * .3 or o["pp"] > best * 4: return  # waarschijnlijk een andere maat of soort: geen oordeel
+    eh = {"kg": "kilo", "l": "liter", "st": "stuk"}.get(o["eh"], o["eh"])
+    if o["pp"] <= best * .97: o["ds"], o["dt"] = "top", f"Laagste prijs per {eh} van alle winkels"
+    elif o["pp"] <= best * 1.10: o["ds"], o["dt"] = "ok", "Goede prijs, vergeleken met alle winkels"
+    else:
+        # Nepkorting: hetzelfde merk is bij een andere supermarkt zonder actie duidelijk goedkoper.
+        merk = eerste_woord(o["n"])
+        if merk in HUISMERK_W or len(merk) < 3 or merk in norm(term): return  # geen merk, maar de soort zelf (blauwe bessen)
+        if term not in _TERMPROD: _TERMPROD[term] = [p for p in matches(term) if p[5] and id(p) not in BAD]
+        ow = {w for w in norm(o["n"]) if len(w) > 2 and not w[0].isdigit()}
+        o_inh = o["p"] / o["pp"] if o["pp"] else 0
+        def lijkt(p):
+            pw = {w for w in norm(p[1]) if len(w) > 2 and not w[0].isdigit()}
+            if not ow or len(ow & pw) / len(ow | pw) < .6: return False
+            inh = p[3] / p[5] if p[5] else 0
+            return o_inh > 0 and inh > 0 and 1 / 1.4 <= inh / o_inh <= 1.4  # ongeveer even grote verpakking
+        zelfde = [(p[5], p[0]) for p in _TERMPROD[term] if eerste_woord(p[1]) == merk and p[6] == o["eh"] and stores[p[0]]["id"] != o["s"] and lijkt(p)]
+        if zelfde:
+            b2, s2 = min(zelfde)
+            if o["pp"] * .3 < b2 <= o["pp"] * .85: o["ds"], o["dt"] = "duur", f"Zelfde merk zonder actie goedkoper: {eur(b2)} per {eh} bij {NAMEN.get(stores[s2]['id'], stores[s2]['name'])}"
 _od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 _n = sum(_deel_in(o) for o in _od.get("offers", []))
 for o in OFFERS: _deel_in(o)
@@ -322,6 +352,8 @@ for o in OFFERS: per_winkel.setdefault(o["s"], []).append(o)
 winkels_o = sorted(per_winkel, key=lambda s: NAMEN[s])
 def chips_o(cur):
     return '<nav class="chips" aria-label="Supermarkten">' + f'<a class="chip{" on" if not cur else ""}" href="/aanbiedingen/">Alle winkels</a>' + "".join(f'<a class="chip{" on" if cur == s else ""}" href="/aanbiedingen/{s}/">{esc(NAMEN[s])}</a>' for s in winkels_o) + "</nav>"
+AP_MERKEN = [("coca-cola", "Coca-Cola"), ("pepsi-max", "Pepsi Max"), ("red-bull", "Red Bull"), ("ben-jerrys", "Ben & Jerry's"), ("ijs", "IJs"), ("hertog-jan", "Hertog Jan"), ("heineken", "Heineken"),
+             ("dolce-gusto", "Dolce Gusto"), ("koffiecups", "Koffiecups"), ("douwe-egberts", "Douwe Egberts"), ("mosselen", "Mosselen"), ("pizza", "Pizza"), ("pampers", "Pampers"), ("ariel", "Ariel"), ("lays", "Lay's")]
 AP_LINKS = [("krat-bier", "Krat bier"), ("pils", "Bier"), ("gehakt", "Gehakt"), ("kipfilet", "Kipfilet"), ("koffie", "Koffie"), ("wasmiddel", "Wasmiddel"), ("luiers", "Luiers"),
             ("cola", "Cola en frisdrank"), ("toiletpapier", "Toiletpapier"), ("kaas", "Kaas"), ("eieren", "Eieren"), ("chips", "Chips"), ("wijn", "Wijn"), ("boter", "Boter")]
 def offers_page(cur, lst):
@@ -336,9 +368,9 @@ def offers_page(cur, lst):
     if cur:
         nm = NAMEN[cur]; naam_actie = "Bonus" if cur == "ah" else "aanbiedingen"
         _wk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1]
-        title = (f"AH Bonus week {_wk}: {len(nu_)} aanbiedingen" if cur == "ah" else f"{nm} folder week {_wk}: {len(nu_)} aanbiedingen") + (f" t/m {kortdag(eind)}" if eind else "")
+        title = (f"AH Bonus folder week {_wk}: {len(nu_)} aanbiedingen" if cur == "ah" else f"{nm} folder week {_wk}: {len(nu_)} aanbiedingen") + (f" t/m {kortdag(eind)}" if eind else "")
         desc = f"Alle {len(nu_)} {naam_actie} van {nm} op een rij, de grootste korting eerst" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Elke dag bijgewerkt, met directe links naar het product."
-        h1 = f"{'AH Bonus' if cur == 'ah' else nm + ' aanbiedingen'} deze week (week {_wk})"
+        h1 = f"{'AH Bonus folder' if cur == 'ah' else nm + ' folder en aanbiedingen'} deze week (week {_wk})"
         lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {esc(nm)}, de grootste korting eerst." + (f" Plus {len(straks)} acties die binnenkort beginnen." if straks else "")
     else:
         title = f"Supermarkt aanbiedingen week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]}: {len(nu_)} acties bij {len(winkels_o)} winkels"
@@ -391,7 +423,7 @@ def offers_page(cur, lst):
                  + f'<p><a href="{path}">{esc(NAMEN[cur])} aanbiedingen van deze week</a> · <a href="/aanbiedingen/">Alle supermarkten</a></p>')
         schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(NAMEN[cur])} aanbiedingen volgende week</h1><p class=\"lead\">Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst.</p>", vbody, [vcld], actief="/aanbiedingen/"))
         made.append((vpath, "0.7"))
-    body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
+    body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Populaire merken in de aanbieding</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{esc(n_)} aanbieding</a></li>' for s_, n_ in AP_MERKEN) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
     schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>", body, ld, actief="/aanbiedingen/"))
     made.append((path, "0.8"))
 if OFFERS:
@@ -665,16 +697,31 @@ AANB_PRODUCT = [  # (slug, naam, zoekpatroon in de actienaam, uitsluiten, vaste 
     ("chips", "Chips", r"chips|lay'?s|pringles|doritos|croky|smiths|hamka", r"stokbrood|chocolade", ["chips naturel", "chips paprika", "chips"]),
     ("wijn", "Wijn", r"\bwijn\b|rode wijn|witte wijn|rosé|merlot|chardonnay|sauvignon|cabernet|prosecco|cava", r"azijn|saus|glas|kurk", ["rode wijn", "witte wijn", "rosé"]),
     ("boter", "Boter en margarine", r"roomboter|boter\b|margarine|blue band|becel|halvarine|bak en braad", r"pinda|koek|cake|croissant|ham|sprits|speculaas|taart|brood", ["roomboter", "margarine", "halvarine"]),
+    ("coca-cola", "Coca-Cola", r"coca-?cola", r"chips|snoep|gum", ["coca-cola", "coca-cola zero"], True),
+    ("pepsi-max", "Pepsi Max", r"pepsi", r"chips|snoep", ["pepsi max"], True),
+    ("red-bull", "Red Bull", r"red ?bull", r"", ["red bull"], True),
+    ("ben-jerrys", "Ben & Jerry's", r"ben ?(&|en|and) ?jerry", r"", [], True),
+    ("ijs", "IJs", r"\bijs\b|magnum|cornetto|ben ?(&|en) ?jerry|haagen|häagen|carte d'or|\bola\b", r"ijsberg|ijsthee|ice ?tea|ijsklont|ijskoffie|ijsblok|ijzer", ["roomijs", "ijs"], True),
+    ("hertog-jan", "Hertog Jan", r"hertog jan", r"alcoholvrij|0[.,]0", [], True),
+    ("heineken", "Heineken", r"heineken", r"alcoholvrij|0[.,]0", [], True),
+    ("dolce-gusto", "Dolce Gusto", r"dolce gusto", r"machine|apparaat", [], True),
+    ("koffiecups", "Koffiecups (Nespresso)", r"nespresso|koffiecups|capsules|l'or espresso", r"machine|apparaat|dolce gusto", ["koffiecups"], True),
+    ("douwe-egberts", "Douwe Egberts", r"douwe egberts", r"machine|apparaat", [], True),
+    ("mosselen", "Mosselen", r"mossel", r"saus|kruiden", ["mosselen"], True),
+    ("pizza", "Pizza", r"pizza", r"saus|kruiden|deeg|bodem|snijder|steen|chips|tomaten", ["pizza"], True),
+    ("pampers", "Pampers", r"pampers", r"", ["luiers"], True),
+    ("ariel", "Ariel", r"\bariel\b", r"", ["wasmiddel"], True),
+    ("lays", "Lay's chips", r"lay'?s\b", r"", ["chips naturel"], True),
 ]
 def _o_unit(o):
     return o.get("pp") if o.get("pp") else None
 _wk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1]
 AP_LIJST = []
-for sl, naam_, pat, uit, termen in AANB_PRODUCT:
+for sl, naam_, pat, uit, termen, *merk in AANB_PRODUCT:
     rx, rxu = re.compile(pat, re.I), re.compile(uit, re.I)
     acts = [o for o in OFFERS if rx.search(o["n"]) and not rxu.search(o["n"])]
     ts = [t for t in termen if t in PICKED]
-    if len(acts) < 3 and not ts: continue
+    if len(acts) < 3 and not ts and not merk: continue
     nu_ = [o for o in acts if not o.get("v") or o["v"] <= VANDAAG]; straks = [o for o in acts if o.get("v") and o["v"] > VANDAAG]
     met_eh = [o for o in nu_ if _o_unit(o)]
     nu_.sort(key=lambda o: (_o_unit(o) if _o_unit(o) else 1e9, o["p"]))
@@ -696,7 +743,7 @@ for sl, naam_, pat, uit, termen in AANB_PRODUCT:
     body = ((f'<h2>Aanbiedingen deze week</h2><ul class="offers" id="grid">' + "".join(offer_card(o) for o in nu_[:60]) + "</ul>" if nu_ else '<p class="note">Op dit moment zijn er geen acties. Hieronder de vaste prijzen.</p>')
             + (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">' + "".join(offer_card(o) for o in straks[:20]) + "</ul>" if straks else "")
             + (f'<h2>Vaste prijzen: waar is {esc(naam_.lower())} altijd het goedkoopst?</h2>{cat_tabel(ts)}' if ts else "")
-            + '<h2>Meer aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s2}/">{esc(n2)} aanbieding</a></li>' for s2, n2, *_ in AANB_PRODUCT if s2 != sl)
+            + '<h2>Meer aanbiedingen per product en merk</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s2}/">{esc(n2)} aanbieding</a></li>' for s2, n2, *_ in AANB_PRODUCT if s2 != sl)
             + '<li><a href="/aanbiedingen/">Alle aanbiedingen van deze week</a></li></ul>' + faq_html(faq))
     schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/aanbiedingen/", og_title=f"{naam_} aanbieding week {_wk}"))
     made.append((path, "0.8")); AP_LIJST.append((sl, naam_, len(nu_)))
