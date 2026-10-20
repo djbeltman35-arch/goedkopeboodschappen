@@ -1229,7 +1229,17 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]
   if(S.offersUpdated) $("src").textContent=`Prijzen van de webshops van de supermarkten. Aanbiedingen bijgewerkt op ${dagLang(S.offersUpdated)}. De prijs aan de kassa is leidend.`;
 }).catch(e=>{console.error(e);$("results").innerHTML='<div class="empty">De prijzen konden niet worden geladen. Controleer je internetverbinding en herlaad de pagina.</div>'});
 // Snel opnieuw openen en offline je lijst bekijken.
-if("serviceWorker" in navigator&&location.protocol==="https:") addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+// Altijd de nieuwste versie: bij openen en bij terugkomen in de app kijken of er een update is; zo ja, één keer herladen.
+if("serviceWorker" in navigator&&location.protocol==="https:"){
+  const swAl=!!navigator.serviceWorker.controller;let swHerlaad=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!swAl||swHerlaad)return;swHerlaad=true;
+    const a=document.activeElement;const bezig=a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&a.value;
+    if(bezig||document.querySelector("dialog[open]"))addEventListener("visibilitychange",()=>{if(document.hidden)location.reload()},{once:true});else location.reload()});
+  addEventListener("load",()=>navigator.serviceWorker.register("/sw.js",{updateViaCache:"none"}).catch(()=>{}));
+  let swWeg=0;document.addEventListener("visibilitychange",()=>{if(document.hidden){swWeg=Date.now();return}
+    if(Date.now()-swWeg>60000)navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{})});
+}
 </script>
 </body>
 </html>

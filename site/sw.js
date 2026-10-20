@@ -1,5 +1,6 @@
-// Goedkope Boodschappen: snel opnieuw openen. De prijslijst komt direct uit de cache en wordt op de achtergrond ververst.
-const C = 'gb-v45';
+// Goedkope Boodschappen. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
+// zodat de browser deze service worker vernieuwt, de oude cache weggooit en bezoekers de nieuwste versie krijgen.
+const C = 'gb-v46-__BOUW__';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
@@ -8,12 +9,13 @@ self.addEventListener('fetch', e => {
   if (u.pathname === '/producten.json' || u.pathname === '/producten-kern.json' || u.pathname === '/producten-rest.json' || u.pathname === '/winkels.json' || u.pathname.startsWith('/p/') || u.pathname === '/stijl.css' || u.pathname.startsWith('/icons/')) {
     e.respondWith(caches.open(C).then(async c => {
       const hit = await c.match(e.request, { ignoreSearch: true });
-      const net = fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }).catch(() => hit);
+      // Altijd even bij de server navragen (goedkoop: 304 als er niets veranderd is), niet de oude browsercache.
+      const net = fetch(e.request, { cache: 'no-cache' }).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }).catch(() => hit);
       return hit || net;
     }));
   } else if (e.request.mode === 'navigate') {
     // Pagina's altijd vers; zonder internet de laatst bekeken versie.
-    e.respondWith(fetch(e.request).then(r => { const k = r.clone(); caches.open(C).then(c => c.put(e.request, k)); return r; }).catch(() => caches.match(e.request).then(r => r || caches.match('/'))));
+    e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const k = r.clone(); caches.open(C).then(c => c.put(e.request, k)); return r; }).catch(() => caches.match(e.request).then(r => r || caches.match('/'))));
   }
 });
 

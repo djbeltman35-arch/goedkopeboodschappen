@@ -19,6 +19,9 @@ cp -r site/icons site/deel site/fout.js site/maaltijden-img site/maaltijden-foto
 cp data/aanbiedingen.json data/aldi.json data/status.json "$OUT/data/"
 [ -d data/social ] && cp -r data/social "$OUT/data/"
 
+# Service worker een unieke versie per build: browsers zien dan dat er een update is en halen alles vers op.
+sed -i "s/__BOUW__/$(date +%Y%m%d%H%M%S)/" "$OUT/sw.js"
+
 # 3. Alle pagina's
 python3 scripts/bouw_paginas.py "$OUT"
 echo "klaar: $(find "$OUT" -type f | wc -l) bestanden in $OUT"
