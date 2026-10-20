@@ -34,6 +34,13 @@
 .app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;align-items:start;padding-block:6px 30px}
 @media (max-width:920px){.app{grid-template-columns:minmax(0,1fr)}}
 .quick{margin:0 0 6px}
+/* Categorieën als tegels: alles in één oogopslag */
+.quick.tegels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible;padding:2px 0 8px}
+@media (min-width:560px){.quick.tegels{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.quick.tegels .chip{flex-direction:column;justify-content:center;gap:2px;white-space:normal;text-align:center;border-radius:14px;padding:9px 6px;font-size:13px;line-height:1.2;min-height:64px}
+.quick.tegels .chip .ic{font-size:22px;line-height:1}
+.keus{margin:8px 0 4px}.keus p{margin:0 0 6px;font-weight:700}
+.keus .chips{flex-wrap:wrap;overflow:visible;gap:6px}.keus .chip{padding:6px 11px;font-size:14px}
 .res h2{font-size:21px;margin:16px 0 4px}
 .res .meta{color:var(--muted);font-size:15px;margin:0 0 8px}
 .rows{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
@@ -208,7 +215,7 @@
 
   <div class="wrap app">
     <section class="res" aria-label="Zoekresultaten">
-      <div class="chips quick" id="quick"></div>
+      <div class="chips quick tegels" id="quick" role="group" aria-label="Categorieën"></div>
       <div id="results" aria-live="polite"><p class="loading">Prijzen laden…</p></div>
     </section>
 
@@ -422,22 +429,34 @@ function search(fromUser){
   if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
   if(!m.length){$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.</div>`;return}
   const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
+  const keus=kiesPrecies(q);
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
   const top=best[0], last=best[best.length-1];
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   $("results").innerHTML=`<h2>${esc(q[0].toUpperCase()+q.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
+  ${keus}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
 
+// Zoek je iets dat we verder hebben opgesplitst (cola zero, bier, broccoli)? Toon dan meteen de precieze keuzes.
+function kiesPrecies(q){
+  const w=norm(q).split(" ").filter(x=>x.length>1); if(!w.length) return "";
+  const has=(t,x)=>norm(t).split(" ").some(y=>y.startsWith(x));
+  const pas=t=>w.every(x=>has(t,x))||(VARNORM.get(norm(t))?.zoek||[]).some(z=>w.every(x=>has(z,x)));
+  const out=[];
+  for(const c of CATS){const sub=w.every(x=>has(c[0],x));
+    for(const t of c[2]) if((sub||pas(t))&&norm(t)!==norm(q)&&!out.includes(t)) out.push(t)}
+  if(!out.length) return "";
+  return `<div class="keus"><p>Kies precies wat je zoekt:</p><div class="chips">${out.slice(0,16).map(t=>`<a class="chip" href="/?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a>`).join("")}</div></div>`;
+}
 /* Snelkeuze: aanbiedingen en categorieën */
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
-  $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}">🔥 Aanbiedingen${n?` (${n})`:""}</button>`+
-    GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}">${g[1]} ${esc(g[0])}</button>`).join("");
+  $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
+    GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("");
 }
 function renderView(){
   quick();
