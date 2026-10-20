@@ -74,6 +74,12 @@ if len(HIST["dagen"]) >= 30:
     for t_, perw in HIST["termen"].items():
         m = {w: min(v for v in r[:-1] if v is not None) for w, r in perw.items() if any(v is not None for v in r[:-1])}
         if m: laagste["t"][t_] = {w: round(v, 3) for w, v in m.items()}
+        # "Normale" prijs: het midden (mediaan) van de laatste 30 metingen, als er minstens 10 zijn.
+        nm = {}
+        for w, r in perw.items():
+            v = sorted(x for x in r[:-1][-30:] if x is not None)
+            if len(v) >= 10: nm[w] = round(v[len(v) // 2], 3)
+        if nm: laagste.setdefault("n", {})[t_] = nm
     os.makedirs(os.path.join(OUT, "data"), exist_ok=True)
     json.dump(laagste, open(os.path.join(OUT, "data", "laagste.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 def kortdatum(d):
@@ -474,6 +480,16 @@ json.dump({"stores": _pd["stores"], "products": [p_ for i, p_ in enumerate(_pd["
 json.dump({"products": [p_ for i, p_ in enumerate(_pd["products"]) if i not in _kern]},
           open(os.path.join(OUT, "producten-rest.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 print(len(_kern), "van", _n, "producten in producten-kern.json")
+# Prijzen per soort en winkel voor het weekoverzicht per mail (netlify/functions/weekoverzicht.mjs):
+# {soort: {"w": {winkel: prijs}, "n": naam van het goedkoopste product, "s": winkel daarvan}}
+_tp = {}
+for t_, rows in PICKED.items():
+    w = {stores[si]["id"]: round(eff(p_), 2) for si, p_ in rows if id(p_) not in BAD}
+    u = {stores[si]["id"]: round(vgl_unit(p_), 3) for si, p_ in rows if id(p_) not in BAD and vgl_unit(p_) is not None}
+    if w:
+        si0, p0_ = rows[0]
+        _tp[t_.lower()] = {"t": t_, "w": w, "u": u, "n": p0_[1], "s": stores[si0]["id"]}
+json.dump({"dag": VANDAAG, "soorten": _tp}, open(os.path.join(OUT, "data", "termprijzen.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # A-merken voor de app: eerste woord van de productnaam, bij minstens 3 supermarkten, en meestal vooraan (niet een gewoon woord).
 _eerst, _overal, _win = {}, {}, {}
 for _p in prods:

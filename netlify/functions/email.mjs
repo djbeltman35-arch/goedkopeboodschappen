@@ -1,5 +1,5 @@
 // E-mailmeldingen bij aanbiedingen: aanmelden (met bevestigingsmail), lijst bijwerken, status opvragen en afmelden.
-// Bewaard in Netlify Blobs: het e-mailadres, de woorden op de lijst en de gekozen supermarkten. Niets anders.
+// Bewaard in Netlify Blobs: het e-mailadres, de woorden op de lijst, de gekozen supermarkten en of je het weekoverzicht wilt. Niets anders.
 // Onbevestigde aanmeldingen ruimt meldingen-sturen na 7 dagen op.
 import { getStore } from '@netlify/blobs';
 import crypto from 'node:crypto';
@@ -62,7 +62,7 @@ export default async (req, context) => {
     const t = url.searchParams.get('token');
     if (!t) return json({ aan });
     const a = geldigToken(t) ? await store.get('t-' + t, { type: 'json' }).catch(() => null) : null;
-    return json({ aan, status: a ? (a.bevestigd ? 'bevestigd' : 'wacht') : 'onbekend', adres: a ? a.email.replace(/^(.).*(@.*)$/, '$1…$2') : null });
+    return json({ aan, status: a ? (a.bevestigd ? 'bevestigd' : 'wacht') : 'onbekend', adres: a ? a.email.replace(/^(.).*(@.*)$/, '$1…$2') : null, week: !!a?.week });
   }
   if (req.method !== 'POST') return json({ fout: 'niet toegestaan' }, 405);
   let body; try { body = await req.json(); } catch { return json({ fout: 'ongeldig verzoek' }, 400); }
@@ -74,9 +74,12 @@ export default async (req, context) => {
     const a = await store.get('t-' + body.token, { type: 'json' }).catch(() => null);
     if (!a) return json({ status: 'onbekend' });
     if (body.afmelden) { await store.delete('t-' + body.token); await store.delete(adresSleutel(a.email)); return json({ status: 'uit' }); }
-    a.termen = termen; a.winkels = winkels; a.bijgewerkt = new Date().toISOString();
+    // Alleen het weekoverzicht aan- of uitzetten, of de lijst bijwerken (of allebei).
+    if ('week' in body) a.week = !!body.week;
+    if (Array.isArray(body.termen)) { a.termen = termen; a.winkels = winkels; }
+    a.bijgewerkt = new Date().toISOString();
     await store.setJSON('t-' + body.token, a);
-    return json({ status: a.bevestigd ? 'bevestigd' : 'wacht' });
+    return json({ status: a.bevestigd ? 'bevestigd' : 'wacht', week: !!a.week });
   }
 
   // Nieuwe aanmelding

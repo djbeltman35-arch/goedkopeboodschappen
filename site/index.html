@@ -161,6 +161,7 @@
 .bulk textarea:focus{border-color:var(--green);outline:none}
 .bulk .btn{margin-top:8px;padding:9px 14px;font-size:15px}
 .low{display:inline-block;font:700 13px var(--text);color:var(--green-dark);background:var(--green-soft);padding:2px 8px;border-radius:6px}
+.hoger{display:inline-block;font:700 13px var(--text);color:var(--deal);background:var(--deal-soft);padding:2px 8px;border-radius:6px}
 .src{font-size:13px;color:var(--muted);margin:14px 0 0}
 
 /* Uitleg onderaan */
@@ -430,10 +431,16 @@ const pickCache=new Map();
 function pick(term){if(!pickCache.has(term))pickCache.set(term,perStore(matches(term,false)));return pickCache.get(term)}
 
 // "Laagste prijs sinds juni": de prijs per eenheid ligt nu onder alles wat we bij deze winkel sinds de eerste meting zagen.
+// Prijs tegenover de geschiedenis: "Laagste prijs sinds juni", anders "x% goedkoper dan normaal" of "Duurder dan normaal".
+// Normaal = het midden van de gewone prijzen van de afgelopen maand bij die winkel (data/laagste.json).
 function laag(p,term){
   const L=S.laagste; if(!L||!term||p.bad) return ""; const k=PAGINAS.has(norm(term))?CATS.flatMap(c=>c[2]).find(t=>norm(t)===norm(term)):null;
-  const m=k&&L.t[k]?.[sid(p[0])], u=effUnit(p); if(m==null||u==null||L.eh[k]!==p[6]||u>=m*.99) return "";
-  return `<span class="low">Laagste prijs sinds ${new Date(L.sinds+"T12:00:00").toLocaleDateString("nl-NL",{day:"numeric",month:"long"})}</span>`;
+  const u=effUnit(p); if(!k||u==null||L.eh[k]!==p[6]) return "";
+  const m=L.t[k]?.[sid(p[0])], n=L.n?.[k]?.[sid(p[0])];
+  if(m!=null&&u<m*.99) return `<span class="low">Laagste prijs sinds ${new Date(L.sinds+"T12:00:00").toLocaleDateString("nl-NL",{day:"numeric",month:"long"})}</span>`;
+  if(n!=null&&u<=n*.95) return `<span class="low">${Math.round((1-u/n)*100)}% goedkoper dan normaal</span>`;
+  if(n!=null&&u>=n*1.08) return `<span class="hoger" title="Normaal ${esc(unitTxt(n,p[6]))}">Duurder dan normaal</span>`;
+  return "";
 }
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
@@ -739,13 +746,13 @@ function renderNotify(){
 function mailHtml(lijn){
   const M=S.mail; if(!M?.aan&&M?.status!=="bevestigd"&&M?.status!=="wacht") return "";
   const cls=lijn?"mail":"";
-  if(M.status==="bevestigd") return `<div class="${cls}"><p class="on">📧 E-mail bij aanbiedingen staat aan${M.adres?` (${esc(M.adres)})`:""}</p><button type="button" class="btn-line" data-mail="uit">E-mail uitzetten</button></div>`;
+  if(M.status==="bevestigd") return `<div class="${cls}"><p class="on">📧 E-mail bij aanbiedingen staat aan${M.adres?` (${esc(M.adres)})`:""}</p><label class="weekmail"><input type="checkbox" data-weekmail${M.week?" checked":""}> Stuur mij ook elke zaterdag een <b>weekoverzicht</b>: waar mijn lijst die week het goedkoopst is</label><button type="button" class="btn-line" data-mail="uit">E-mail uitzetten</button></div>`;
   if(M.status==="wacht") return `<div class="${cls}"><p>📧 <b>Bijna klaar!</b> We hebben je een mail gestuurd. Tik op de knop in die mail om te bevestigen. Niets ontvangen? Kijk ook even bij spam.</p><button type="button" class="btn-line" data-mail="uit">Annuleren</button></div>`;
   return `<div class="${cls}"><p>📧 <b>${lijn?"Of liever per e-mail?":"Mail als iets van je lijst in de aanbieding komt?"}</b> Gratis, hoogstens één mail per dag, afmelden met één klik.</p>${M.msg?`<p class="muted">${esc(M.msg)}</p>`:""}<form class="mrow" id="mailf"><label class="sr" for="mailin">Je e-mailadres</label><input type="email" id="mailin" placeholder="jouw@email.nl" autocomplete="email" required><button type="submit" class="btn">Aanmelden</button></form></div>`;
 }
 const mailToken=()=>store.get("email-token");
 async function mailStatus(){
-  try{const t=mailToken();const r=await (await fetch("/api/email"+(t?"?token="+t:""))).json();S.mail={aan:r.aan,status:r.status,adres:r.adres};if(t&&r.status==="onbekend")store.set("email-token",null)}catch(e){S.mail=null}
+  try{const t=mailToken();const r=await (await fetch("/api/email"+(t?"?token="+t:""))).json();S.mail={aan:r.aan,status:r.status,adres:r.adres,week:!!r.week};if(t&&r.status==="onbekend")store.set("email-token",null)}catch(e){S.mail=null}
   renderNotify();
 }
 async function mailAan(email){
@@ -756,6 +763,7 @@ async function mailAan(email){
   renderNotify();
 }
 async function mailUit(){const t=mailToken();if(t){try{await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,afmelden:true})})}catch(e){}}store.set("email-token",null);S.mail.status=null;gc("email/uit","E-mail uitgezet");renderNotify()}
+async function mailWeek(aan){const t=mailToken();if(!t)return;S.mail.week=aan;try{await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,week:aan})})}catch(e){}gc("email/week/"+(aan?"aan":"uit"),"Weekoverzicht")}
 async function mailSync(){const t=mailToken();if(!t)return;try{await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,termen:S.list.map(x=>x.term),winkels:winkelsAan()})})}catch(e){}}
 let pushT; function pushLater(){if(!S.pushOn&&!mailToken())return;clearTimeout(pushT);pushT=setTimeout(()=>{if(S.pushOn)pushSync();mailSync()},2000)}
 
@@ -887,6 +895,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("change",e=>{
   const dn=e.target.closest("[data-done]"); if(dn){const x=S.list[+dn.dataset.done];if(x){x.done=dn.checked;save();renderList()}return}
+  if(e.target.matches("[data-weekmail]")){mailWeek(e.target.checked);return}
   const pk=e.target.closest("[data-pick]"); if(pk){const i=+pk.dataset.pick;pk.checked?S.pick.add(i):S.pick.delete(i);renderList();return}
   const st=e.target.closest("[data-store]"); if(st){st.checked?S.off.delete(st.dataset.store):S.off.add(st.dataset.store);winkelsGewijzigd();return}
   if(e.target.id==="ofcat"){S.ofc=e.target.value;S.ofn=60;renderOffers()}

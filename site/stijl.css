@@ -197,3 +197,4 @@ a.route{flex:none;display:inline-block;background:var(--green);color:var(--on-gr
 .where .naar{margin:10px 0 0}
 .opennu{color:var(--green);font-weight:700;font-size:13px}.dicht{color:var(--deal);font-weight:700;font-size:13px}
 .onb{font-size:12px;color:var(--muted);font-style:italic}
+.weekmail{display:flex;gap:8px;align-items:flex-start;margin:6px 0 10px;font-size:15px;line-height:1.35}.weekmail input{margin-top:3px;width:18px;height:18px;flex:none}
