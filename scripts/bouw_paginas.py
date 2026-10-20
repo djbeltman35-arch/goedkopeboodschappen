@@ -16,7 +16,7 @@ def header(actief=""):
     links = "".join(f'<a href="{h}"{" class=" + c if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/glutenvrij/">Glutenvrij</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/glutenvrij/">Glutenvrij</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -608,6 +608,40 @@ if GV_LIJST:
     schrijf("/glutenvrij/", page("/glutenvrij/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Glutenvrije boodschappen: waar is het goedkoopst?"))
     made.append(("/glutenvrij/", "0.8"))
     print(len(GV_LIJST), "glutenvrij-pagina's,", totaal, "producten")
+
+# ---------- Seizoen: Sinterklaas en kerst ----------
+def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
+    ts = [t for t in termen if t in PICKED]
+    if len(ts) < 4: return
+    acties = sorted([o for o in OFFERS if any(re.search(r"\b" + w, o["n"].lower()) for w in woorden)], key=lambda o: -o.get("pct", 0))[:24]
+    top, n_top = winnaar(ts)
+    ch, cld = crumbs((kort, None))
+    head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead} Per product de goedkoopste supermarkt, elke dag bijgewerkt. <b>{esc(nm(top))}</b> is nu bij {n_top} van de {len(ts)} producten het goedkoopst.</p>'
+    faq = [(f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
+           ("Hoe actueel zijn de prijzen?", "Elke dag bijgewerkt met de prijzen en aanbiedingen van de webshops van de supermarkten.")]
+    body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}'
+            + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="cards" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
+            + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
+    schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)], og_title=h1))
+    made.append((path, "0.8"))
+    print(path, len(ts), "producten,", len(acties), "acties")
+seizoenpagina("/sinterklaas/", "Sinterklaas", "Sinterklaas: pepernoten, chocoladeletters en speculaas vergelijken",
+    f"Pepernoten en chocoladeletters: waar het goedkoopst? ({MAAND})",
+    "Pepernoten, kruidnoten, chocoladeletters, speculaas, marsepein en taai taai bij alle supermarkten naast elkaar, op prijs per kilo.",
+    ["pepernoten", "kruidnoten", "chocolade kruidnoten", "chocoladeletter", "speculaas", "gevulde speculaas", "speculaasbrokken", "taai taai", "marsepein",
+     "schuimpjes", "amandelstaaf", "chocolade munten", "borstplaat", "speculaaspasta", "gemberkoek"],
+    ["pepernot", "kruidnot", "chocoladeletter", "chocolade letter", "speculaas", "marsepein", "taai", "schuimpjes", "sint", "amandelsta", "borstplaat"],
+    [("Wat is het verschil tussen pepernoten en kruidnoten?", "Kruidnoten zijn de kleine, harde, ronde koekjes met speculaaskruiden. Echte pepernoten zijn zachter en taaier, gemaakt met roggemeel en anijs. In de winkel heten kruidnoten vaak ook pepernoten."),
+     ("Hoe vergelijk je pepernoten eerlijk?", "Op prijs per kilo: zakken verschillen veel in gewicht. Op deze pagina staat per product de voordeligste verpakking per kilo.")])
+seizoenpagina("/kerst/", "Kerst", "Kerst: kerstdiner en kersthapjes per supermarkt vergelijken",
+    f"Goedkoop kerstdiner: gourmet, wild en champagne vergeleken ({MAAND})",
+    "Gourmetschotels, rollade, hertenbiefstuk, kaasfondue, zalm, garnalen, kerststol en bubbels bij alle supermarkten naast elkaar.",
+    ["gourmetschotel", "rollade", "hertenbiefstuk", "kaasfondue", "zalmfilet", "garnalen", "paté", "kerststol", "amandelstaaf", "oliebollen", "appelflappen",
+     "champagne", "cava", "prosecco", "glühwein", "advocaat"],
+    ["kerst", "gourmet", "fondue", "rollade", "hert", "wild", "kalkoen", "stol", "champagne", "cava", "prosecco", "glühwein", "oliebol"],
+    [("Wat kost gourmetten per persoon?", "Een gourmetschotel kost bij de supermarkt meestal tussen de 4 en 8 euro per persoon. Hierboven zie je per supermarkt de voordeligste schotel."),
+     ("Wanneer komen de kerstaanbiedingen?", "De meeste supermarkten starten de kerstacties in de weken voor kerst; de grootste kortingen op vlees, vis en drank zie je meestal in de laatste week. Deze pagina werkt dagelijks bij.")],
+    extra='<h2>Kerstmenu met prijs per supermarkt</h2><p>Liever een compleet menu? Bekijk de <a href="/maaltijden/">complete maaltijden</a> of het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a> met boodschappenlijst.</p>')
 
 # ---------- 404, sitemap, robots ----------
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
