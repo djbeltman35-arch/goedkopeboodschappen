@@ -286,3 +286,10 @@ nav.terug.vast .tknop{padding:6px 12px;font-size:14px}
 .ptable .wnm{display:none}
 @media (max-width:560px){.ptable .wcol{display:none}.ptable .wnm{display:block;font-weight:700;font-size:13px;margin-bottom:2px;white-space:normal}}
 h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+/* Weekmenu's: keuzeknoppen en blok op de maaltijdenpagina */
+.wmkeus{flex-wrap:wrap;margin:6px 0 10px}
+.wmkeus a.chip{text-decoration:none;color:inherit}
+.wmkeus a.chip[aria-current=page]{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.wmblok{margin:14px 0 18px;padding:14px 16px;border-radius:16px;background:var(--green-soft)}
+.wmblok p{margin:0 0 6px}.wmblok span{font-size:14px;color:var(--muted)}
+#quick a.chip.wm{border-color:var(--green);background:var(--green-soft)}

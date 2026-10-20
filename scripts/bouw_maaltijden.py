@@ -231,6 +231,7 @@ if MAAL:
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
     head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} gewone Nederlandse avondmaaltijden voor 4 personen, met calorieën en de supermarkt waar alle ingrediënten samen het minst kosten. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span> voor het hele gerecht.</p><p class=\"note mkeus\" hidden></p><p class=\"feiten\">{sprong}</p>"
+            '<div class="wmblok"><p><b>📅 Weekmenu met boodschappenlijst</b><br><span>5 avondmaaltijden, samen ingekocht bij de goedkoopste supermarkt.</span></p><div class="chips wmkeus"><a class="chip" href="/maaltijden/weekmenu/">💶 Goedkoop</a><a class="chip" href="/maaltijden/weekmenu-glutenvrij/">🌾 Glutenvrij</a><a class="chip" href="/maaltijden/weekmenu-caloriearm/">🥗 Caloriearm</a></div></div>'
             f'<div class="mfbalk" id="mfbalk"><p class="mfilters"><button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p></div>')
     themalinks = ('<h2>Meer overzichten</h2><ul class="links"><li><a href="/maaltijden/weekmenu/">📅 Goedkoop weekmenu met boodschappenlijst</a></li><li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li><li><a href="/maaltijden/caloriearm/">Caloriearme maaltijden</a></li><li><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden</a></li><li><a href="/maaltijden/stamppot/">Goedkope stamppotten</a></li>'
                   + "".join(f'<li><a href="/maaltijden/{v[0]}/">{esc(v[1])}</a></li>' for v in SOORT_PAD.values()) + '<li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>')
@@ -261,7 +262,7 @@ def themapagina(slug_, kort, h1, title, lead, ms, faq_extra=()):
     g = ms[0]
     faq = [(f"Wat is de goedkoopste uit deze lijst?", f"{g['naam']}: {eur(g['rang'][0][1]['tot'])} voor 4 personen bij {wnaam(g['rang'][0][0])}, {pp(g['rang'][0][1]['tot'])} per persoon."), *faq_extra,
            ("Hoe actueel zijn de prijzen?", f"De prijzen worden elke dag bijgewerkt met de prijzen en aanbiedingen van de supermarkten. Deze pagina is van {DATUM}.")]
-    andere = [(f"/maaltijden/{x}/", t) for x, t in [("goedkoop-avondeten", "De 10 goedkoopste maaltijden"), ("caloriearm", "Caloriearme maaltijden"), ("glutenvrij", "Glutenvrije maaltijden"), ("stamppot", "Goedkope stamppotten"), *SOORT_PAD.values()] if x != slug_]
+    andere = [(f"/maaltijden/{x}/", t) for x, t in [("weekmenu-glutenvrij" if slug_ == "glutenvrij" else "weekmenu-caloriearm" if slug_ == "caloriearm" else "weekmenu", "📅 Glutenvrij weekmenu met boodschappenlijst" if slug_ == "glutenvrij" else "📅 Caloriearm weekmenu met boodschappenlijst" if slug_ == "caloriearm" else "📅 Goedkoop weekmenu met boodschappenlijst"), ("goedkoop-avondeten", "De 10 goedkoopste maaltijden"), ("caloriearm", "Caloriearme maaltijden"), ("glutenvrij", "Glutenvrije maaltijden"), ("stamppot", "Goedkope stamppotten"), *SOORT_PAD.values()] if x != slug_]
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Maaltijd (4 personen)</th><th style="text-align:right">Goedkoopst</th></tr></thead><tbody data-sorteer="1">{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM} voor alle ingrediënten in hele verpakkingen, zoals aan de kassa. Tik op een maaltijd voor de 3 goedkoopste supermarkten en wat elk ingrediënt kost.</p>'
             + re.sub(r'<p>((?:Nu is |[^<]*: )[^<]*? bij [^<]*?)</p>', r'<p class="tfaqz">\1</p>', faq_html(faq), count=2) + '<h2>Meer overzichten</h2><ul class="links">' + "".join(f'<li><a href="{h}">{esc(t)}</a></li>' for h, t in andere) + '<li><a href="/maaltijden/">Alle complete maaltijden</a></li></ul>' + MKJS)
@@ -307,11 +308,13 @@ if MAAL:
                     f"{len(ms)} gewone {kort.lower()} voor 4 personen, met calorieën en de supermarkt waar je het minst betaalt. Vanaf <span data-vanaf><b>{eur(pprs(ms[0]))}</b></span> voor het hele gerecht.", ms)
 # ---------- Weekmenu: 5 goedkope avondmaaltijden, samen ingekocht ----------
 from maaltijd_kosten import ingredient_prijzen as _ingprijs
-def _weekmenu_kies(pool):
+WM_GEBRUIKT = set()
+def _weekmenu_kies(pool, vermijd=frozenset()):
     gekozen, gezien = [], set()
     for soort in ("aardappel", "pasta", "rijst", "oven", "wereld", "soep", "salade"):
         if len(gekozen) == 5: break
         c = sorted([m for m in pool if m["soort"] == soort and m["slug"] not in gezien], key=pprs)
+        c = [m for m in c if m["slug"] not in vermijd] or c  # liefst iets anders dan in het goedkope weekmenu
         if c: gekozen.append(c[0]); gezien.add(c[0]["slug"])
     for m in sorted(pool, key=pprs):
         if len(gekozen) == 5: break
@@ -336,7 +339,8 @@ def _weekmenu_samen(ms):
     return sorted(uit, key=lambda x: x[1]), som
 WEEKMENU_PRIJS = {}
 def weekmenu(slug_, kort, h1, lead_extra, pool):
-    ms = _weekmenu_kies(pool)
+    ms = _weekmenu_kies(pool, frozenset(WM_GEBRUIKT) if slug_ != "weekmenu" else frozenset())
+    if slug_ == "weekmenu": WM_GEBRUIKT.update(m["slug"] for m in ms)
     if len(ms) < 5: return
     rang, som = _weekmenu_samen(ms)
     if len(rang) < 3: return
@@ -360,7 +364,8 @@ def weekmenu(slug_, kort, h1, lead_extra, pool):
     faq = [(f"Wat kost dit weekmenu?", f"Op {DATUM} kost het hele weekmenu voor 4 personen {eur(tot0)} bij {wnaam(si0)}, voor 5 avondmaaltijden. Bij {wnaam(rang[-1][0])} betaal je {eur(rang[-1][1] - tot0)} meer."),
            ("Waarom is samen inkopen goedkoper?", f"Ingrediënten die in meer gerechten zitten, zoals uien of knoflook, koop je maar één keer. Los gekocht kosten deze 5 maaltijden samen ongeveer {eur(los)}; samen ingekocht {eur(tot0)}."),
            ("Wat zit er niet bij?", "Olie, zout, peper, kruiden en bouillon uit de voorraadkast tellen niet mee in de prijs. Die staan wel bij elk recept.")]
-    body = (f'<h2>Het menu</h2><ul class="links weekmenu">{menu}</ul>'
+    keus = '<div class="chips wmkeus" role="navigation" aria-label="Kies een weekmenu">' + "".join(f'<a class="chip" href="/maaltijden/{x}/"{" aria-current=page" if x == slug_ else ""}>{t}</a>' for x, t in [("weekmenu", "💶 Goedkoop"), ("weekmenu-glutenvrij", "🌾 Glutenvrij"), ("weekmenu-caloriearm", "🥗 Caloriearm")]) + "</div>"
+    body = (keus + f'<h2>Het menu</h2><ul class="links weekmenu">{menu}</ul>'
             f'<h2>Waar koop je alles het goedkoopst?</h2><ol class="mtop">{tops}</ol>'
             f'<h2>Boodschappenlijst bij {esc(wnaam(si0))}</h2><div class="tblwrap"><table class="ptable"><tbody>{lijst}</tbody><tfoot><tr><td><b>Totaal</b></td><td class="p"><b>{eur(tot0)}</b></td></tr></tfoot></table></div>'
             f'<p class="note">Hele verpakkingen, zoals aan de kassa. Prijzen van {DATUM}; lopende aanbiedingen tellen mee. Het menu wordt elke dag opnieuw gekozen op basis van de prijzen.</p>'

@@ -641,7 +641,7 @@ if GV_LIJST:
            ("Is dit geschikt bij coeliakie?", "Gebruik het als prijsvergelijking. Controleer bij coeliakie altijd het etiket en het glutenvrij-logo (de doorgestreepte aar).")]
     faq = [f for f in faq if f[1]]
     body = (f'<ul class="links gvlijst">{blok}</ul><h2>Glutenvrij per supermarkt</h2><ul class="links">' + "".join(f"<li>{esc(nm(si))}: {n} producten</li>" for si, n in ww) + "</ul>"
-            + '<h2>Glutenvrij koken</h2><p><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden met prijs per supermarkt</a>: gewone avondmaaltijden zonder pasta, brood of bloem, met de goedkoopste winkel voor alle ingrediënten. In de app kun je ook bij elke categorie op <b>🌾 Alleen glutenvrij</b> tikken.</p>'
+            + '<h2>Glutenvrij koken</h2><p><a href="/maaltijden/weekmenu-glutenvrij/">📅 Glutenvrij weekmenu</a>: 5 avondmaaltijden zonder gluten, samen ingekocht, met boodschappenlijst.</p><p><a href="/maaltijden/glutenvrij/">Glutenvrije maaltijden met prijs per supermarkt</a>: gewone avondmaaltijden zonder pasta, brood of bloem, met de goedkoopste winkel voor alle ingrediënten. In de app kun je ook bij elke categorie op <b>🌾 Alleen glutenvrij</b> tikken.</p>'
             + faq_html(faq) + '<a class="cta" href="/">Vergelijk je hele boodschappenlijst</a>')
     schrijf("/glutenvrij/", page("/glutenvrij/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Glutenvrije boodschappen: waar is het goedkoopst?"))
     made.append(("/glutenvrij/", "0.8"))
