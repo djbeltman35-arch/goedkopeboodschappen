@@ -17,7 +17,7 @@
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700&display=swap">
-<link rel="stylesheet" href="/stijl.css?v={{VERSIE}}">
+<link rel="stylesheet" href="/stijl.css?v={{VERSIE}}"><script src="/fout.js?v={{VERSIE}}" defer></script>
 <link rel="preload" href="/producten.json" as="fetch" crossorigin>
 <script type="application/ld+json">{{LDJSON}}</script>
 <style>
@@ -210,7 +210,11 @@
     <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Gratis en zonder reclame</li></ul>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
-      <div class="sall"><button type="button" class="btn-line" data-sall="1">Alles aan</button><button type="button" class="btn-line" data-sall="0">Alles uit</button></div></div></details>
+      <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
+      <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p></div>
+      <div class="sall"><button type="button" class="btn-line" data-sall="1">Alles aan</button><button type="button" class="btn-line" data-sall="0">Alles uit</button></div>
+      <p class="hint" style="margin-top:14px"><b>Merken</b>: vergelijk alles, of laat huismerken (zoals AH, Jumbo en 1 de Beste) juist weg of alleen zien. Groente en fruit zonder merk blijven altijd zichtbaar.</p>
+      <div class="chips merken" role="group" aria-label="Merken" id="merken"></div></div></details>
   </section>
 
   <div class="wrap app">
@@ -282,7 +286,7 @@ const STARTS=["kat","hond"];
 const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
-const S={maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
+const S={betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
 const store={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -377,12 +381,30 @@ function variant(v,pool){
   }
   return uit;
 }
+/* Merken: huismerk ("h"), A-merk ("a") of geen merk (""). Een A-merk is een merknaam die bij minstens 3 supermarkten vooraan
+   in de productnaam staat (Unox, Campina). Huismerken staan hieronder; Lidl en Aldi verkopen bijna alleen eigen merken. */
+const HUISMERK=["ah","jumbo","jumbo's","plus","pcd","1 de beste","g'woon","gwoon","dekavers","dekamarkt","hoogvliet","spar","poiesz","vomar","lidl","aldi","melkan","zuivelmeester","bio+","smaakt","daily chef","derlon","bonbébé","bonbebe","uit de keuken van plus","boerentrots","euroshopper"];
+const eersteWoord=n=>(String(n).toLowerCase().match(/[a-z0-9à-ÿ'&+-]+/g)||[]);
+function merkenBepalen(){
+  const eerst=new Map(), overal=new Map(), win=new Map();
+  for(const p of S.prods){const w=eersteWoord(p[1]);if(!w.length)continue;
+    eerst.set(w[0],(eerst.get(w[0])||0)+1);(win.get(w[0])||win.set(w[0],new Set()).get(w[0])).add(sid(p[0]));
+    for(const x of new Set(w))overal.set(x,(overal.get(x)||0)+1)}
+  const zelfde=new Set(["lidl","aldi"]);
+  for(const p of S.prods){const n=p[1].toLowerCase(),w=eersteWoord(p[1]);
+    if(HUISMERK.some(h=>n.startsWith(h+" ")||n===h)){p.merk="h";continue}
+    const f=w[0];
+    if(f&&!/^\d/.test(f)&&f.length>1&&(win.get(f)?.size||0)>=3&&eerst.get(f)/overal.get(f)>=.7){p.merk="a";continue}
+    p.merk=zelfde.has(sid(p[0]))?"h":""}
+}
+// Merkkeuze: "alle", "zonder" (zonder huismerken) of "huis" (alleen huismerken). Producten zonder merk tellen altijd mee.
+const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
 function matches(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
   // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
   const fit=(x,w,last)=>x===w||(w.length>=5&&x.endsWith(w))||(prefix&&last&&x.startsWith(w));
-  const m=pool.filter(p=>on(p[0])&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
+  const m=pool.filter(p=>on(p[0])&&merkOk(p)&&!S.betwist.has(p.lk)&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
   const clean=m.filter(p=>!p.hay.some(x=>vreemd(x,t)));
   return verfijn(clean.length?clean:m,t);
 }
@@ -414,11 +436,13 @@ function laag(p,term){
   const m=k&&L.t[k]?.[sid(p[0])], u=effUnit(p); if(m==null||u==null||L.eh[k]!==p[6]||u>=m*.99) return "";
   return `<span class="low">Laagste prijs sinds ${new Date(L.sinds+"T12:00:00").toLocaleDateString("nl-NL",{day:"numeric",month:"long"})}</span>`;
 }
+// Knopje "Klopt niet?" (afgehandeld in /fout.js)
+const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
 function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
   return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${i>=0?laag(p,term):""}</div>
-  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span></div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${i>=0?foutKnop(p,term):""}</div>
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":esc(unitTxt(u,p[6]))}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
@@ -492,7 +516,7 @@ function perPak(alle,ts){
 const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
 function rijen(rows){
   return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
-    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${winkels(v)}</div>
+    <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${winkels(v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6]))}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
@@ -748,12 +772,39 @@ async function shareList(){
     await navigator.clipboard.writeText(url); $("share").textContent="Link gekopieerd ✓"; setTimeout(()=>$("share").textContent="Lijst delen",2500);
   }catch(e){prompt("Kopieer deze link:",url)}
 }
+function merkenUi(){const el=$("merken");if(!el)return;el.innerHTML=[["alle","Alle merken"],["zonder","Zonder huismerken"],["huis","Alleen huismerken"]].map(([k,t])=>`<button type="button" class="chip" data-merk="${k}" aria-pressed="${S.merk===k}">${t}</button>`).join("")}
+// Winkels in de buurt via OpenStreetMap (Overpass). De locatie gaat alleen daarheen; we bewaren hem niet.
+const OSM_MERK=[[/albert heijn|\bah\b/,"ah"],[/jumbo/,"jumbo"],[/lidl/,"lidl"],[/aldi/,"aldi"],[/^plus\b|\bplus$/,"plus"],[/dirk/,"dirk"],[/dekamarkt/,"dekamarkt"],[/hoogvliet/,"hoogvliet"],[/poiesz/,"poiesz"],[/spar/,"spar"],[/vomar/,"vomar"]];
+async function winkelsInBuurt(){
+  const msg=$("buurtmsg"),km=+($("buurtkm")?.value||5);
+  if(!navigator.geolocation){msg.textContent="Je browser kan je locatie niet doorgeven.";return}
+  msg.textContent="Even je locatie ophalen…";
+  let pos; try{pos=await new Promise((ok,fout)=>navigator.geolocation.getCurrentPosition(ok,fout,{enableHighAccuracy:false,timeout:15000,maximumAge:6e5}))}
+  catch(e){msg.textContent=e&&e.code===1?"Je hebt geen toestemming gegeven voor je locatie. Je kunt de winkels ook hierboven zelf aanvinken.":"Je locatie ophalen lukte niet. Probeer het nog eens of vink de winkels zelf aan.";return}
+  msg.textContent="Supermarkten in de buurt zoeken…";
+  const {latitude:la,longitude:lo}=pos.coords, q=`[out:json][timeout:25];nwr["shop"="supermarket"](around:${km*1000},${la.toFixed(4)},${lo.toFixed(4)});out tags;`;
+  let data=null;
+  for(const u of ["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"]){
+    try{const r=await fetch(u,{method:"POST",body:"data="+encodeURIComponent(q),headers:{"Content-Type":"application/x-www-form-urlencoded"}});if(r.ok){data=await r.json();break}}catch(e){}}
+  if(!data){msg.textContent="OpenStreetMap is nu niet bereikbaar. Probeer het later nog eens of vink de winkels zelf aan.";return}
+  const ids=new Set(S.stores.filter(s=>s.count).map(s=>s.id)), gevonden=new Map();
+  for(const el of data.elements||[]){const t=el.tags||{},n=((t.brand||"")+" | "+(t.name||"")).toLowerCase();
+    for(const [re,id] of OSM_MERK) if(re.test(n)&&ids.has(id)){gevonden.set(id,(gevonden.get(id)||0)+1);break}}
+  if(!gevonden.size){msg.textContent=`Binnen ${km} km vonden we geen van onze supermarkten. Kies een grotere afstand.`;return}
+  S.off=new Set([...ids].filter(id=>!gevonden.has(id)));
+  winkelsGewijzigd();
+  const namen=[...gevonden.keys()].map(id=>STORENAMES[id]||id).sort((a,b)=>a.localeCompare(b));
+  $("buurtmsg").textContent=`Binnen ${km} km: ${namen.join(", ")}. De andere winkels staan uit; je kunt ze hierboven weer aanvinken.`;
+  gc("buurt/"+gevonden.size,"Winkels in de buurt");
+}
 function storesUi(){
   const ids=[...new Set(S.stores.filter(s=>s.count).map(s=>s.id))].sort((a,b)=>(STORENAMES[a]||a).localeCompare(STORENAMES[b]||b));
   const k=ids.filter(id=>!S.off.has(id)).length;
   $("mysum").textContent=`Mijn supermarkten: ${k===ids.length?"alle "+k:k+" van "+ids.length}`;
   const aan=ids.filter(id=>!S.off.has(id)).map(id=>STORENAMES[id]||id);
   $("mysub").textContent=k===ids.length?"Kom je niet overal? Kies hier je eigen winkels.":k?aan.join(", "):"Kies minstens één supermarkt";
+  if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"zonder huismerken":"alleen huismerken");
+  merkenUi();
   $("sgrid").innerHTML=ids.map(id=>`<label><input type="checkbox" data-store="${id}"${S.off.has(id)?"":" checked"}> ${esc(STORENAMES[id]||id)}</label>`).join("");
 }
 function jump(id){const el=$(id); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"}))}
@@ -787,6 +838,8 @@ document.addEventListener("click",e=>{
   const pu=e.target.closest("[data-push]"); if(pu){pu.disabled=true;pu.dataset.push==="aan"?pushAan():pushUit();return}
   const t=e.target.closest(".store"); if(t){S.sel=+t.dataset.si;renderWhere();return}
   const tr=e.target.closest("[data-try]"); if(tr){e.preventDefault();$("q").value=tr.dataset.try;search(true);jump("results");return}
+  if(e.target.closest("[data-buurt]")){winkelsInBuurt();return}
+  const mk=e.target.closest("[data-merk]"); if(mk){S.merk=mk.dataset.merk;store.set("merken",S.merk);pickCache.clear();storesUi();renderAll();gc("merken/"+S.merk,"Merkkeuze");return}
   if(e.target.closest("[data-golist]")){e.preventDefault();jump("lijst");return}
 });
 document.addEventListener("change",e=>{
@@ -829,7 +882,10 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
   if(aldi?.products) for(const r of aldi.products) S.prods.push([ai,...r]);
   S.sidx=new Map(S.stores.map((s,i)=>[s.id,i]));
   S.byLink=new Map();
-  S.prods.forEach((p,i)=>{p.i=i;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");S.byLink.set(link(p),p)});
+  S.prods.forEach((p,i)=>{p.i=i;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);S.byLink.set(p.lk,p)});
+  merkenBepalen();
+  // Door 3 of meer bezoekers als "klopt niet" gemeld: tijdelijk weglaten (zie netlify/functions/betwist.mjs).
+  fetch("/api/betwist").then(r=>r.ok?r.json():null).then(j=>{if(j?.links?.length){S.betwist=new Set(j.links);pickCache.clear();renderAll()}}).catch(()=>{});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);
   if(offers?.offers){
     S.offers=offers.offers.filter(o=>S.sidx.has(o.s)&&o.p>0&&(!o.t||o.t>=today));
@@ -837,6 +893,7 @@ Promise.all([fetch("/producten.json").then(r=>r.json()),laadJson("aldi.json"),la
     S.offersUpdated=offers.updated;
   }
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
+  S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";
   // Lijst laden (ook uit oudere versies van de site), daarna gedeelde lijst of artikelen van andere pagina's erbij.
   let list=store.get("lijst-v3");
   if(!Array.isArray(list)){const old=store.get("lijst-v2")||store.get("lijst-bewaard-v2")?.list;list=Array.isArray(old)?old.map(x=>({...x,s:S.stores[x.si]?.id})):[]}
