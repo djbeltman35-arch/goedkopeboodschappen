@@ -489,7 +489,7 @@ function perPak(alle,ts){
   return [...uit.keys()].sort((a,b)=>a-b).map(k=>[PAKGROEP[k],uit.get(k).sort((a,b)=>plek.get(rest(a))-plek.get(rest(b))||alle.indexOf(a)-alle.indexOf(b))]);
 }
 // Bij welke winkels het product te koop is, van goedkoop naar duur.
-const winkels=v=>v&&v.length?`<span class="kc wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
+const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
 function rijen(rows){
   return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
     <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${winkels(v)}</div>

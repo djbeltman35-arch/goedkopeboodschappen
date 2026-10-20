@@ -66,7 +66,12 @@ PREFIX = [("Coca-Cola Zero", 0), ("Cola zero en light", 0), ("Coca-Cola", 42), (
           ("7up en Sprite", 30), ("Ice tea", 25), ("Spa ", 0), ("Bruisend water", 0), ("Water ", 0), ("Energiedrank suikervrij", 3),
           ("Energiedrank", 45), ("Alcoholvrij bier", 20), ("Pils", 42)]
 
+from kcal_extra import K2
+
 def kcal_van(t):
+    if t in K2:
+        v = K2[t]
+        return v if isinstance(v, tuple) else (v, G)
     for pre, v in PREFIX:
         if t.startswith(pre): return (v, ML)
     for k in (t, t.removesuffix(" vers"), t.removesuffix(" diepvries"), t.removesuffix(" in pot"),

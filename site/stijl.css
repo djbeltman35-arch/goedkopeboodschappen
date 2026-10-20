@@ -158,7 +158,7 @@ ul.chips a:hover{border-color:var(--green)}
 h2[id]{scroll-margin-top:80px}
 .kc{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .kc::before{content:"🔥 "}
-.wk::before{content:none}
+.wk{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .kcal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .lmaal{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 12px}
 .lmaal h3{margin:0 0 6px;font-size:17px}

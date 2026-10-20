@@ -176,7 +176,7 @@ print(len(PICKED), "productpagina's")
 def winkels_txt(t):
     """Bij welke winkels het product te koop is, van goedkoop naar duur."""
     w = [NAMEN.get(stores[si]["id"], stores[si]["name"]) for si, _ in PICKED[t]]
-    return f'<span class="kc wk">🏪 {"Alleen bij " if len(w) == 1 else f"Bij {len(w)} winkels: "}{esc(", ".join(w))}</span>'
+    return f'<span class="wk">🏪 {"Alleen bij " if len(w) == 1 else f"Bij {len(w)} winkels: "}{esc(", ".join(w))}</span>'
 def cat_rij(t):
     si, p = PICKED[t][0]
     kt = kcal_txt(t)
