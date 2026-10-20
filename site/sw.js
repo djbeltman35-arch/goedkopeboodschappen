@@ -1,5 +1,5 @@
 // Goedkope Boodschappen: snel opnieuw openen. De prijslijst komt direct uit de cache en wordt op de achtergrond ververst.
-const C = 'gb-v11';
+const C = 'gb-v12';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {

@@ -178,9 +178,31 @@ def cat_rij(t):
     kt = kcal_txt(t)
     return (f'<tr><td><a href="/vergelijk/{slug(t)}/"><b>{esc(cap(t))}</b></a><span class="sub">{esc(p[1])}</span>' + (f'<span class="kc">{esc(kt)}</span>' if kt else "") + f'{addbtn(p, t)}</td>'
             + f'<td><b>{esc(NAMEN.get(stores[si]["id"]))}</b></td><td class="p">{tag(eff(p))}<br><span class="unit">{esc(per(*toon_unit(p)))}</span></td></tr>')
+# Drank per verpakking onder een eigen kopje (zelfde indeling als pakGroep/perPak in site/index.html).
+PAKGROEP = ["Losse flessen", "Flessen per pack", "Kratten", "Losse blikjes", "Blikjes per pack", "Trays", "Overig"]
+PAKSTART = re.compile(r"\b(fles|flesje|flesjes|flessen|beugelflessen|kinderflesjes|los|sixpack|blikjes|blikken|krat|mini|\d+ x)\b")
+def pak_groep(t):
+    s = t.lower()
+    if re.search(r"\bkrat\b", s): return 2
+    if re.search(r"\btray\b", s): return 5
+    if re.search(r"\blos blik(je)?\b", s): return 3
+    if re.search(r"\b(blikjes|blikken)\b", s): return 4
+    if re.search(r"\b(flesjes|flessen|beugelflessen|kinderflesjes)\b", s) or re.search(r"\d+ x \d", s): return 1
+    if re.search(r"\b(fles|flesje)\b", s): return 0
+    return -1
+def per_pak(items):
+    g = {t: pak_groep(t) for t in items}
+    if len({x for x in g.values() if x >= 0}) < 2: return [("", items)]
+    def rest(t):
+        s = t.lower(); m = PAKSTART.search(s); return s[m.start():] if m else s
+    plek = {}
+    for t in items: plek.setdefault(rest(t), len(plek))
+    uit = {}
+    for t in items: uit.setdefault(6 if g[t] < 0 else g[t], []).append(t)
+    return [(PAKGROEP[k], sorted(uit[k], key=lambda t: (plek[rest(t)], items.index(t)))) for k in sorted(uit)]
 def cat_tabel(items):
-    return ('<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>'
-            + "".join(cat_rij(t) for t in items) + '</tbody></table></div>')
+    kop = '<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Goedkoopst bij</th><th style="text-align:right">Prijs</th></tr></thead><tbody>'
+    return "".join((f'<h3 class="pakkop">{esc(k)}</h3>' if k else "") + kop + "".join(cat_rij(t) for t in ts) + '</tbody></table></div>' for k, ts in per_pak(items))
 def winnaar(items):
     winst = {}
     for t in items: winst[PICKED[t][0][0]] = winst.get(PICKED[t][0][0], 0) + 1

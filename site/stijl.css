@@ -154,6 +154,7 @@ ul.chips a{flex:none;display:inline-flex;align-items:center;gap:6px;background:v
 ul.chips a:hover{border-color:var(--green)}
 .subchips{flex-wrap:wrap;overflow:visible;margin:4px 0 8px}
 .subkop{margin:22px 0 6px;font-size:18px;scroll-margin-top:80px}
+.pakkop{margin:16px 0 6px;font-size:15px;color:var(--muted,#555);font-weight:700;text-transform:none}
 h2[id]{scroll-margin-top:80px}
 .kc{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .kc::before{content:"🔥 "}

@@ -462,9 +462,31 @@ function renderView(){
   quick();
   if(S.view==="deals") return renderOffers();
   const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
-  const blok=c=>{const rows=c[2].map(t=>({t,b:[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]})).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}<ul class="rows">${rijen(rows)}</ul>`:""};
+  const blok=c=>{const rows=c[2].map(t=>({t,b:[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]})).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}${perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("")}`:""};
   $("results").innerHTML=`<h2>${g[1]} ${esc(g[0])}</h2><p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
   ${subs.length>1?`<div class="chips subchips">${subs.map(c=>`<a class="chip" href="#sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</a>`).join("")}</div>`:""}${subs.map(blok).join("")}`;
+}
+// Drank per verpakking onder een eigen kopje (krat, flesjes, blikjes), zodat je gelijke verpakkingen naast elkaar ziet.
+// Zelfde indeling als pak_groep in scripts/bouw_paginas.py.
+const PAKGROEP=["Losse flessen","Flessen per pack","Kratten","Losse blikjes","Blikjes per pack","Trays","Overig"];
+const PAKSTART=/\b(fles|flesje|flesjes|flessen|beugelflessen|kinderflesjes|los|sixpack|blikjes|blikken|krat|mini|\d+ x)\b/;
+function pakGroep(t){
+  const s=t.toLowerCase();
+  if(/\bkrat\b/.test(s)) return 2; if(/\btray\b/.test(s)) return 5;
+  if(/\blos blik(je)?\b/.test(s)) return 3;
+  if(/\b(blikjes|blikken)\b/.test(s)) return 4;
+  if(/\b(flesjes|flessen|beugelflessen|kinderflesjes)\b/.test(s)||/\d+ x \d/.test(s)) return 1;
+  if(/\b(fles|flesje)\b/.test(s)) return 0;
+  return -1;
+}
+function perPak(alle,ts){
+  const g=new Map(ts.map(t=>[t,pakGroep(t)])), soorten=new Set([...g.values()].filter(x=>x>=0));
+  if(soorten.size<2) return [["",ts]];
+  const rest=t=>{const s=t.toLowerCase(),m=s.match(PAKSTART);return m?s.slice(m.index):s};
+  const plek=new Map(); alle.forEach(t=>{const r=rest(t);if(!plek.has(r))plek.set(r,plek.size)});
+  const uit=new Map();
+  for(const t of ts){const k=g.get(t)<0?6:g.get(t);(uit.get(k)||uit.set(k,[]).get(k)).push(t)}
+  return [...uit.keys()].sort((a,b)=>a-b).map(k=>[PAKGROEP[k],uit.get(k).sort((a,b)=>plek.get(rest(a))-plek.get(rest(b))||alle.indexOf(a)-alle.indexOf(b))]);
 }
 function rijen(rows){
   return `${rows.map(({t,b})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
