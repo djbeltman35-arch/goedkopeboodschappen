@@ -49,7 +49,8 @@ GV_RE = re.compile(r"gluten ?vrij|gluten[- ]?free|zonder gluten|sans gluten|senz
 def kcal_arm(kt):
     m = re.match(r"^(\d+(?:[.,]\d+)?) kcal per 100 (g|ml)$", kt or "")
     return bool(m) and float(m.group(1).replace(",", ".")) <= (20 if m.group(2) == "ml" else 40)
-LV_RE = re.compile(r"lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei", re.I)
+# Lactosevrij: met lactosevrij in de naam, of van nature zonder melk (plantaardige drinks en zuivelvervangers, vegan).
+LV_RE = re.compile(r"lactose ?vrij|zonder lactose|lactose[- ]?free|laktosefrei|\bvegan\b|100% plantaardig|plantaardige? (?:drink|yoghurt|kwark|kaas|room|variatie|alternatief|boter|ijs)|soja ?drink|haver ?drink|havermelk|amandel ?drink|kokos ?drink|rijst ?drink|\balpro\b|\boatly\b|\bviolife\b", re.I)
 from eiwit import EIWIT
 def eiwitrijk(term, kt=""):
     """EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en hier ook minstens 5 g per 100 g)."""
@@ -1012,7 +1013,26 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead} Per product de goedkoopste supermarkt, elke dag bijgewerkt. <b>{esc(nm(top))}</b> is nu bij {n_top} van de {len(ts)} producten het goedkoopst.</p>'
     faq = [(f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
            ("Hoe actueel zijn de prijzen?", "Elke dag bijgewerkt met de prijzen en aanbiedingen van de webshops van de supermarkten.")]
-    body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}'
+    # Allergievriendelijk: per product een glutenvrije en/of lactosevrije variant (als die er is), en alle zulke feestproducten.
+    def _var(rx, kw):
+        arr = [p for p in prods if stores[p[0]].get("count") and rx.search(p[1]) and re.search(r"\b" + re.escape(kw), p[1].lower())]
+        return sorted(arr, key=lambda p: eff(p))[:2]
+    def _vtxt(arr): return "".join(f'<span class="sub">{esc(p[1])} · {esc(nm(p[0]))} · {eur(eff(p))}</span>{addbtn(p, p[1])}' for p in arr) or '<span class="sub">nog niet gevonden</span>'
+    arij, alle_v = "", {}
+    for t in ts:
+        kws = [w for w in norm(t) if len(w) > 3 and w not in ("gevulde", "roomboter", "naturel")] or norm(t)[:1]
+        def _var2(rx): 
+            arr = [p for p in prods if stores[p[0]].get("count") and rx.search(p[1]) and all(re.search(r"\b" + re.escape(w), p[1].lower()) for w in kws) and not re.search(r"\bfish\b|\bburger\b", p[1].lower())]
+            return sorted(arr, key=lambda p: eff(p))[:2]
+        g_, l_ = _var2(GV_RE), _var2(LV_RE)
+        for p in g_ + l_: alle_v[id(p)] = p
+        if g_ or l_: arij += f'<tr><td><b>{esc(cap(t))}</b></td><td>🌾 {_vtxt(g_)}</td><td>🥛 {_vtxt(l_)}</td></tr>'
+    extra_v = [p for p in prods if stores[p[0]].get("count") and (GV_RE.search(p[1]) or LV_RE.search(p[1])) and any(re.search(r"\b" + w, p[1].lower()) for w in woorden) and id(p) not in alle_v][:30]
+    allerg = ((f'<h2>Glutenvrij of lactosevrij vieren</h2><p class="note">Per product een glutenvrije (🌾) of lactosevrije (🥛) variant, de goedkoopste eerst. Controleer bij een allergie altijd het etiket.</p>'
+               f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Glutenvrij</th><th>Lactosevrij</th></tr></thead><tbody>{arij}</tbody></table></div>' if arij else "")
+              + (f'<h3>Meer glutenvrije en lactosevrije feestproducten</h3><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td>{labels(p[1])}<b>{esc(p[1])}</b><span class="sub">{esc(nm(p[0]))} · {esc(p[4] or "")}</span>{addbtn(p, p[1])}</td><td class="p">{tag(eff(p))}</td></tr>' for p in sorted(extra_v, key=eff)) + '</tbody></table></div>' if extra_v else "")
+              + '<p><a href="/glutenvrij/">Alle glutenvrije boodschappen</a> · <a href="/lactosevrij/">Alle lactosevrije boodschappen</a> · <a href="/maaltijden/weekmenu-glutenvrij/">Glutenvrij weekmenu</a></p>')
+    body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}' + allerg
             + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="offers" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
             + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
     schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)], og_title=h1))
