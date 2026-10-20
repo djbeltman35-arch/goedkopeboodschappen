@@ -226,3 +226,6 @@ a.route{flex:none;display:inline-block;background:var(--green);color:var(--on-gr
 .mlbls{display:block;margin:2px 0 4px}
 td .lbl,.row .lbl{display:inline-block}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .lbl.gv{background:#3a2e10;color:#f5d27a;border-color:#6b5420}:root:not([data-theme=light]) .lbl.arm{border-color:transparent}}
+/* In de app schuift de terugbalk mee, zodat je ook diep in een categorie terug kunt */
+#results nav.terug.app{position:sticky;top:0;z-index:6;background:var(--page);padding:8px 0;margin:0 0 6px;box-shadow:0 6px 8px -8px rgba(0,0,0,.25)}
+#results nav.terug.app .tknop{padding:6px 12px;font-size:14px}
