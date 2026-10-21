@@ -18,7 +18,9 @@ def foto_html(m):
     lu, lt = lic_url(f["licentie"]), esc(f["licentie"])
     maker = esc(f["maker"]) + ", " if f["maker"] else ""
     licentie = f'<a href="{lu}" rel="noopener" target="_blank">{lt}</a>' if lu else lt
-    return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" srcset="/maaltijden-foto/{m["slug"]}-kaart.jpg 640w, /maaltijden-foto/{m["slug"]}-16x9.jpg 1200w" sizes="(max-width: 760px) 100vw, 720px" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high" decoding="async">'
+    _w = os.path.exists(os.path.join(ROOT, "site", "maaltijden-foto", f'{m["slug"]}-16x9.webp'))
+    _bron = (f'<source type="image/webp" srcset="/maaltijden-foto/{m["slug"]}-kaart.webp 640w, /maaltijden-foto/{m["slug"]}-16x9.webp 1200w" sizes="(max-width: 760px) 100vw, 720px">' if _w else "")
+    return (f'<figure class="mfoto"><picture>{_bron}<img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" srcset="/maaltijden-foto/{m["slug"]}-kaart.jpg 640w, /maaltijden-foto/{m["slug"]}-16x9.jpg 1200w" sizes="(max-width: 760px) 100vw, 720px" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high" decoding="async"></picture>'
             f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">{esc(f.get("via") or "Wikimedia Commons")}</a> (bijgesneden)</figcaption></figure>')
 MAAL_BEELDEN = {}  # pad -> lijst afbeeldings-url's, voor de afbeeldingen-sitemap
 def beeld_objecten(m):
@@ -34,7 +36,11 @@ def beelden(m):
     if m["slug"] in FOTO: return [f"{BASE}/maaltijden-foto/{m['slug']}-{x}.jpg" for x in ("16x9", "4x3", "1x1")]
     return [f"{BASE}/maaltijden-img/{m['slug']}-16x9.png", f"{BASE}/maaltijden-img/{m['slug']}-1x1.png"]
 def kaartbeeld(m):
-    if m["slug"] in FOTO: return f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="{esc(m['naam'])}" loading="lazy">'
+    if m["slug"] in FOTO:
+        _img = f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="{esc(m['naam'])}" loading="lazy" decoding="async">'
+        if os.path.exists(os.path.join(ROOT, "site", "maaltijden-foto", f'{m["slug"]}-kaart.webp')):
+            return f'<picture><source type="image/webp" srcset="/maaltijden-foto/{m["slug"]}-kaart.webp">{_img}</picture>'
+        return _img
     emo = {k: e_ for k, _, e_ in SOORTEN}.get(m["soort"], "🍽️")
     return f'<div class="mimg mleeg" aria-hidden="true">{emo}</div>'
 

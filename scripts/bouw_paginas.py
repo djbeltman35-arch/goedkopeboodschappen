@@ -10,7 +10,7 @@ from vergelijk import json, re, html, datetime, itertools, statistics, quote, qu
 # ---------- sjabloon ----------
 FONT = ''
 FAV = '<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">'
-GC = '<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
+GC = '<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>'
 NAV = [("/aanbiedingen/", '<span class="ic">🔥 </span>Aanbiedingen', "pill aanb"), ("/maaltijden/", '<span class="ic">🍽️ </span>Maaltijden', "pill mt"), ("/feestdagen/", "🎉 Feestdagen", "feest"), ("/categorie/", "Categorieën", "wide")]
 def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
