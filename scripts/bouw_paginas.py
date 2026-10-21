@@ -391,11 +391,11 @@ for g, gic in GROEPEN:
     schrijf(gpath, page(gpath, title, desc, head, body, ld, actief="/categorie/"))
     made.append((gpath, "0.8"))
 head = crumbs(("Categorieën", None))[0] + "<h1>Boodschappen vergelijken per categorie</h1><p class=\"lead\">Kies een categorie en zie per product welke supermarkt het goedkoopst is.</p>"
-body = "".join(f'<h2><a href="/categorie/{slug(g)}/">{gi} {esc(g)}</a></h2><ul class="chips">' + "".join(f'<li><a href="/categorie/{slug(c[0])}/">{c[1]} {esc(c[0])}</a></li>' for c, _ in GROEP_ITEMS[g][0] if slug(c[0]) != slug(g)) + "</ul>"
+def _cl(href, kop, items): return f'<div class="cl"><h2 class="clk"><a href="{href}">{kop}</a></h2><p class="cls">' + " · ".join(f'<a href="{h}">{esc(t)}</a>' for h, t in items) + '</p></div>'
+body = ('<div class="catlijst">' + "".join(_cl(f"/categorie/{slug(g)}/", f"{gi} {esc(g)}", [(f"/categorie/{slug(c[0])}/", c[0]) for c, _ in GROEP_ITEMS[g][0] if slug(c[0]) != slug(g)])
                for g, gi in GROEPEN if g in GROEP_ITEMS)
-body += ('<h2><a href="/vegan/">🌱 Vegan</a></h2><ul class="chips">' + "".join(f'<li><a href="/vegan/{sl}/">{ic} {esc(nm_)}</a></li>' for sl, nm_, ic in VG_LIJST)
-         + '<li><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden</a></li></ul>'
-         + '<h2>Dieet en leefstijl</h2><ul class="chips"><li><a href="/glutenvrij/">🌾 Glutenvrij</a></li><li><a href="/lactosevrij/">🥛 Lactosevrij</a></li><li><a href="/eiwitrijk/">💪 Eiwitrijk</a></li><li><a href="/vegan/">🌱 Vegan</a></li><li><a href="/halal/">Halal</a></li><li><a href="/koosjer/">Koosjer</a></li><li><a href="/maaltijden/caloriearm/">🥗 Caloriearm</a></li></ul>')
+        + _cl("/dieet/", "🥗 Dieet en leefstijl", [("/glutenvrij/", "Glutenvrij"), ("/lactosevrij/", "Lactosevrij"), ("/vegan/", "Vegan"), ("/halal/", "Halal"), ("/koosjer/", "Koosjer"), ("/eiwitrijk/", "Eiwitrijk"), ("/maaltijden/caloriearm/", "Caloriearm"), ("/allergie/", "Allergie")])
+        + _cl("/vegan/", "🌱 Vegan", [(f"/vegan/{sl}/", nm_) for sl, nm_, ic in VG_LIJST] + [("/maaltijden/vegan/", "Vegan maaltijden")]) + '</div>')
 schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} boodschappen in {len(catpaths)} categorieën bij {AANTAL} supermarkten: groente, diepvries, zuivel, vlees, frisdrank, bier, huishouden en meer.", head, body, actief="/categorie/"))
 made.append(("/categorie/", "0.6"))
 lis = "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in sorted(PICKED))
