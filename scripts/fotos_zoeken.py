@@ -213,10 +213,12 @@ def api(params):
     u = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode({**params, "format": "json"})
     return json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30))
 os.makedirs("fotos-kandidaten", exist_ok=True)
+_af = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fotos_alleen.txt')
+ALLEEN = set((os.environ.get('ALLEEN') or (open(_af).read() if os.path.exists(_af) else '')).strip().split(',')) - {''}
 alle = {}
 for m in MAALTIJDEN:
     slug = m["slug"]; gezien = set(); kand = []
-    if slug in GEDAAN: continue
+    if slug in GEDAAN or (ALLEEN and slug not in ALLEEN): continue
     for q in Q.get(slug, [m["naam"]]):
         try:
             r = api({"action": "query", "generator": "search", "gsrsearch": f"{q} filetype:bitmap", "gsrnamespace": 6, "gsrlimit": 12,
@@ -244,7 +246,7 @@ for m in MAALTIJDEN:
                 print("openverse fout", q, e); continue
             for x in r.get("results", []):
                 if len(kand) >= 6: break
-                if (x.get("width") or 0) < 900 or x.get("url") in gezien: continue
+                if (x.get("width") and x["width"] < 800) or x.get("url") in gezien: continue
                 gezien.add(x.get("url"))
                 l, v = (x.get("license") or "").lower(), x.get("license_version") or ""
                 lic = {"cc0": "CC0", "pdm": "Public domain", "by": f"CC BY {v}".strip(), "by-sa": f"CC BY-SA {v}".strip()}.get(l)
