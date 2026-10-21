@@ -1,0 +1,20 @@
+name: Lettertypen ophalen
+# Eenmalig: haalt de woff2-bestanden op zodat de site de lettertypen zelf host (sneller, geen Google-verbinding).
+on:
+  push:
+    branches: [fonts]
+permissions:
+  contents: write
+jobs:
+  fonts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p site/fonts
+          cd site/fonts
+          npm pack @fontsource/atkinson-hyperlegible @fontsource/barlow-condensed
+          for f in *.tgz; do mkdir x && tar xzf "$f" -C x && cp x/package/files/*-latin-{400,600,700}-normal.woff2 . 2>/dev/null; rm -rf x "$f"; done
+          ls -la
+          git config user.name "fonts-bot"; git config user.email "fonts-bot@users.noreply.github.com"
+          git add . && git commit -m "Lettertypen" && git push origin HEAD:fonts
