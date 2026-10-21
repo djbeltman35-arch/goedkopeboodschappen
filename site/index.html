@@ -205,7 +205,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a class="pill mt" href="#lijst" data-naarlijst>🛒 Mijn lijst<b class="navn" id="navn" hidden></b></a><a class="pill aanb" href="/aanbiedingen/" data-volgendeweek>📅 Volgende week</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
     
   </div>
 </header>
@@ -219,7 +219,7 @@
       <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn">Zoek</button>
     </form>
-    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen</li><li>Onafhankelijk, zonder reclame</li></ul>
+    <ul class="promise"><li>Elke dag nieuwe prijzen</li><li>Onafhankelijk en zonder reclame</li></ul>
     <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
@@ -663,8 +663,22 @@ const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?`Alleen bij $
 function mijnRij(b,v){if(!S.mijn||isMijn(b[0]))return S.mijn&&isMijn(b[0])?'<span class="mijnlbl">⭐ Jouw winkel is het goedkoopst</span>':"";
   const pm=(v||[]).find(p=>isMijn(p[0]));if(!pm)return "";const d=mijnVerschil(pm,b).d;
   return d>=.05?`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: daar betaal je ${eur(d)} meer</span>`:`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: bijna even goedkoop</span>`}
+// A-merk naast huismerk: twee kolommen, zodat het verschil meteen duidelijk is en je er één op je lijst zet.
+function duoKol(p,lbl,t){const o=offerOf(p),u=p.lit?eff(p)/p.lit:effUnit(p),e=p.lit?"l":p[6];
+  return `<div class="dk"><span class="dl">${lbl}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}<a class="dn" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])} <span class="sz">${esc(p[4]||"")}</span></a><div class="dp">${tag(eff(p),o?"deal":"")}${S.list.some(x=>x.link===link(p))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(t)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</div><span class="unit">${u!=null?esc(unitTxt(u,e)):""}</span></div>`}
+function duoRij(t){if(S.merk!=="alle")return "";const m=matches(t).filter(p=>!p.bad).sort((x,y)=>rank(x)-rank(y));
+  const per={};for(const p of m){const w=p[0];per[w]=per[w]||{};if(p.merk==="a"&&!per[w].a)per[w].a=p;if(p.merk==="h"&&!per[w].h)per[w].h=p}
+  const paren=Object.keys(per).filter(w=>per[w].a&&per[w].h);if(!paren.length)return "";
+  const keus=(S.duoW||{})[t];let w=paren.includes(keus)?keus:paren.find(x=>isMijn(x));
+  if(!w)w=paren.sort((x,y)=>rank(per[x].h)-rank(per[y].h))[0];
+  const a=per[w].a,h=per[w].h,eu=p=>p.lit?eff(p)/p.lit:effUnit(p),eh=p=>p.lit?"l":p[6];
+  const ua=eu(a),uh=eu(h);let v="";
+  if(ua&&uh&&eh(a)===eh(h)){const d=Math.round((1-uh/ua)*100);v=d>=3?`Huismerk is <b>${d}% goedkoper</b> per ${EHN[eh(h)]||"stuk"}`:d<=-3?`A-merk is <b>${-d}% goedkoper</b> per ${EHN[eh(a)]||"stuk"}`:"Bijna even duur"}
+  const hb=m.find(p=>p.merk==="h"&&p[0]!==w&&eu(p)&&uh&&eh(p)===eh(h)&&eu(p)<uh*0.97);
+  const let_=hb?`<p class="duolet">⚠️ Het huismerk is het goedkoopst bij <b>${esc(sname(hb[0]))}</b>: ${esc(unitTxt(eu(hb),eh(hb)))}. ${per[hb[0]]?`<button type="button" class="kies" data-duow="${esc(hb[0])}" data-duot="${esc(t)}">Toon ${esc(sname(hb[0]))}</button>`:`<button type="button" class="kies" data-add="${hb.i}" data-term="${esc(t)}">+ Zet op mijn lijst</button>`}</p>`:"";
+  return `<li class="row duo"><div class="duokop"><a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a><span class="shop">${esc(sname(w))}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}</div><div class="duo2">${duoKol(a,"A-merk",t)}${duoKol(h,"Huismerk",t)}</div>${v?`<p class="duov">${v}</p>`:""}${let_}</li>`}
 function rijen(rows){
-  return `${rows.map(({t,b,v})=>{const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
+  return `${rows.map(({t,b,v})=>{const d=duoRij(t);if(d)return d;const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
     <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t],t)}${winkels(v)}${mijnRij(b,v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
@@ -742,7 +756,7 @@ function renderMaal(){
 // Actuele prijs van het gekozen product, inclusief een lopende aanbieding.
 function cur(x){const p=S.byLink.get(x.link); if(p) return eff(p); if(x.offerTill!==undefined) return (!x.offerTill||x.offerTill>=today)?x.price:null; return null}
 const priceOf=x=>cur(x)??x.price;
-function renderList(){
+function renderList(){{const nn=$("navn"),c=S.list.length;if(nn){nn.hidden=!c;nn.textContent=c}}
   const n=S.list.length;
   $("lcount").textContent=n?`${n} ${n===1?"artikel":"artikelen"}`:"";
   $("ltools").hidden=!n;
@@ -1135,6 +1149,9 @@ document.addEventListener("click",e=>{
   if(ank&&ank.getAttribute("href").length>1){const doel=document.getElementById(decodeURIComponent(ank.getAttribute("href").slice(1)));
     if(doel){e.preventDefault();if(doel.tagName==="DETAILS")doel.open=true;const ga=()=>doel.scrollIntoView({block:"start"});ga();requestAnimationFrame(()=>{ga();setTimeout(ga,120);setTimeout(ga,350);setTimeout(ga,700)});
       try{history.replaceState(history.state,"",ank.getAttribute("href"))}catch(x){}return}}
+  if(e.target.closest("[data-naarlijst]")){e.preventDefault();const l=$("lijst");if(l)l.scrollIntoView({block:"start"});return}
+  if(e.target.closest("[data-volgendeweek]")){e.preventDefault();S.view="deals";S.ofsoon=true;S.ofn=60;renderAll();const r=$("results");if(r)r.scrollIntoView({block:"start"});return}
+  {const dw=e.target.closest("[data-duow]");if(dw){S.duoW=S.duoW||{};S.duoW[dw.dataset.duot]=dw.dataset.duow;const y=scrollY;renderView();const d=$(OPEN.size?[...OPEN].pop():"x");scrollTo(0,y);return}}
   if(e.target.closest("[data-vastewinkel]")){e.preventDefault();const d=$("mystores");if(d){d.open=true;d.scrollIntoView({block:"start"});setTimeout(()=>{const sel=$("mijnsel");if(sel)sel.focus()},300)}return}
   if(e.target.closest("[data-toonalarm]")){e.preventDefault();const d=$("prijsalarm");if(d){d.hidden=!d.hidden;if(!d.hidden){d.scrollIntoView({block:"center"});const inp=d.querySelector("input");if(inp)inp.focus()}}return}
   if(e.target.closest("[data-startlijst]")){startLijst();return}

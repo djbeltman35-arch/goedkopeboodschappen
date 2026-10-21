@@ -527,3 +527,34 @@ html body .subblok>summary .subnaam{min-width:0}
 html body .quick.tegels .chip{border-width:1.5px}
 html body .mystores{border-width:1.5px}
 html body section.hero{padding-bottom:8px}
+.nav .navn{display:inline-block;min-width:18px;margin-left:4px;padding:0 5px;border-radius:999px;background:var(--green);color:var(--on-green);font-size:11px;line-height:18px;text-align:center}
+.nav .navn[hidden]{display:none}
+/* Home: rustige randen om de bovenste tegels, kleur alleen in tekst en lichte achtergrond */
+html body .quick.tegels .start .chip,html body .quick.tegels .start .chip.hot,html body .quick.tegels .start .chip.wm,html body .quick.tegels .start .chip.mt,html body .quick.tegels .start a.chip.dieet,html body .quick.tegels .start a.chip.seizoen{border:1px solid var(--line);box-shadow:none}
+html body .mystores{border:1px solid var(--line)}
+html body .quick.tegels .cats a.chip.dieet{border:1px solid var(--line)}
+@media (max-width:370px){html body .nav{gap:3px}html body .nav a{font-size:12px;padding:5px 6px}html body .nav a.feest{padding:5px 7px}html body .brand img{width:26px;height:26px}}
+/* Home: kop, uitleg en vinkjes gecentreerd, vinkjes onder elkaar */
+html body .hero h1,html body .hero .lead{text-align:center;margin-left:auto;margin-right:auto}
+html body .promise{flex-direction:column;align-items:center;gap:2px}
+html,body{overflow-x:clip}
+/* A-merk naast huismerk */
+html body .row.duo{display:block;padding:10px 12px}
+.row.duo .duokop{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:6px}
+.row.duo .duokop .kc{display:inline}
+.row.duo .duo2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row.duo .dk{display:flex;flex-direction:column;gap:3px;min-width:0;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.row.duo .dk:last-child{background:var(--green-soft)}
+.row.duo .dl{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.row.duo .dk .shop{align-self:flex-start;font-size:12px}
+.row.duo .dn{font-size:13px;line-height:1.3;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.row.duo .dn .sz{color:var(--muted)}
+.row.duo .dp{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto}
+.row.duo .dp .tag{font-size:17px;padding:3px 6px}
+.row.duo .dp .plus{width:38px;height:38px;flex:none}
+.row.duo .unit{font-size:12px}
+.row.duo .duov{margin:6px 0 0;font-size:13px;color:var(--green-dark)}
+.row.duo .duolet{margin:6px 0 0;padding:6px 8px;border-radius:8px;background:#fff6e0;border:1px solid #f0d58a;font-size:13px;line-height:1.4}
+.row.duo .duolet .kies{margin-left:4px;padding:3px 9px;font-size:12.5px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .row.duo .duolet{background:#3a2e10;border-color:#6b5420}}
+.row.duo .duolet .kies{border:1px solid var(--green);background:var(--surface);color:var(--green-dark);border-radius:999px;font-weight:700;cursor:pointer}
