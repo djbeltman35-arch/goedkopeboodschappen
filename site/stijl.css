@@ -468,3 +468,50 @@ html body .chips,html body .mfbalk .mfilters{flex-wrap:wrap;overflow:visible}
 .alkaart{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
 .alkaart li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .alkaart p{margin:0}.alkaart .alkop{font-size:16px}.alkaart .sub{display:block;font-size:13px;color:var(--muted);margin:2px 0 6px}.alkaart .allinks{font-size:14px}
+.subblok.sectie{margin:10px 0}
+.subblok>summary h3.subnaam{margin:0;font-size:15px;font-weight:700;line-height:1.35}
+.faqv .subin p{margin:6px 0 4px;font-size:14.5px}
+.subblok.sectie .subin{padding:6px 12px 10px}
+.subblok.sectie .subin>h2:first-child{margin-top:0}
+/* Duidelijk wat je moet doen: rechts "Bekijk" / "Sluiten" */
+html body .subblok>summary::after{content:"Bekijk ▾";transform:none;flex:none;font-size:12.5px;font-weight:700;color:var(--green-dark);background:var(--green-soft);border:1px solid var(--green);padding:3px 9px;border-radius:999px;white-space:nowrap}
+html body .subblok[open]>summary::after{content:"Sluiten ▴";transform:none;background:var(--surface)}
+html body .subblok>summary .subnaam{min-width:0}
+.msoort{margin-top:0}
+/* Duidelijk wat je moet doen: rechts "Zoek nu" / "Sluiten" */
+html body .subblok>summary::after{content:"Zoek nu ▾";transform:none;flex:none;font-size:12.5px;font-weight:700;color:var(--green-dark);background:var(--green-soft);border:1px solid var(--green);padding:3px 9px;border-radius:999px;white-space:nowrap}
+html body .subblok[open]>summary::after{content:"Sluiten ▴";transform:none;background:var(--surface)}
+html body .subblok>summary .subnaam{min-width:0}
+.msoort{margin-top:0}
+html body .mystores summary .sub{display:inline;font-size:12.5px;margin-left:4px;color:var(--muted)}
+/* Duidelijke pijl om in en uit te klappen */
+html body .subblok>summary::after{content:"";flex:none;width:30px;height:30px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/18px no-repeat;transition:transform .2s}
+html body .subblok[open]>summary::after{transform:rotate(180deg)}
+/* Duidelijke pijl om in en uit te klappen */
+html body .subblok>summary::after{content:"";flex:none;width:30px;height:30px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/18px no-repeat;transition:transform .2s}
+html body .subblok[open]>summary::after{transform:rotate(180deg)}
+.chips.merkkeus{margin:4px 0 6px}
+html body .mystores summary .sub{display:block;margin:1px 0 0;font-size:12.5px}
+html body .mystores summary>span:not(.ic){white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* Home: compactere tegels */
+html body .quick.tegels .cats .chip{flex-direction:row;justify-content:flex-start;text-align:left;gap:6px;min-height:42px;padding:6px 8px;font-size:12.5px;line-height:1.2}
+html body .quick.tegels .cats .chip .ic{font-size:17px}
+html body .quick.tegels .start .chip{min-height:62px;padding:6px;font-size:14px}
+html body .quick.tegels .start .chip .ic{font-size:19px}
+/* Home: categorietegels een stuk minder hoog */
+html body .quick.tegels .cats .chip{flex-direction:row;justify-content:flex-start;text-align:left;gap:6px;min-height:40px;padding:5px 8px;font-size:12.5px;line-height:1.2}
+html body .quick.tegels .cats .chip .ic{font-size:17px}
+html body .quick.tegels .start .chip{min-height:60px;padding:6px;font-size:14px}
+html body .quick.tegels .start .chip .ic{font-size:19px}
+.subblok.keus,.subblok.opties{margin:8px 0}
+.subblok.keus>summary,.subblok.opties>summary{padding:9px 12px;font-size:14.5px}
+.subblok.keus .chips{padding:4px 0}
+/* Overzichtskaarten (dieet, feestdagen, allergie, kennisbank) een stuk minder hoog */
+html body .feesten{gap:6px}
+html body .feesten a{padding:8px 12px;border-radius:12px;border-width:1.5px;gap:0 10px}
+html body .feesten .fi{font-size:22px}
+html body .feesten b{font-size:16px}
+html body .feesten .sub{font-size:12.5px;line-height:1.3}
+html body .alkaart{gap:6px}
+html body .alkaart li{padding:8px 12px}
+html body .quick.tegels .cats a.chip.dieet{border-color:var(--green);background:var(--green-soft);color:var(--green-dark);text-decoration:none}

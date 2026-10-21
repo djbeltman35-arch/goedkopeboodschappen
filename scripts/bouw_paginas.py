@@ -27,6 +27,39 @@ window.mark=()=>{const q=get(),u=new Set(q.map(x=>x.u));document.querySelectorAl
 const n=q.length,m=cnt(),d=document.getElementById("dock");if(!d)return;d.hidden=false;document.body.classList.add("hasdock");document.getElementById("dockt").innerHTML=n?"<b>"+n+(n===1?" artikel":" artikelen")+"</b> klaar voor je lijst":m?"<b>Mijn lijst</b>: "+m+(m===1?" artikel":" artikelen"):"<b>Mijn lijst</b> is nog leeg"};
 const gc=(p,t)=>{try{window.goatcounter&&goatcounter.count&&goatcounter.count({path:p,title:t||p,event:true})}catch(e){}};
 document.addEventListener("click",ev=>{const out=ev.target.closest("[data-out]");if(out){gc("naar/"+out.dataset.out,"Doorklik");return}const b=ev.target.closest(".add[data-o]");if(!b)return;const o=JSON.parse(b.dataset.o),q=get();if(!q.some(x=>x.u===o.u)){q.push(o);if(!put(q)){b.textContent="Bewaren lukt niet in deze browser";return}gc("lijst/"+(o.term||o.n).toLowerCase(),"Op lijst")}mark()});mark()})()</script>'''
+_VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+_TAG = re.compile(r"<(/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*?)(/?)>|<!--.*?-->|<script\b.*?</script>|<style\b.*?</style>", re.S)
+def uitklap(body):
+    """Elke hoofdsectie (een h2 op het bovenste niveau tot de volgende) wordt een uitklapblok, net als de categorieën in de app.
+    De eerste sectie staat open, de rest is dicht. Inhoud blijft in de HTML, dus Google leest alles."""
+    depth, starts, stops = 0, [], []
+    for m in _TAG.finditer(body):
+        tok = m.group(0)
+        if tok.startswith("<!--"): continue
+        if tok.startswith("<script") or tok.startswith("<style"):
+            if depth == 0: stops.append(m.start())
+            continue
+        close, name, attrs, selfc = m.group(1), m.group(2).lower(), m.group(3), m.group(4)
+        if name in _VOID or selfc: continue
+        if close: depth -= 1; continue
+        if depth == 0:
+            if name == "h2": starts.append(m.start())
+            elif name in ("nav",) or (name == "a" and 'class="cta"' in attrs) or (name == "section" and 'class="faq"' in attrs): stops.append(m.start())
+        depth += 1
+    if len(starts) < 2: return body
+    out, pos = [], 0
+    for i, st in enumerate(starts):
+        nxt = min([x for x in starts[i + 1:] + stops if x > st] or [len(body)])
+        sec = body[st:nxt]
+        h = re.match(r'<h2([^>]*)>(.*?)</h2>', sec, re.S)
+        if not h: continue
+        idm = re.search(r'\sid="([^"]+)"', h.group(1)); kop = re.sub(r"<a\b[^>]*>|</a>", "", h.group(2))
+        out.append(body[pos:st])
+        ida = ' id="%s"' % idm.group(1) if idm else ""
+        out.append(f'<details class="subblok sectie"{ida}{" open" if i == 0 else ""}><summary><h2 class="subnaam">{kop}</h2></summary><div class="subin">{sec[h.end():]}</div></details>')
+        pos = nxt
+    out.append(body[pos:])
+    return "".join(out)
 def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css="", og_title=None, og_img=None):
     # Google toont ongeveer 60 tekens titel en 155 tekens omschrijving: te lange titels zonder maand/jaar, omschrijvingen netjes inkorten.
     if len(title) > 65: title = re.sub(r"\s*\((januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) \d{4}\)$", "", title)
@@ -38,6 +71,7 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
     if len(title) > 65: title = title.replace(": waar is het goedkoopst?", ": prijs per supermarkt").replace(" vergelijken: goedkoopst bij ", ": goedkoopst bij ")
     if len(title) > 68: title = title[:title.rfind(" ", 0, 64)].rstrip(",:;–-") + "…"
     if len(desc) > 160: desc = desc[:desc.rfind(" ", 0, 155)].rstrip(",;:") + "…"
+    body_html = uitklap(body_html)
     _t = re.search(r'<nav class="terug".*?</nav>', head_html, re.S)
     if _t: body_html = body_html + _t.group(0).replace('class="terug"', 'class="terug onder"', 1)
     ldtag = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
@@ -108,7 +142,7 @@ def crumbs(*items):
           [{"@type": "ListItem", "position": i + 2, "name": t, **({"item": BASE + h} if h else {})} for i, (t, h) in enumerate(items)]}
     return html_, ld
 def faq_ld(faq): return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
-def faq_html(faq): return '<section class="faq"><h2>Veelgestelde vragen</h2>' + "".join(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>" for q, a in faq) + "</section>"
+def faq_html(faq): return '<section class="faq"><h2>Veelgestelde vragen</h2><div class="subblokken">' + "".join(f'<details class="subblok faqv"><summary><h3 class="subnaam">{esc(q)}</h3></summary><div class="subin"><p>{esc(a)}</p></div></details>' for q, a in faq) + "</div></section>"
 def addbtn(p, term):
     o = {"s": stores[p[0]]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": term}
     return f'<button type="button" class="add" data-o="{esc(json.dumps(o, ensure_ascii=False))}">+ Op mijn lijst</button>'

@@ -134,12 +134,12 @@
 .notify input[type=email]:focus{border-color:var(--green);outline:none}
 .ltools{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .ltools button{padding:9px 13px;font-size:15px}
-.mystores{margin-top:16px;max-width:720px;background:var(--green-soft);border:2px solid var(--green);border-radius:14px}
-.mystores summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:12px 14px;font-weight:700;font-size:16px;color:var(--green-dark)}
+.mystores{margin-top:10px;max-width:720px;background:var(--green-soft);border:2px solid var(--green);border-radius:14px}
+.mystores summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:7px 10px;font-weight:700;font-size:15px;line-height:1.25;color:var(--green-dark)}
 .mystores summary::-webkit-details-marker{display:none}
-.mystores summary .ic{font-size:22px;line-height:1}
+.mystores summary .ic{font-size:18px;line-height:1}
 .mystores summary .sub{display:block;font-weight:400;font-size:14px;color:var(--ink)}
-.mystores summary::after{content:"Kiezen";margin-left:auto;flex:none;background:var(--green);color:var(--on-green);border-radius:10px;padding:7px 12px;font-size:14px}
+.mystores summary::after{content:"Kiezen";margin-left:auto;flex:none;background:var(--green);color:var(--on-green);border-radius:8px;padding:5px 10px;font-size:13px}
 .mystores[open] summary::after{content:"Klaar"}
 .mystores .in{padding:0 14px 14px}
 .mystores .hint{margin:0}
@@ -434,6 +434,12 @@ function dieetRel(sleutel,termen){
   return DIEET_REL[sleutel]=DIEET_K.filter(k=>n[k]>=(k==="arm"||k==="eiw"?1:2));
 }
 let DIEET_NU=DIEET_K;
+// Keuze A-merken / huismerken / beide boven de subcategorieën, alleen waar beide soorten voorkomen.
+const MERK_REL={};
+function merkRel(sleutel,termen){if(sleutel in MERK_REL)return MERK_REL[sleutel];const oud=S.merk;S.merk="alle";let h=0,a=0;
+  for(const t of termen){for(const p of matches0(t).slice(0,40)){if(p.merk==="h")h++;else if(p.merk==="a")a++}if(h>=3&&a>=3)break}
+  S.merk=oud;return MERK_REL[sleutel]=h>=3&&a>=3}
+const merkChips=ok=>ok||S.merk!=="alle"?`<div class="chips merkkeus" role="group" aria-label="Merk">${[["alle","Beide"],["zonder","A-merken"],["huis","Huismerken"]].map(([k,t])=>`<button type="button" class="chip" data-merk="${k}" aria-pressed="${S.merk===k}">${t}</button>`).join("")}</div>`:"";
 const dieetChips=(rel)=>{DIEET_NU=(rel||DIEET_K).concat(DIEET_K.filter(k=>S.dieet[k]&&!(rel||DIEET_K).includes(k)));if(!DIEET_NU.length)return "";const voorb=DIEET_NU.slice(0,3).map(k=>DIEET_TXT[k]).join(", ");return `<button type="button" class="filterknop" data-dieetopen aria-expanded="${!!(S.dieetOpen||dieetAan())}">⚙️ Filter${dieetAan()?` (${dieetAan()})`:`: ${voorb}${DIEET_NU.length>3?"…":""}`}</button>`+(S.dieetOpen||dieetAan()?dieetChips0():"")};
 const dieetChips0=()=>`<div class="chips dieet" role="group" aria-label="Dieet">${DIEET_NU.includes("gv")?`<button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Glutenvrij</button>`:""}${DIEET_NU.includes("lv")?`<button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Lactosevrij</button>`:""}${DIEET_NU.includes("vg")?`<button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Vegan</button>`:""}${DIEET_NU.includes("hl")?`<button type="button" class="chip" data-dieet="hl" aria-pressed="${!!S.dieet.hl}">Halal</button>`:""}${DIEET_NU.includes("arm")?`<button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Caloriearm</button>`:""}${DIEET_NU.includes("eiw")?`<button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Eiwitrijk</button>`:""}</div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.hl?"Alleen producten met halal in de naam (vooral vlees en kip); groente, fruit en andere producten zonder vlees zie je dan niet. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
 function matches0(q,prefix=true,pool=S.prods,basis=false){
@@ -558,9 +564,9 @@ function search(fromUser){
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
-  $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips(dieetRel("q"+norm(q),[q]))}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
+  $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips(dieetRel("q"+norm(q),[q]))}${S.demo?"":merkChips(merkRel("q"+norm(q),[q]))}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${S.demo?"":mijnBlok(best,kop)}${keus}${S.demo?"":alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
+  ${S.demo||!S.mijn?"":mijnBlok(best,kop)}${keus}${(o=>o?`<details class="subblok opties"><summary><span class="subnaam">⚙️ Meer: ${S.mijn?"":"vaste winkel, "}prijsalarm, prijsverloop</span></summary><div class="subin">${o}</div></details>`:"")((S.demo||S.mijn?"":mijnBlok(best,kop))+(S.demo?"":alarmHtml(kop,lo))+(PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""))}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -574,16 +580,18 @@ function kiesPrecies(q){
   for(const c of CATS){const sub=w.every(x=>has(c[0],x));
     for(const t of c[2]) if((sub||pas(t))&&norm(t)!==norm(q)&&!out.includes(t)) out.push(t)}
   if(!out.length) return "";
-  return `<div class="keus"><p>Kies precies wat je zoekt:</p><div class="chips">${out.slice(0,16).map(t=>`<a class="chip" href="/?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a>`).join("")}</div></div>`;
+  return `<details class="subblok keus"><summary><span class="subnaam">🔎 Kies precies wat je zoekt</span><span class="subn">${Math.min(out.length,16)}</span></summary><div class="subin"><div class="chips">${out.slice(0,16).map(t=>`<a class="chip" href="/?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a>`).join("")}</div></div></details>`;
 }
 /* Snelkeuze: aanbiedingen en categorieën */
+// Volgorde op de startpagina: waar in Google het meest op gezocht wordt (geschat), met Dieet en leefstijl vooraan.
+const CAT_VOLG=["Vlees en vis","DIEET","Zuivel en eieren","Groente en aardappelen","Koffie en thee","Frisdrank en sap","Bier en wijn","Huishouden","Verzorging en baby","Fruit","Kaas","Brood en ontbijt","Koek en snoep","Chips en noten","Diepvries","Pasta, rijst en wereldkeuken","Broodbeleg","Vleeswaren en tapas","Soep, conserven en bakken","Sauzen, olie en kruiden","Huisdieren"];
+function catVolgorde(){const r=[];for(const n of CAT_VOLG){if(n==="DIEET"){r.push(-1);continue}const i=GROEPEN.findIndex(g=>g[0]===n);if(i>=0)r.push(i)}GROEPEN.forEach((g,i)=>{if(!r.includes(i))r.push(i)});return r}
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?`<small>${n} acties</small>`:""}</button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a>`+
     `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>prijs per supermarkt</small></a>`+feest+`</div>`+
-    `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
-    `<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a></div>`;
+    `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
 function seizoenTegels(max){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
@@ -605,7 +613,7 @@ function renderView(){
   const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
   const blok=c=>{const rows=c[2].map(t=>{const v=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b));return {t,b:v[0],v}}).filter(r=>r.b); if(!rows.length)return "";const inh=perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("");
     return subs.length>1?`<details class="subblok" id="sub-${S.view}-${CATS.indexOf(c)}"${dieetAan()||OPEN.has("sub-"+S.view+"-"+CATS.indexOf(c))?" open":""}><summary><span class="subnaam">${c[1]} ${esc(c[0])}</span><span class="subn">${rows.length}</span></summary>${inh}</details>`:inh};
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2>${GEEN_DIEET.has(g[0])?"":dieetChips(dieetRel("g"+S.view,subs.flatMap(c=>c[2])))}<p class="meta">${subs.length>1?"Tik op een soort om de producten te zien.":"Tik op een product voor alle prijzen."}</p>
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2>${GEEN_DIEET.has(g[0])?"":dieetChips(dieetRel("g"+S.view,subs.flatMap(c=>c[2])))}${merkChips(merkRel("g"+S.view,subs.flatMap(c=>c[2])))}<p class="meta">${subs.length>1?"Tik op een soort om de producten te zien.":"Tik op een product voor alle prijzen."}</p>
   <div class="subblokken">${subs.map(blok).join("")}</div>`;
 }
 // Drank per verpakking onder een eigen kopje (krat, flesjes, blikjes), zodat je gelijke verpakkingen naast elkaar ziet.
