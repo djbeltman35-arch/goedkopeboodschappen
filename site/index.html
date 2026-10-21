@@ -712,7 +712,7 @@ function renderOffers(){
   const list=f.slice().sort(sorters[S.ofsort]).slice(0,S.ofc==="alle"?S.ofn:Math.max(S.ofn,400));
   const order=[...GROEPEN.map(c=>c[0]),"Overig"].filter(c=>cats.has(c));
   if(S.ofc!=="alle"&&!cats.has(S.ofc)){S.ofc="alle";return renderOffers()}
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2>${dieetChips()}
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2><p class="deel"><button type="button" class="btn-line deelknop" data-deelaanb>📤 Delen</button></p>${dieetChips()}
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="kiezers"><label><span class="sr">Supermarkt</span><select data-ofsel="s"><option value="alle">🏪 Alle winkels</option>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<option value="${s}"${S.ofs===s?" selected":""}>${esc(STORENAMES[s]||s)} (${n})</option>`).join("")}</select></label>
   <label><span class="sr">Categorie</span><select data-ofsel="c"><option value="alle">📂 Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label></div>
@@ -1168,6 +1168,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-naarlijst]")){e.preventDefault();const l=$("lijst");if(l)l.scrollIntoView({block:"start"});return}
   if(e.target.closest("[data-volgendeweek]")){e.preventDefault();S.view="deals";S.ofsoon=true;S.ofn=60;renderAll();const r=$("results");if(r)r.scrollIntoView({block:"start"});return}
   {const dw=e.target.closest("[data-duow]");if(dw){S.duoW=S.duoW||{};S.duoW[dw.dataset.duot]=dw.dataset.duow;const y=scrollY;renderView();const d=$(OPEN.size?[...OPEN].pop():"x");scrollTo(0,y);return}}
+  if(e.target.closest("[data-deelaanb]")){const u=SITE+"/aanbiedingen/"+(S.ofs&&S.ofs!=="alle"?S.ofs+"/"+(S.ofsoon?"volgende-week/":""):""),t=(S.ofs&&S.ofs!=="alle"?(STORENAMES[S.ofs]||S.ofs)+" ":"")+"aanbiedingen "+(S.ofsoon?"volgende week":"van deze week");if(navigator.share)navigator.share({title:t,text:t,url:u}).catch(()=>{});else window.open("https://wa.me/?text="+encodeURIComponent(t+" "+u),"_blank");return}
   if(e.target.closest("[data-vastewinkel]")){e.preventDefault();const d=$("mystores");if(d){d.open=true;d.scrollIntoView({block:"start"});setTimeout(()=>{const sel=$("mijnsel");if(sel)sel.focus()},300)}return}
   if(e.target.closest("[data-toonalarm]")){e.preventDefault();const d=$("prijsalarm");if(d){d.hidden=!d.hidden;if(!d.hidden){d.scrollIntoView({block:"center"});const inp=d.querySelector("input");if(inp)inp.focus()}}return}
   if(e.target.closest("[data-startlijst]")){startLijst();return}

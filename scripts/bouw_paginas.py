@@ -142,6 +142,10 @@ def crumbs(*items):
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": BASE + "/"}] +
           [{"@type": "ListItem", "position": i + 2, "name": t, **({"item": BASE + h} if h else {})} for i, (t, h) in enumerate(items)]}
     return html_, ld
+def deel_html(tekst, path):
+    """Delen via het deelmenu van de telefoon; anders via WhatsApp."""
+    url = f"{BASE}{path}"
+    return f'<p class="deel"><a class="btn-line deelknop" href="https://wa.me/?text={quote(tekst + " " + url)}" target="_blank" rel="noopener" data-deel="{esc(json.dumps({"t": tekst, "u": url}, ensure_ascii=False))}">📤 Delen</a></p>'
 def faq_ld(faq): return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
 def faq_html(faq): return '<section class="faq"><h2>Veelgestelde vragen</h2><div class="subblokken">' + "".join(f'<details class="subblok faqv"><summary><h3 class="subnaam">{esc(q)}</h3></summary><div class="subin"><p>{esc(a)}</p></div></details>' for q, a in faq) + "</div></section>"
 def addbtn(p, term):
@@ -543,10 +547,10 @@ def offers_page(cur, lst):
         vbody = (f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in vlijst[:150])}</ul>'
                  + f'<p class="note">Acties die bij {esc(NAMEN[cur])} al bekend zijn en binnenkort beginnen. Prijzen kunnen nog wijzigen; elke ochtend bijgewerkt.</p>'
                  + f'<p><a href="{path}">{esc(NAMEN[cur])} aanbiedingen van deze week</a> · <a href="/aanbiedingen/">Alle supermarkten</a></p>')
-        schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(NAMEN[cur])} aanbiedingen volgende week</h1><p class=\"lead\">Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst.</p>", vbody, [vcld], actief="/aanbiedingen/"))
+        schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(NAMEN[cur])} aanbiedingen volgende week</h1><p class=\"lead\">Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst.</p>" + deel_html(f"{NAMEN[cur]} aanbiedingen volgende week", vpath), vbody, [vcld], actief="/aanbiedingen/"))
         made.append((vpath, "0.7"))
     body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Populaire merken in de aanbieding</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{esc(n_)} aanbieding</a></li>' for s_, n_ in AP_MERKEN) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
-    schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>", body, ld, actief="/aanbiedingen/"))
+    schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>" + deel_html(h1, path), body, ld, actief="/aanbiedingen/"))
     made.append((path, "0.8"))
 if OFFERS:
     offers_page(None, OFFERS)
@@ -1071,7 +1075,7 @@ for sl, naam_, pat, uit, termen, *merk in AANB_PRODUCT:
             + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + ". Elke dag bijgewerkt.")
     ch, cld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (f"{naam_} aanbieding", None))
     head = ch + (f'<h1>{esc(naam_)} aanbieding deze week</h1><p class="lead">Week {_wk}: <b>{len(nu_)}</b> acties bij {len(winkels_)} supermarkten'
-                 + (f", de voordeligste per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'} eerst" if met_eh else ", de goedkoopste eerst") + ". Elke dag bijgewerkt met de nieuwe acties.</p>")
+                 + (f", de voordeligste per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'} eerst" if met_eh else ", de goedkoopste eerst") + ". Elke dag bijgewerkt met de nieuwe acties.</p>" + deel_html(f"{naam_} in de aanbieding deze week: alle supermarkten naast elkaar", path))
     faq = []
     if goed: faq.append((f"Waar is {naam_.lower()} deze week in de aanbieding?", f"In week {_wk} hebben {', '.join(NAMEN.get(w, w) for w in winkels_)} {naam_.lower()} in de aanbieding. Het voordeligst is nu {goed['n']} bij {NAMEN.get(goed['s'], goed['s'])} voor {eur(goed['p'])}" + (f" ({goed['lbl']})" if goed.get('lbl') else "") + "."))
     if ts:

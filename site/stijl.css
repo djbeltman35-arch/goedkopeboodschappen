@@ -586,3 +586,7 @@ html body .nav a,html body .nav a.feest,html body .nav a.pill{display:inline-fle
 html body .chips,html body .lbar,html body .terug,html body .ltools,html body .merkkeus,html body .kiezers{align-items:stretch}
 html body .chips>.chip,html body .chips>li>a,html body .lbar>button,html body .terug>.tknop,html body .ltools>button{display:inline-flex;align-items:center;justify-content:center}
 html body #quick a.chip.lunch{border:2px solid var(--line);background:#fff8e6;color:var(--ink);text-decoration:none}
+/* Starttegels allemaal dezelfde kleur */
+html body #quick .start .chip,html body #quick .start .chip.hot,html body #quick .start a.chip.seizoen,html body #quick .start a.chip.lunch,html body #quick .start a.chip.dieet,html body #quick .start a.chip.wm,html body #quick .start .chip.mt{background:var(--green-soft);color:var(--ink)}
+html body #quick .start .chip small{color:var(--muted);opacity:1}
+html body .promise{justify-items:center;font-weight:700;color:var(--ink)}
