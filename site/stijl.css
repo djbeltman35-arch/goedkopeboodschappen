@@ -590,3 +590,7 @@ html body #quick a.chip.lunch{border:2px solid var(--line);background:#fff8e6;co
 html body #quick .start .chip,html body #quick .start .chip.hot,html body #quick .start a.chip.seizoen,html body #quick .start a.chip.lunch,html body #quick .start a.chip.dieet,html body #quick .start a.chip.wm,html body #quick .start .chip.mt{background:var(--green-soft);color:var(--ink)}
 html body #quick .start .chip small{color:var(--muted);opacity:1}
 html body .promise{justify-items:center;font-weight:700;color:var(--ink)}
+/* Vinkjes: elke regel als geheel gecentreerd */
+html body .promise{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px;text-align:center}
+html body .promise li.brk{flex-basis:100%;height:0;margin:0;padding:0}
+html body .promise li.brk::before{content:none}
