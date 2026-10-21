@@ -205,7 +205,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a class="pill mt" href="#lijst" data-naarlijst>🛒 Mijn lijst<b class="navn" id="navn" hidden></b></a><a class="pill aanb" href="/aanbiedingen/" data-volgendeweek>📅 Volgende week</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a class="pill aanb" href="/aanbiedingen/" data-volgendeweek>📅 Acties volgende week</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
     
   </div>
 </header>
@@ -219,7 +219,7 @@
       <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn">Zoek</button>
     </form>
-    <ul class="promise"><li>Elke dag nieuwe prijzen</li><li>Onafhankelijk en zonder reclame</li></ul>
+    <ul class="promise"><li>Elke dag nieuwe prijzen</li><li>Gratis</li><li>Onafhankelijk</li><li>Zonder reclame</li></ul>
     <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
@@ -548,6 +548,14 @@ function alarmHtml(q,lo){
   return`<form class="alarm" data-alarm="${esc(q)}" data-u="${lo[6]}"><span>🔔 Mail me als ${esc(q)} onder</span> <label>€ <input type="number" name="max" step="0.01" min="0.01" value="${voorstel.toFixed(2)}" inputmode="decimal" aria-label="Maximale prijs per ${eh}"></label> <span>per ${eh} komt (nu ${eur(effUnit(lo))})</span> <button type="submit" class="btn-line">Zet aan</button><span class="alarmmsg" role="status"></span></form>`;
 }
 async function alarmSync(){const t=mailToken();if(!t)return false;try{const r=await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t,alarm:(store.get("alarmen")||[]).map(({t,max,u})=>({t,max,u}))})});return r.ok}catch(e){return false}}
+// Keuze uit verpakkingsinhoud: producten indelen naar hoeveel erin zit (klein, groot, multipack, krat …).
+function pakVan(p){const u=p.lit?null:effUnit(p),e=p.lit?"l":p[6],q=p.lit?p.lit:(u?eff(p)/u:null);if(!q||!isFinite(q))return "";
+  if(e==="l")return q<.4?"Klein (tot 40 cl)":q<=1.05?"Fles of pak (tot 1 liter)":q<=2.6?"Groot (1 tot 2,5 liter)":q<=8?"Multipack (2,5 tot 8 liter)":"Krat of tray (meer dan 8 liter)";
+  if(e==="kg")return q<.25?"Klein (tot 250 gram)":q<=.6?"Middel (250 tot 600 gram)":q<=1.2?"Groot (600 gram tot 1,2 kilo)":"Extra groot (meer dan 1,2 kilo)";
+  if(e==="st")return q<=1.5?"Per stuk":q<=6.5?"2 tot 6 stuks":q<=12.5?"7 tot 12 stuks":"Meer dan 12 stuks";return ""}
+const PAK_VOLG=["Klein (tot 40 cl)","Fles of pak (tot 1 liter)","Groot (1 tot 2,5 liter)","Multipack (2,5 tot 8 liter)","Krat of tray (meer dan 8 liter)","Klein (tot 250 gram)","Middel (250 tot 600 gram)","Groot (600 gram tot 1,2 kilo)","Extra groot (meer dan 1,2 kilo)","Per stuk","2 tot 6 stuks","7 tot 12 stuks","Meer dan 12 stuks"];
+function pakIndeling(m){const n=new Map();for(const p of m){const k=pakVan(p);if(k)n.set(k,(n.get(k)||0)+1)}return PAK_VOLG.filter(k=>n.has(k)).map(k=>[k,n.get(k)])}
+document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-pak]");if(!x)return;S.pak=x.value;search()});
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick(); if(fromUser||q!=="halfvolle melk") S.demo=false;
   if(!q){$("results").innerHTML="";return}
@@ -557,6 +565,9 @@ function search(fromUser){
   let bedoeld="";
   if(!m.length){const alt=verbeter(q); if(alt){const m2=matches(alt,false).length?matches(alt,false):matches(alt); if(m2.length){m=m2;bedoeld=alt;if(fromUser)gc("verbeterd/"+norm(q)+"/"+norm(alt),"Zoekt (verbeterd): "+q+" → "+alt)}}}
   if(!m.length){if(fromUser&&S.restGeladen)gc("geen/"+norm(q),"Niets gevonden: "+q);$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.${!S.restGeladen?" (De laatste producten worden nog geladen; probeer het zo nog eens.)":""}</div>`;return}
+  if(S.pakQ!==norm(q)){S.pak="";S.pakQ=norm(q)}
+  const pk=pakIndeling(m);if(S.pak&&pk.some(x=>x[0]===S.pak))m=m.filter(p=>pakVan(p)===S.pak);else S.pak="";
+  const pakHtml=pk.length>1?`<label class="pakkeus"><span>📦 Inhoud</span><select data-pak><option value="">Alle verpakkingen</option>${pk.map(([k,n])=>`<option value="${esc(k)}"${S.pak===k?" selected":""}>${esc(k)} (${n})</option>`).join("")}</select></label>`:"";
   const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
   const keus=kiesPrecies(q);
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
@@ -568,6 +579,7 @@ function search(fromUser){
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${S.demo||!S.mijn?"":mijnBlok(best,kop)}${keus}${S.demo?"":(()=>{const al=alarmHtml(kop,lo),pg=PAGINAS.has(norm(q))?`/vergelijk/${PAGINAS.get(norm(q))}/`:"";
     return `<p class="snelopties"><a href="#" data-vastewinkel>⭐ ${S.mijn?"Vaste winkel wijzigen":"Vaste winkel kiezen"}</a>${al?`<a href="#" data-toonalarm>🔔 Prijsalarm</a>`:""}${pg?`<a href="${pg}">📈 Prijsverloop</a>`:""}</p>${al?`<div id="prijsalarm" hidden>${al}</div>`:""}`})()}
+  ${pakHtml}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -590,8 +602,8 @@ function catVolgorde(){const r=[];for(const n of CAT_VOLG){if(n==="DIEET"){r.pus
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?`<small>${n} acties</small>`:""}</button>`+
-    `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a>`+
-    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>prijs per supermarkt</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl<small>glutenvrij, vegan, halal…</small></a>`+feest+`</div>`+
+    `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>`+
+    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl<small>glutenvrij, vegan, halal…</small></a>`+feest+`</div>`+
     `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
@@ -665,9 +677,13 @@ function mijnRij(b,v){if(!S.mijn||isMijn(b[0]))return S.mijn&&isMijn(b[0])?'<spa
   return d>=.05?`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: daar betaal je ${eur(d)} meer</span>`:`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: bijna even goedkoop</span>`}
 // A-merk naast huismerk: twee kolommen, zodat het verschil meteen duidelijk is en je er één op je lijst zet.
 function duoKol(p,lbl,t){const o=offerOf(p),u=p.lit?eff(p)/p.lit:effUnit(p),e=p.lit?"l":p[6];
-  return `<div class="dk"><span class="dl">${lbl}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}<a class="dn" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])} <span class="sz">${esc(p[4]||"")}</span></a><div class="dp">${tag(eff(p),o?"deal":"")}${S.list.some(x=>x.link===link(p))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(t)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</div><span class="unit">${u!=null?esc(unitTxt(u,e)):""}</span></div>`}
-function duoRij(t){if(S.merk!=="alle")return "";const m=matches(t).filter(p=>!p.bad).sort((x,y)=>rank(x)-rank(y));
-  const per={};for(const p of m){const w=p[0];per[w]=per[w]||{};if(p.merk==="a"&&!per[w].a)per[w].a=p;if(p.merk==="h"&&!per[w].h)per[w].h=p}
+  return `<div class="dk"><span class="dl">${lbl}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}<a class="dn" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])} <span class="sz">${esc(p[4]||"")}</span></a>${labels(p[1],KCAL[(t||"").toLowerCase()],t)}<div class="dp">${tag(eff(p),o?"deal":"")}${S.list.some(x=>x.link===link(p))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(t)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</div><span class="unit">${u!=null?esc(unitTxt(u,e)):""}</span></div>`}
+function duoRij(t){if(S.merk!=="alle")return "";
+  // Alleen echte vergelijkbare producten: dezelfde strenge selectie als de gewone rij (geen appelstroop bij peren of Fanta bij sinaasappels).
+  let m=matches(t,false);if(!m.length)return "";markBad(m);m=m.filter(p=>!p.bad);if(!m.length)return "";
+  const gmin=Math.min(...m.map(words));m=m.filter(p=>words(p)<=gmin+2);
+  const per={},grp={};for(const p of m){if(p.merk!=="a"&&p.merk!=="h")continue;const k=p[0]+"|"+p.merk;(grp[k]||(grp[k]=[])).push(p)}
+  for(const k in grp){const arr=grp[k],mn=Math.min(...arr.map(words)),best=arr.filter(p=>words(p)<=mn+1).sort((x,y)=>rank(x)-rank(y))[0],[w,mk]=k.split("|");per[w]=per[w]||{};per[w][mk]=best}
   const paren=Object.keys(per).filter(w=>per[w].a&&per[w].h);if(!paren.length)return "";
   const keus=(S.duoW||{})[t];let w=paren.includes(keus)?keus:paren.find(x=>isMijn(x));
   if(!w)w=paren.sort((x,y)=>rank(per[x].h)-rank(per[y].h))[0];

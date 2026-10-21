@@ -558,3 +558,19 @@ html body .row.duo{display:block;padding:10px 12px}
 .row.duo .duolet .kies{margin-left:4px;padding:3px 9px;font-size:12.5px}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .row.duo .duolet{background:#3a2e10;border-color:#6b5420}}
 .row.duo .duolet .kies{border:1px solid var(--green);background:var(--surface);color:var(--green-dark);border-radius:999px;font-weight:700;cursor:pointer}
+.pakkeus{display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:700;font-size:14.5px}
+.pakkeus select{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 14px var(--text)}
+/* Starttegels: icoon en titel overal op dezelfde hoogte */
+html body .quick.tegels .start .chip{justify-content:flex-start;padding-top:8px}
+html body .quick.tegels .start .chip small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* Overal onopvallende kaders: 1px, lichtgrijs */
+html body .chip,html body .terug .tknop,html body .filterknop,html body .subblok,html body .ptable,html body .feesten a,html body .alkaart li,html body .catlijst,html body .row.duo .dk,html body .mstores,html body .wmblok,html body .hvdeel,html body .card,html body .mkaart,html body .mgrid>li,html body ul.offers>li.offer,html body .rows,html body .list{border-width:1px;border-color:var(--line)}
+html body .terug .tknop:not(.home){border-color:#b9d8c6}
+html body .chip[aria-pressed=true],html body .chip.on{border-color:var(--green)}
+html body .quick.tegels .cats .chip{border:1px solid var(--line)}
+html body input[type=search],html body input[type=text],html body #q{border-width:1px}
+html body .promise{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:2px 14px}
+html body #quick .start .chip,html body #quick a.chip.wm,html body #quick a.chip.seizoen,html body #quick a.chip.dieet,html body #quick .chip.hot,html body #quick .cats .chip{border:1px solid var(--line)}
+/* Alle tegels en kaders dezelfde rand als de categorietegels: 2px lichtgrijs */
+html body .chip,html body .terug .tknop,html body .filterknop,html body .subblok,html body .ptable,html body .feesten a,html body .alkaart li,html body .catlijst,html body .row.duo .dk,html body .wmblok,html body .hvdeel,html body .mgrid>li,html body ul.offers>li.offer,html body .rows,html body .list,html body .mystores,html body #quick .start .chip,html body #quick a.chip.wm,html body #quick a.chip.seizoen,html body #quick a.chip.dieet,html body #quick .chip.hot,html body #quick .cats .chip,html body .pakkeus select,html body .kiezers select{border:2px solid var(--line)}
+html body .chip[aria-pressed=true],html body .chip.on{border-color:var(--green)}
