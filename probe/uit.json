@@ -1,31 +1,394 @@
 {
- "ah_chunks": {
-  "chunks": 30,
-  "vond": [
-   "ENDPOINT https://tst.ah.nl/gql"
-  ]
- },
- "ah_spotlight_nu": {
-  "2026-10-21_spotlight": "200 8269 {\"sectionType\":\"SP\",\"sectionDescription\":\"Uit de Bonusfolder\",\"bonusGroupOrProducts\":[{\"bonusGroup\":{\"id\":\"815112\",\"offerId\":198877,\"offerStartDate\":\"2026-10-19\",\"segmentId\":815112,\"segmentDescription\":\"Alle AH Wok- en roerbakgroenten 400 gram\",\"bonusStartDate\":\"2026-10-19\",\"bonusEndDate\":\"2026-10-2",
-  "2026-10-21_other": "500 215 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/other for request '/bonuspage/v2/section/other'.\",\"correlationId\":\"31b001b4-b43b-45c6-997f-13d6e02c65e3\",\"timestamp\":\"2026-10-21T14:03:34.678995909Z\"}",
-  "2026-10-21_all": "500 211 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/all for request '/bonuspage/v2/section/all'.\",\"correlationId\":\"23498c35-8955-40b2-a29a-4f320021857d\",\"timestamp\":\"2026-10-21T14:03:34.965283545Z\"}",
-  "2026-10-26_spotlight": "200 86 {\"sectionType\":\"\",\"sectionDescription\":\"\",\"bonusGroupOrProducts\":[],\"sectionImage\":[]}",
-  "2026-10-26_other": "500 215 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/other for request '/bonuspage/v2/section/other'.\",\"correlationId\":\"0430bcbd-d73b-4024-9360-b3ec4cde1051\",\"timestamp\":\"2026-10-21T14:03:36.015906844Z\"}",
-  "2026-10-26_all": "500 211 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/all for request '/bonuspage/v2/section/all'.\",\"correlationId\":\"ab4d94fc-2261-4ccc-b2a7-5e544fff0448\",\"timestamp\":\"2026-10-21T14:03:36.248689544Z\"}",
-  "2026-10-28_spotlight": "200 86 {\"sectionType\":\"\",\"sectionDescription\":\"\",\"bonusGroupOrProducts\":[],\"sectionImage\":[]}",
-  "2026-10-28_other": "500 215 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/other for request '/bonuspage/v2/section/other'.\",\"correlationId\":\"104cdaf6-a55c-4295-9366-b9c9f4886307\",\"timestamp\":\"2026-10-21T14:03:36.817212213Z\"}",
-  "2026-10-28_all": "500 211 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/all for request '/bonuspage/v2/section/all'.\",\"correlationId\":\"b3c66a46-9254-47a6-87b6-c52f02b0edf2\",\"timestamp\":\"2026-10-21T14:03:37.050079751Z\"}",
-  "2026-11-02_spotlight": "200 86 {\"sectionType\":\"\",\"sectionDescription\":\"\",\"bonusGroupOrProducts\":[],\"sectionImage\":[]}",
-  "2026-11-02_other": "500 215 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/other for request '/bonuspage/v2/section/other'.\",\"correlationId\":\"caa6225a-bc07-48c0-ba2f-8f5c2af4f2db\",\"timestamp\":\"2026-10-21T14:03:37.516621028Z\"}",
-  "2026-11-02_all": "500 211 {\"status\":500,\"message\":\"No static resource bonuspage/v2/section/all for request '/bonuspage/v2/section/all'.\",\"correlationId\":\"1b3d9757-d49b-46df-8700-ae3082d6543c\",\"timestamp\":\"2026-10-21T14:03:37.742018459Z\"}"
- },
- "vomar": {
-  "api": [
-   "https://www.vomar.nl/sitemap.xml",
-   "https://login.vomar.nl/oauth2/authorize",
-   "https://werkenbij.vomar.nl/"
+ "spotlight": {
+  "sectionType": "SP",
+  "sectionDescription": "Uit de Bonusfolder",
+  "bonusGroupOrProducts": [
+   {
+    "bonusGroup": {
+     "id": "815112",
+     "offerId": 198877,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815112,
+     "segmentDescription": "Alle AH Wok- en roerbakgroenten 400 gram",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198877_AH_NL_WK43_ALLE_AH_WOK_EN_ROERBAKGROENTEN_400_GRAM?rendition=200px&fileType=binary&version=N_OZkdEmlndnqBVm5XacyQ"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198877_AH_NL_WK43_ALLE_AH_WOK_EN_ROERBAKGROENTEN_400_GRAM?rendition=708px&fileType=binary&version=N_OZkdEmlndnqBVm5XacyQ"
+      }
+     ],
+     "category": "Groente, aardappelen",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815124",
+     "offerId": 198889,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815124,
+     "segmentDescription": "Alle AH Gehakt 300 gram en AH Terra plantaardig rulgehakt 200 gram*",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198889_AH_NL_WK43_ALLE_AH_GEHAKT_300_GRAM_EN_AH_TERRA_PLANTAARDIG_RULGEHAKT_200_GRAM?rendition=200px&fileType=binary&version=WaFbGmokG622Ovk0c0Nm0g"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198889_AH_NL_WK43_ALLE_AH_GEHAKT_300_GRAM_EN_AH_TERRA_PLANTAARDIG_RULGEHAKT_200_GRAM?rendition=708px&fileType=binary&version=WaFbGmokG622Ovk0c0Nm0g"
+      }
+     ],
+     "category": "Vlees",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [
+      "*M.u.v. Biologisch"
+     ],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false,
+     "exceptionRule": "*M.u.v. Biologisch"
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815147",
+     "offerId": 198912,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815147,
+     "segmentDescription": "Alle AH Goudse kaas in stukken van de zelfbedieningsafdeling*",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198912_AH_NL_WK43_ALLE_AH_GOUDSE_KAAS_IN_STUKKEN_VAN_DE_ZELFBEDIENINGSAFDELING?rendition=200px&fileType=binary&version=kyw5CnyvnvMXWFHLOwLdmA"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198912_AH_NL_WK43_ALLE_AH_GOUDSE_KAAS_IN_STUKKEN_VAN_DE_ZELFBEDIENINGSAFDELING?rendition=708px&fileType=binary&version=kyw5CnyvnvMXWFHLOwLdmA"
+      }
+     ],
+     "category": "Kaas",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [
+      "*M.u.v. grootverpakkingen"
+     ],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false,
+     "exceptionRule": "*M.u.v. grootverpakkingen"
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815113",
+     "offerId": 198878,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815113,
+     "segmentDescription": "Alle Campina Langlekker literpakken",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198878_AH_NL_WK43_ALLE_CAMPINA_LANGLEKKER_LITERPAKKEN?rendition=200px&fileType=binary&version=eBhVYcdsphHITQWPWRZu2Q"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198878_AH_NL_WK43_ALLE_CAMPINA_LANGLEKKER_LITERPAKKEN?rendition=708px&fileType=binary&version=eBhVYcdsphHITQWPWRZu2Q"
+      }
+     ],
+     "category": "Zuivel, eieren",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815156",
+     "offerId": 198921,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815156,
+     "segmentDescription": "Alle Royal Club, Pepsi, Rivella en 7UP literflessen",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198921_AH_NL_WK43_ALLE_ROYAL_CLUB_PEPSI_RIVELLA_EN_7UP_LITERFLESSEN?rendition=200px&fileType=binary&version=cvnLvJaglM6KXHDwOOdJjA"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198921_AH_NL_WK43_ALLE_ROYAL_CLUB_PEPSI_RIVELLA_EN_7UP_LITERFLESSEN?rendition=708px&fileType=binary&version=cvnLvJaglM6KXHDwOOdJjA"
+      }
+     ],
+     "category": "Frisdrank, sappen, water",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815177",
+     "offerId": 198942,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815177,
+     "segmentDescription": "Alle A-merk haarverzorging en -styling",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198942_AH_NL_WK43_ALLE_AMERK_HAARVERZORGING_EN_STYLING?rendition=200px&fileType=binary&version=WaFbGmokG622Ovk0c0Nm0g"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198942_AH_NL_WK43_ALLE_AMERK_HAARVERZORGING_EN_STYLING?rendition=708px&fileType=binary&version=WaFbGmokG622Ovk0c0Nm0g"
+      }
+     ],
+     "category": "Drogisterij",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false
+    }
+   },
+   {
+    "bonusGroup": {
+     "id": "815173",
+     "offerId": 198938,
+     "offerStartDate": "2026-10-19",
+     "segmentId": 815173,
+     "segmentDescription": "Alle Robijn, Ariel en Lenor",
+     "bonusStartDate": "2026-10-19",
+     "bonusEndDate": "2026-10-25",
+     "validityPeriod": {
+      "start": "2026-10-19",
+      "end": "2026-10-25",
+      "description": "",
+      "code": "NO_LABEL"
+     },
+     "bonusType": "AH",
+     "promotionType": "NATIONAL",
+     "segmentType": "AH",
+     "discountDescription": "2e GRATIS",
+     "images": [
+      {
+       "width": 200,
+       "height": 200,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198938_AH_NL_WK43_ALLE_ROBIJN_ARIEL_EN_LENOR?rendition=200px&fileType=binary&version=QXKMisD5Oz5pudENP2hN5Q"
+      },
+      {
+       "width": 708,
+       "height": 708,
+       "url": "https://static.ah.nl/mam/bonus/COMBIBEELD_198938_AH_NL_WK43_ALLE_ROBIJN_ARIEL_EN_LENOR?rendition=708px&fileType=binary&version=QXKMisD5Oz5pudENP2hN5Q"
+      }
+     ],
+     "category": "Huishouden",
+     "future": false,
+     "products": [],
+     "shopType": "AH",
+     "bonusPeriodDescription": "",
+     "exampleHasListPrice": false,
+     "isStapelBonus": false,
+     "extraDescriptions": [],
+     "labelType": "SPOTLIGHT",
+     "discountLabels": [
+      {
+       "code": "DISCOUNT_ONE_FREE",
+       "defaultDescription": "2e gratis",
+       "count": 2
+      }
+     ],
+     "storeOnlyPromotion": false
+    }
+   }
   ],
-  "keys": [],
-  "stuk": "ht:700;line-height:2.4rem;margin-bottom:8px}@media(min-width:1120px){.jumbo{font-size:4rem;line-height:4rem}}.heading-1,h1{font-size:2rem;font-weight:800;line-height:2.4rem;margin-bottom:3.2rem}@media(min-width:1120px){.heading-1,h1{font-size:2.8rem;line-height:3.4rem}}.heading-2,h2{font-size:1.8rem;font-weight:800;line-height:2.2rem}@media(min-width:1120px){.heading-2,h2{font-size:2.4rem;line-height:3.4rem}}.heading-3,h3{font-size:1.4rem;font-weight:600;line-height:2.2rem}@media(min-width:1120px){.heading-3,h3{font-size:1.6rem;line-height:2.2rem}}.heading-4,h4{font-size:1.4rem;font-weight:600;line-height:2.2rem}@media(min-width:1120px){.heading-4,h4{font-size:1.6rem;line-height:2.2rem}}.subtitle-1{font-size:1.4rem;font-weight:800;line-height:2.1rem}@media(min-width:1120px){.subtitle-1{font-size:2rem;line-height:2.4rem}}.subtitle-2{font-weight:500}.subtitle-2,.subtitle-3{font-size:1.4rem;line-height:2.3rem}.subtitle-3{font-weight:400}.intro-title{font-size:1.6rem;font-weight:500;line-height:1.5}@media(min-width:1120px){.intro-title{font-size:2rem;line-height:3rem}}.button,button{font-size:1.6rem;font-weight:500;line-height:2.4rem}.button{align-items:center;display:flex;height:48px}.button-yellow{background:#ffed00;border-color:#ffed00;border-radius:.4rem;box-shadow:2px 2px 4px 0 rgba(0,0,0,.7);color:#12110c;margin-top:3.2rem;padding:0 3.2rem;transition:all .2s ease-in-out}.button-yellow:hover{box-shadow:1px 1px 2px 0 rgba(0,0,0,.7)}.quote{font-size:1.1rem;line-height:1.4rem}.price{font-family:\"IJmond\",sans-serif;font-size:1.6rem;line-height:1.5}@media(min-width:1120px){.price{font-size:3.2rem;line-height:3.2rem}}.price.big{font-family:\"IJmond\",sans-serif;font-size:2.4rem;line-height:1}@media(min-width:1120px){.price.big{font-size:4.8rem;line-height:4.8rem}}h1 small{color:#9b9b9b;font-size:1.4rem;font-weight:400;margin-left:1.6rem}.last-of-type{margin-bottom:4rem}@media(min-width:960px){.last-of-type{margin-bottom:6.5rem}}html body.site-6 .last-of-type{margin-bottom:0}#products{display:flex;flex-wrap:wrap;width:100%}#products .product:nth-child(-n+1) a{border-top:1px solid #d8d8d8}@media(min-width:960px){#products .product:nth-child(-n+3) a{border-top:1px solid #d8d8d8}}.product a{border-bottom:1px solid #d8d8d8;color:#12110c;display:flex;flex-wrap:wrap;padding-top:1.4rem;position:relative}@media(min-width:960px){.product a{flex-direction:column;margin-bottom:1.6rem;margin-top:.4rem;min-height:29.6rem;padding:1.6rem 0}}.product a .content{width:calc(100% - 6.8rem)}@media(min-width:960px){.product a .content{width:100%}}.product a .content .description{line-height:1.9rem;min-height:3.8rem}@media(min-width:960px){.product a .content .description{min-height:5.6rem;width:100%}}.product a .image{justify-content:center;margin-bottom:1rem;margin-right:.8rem}@media(min-width:960px){.product a .image{display:flex;margin-right:0}}.product a .image .labels{display:flex;flex-direction:column;gap:.2rem;position:absolute;width:100%}@media(min-width:960px){.prod"
- }
+  "sectionImage": []
+ },
+ "sec_spotlight": 200,
+ "sec_SP": 500,
+ "sec_OTHER": 500,
+ "sec_BG": 500,
+ "sec_bonus": 500,
+ "sec_categories": 500,
+ "sec_group": 500,
+ "sec_segments": 500,
+ "https://api.ah.nl/mobile-services/bonuspage/v2/metadata": "500 {\"status\":500,\"message\":\"No static resource bonuspage/v2/metadata for request '/bonuspage/v2/metadata'.\",\"correlationId\":\"37d76ef9-ad0e-447f-9771-bfc755b9a296\",\"timestamp\":\"2026-10-21T14:04:37.944792753Z\"}",
+ "https://api.ah.nl/mobile-services/bonuspage/v3/metadata": "200 {\"periods\":[{\"bonusStartDate\":\"2026-10-19\",\"bonusEndDate\":\"2026-10-25\",\"nextPeriodVisibleFrom\":\"2026-10-23\",\"bonusFolderUrl\":\"https://folder.ah.nl/bonus-week-43-2026/?publitas_embed=embedded\",\"bonusFolderIconUrl\":\"https://folder.ah.nl/bonus-week-43-2026/cover_page.jpg?ts=1792425449&size=at200\",\"voordeelshopFolderUrl\":\"https://folder.ah.nl/voordeelshop-folder-week-43-2026/?publitas_embed=embedded\",\"voordeelshopIconUrl\":\"https://folder.ah.nl/voordeelshop-folder-week-43-2026/cover_page.jpg?ts=1792399686&size=at200\",\"tabs\":[{\"description\":\"Uitgelicht\",\"urlMetadataList\":[{\"url\":\"bonuspage/v2/sectio",
+ "https://api.ah.nl/mobile-services/bonuspage/v1/periods": "500 {\"status\":500,\"message\":\"No static resource bonuspage/v1/periods for request '/bonuspage/v1/periods'.\",\"correlationId\":\"2b8a9070-e2df-47d2-9853-0cf91ab9cc6d\",\"timestamp\":\"2026-10-21T14:04:38.692122755Z\"}",
+ "https://api.ah.nl/mobile-services/bonuspage/v2/periods": "500 {\"status\":500,\"message\":\"No static resource bonuspage/v2/periods for request '/bonuspage/v2/periods'.\",\"correlationId\":\"5cd217e0-8407-4fcd-baab-a55631cfba1f\",\"timestamp\":\"2026-10-21T14:04:38.928073188Z\"}",
+ "https://api.ah.nl/mobile-services/bonuspage/v2/sections?date=2026-10-21": "500 {\"status\":500,\"message\":\"No static resource bonuspage/v2/sections for request '/bonuspage/v2/sections'.\",\"correlationId\":\"c3a7277b-28a2-4d44-96a6-f05875911009\",\"timestamp\":\"2026-10-21T14:04:39.153416689Z\"}",
+ "https://api.ah.nl/mobile-services/bonuspage/v2/section?date=2026-10-21": "500 {\"status\":500,\"message\":\"Required request parameter 'promotionType' for method parameter type String is not present\",\"correlationId\":\"f058858f-0546-46f3-8920-3fe068c98bb4\",\"timestamp\":\"2026-10-21T14:04:39.339505268Z\"}",
+ "filters": [
+  "brand:AH=AH|AH Biologisch=AH Biologisch|AH Terra=AH Terra|Alpro=Alpro|Arla=Arla|Aroy-D=Aroy-D|Betsie's=Betsie's|Biodermal=Biodermal",
+  "taxonomy:5900=0-6 maanden (zuigelingenvoeding)|10206=Aziatische keuken|10299=Bakproducten|11640=Biscuits|4114=Candybars|4115=Candybars minis|1855=Candybars multipack|998=Chocolade",
+  "intolerance:sp_include_intolerance_geen_eieren=eieren|sp_include_intolerance_geen_gluten=gluten|sp_include_intolerance_geen_lactose=lactose|sp_include_intolerance_geen_lupine=lupine|sp_include_intolerance_geen_melk=melk|sp_include_intolerance_geen_mosterd=mosterd|sp_include_intolerance_geen_noten=noten|sp_include_intolerance_geen_pindas=pinda's",
+  "diet:sp_include_dieet_laag_suiker=Laag suiker|sp_include_dieet_laag_vet=Laag vet|sp_include_dieet_laag_zout=Laag zout|sp_include_dieet_veganistisch=Veganistisch|sp_include_dieet_vegetarisch=Vegetarisch",
+  "nutriscore:a=Score A|b=Score B|c=Score C|d=Score D|e=Score E|n-a=Score N/A",
+  "bonus:Bonus=Bonus",
+  "np_verbluffen:np_verbluffen=Prijsfavoriet",
+  "np_biologisch:np_biologisch=Biologisch",
+  "np_nieuw:np_nieuw=Nieuw",
+  "diepvries:diepvries=Diepvries",
+  "np_feestfav:np_feestfav=Voor de feestdagen",
+  "sp_include_dieet_vegetarisch:sp_include_dieet_vegetarisch=Vegetarisch",
+  "sp_include_dieet_veganistisch:sp_include_dieet_veganistisch=Veganistisch"
+ ]
 }
