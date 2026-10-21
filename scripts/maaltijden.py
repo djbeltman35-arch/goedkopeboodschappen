@@ -41,7 +41,7 @@ I = {
     "zure room": (["zure room"], 190, None, []),
     "mayonaise": (["mayonaise"], 700, None, ["light", "halfvol", "knoflook", "sriracha", "truffel", "vegan"]),
     "uien": (["uien", "gele uien", "ui"], 35, .1, ["rode", "gesneden", "zilver", "gebakken", "zoete", "soep", "ringen", "lente", "amsterdamse", "aardappel", "bacon", "zuur", "pot", "tomaten", "blokjes", "saus"]),
-    "winterpeen": (["winterpeen", "wortelen", "wortels"], 30, .15, ["doperwten", "snack", "mini", "geraspt", "julienne"]),
+    "winterpeen": (["winterpeen", "wortelen", "wortels"], 30, .15, ["doperwten", "erwten", "snack", "mini", "geraspt", "julienne", "sap", "salade", "puree"]),
     "bleekselderij": (["bleekselderij"], 15, .4, []),
     "knolselderij": (["knolselderij"], 30, .8, ["blokjes"]),
     "prei": (["prei", "prei gesneden"], 30, .25, ["soep", "roerbak"]),
@@ -101,7 +101,7 @@ I = {
     "courgette": (["courgette"], 17, .3, ["ovengroente", "spaghetti", "noedels", "soep", "spiralen", "linten", "airfryer", "rasp"]),
     "couscous": (["couscous"], 360, None, ["parel", "volkoren", "salade", "kant", "maaltijd", "kruiden"]),
     "dadels": (["dadels"], 280, None, ["siroop", "koek", "reep", "chocolade", "bacon"]),
-    "rijstnoedels": (["rijstnoedels", "rice noodles", "rijst noedels"], 360, None, ["soep", "instant", "cup", "kip", "kant"]),
+    "rijstnoedels": (["rijstnoedels", "rice noodles", "rijst noedels"], 360, None, ["soep", "instant", "cup", "kip", "kant", "mama", "groente", "smaak", "flavour", "pot"]),
     "zwarte bonen": (["zwarte bonen"], 90, None, ["saus", "salade", "soep", "chili"]),
     "avocado": (["avocado"], 160, .2, ["friet", "dip", "olie", "spread", "guacamole", "mini"]),
 }
