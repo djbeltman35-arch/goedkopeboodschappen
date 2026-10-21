@@ -12,8 +12,9 @@ FONT = ''
 FAV = '<link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">'
 GC = '<script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
 NAV = [("/aanbiedingen/", '<span class="ic">🔥 </span>Aanbiedingen', "pill aanb"), ("/maaltijden/", '<span class="ic">🍽️ </span>Maaltijden', "pill mt"), ("/feestdagen/", "🎉 Feestdagen", "feest"), ("/categorie/", "Categorieën", "wide")]
-def header(actief=""):
-    links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV)
+def header(actief="", hier=""):
+    # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
+    links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV if h != hier)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
@@ -79,7 +80,7 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{BASE}{path}"><meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{esc(og_title or title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:image" content="{BASE}{og_img or "/icons/og.png"}"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0e7c4a">
 {FAV}{FONT}<link rel="stylesheet" href="/stijl.css?v={quote(VERSIE)}"><script src="/fout.js?v={quote(VERSIE)}" defer></script>{f"<style>{extra_css}</style>" if extra_css else ""}{ldtag}{GC}</head><body>
-{header(actief)}<main><div class="wrap pagehead">{head_html}</div><div class="wrap content">{body_html}</div></main>{FOOTER}{LISTJS}</body></html>'''
+{header(actief, path)}<main><div class="wrap pagehead">{head_html}</div><div class="wrap content">{body_html}</div></main>{FOOTER}{LISTJS}</body></html>'''
 def schrijf(path, inhoud):
     p = os.path.join(OUT, path.strip("/"), "index.html") if path.endswith("/") else os.path.join(OUT, path.lstrip("/"))
     os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "w").write(inhoud)

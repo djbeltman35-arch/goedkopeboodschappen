@@ -41,8 +41,8 @@
 .quick.tegels .chip .ic{font-size:22px;line-height:1}
 .quick.tegels{display:block}
 .quick.tegels .start,.quick.tegels .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.quick.tegels .start{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (min-width:560px){.quick.tegels .cats{grid-template-columns:repeat(5,minmax(0,1fr))}.quick.tegels .start{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.quick.tegels .start{grid-template-columns:repeat(6,minmax(0,1fr))}.quick.tegels .start>*{grid-column:span 2}.quick.tegels .start>:nth-child(n+4){grid-column:span 3}.quick.tegels .start>:nth-child(4):last-child{grid-column:span 6}
+@media (min-width:560px){.quick.tegels .cats{grid-template-columns:repeat(5,minmax(0,1fr))}.quick.tegels .start{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .quick.tegels .start .chip{min-height:84px;font-size:15px;font-weight:800}
 .quick.tegels .start .chip small{display:block;font-weight:600;font-size:11.5px;opacity:.8}
 .quick.tegels .start .chip.mt{background:#e9f6ef;border-color:#b8dfc8;color:#0b6b3f}
@@ -205,7 +205,7 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a class="pill aanb" href="/aanbiedingen/"><span class="ic">🔥 </span>Aanbiedingen</a><a class="pill mt" href="/maaltijden/"><span class="ic">🍽️ </span>Maaltijden</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav" aria-label="Menu"><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
     
   </div>
 </header>
@@ -213,7 +213,7 @@
 <main>
   <section class="wrap hero">
     <h1>Boodschappen vergelijken</h1>
-    <p class="lead">Vergelijk je boodschappen bij {{AANTAL}} supermarkten. Zoek een product en zie meteen waar het het goedkoopst is.</p>
+    <p class="lead">Zoek een product en zie direct welke van de {{AANTAL}} supermarkten het goedkoopst is.</p>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
@@ -566,7 +566,8 @@ function search(fromUser){
   const kop=bedoeld||q;
   $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips(dieetRel("q"+norm(q),[q]))}${S.demo?"":merkChips(merkRel("q"+norm(q),[q]))}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${S.demo||!S.mijn?"":mijnBlok(best,kop)}${keus}${(o=>o?`<details class="subblok opties"><summary><span class="subnaam">⚙️ Meer: ${S.mijn?"":"vaste winkel, "}prijsalarm, prijsverloop</span></summary><div class="subin">${o}</div></details>`:"")((S.demo||S.mijn?"":mijnBlok(best,kop))+(S.demo?"":alarmHtml(kop,lo))+(PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""))}
+  ${S.demo||!S.mijn?"":mijnBlok(best,kop)}${keus}${S.demo?"":(()=>{const al=alarmHtml(kop,lo),pg=PAGINAS.has(norm(q))?`/vergelijk/${PAGINAS.get(norm(q))}/`:"";
+    return `<p class="snelopties"><a href="#" data-vastewinkel>⭐ ${S.mijn?"Vaste winkel wijzigen":"Vaste winkel kiezen"}</a>${al?`<a href="#" data-toonalarm>🔔 Prijsalarm</a>`:""}${pg?`<a href="${pg}">📈 Prijsverloop</a>`:""}</p>${al?`<div id="prijsalarm" hidden>${al}</div>`:""}`})()}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -584,27 +585,28 @@ function kiesPrecies(q){
 }
 /* Snelkeuze: aanbiedingen en categorieën */
 // Volgorde op de startpagina: waar in Google het meest op gezocht wordt (geschat), met Dieet en leefstijl vooraan.
-const CAT_VOLG=["Vlees en vis","DIEET","Zuivel en eieren","Groente en aardappelen","Koffie en thee","Frisdrank en sap","Bier en wijn","Huishouden","Verzorging en baby","Fruit","Kaas","Brood en ontbijt","Koek en snoep","Chips en noten","Diepvries","Pasta, rijst en wereldkeuken","Broodbeleg","Vleeswaren en tapas","Soep, conserven en bakken","Sauzen, olie en kruiden","Huisdieren"];
+const CAT_VOLG=["Vlees en vis","Zuivel en eieren","Groente en aardappelen","Koffie en thee","Frisdrank en sap","Bier en wijn","Huishouden","Verzorging en baby","Fruit","Kaas","Brood en ontbijt","Koek en snoep","Chips en noten","Diepvries","Pasta, rijst en wereldkeuken","Broodbeleg","Vleeswaren en tapas","Soep, conserven en bakken","Sauzen, olie en kruiden","Huisdieren"];
 function catVolgorde(){const r=[];for(const n of CAT_VOLG){if(n==="DIEET"){r.push(-1);continue}const i=GROEPEN.findIndex(g=>g[0]===n);if(i>=0)r.push(i)}GROEPEN.forEach((g,i)=>{if(!r.includes(i))r.push(i)});return r}
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?`<small>${n} acties</small>`:""}</button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a>`+
-    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>prijs per supermarkt</small></a>`+feest+`</div>`+
+    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>prijs per supermarkt</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl<small>glutenvrij, vegan, halal…</small></a>`+feest+`</div>`+
     `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
-function seizoenTegels(max){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
-  if(md>=1001&&md<=1205)t.push(["/sinterklaas/","🎁","Sinterklaas"]);
-  if(md>=1115&&md<=1226)t.push(["/kerst/","🎄","Kerst"]);
-  if(md>=1210||md<=101)t.push(["/oud-en-nieuw/","🎆","Oud en nieuw"]);
-  if(md>=1115&&md<=1213)t.push(["/chanoeka/","🕎","Chanoeka"]);
-  if(md>=115&&md<=312)t.push(["/ramadan/","🌙","Ramadan"]);
-  if(md>=301&&md<=406)t.push(["/pasen/","🐣","Pasen"]);
-  if(md>=401&&md<=430)t.push(["/pesach/","🫓","Pesach"]);
-  if(md>=501&&md<=831)t.push(["/bbq/","🍖","Barbecue"]);
-  if((md>=815&&md<=915)||(md>=1015&&md<=1110))t.push(["/lunchtrommel/","🍎","Lunchtrommel"]);
-  return t.slice(0,max||9).map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}<small>feestboodschappen</small></a>`).join("")}
+// Seizoenstegel: altijd het eerstvolgende feest. Is de feestdag voorbij, dan schuift de tegel vanzelf door naar het volgende feest.
+function pasen(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;return new Date(y,mo-1,da)}
+const SUIKER={2026:"03-20",2027:"03-10",2028:"02-27",2029:"02-15",2030:"02-05",2031:"01-25"}, PESACH={2026:"04-09",2027:"04-29",2028:"04-18",2029:"04-07",2030:"04-25",2031:"04-15"}, CHANOEKA={2026:"12-12",2027:"12-31",2028:"12-20",2029:"12-09",2030:"12-28",2031:"12-17"};
+function feestDatums(y){const d=(md)=>md?new Date(y+"-"+md+"T23:59:59"):null,r=[
+  ["/sinterklaas/","🎁","Sinterklaas",new Date(y,11,5,23,59)],["/kerst/","🎄","Kerst",new Date(y,11,26,23,59)],["/oud-en-nieuw/","🎆","Oud en nieuw",new Date(y,11,31,23,59)],
+  ["/ramadan/","🌙","Ramadan",d(SUIKER[y])],["/pasen/","🐣","Pasen",(p=>(p.setDate(p.getDate()+1),p.setHours(23,59),p))(pasen(y))],["/pesach/","🫓","Pesach",d(PESACH[y])],
+  ["/bbq/","🍖","Barbecue",new Date(y,7,31,23,59)],["/lunchtrommel/","🍎","Lunchtrommel",new Date(y,8,15,23,59)],["/chanoeka/","🕎","Chanoeka",d(CHANOEKA[y])]];
+  return r.filter(x=>x[3])}
+function seizoenTegels(max){const nu=new Date(),y=nu.getFullYear();
+  const t=[...feestDatums(y),...feestDatums(y+1)].filter(x=>x[3]>=nu).sort((a,b)=>a[3]-b[3]);const gezien=new Set(),u=[];
+  for(const x of t){if(gezien.has(x[0]))continue;gezien.add(x[0]);u.push(x)}
+  return u.slice(0,max||9).map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}<small>feestboodschappen</small></a>`).join("")}
 // Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
 const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
 function renderView(){
@@ -1133,6 +1135,8 @@ document.addEventListener("click",e=>{
   if(ank&&ank.getAttribute("href").length>1){const doel=document.getElementById(decodeURIComponent(ank.getAttribute("href").slice(1)));
     if(doel){e.preventDefault();if(doel.tagName==="DETAILS")doel.open=true;const ga=()=>doel.scrollIntoView({block:"start"});ga();requestAnimationFrame(()=>{ga();setTimeout(ga,120);setTimeout(ga,350);setTimeout(ga,700)});
       try{history.replaceState(history.state,"",ank.getAttribute("href"))}catch(x){}return}}
+  if(e.target.closest("[data-vastewinkel]")){e.preventDefault();const d=$("mystores");if(d){d.open=true;d.scrollIntoView({block:"start"});setTimeout(()=>{const sel=$("mijnsel");if(sel)sel.focus()},300)}return}
+  if(e.target.closest("[data-toonalarm]")){e.preventDefault();const d=$("prijsalarm");if(d){d.hidden=!d.hidden;if(!d.hidden){d.scrollIntoView({block:"center"});const inp=d.querySelector("input");if(inp)inp.focus()}}return}
   if(e.target.closest("[data-startlijst]")){startLijst();return}
   if(e.target.closest("[data-dieetopen]")){S.dieetOpen=!S.dieetOpen;if(S.view)renderView();else search();return}
   if(e.target.closest("[data-mijnwijzig]")){const d=$("mystores");if(d){d.open=true;jump("mystores");setTimeout(()=>$("mijnsel")?.focus(),400)}return}
