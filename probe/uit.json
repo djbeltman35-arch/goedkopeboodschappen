@@ -1,0 +1,132 @@
+{
+ "dirk_schema": {
+  "status": 400,
+  "velden": [],
+  "errors": [
+   {
+    "message": "Introspection is not allowed for the current request.",
+    "locations": [
+     {
+      "line": 1,
+      "column": 2
+     }
+    ],
+    "extensions": {
+     "field": "__type",
+     "code": "HC0046"
+    }
+   }
+  ]
+ },
+ "deka_schema": {
+  "status": 200,
+  "velden": [],
+  "errors": [
+   {
+    "message": "Introspection is not allowed for the current request.",
+    "locations": [
+     {
+      "line": 1,
+      "column": 2
+     }
+    ],
+    "extensions": {
+     "field": "__type",
+     "code": "HC0046"
+    }
+   }
+  ]
+ },
+ "ah": {
+  "https://api.ah.nl/mobile-services/bonuspage/v1/metadata": {
+   "status": 500,
+   "t": "{\"status\":500,\"message\":\"No static resource bonuspage/v1/metadata for request '/bonuspage/v1/metadata'.\",\"correlationId\":\"b4be2b03-14ce-4853-bc48-ab96267b3b6e\",\"timestamp\":\"2026-10-21T13:50:20.114732964Z\"}"
+  },
+  "https://api.ah.nl/mobile-services/bonuspage/v2/metadata": {
+   "status": 500,
+   "t": "{\"status\":500,\"message\":\"No static resource bonuspage/v2/metadata for request '/bonuspage/v2/metadata'.\",\"correlationId\":\"2dffb54a-d95a-4cdc-a430-12154ac3a953\",\"timestamp\":\"2026-10-21T13:50:20.356514892Z\"}"
+  },
+  "https://api.ah.nl/mobile-services/bonuspage/v1/section?date=2026-10-26": {
+   "status": 500,
+   "t": "{\"status\":500,\"message\":\"No static resource bonuspage/v1/section for request '/bonuspage/v1/section'.\",\"correlationId\":\"63115bab-fb61-428c-bc60-1ce84c5f2c5f\",\"timestamp\":\"2026-10-21T13:50:20.643251295Z\"}"
+  },
+  "https://api.ah.nl/mobile-services/bonuspage/v2/section/spotlight?date=2026-10-26": {
+   "status": 200,
+   "t": "{\"sectionType\":\"\",\"sectionDescription\":\"\",\"bonusGroupOrProducts\":[],\"sectionImage\":[]}"
+  }
+ },
+ "jumbo": {
+  "Alle aanbiedingen": "{\"data\":{\"searchProducts\":{\"count\":1460,\"products\":[{\"title\":\"Jumbo's Kattenbakvulling Ultra 10 L\",\"promotions\":[]},{\"title\":\"Jumbo Salade Ei met Prei 150 g\",\"promotions\":[{\"tags\":[{\"text\":\"3 voor 6,00\"}],\"start\":{\"iso\":\"2026-01-01T00:01:00+01:00\"},\"end\":{\"iso\":\"2026-11-03T23:59:00+01:00\"}}]},{\"title\":\"Jumbo Snackspek 170 g\",\"promotions\":[{\"tags\":[{\"text\":\"2+1 gratis\"}],\"start\":{\"iso\":\"2025-12-31T00:01:00+01:00\"},\"end\":{\"iso\":\"2026-11-03T23:59:00+01:00\"}}]}]}}}",
+  "Volgende week": "{\"data\":{\"searchProducts\":{\"count\":0,\"products\":[]}}}",
+  "Aanbiedingen volgende week": "{\"data\":{\"searchProducts\":{\"count\":0,\"products\":[]}}}",
+  "Komende week": "{\"data\":{\"searchProducts\":{\"count\":0,\"products\":[]}}}",
+  "pagina": {
+   "status": 200,
+   "len": 859980,
+   "volgende": 0,
+   "stukje": "<!DOCTYPE html><html  lang=\"nl-NL\" dir=\"ltr\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Aanbiedingen | Nu in de aanbieding | Jumbo</title><script type=\"text/javascript\">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n      new Da"
+  }
+ },
+ "hoogvliet_pagina": {
+  "status": 503,
+  "len": 3576,
+  "volgende": [],
+  "links": []
+ },
+ "aldi_pagina": {
+  "fout": "TypeError: fetch failed"
+ },
+ "vomar_pagina": {
+  "status": 200,
+  "len": 438027,
+  "volgende": [
+   "volgende week",
+   "volgende week"
+  ],
+  "links": []
+ },
+ "spar_pagina": {
+  "status": 200,
+  "len": 53104,
+  "volgende": [],
+  "links": []
+ },
+ "plus_pagina": {
+  "status": 200,
+  "len": 15147,
+  "volgende": [],
+  "links": []
+ },
+ "dirkweb_pagina": {
+  "status": 200,
+  "len": 1025788,
+  "volgende": [
+   "vanaf woensdag",
+   "vanaf woensdag",
+   "vanaf woensdag",
+   "Volgende week"
+  ],
+  "links": []
+ },
+ "ahweb_pagina": {
+  "status": 200,
+  "len": 419806,
+  "volgende": [
+   "Volgende week",
+   "volgende week",
+   "Volgende week",
+   "Volgende week",
+   "volgende week",
+   "volgende week",
+   "volgende week",
+   "volgende week",
+   "Volgende week",
+   "volgende week"
+  ],
+  "links": [
+   "href=\"/bonus/volgende-week\"",
+   "href=\"/allerhande/wat-eten-we-vandaag/weekmenu\"",
+   "href=\"/allerhande/wat-eten-we-dit-weekend\""
+  ]
+ }
+}
