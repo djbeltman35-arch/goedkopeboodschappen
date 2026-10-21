@@ -594,3 +594,7 @@ html body .promise{justify-items:center;font-weight:700;color:var(--ink)}
 html body .promise{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px;text-align:center}
 html body .promise li.brk{flex-basis:100%;height:0;margin:0;padding:0}
 html body .promise li.brk::before{content:none}
+/* Ruimte vasthouden voor de tegels tot ze getekend zijn: de pagina verspringt dan niet */
+#quick:empty{min-height:590px}
+@media (max-width:340px){#quick:empty{min-height:648px}}
+@media (min-width:560px){#quick:empty{min-height:420px}}

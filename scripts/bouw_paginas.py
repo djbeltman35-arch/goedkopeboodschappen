@@ -557,18 +557,24 @@ def offers_page(cur, lst):
         faq.append((f"Wat is de grootste korting bij {nmw} deze week?", f"{b_['n']} voor {eur(b_['p'])}" + (f" in plaats van {eur(b_['was'])}" if b_.get('was') else "") + (f" ({round(b_['pct'] * 100)}% korting)." if b_['pct'] else ".")))
         faq.append((f"Hoeveel aanbiedingen heeft {nmw} deze week?", f"In week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]} heeft {nmw} {len(nu_)} acties" + (f", en {len(straks)} acties die binnenkort beginnen." if straks else ".")))
         body += faq_html(faq); ld.append(faq_ld(faq))
-        if len(straks) >= 15: body += f'<p><a class="cta" href="/aanbiedingen/{cur}/volgende-week/">{esc(nmw)} aanbiedingen volgende week bekijken</a></p>'
-    if cur and len(straks) >= 15:
+        body += f'<p><a class="cta" href="/aanbiedingen/{cur}/volgende-week/">{esc(nmw)} aanbiedingen volgende week bekijken</a></p>'
+    if cur:
         vpath = f"/aanbiedingen/{cur}/volgende-week/"; vwk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1] % 52 + 1
-        vbeg = min(o["v"] for o in straks)
+        vbeg = min(o["v"] for o in straks) if straks else None
+        _vnaam = "AH Bonus" if cur == "ah" else f"{NAMEN[cur]} folder"
         vch, vcld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], path), ("Volgende week", None))
-        vtitle = f"{NAMEN[cur]} folder volgende week (week {vwk}): {len(straks)} aanbiedingen vanaf {kortdag(vbeg)}"
-        vdesc = f"De {len(straks)} aanbiedingen van {NAMEN[cur]} die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst" + (f", zoals {straks[0]['n'][:50]} voor {eur(straks[0]['p'])}" if straks else "") + ". Nu al bekijken en op je lijst zetten."
+        if straks:
+            vtitle = f"{_vnaam} volgende week (week {vwk}): {len(straks)} aanbiedingen vanaf {kortdag(vbeg)}"
+            vdesc = f"De {len(straks)} aanbiedingen van {NAMEN[cur]} die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst, zoals {straks[0]['n'][:50]} voor {eur(straks[0]['p'])}. Nu al bekijken en op je lijst zetten."
+        else:
+            vtitle = f"{_vnaam} volgende week (week {vwk}): alle aanbiedingen"
+            vdesc = f"De {NAMEN[cur]} aanbiedingen van volgende week (week {vwk}) op een rij, zodra {NAMEN[cur]} ze online zet. Elke ochtend bijgewerkt, met de prijs per kilo en de goedkoopste supermarkt."
         vlijst = sorted(straks, key=lambda o: -o["pct"])
-        vbody = (f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in vlijst[:150])}</ul>'
+        vbody = ((f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in vlijst[:150])}</ul>' if vlijst else
+                  f'<p>De aanbiedingen van volgende week staan er nog niet. {esc(NAMEN[cur])} zet de nieuwe folder kort voor de nieuwe actieweek online; deze pagina werkt elke ochtend vanzelf bij. Tot die tijd: <a href="{path}">alle {len(nu_) if "nu_" in dir() else ""} aanbiedingen van deze week</a>.</p>')
                  + f'<p class="note">Acties die bij {esc(NAMEN[cur])} al bekend zijn en binnenkort beginnen. Prijzen kunnen nog wijzigen; elke ochtend bijgewerkt.</p>'
                  + f'<p><a href="{path}">{esc(NAMEN[cur])} aanbiedingen van deze week</a> · <a href="/aanbiedingen/">Alle supermarkten</a></p>')
-        schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(NAMEN[cur])} aanbiedingen volgende week</h1><p class=\"lead\">Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst.</p>" + deel_html(f"{NAMEN[cur]} aanbiedingen volgende week", vpath), vbody, [vcld], actief="/aanbiedingen/"))
+        schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(_vnaam)} volgende week</h1><p class=\"lead\">" + (f"Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst." if straks else f"Week {vwk}: de nieuwe acties verschijnen hier zodra {esc(NAMEN[cur])} ze bekendmaakt.") + "</p>" + deel_html(f"{NAMEN[cur]} aanbiedingen volgende week", vpath), vbody, [vcld], actief="/aanbiedingen/"))
         made.append((vpath, "0.7"))
     body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Populaire merken in de aanbieding</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{esc(n_)} aanbieding</a></li>' for s_, n_ in AP_MERKEN) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
     schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>" + deel_html(h1, path), body, ld, actief="/aanbiedingen/"))
@@ -783,6 +789,20 @@ app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
 app = (app.replace("{{EIWIT}}", json.dumps(EIWIT, ensure_ascii=False)).replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
           .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
+# Snelheid: de grote vaste tabellen in een apart bestand dat de browser bewaart (scheelt bij elk bezoek ~60 kB),
+# en de prijsbestanden al laten binnenhalen terwijl de pagina nog laadt.
+_data_regels = []
+for _naam in ("CATS", "KCAL", "VARIANT", "AMERK", "VERFIJN"):
+    _m = re.search(r"^const " + _naam + r"=.*;$", app, re.M)
+    if _m: _data_regels.append(_m.group(0)); app = app[:_m.start()] + app[_m.end():]
+if len(_data_regels) == 5:
+    open(os.path.join(OUT, "appdata.js"), "w").write("\n".join(_data_regels) + "\n")
+    app = app.replace('<div id="printsheet" aria-hidden="true"></div>\n', '<div id="printsheet" aria-hidden="true"></div>\n<script src="/appdata.js?v=' + quote(VERSIE) + '"></script>\n', 1)
+else:
+    print("LET OP: appdata niet gesplitst", len(_data_regels))
+# Alleen het kleine winkelbestand vooraf; de grote prijsbestanden zouden de pagina zelf vertragen.
+_pre = '<link rel="preload" href="/winkels.json" as="fetch" crossorigin>'
+app = app.replace("</head>", _pre + "</head>", 1)
 open(os.path.join(OUT, "index.html"), "w").write(app)
 made.insert(0, ("/", "1.0"))
 

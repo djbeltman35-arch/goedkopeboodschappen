@@ -1,6 +1,6 @@
 // Goedkope Boodschappen. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
 // zodat de browser deze service worker vernieuwt, de oude cache weggooit en bezoekers de nieuwste versie krijgen.
-const C = 'gb-v66-__BOUW__';
+const C = 'gb-v68-__BOUW__';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {

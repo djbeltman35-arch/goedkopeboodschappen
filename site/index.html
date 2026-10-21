@@ -601,7 +601,7 @@ const CAT_VOLG=["Vlees en vis","Zuivel en eieren","Groente en aardappelen","Koff
 function catVolgorde(){const r=[];for(const n of CAT_VOLG){if(n==="DIEET"){r.push(-1);continue}const i=GROEPEN.findIndex(g=>g[0]===n);if(i>=0)r.push(i)}GROEPEN.forEach((g,i)=>{if(!r.includes(i))r.push(i)});return r}
 function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
-  $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?`<small>${n} acties</small>`:""}</button>`+
+  $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties`:"deze week"}</small></button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>`+
     `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>`+feest+`<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a></div>`+
     `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
@@ -1289,6 +1289,8 @@ async function prijzenLaden(){
     return {stores:w.stores,products:lijsten.flat(),totaal:1,ids};
   }catch(e){S.perWinkel=false;return fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("/producten.json").then(r=>r.json()))}
 }
+// Tegels meteen tonen (zonder te wachten op de prijzen), zodat de pagina niet verspringt.
+try{quick()}catch(e){}
 Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
   S.stores=d.stores; S.prods=d.products; if(d.ids) for(const id of d.ids) S.kern.add(id);
   // Aldi staat altijd achteraan in de winkellijst.

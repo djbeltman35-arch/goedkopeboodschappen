@@ -25,3 +25,14 @@ sed -i "s/__BOUW__/$(date +%Y%m%d%H%M%S)/" "$OUT/sw.js"
 # 3. Alle pagina's
 python3 scripts/bouw_paginas.py "$OUT"
 echo "klaar: $(find "$OUT" -type f | wc -l) bestanden in $OUT"
+
+# Snelheid: stijlblad verkleinen (commentaar en overbodige spaties weg)
+python3 - "$OUT/stijl.css" <<'PY'
+import re, sys
+p = sys.argv[1]; s = open(p).read()
+s = re.sub(r"/\*.*?\*/", "", s, flags=re.S)
+s = re.sub(r"\s+", " ", s)
+s = re.sub(r"\s*([{};,>])\s*", r"\1", s)
+s = re.sub(r";}", "}", s)
+open(p, "w").write(s.strip())
+PY

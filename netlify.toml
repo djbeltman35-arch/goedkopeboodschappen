@@ -363,3 +363,8 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/appdata.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
