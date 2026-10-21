@@ -1097,6 +1097,12 @@ document.addEventListener("erbij",()=>{if(!S.list)return;if(erbijLaden()){save()
 function renderAll(){renderList();renderWhere();if(S.view)renderView();else search();dock();renderNotify()}
 
 document.addEventListener("click",e=>{
+  // Sprong naar een kopje op dezelfde pagina: rijen buiten beeld hebben nog een geschatte hoogte (content-visibility),
+  // daarom na het tekenen nog een paar keer bijsturen zodat je precies bij het gekozen kopje uitkomt.
+  const ank=e.target.closest('a[href^="#"]');
+  if(ank&&ank.getAttribute("href").length>1){const doel=document.getElementById(decodeURIComponent(ank.getAttribute("href").slice(1)));
+    if(doel){e.preventDefault();const ga=()=>doel.scrollIntoView({block:"start"});ga();requestAnimationFrame(()=>{ga();setTimeout(ga,120);setTimeout(ga,350);setTimeout(ga,700)});
+      try{history.replaceState(history.state,"",ank.getAttribute("href"))}catch(x){}return}}
   if(e.target.closest("[data-startlijst]")){startLijst();return}
   if(e.target.closest("[data-mijnwijzig]")){const d=$("mystores");if(d){d.open=true;jump("mystores");setTimeout(()=>$("mijnsel")?.focus(),400)}return}
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
