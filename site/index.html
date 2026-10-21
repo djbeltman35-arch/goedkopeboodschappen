@@ -294,6 +294,8 @@ const GROEPEN={{GROEPEN}};
 // Calorieën per product (gemiddelde richtwaarde), bijvoorbeeld "46 kcal per 100 ml".
 const KCAL={{KCAL}};
 const PAGINAS=new Map(CATS.flatMap(c=>c[2]).map(t=>[t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9,.]+/g," ").trim(),t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")]));
+// Gedeelde links altijd met de eigen domeinnaam, ook als de app nog vanaf het oude netlify-adres draait.
+const SITE=/(^|\.)netlify\.app$/.test(location.hostname)?"https://boodschappenvergelijk.nl":location.origin;
 const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
 const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
@@ -939,7 +941,7 @@ async function samenStart(){
   finally{b.disabled=false;samenUi()}
 }
 async function samenDeel(){
-  const url=location.origin+"/?samen="+S.samen;
+  const url=SITE+"/?samen="+S.samen;
   try{if(navigator.share){await navigator.share({title:"Onze boodschappenlijst",text:"Doe je mee met onze boodschappenlijst? Wat jij toevoegt of wegstreept, zie ik ook.",url});return}
     await navigator.clipboard.writeText(url);$("samenbalk").querySelector(".sm")?.replaceChildren("Link gekopieerd ✓ Stuur hem naar je huisgenoot.")}catch(e){prompt("Kopieer deze link:",url)}
 }
@@ -980,7 +982,7 @@ async function fotoLezen(file){
   }catch(e){msg.textContent="Tekst herkennen lukte niet op dit toestel. Typ je lijst dan hierboven in."}
 }
 async function shareList(){
-  const url=location.origin+"/?lijst="+encodeURIComponent(S.list.map(x=>((x.q||1)>1?x.q+" ":"")+x.term).join("~"));
+  const url=SITE+"/?lijst="+encodeURIComponent(S.list.map(x=>((x.q||1)>1?x.q+" ":"")+x.term).join("~"));
   gc("deel","Lijst gedeeld");
   try{ if(navigator.share){await navigator.share({title:"Mijn boodschappenlijst",text:"Mijn boodschappenlijst op Goedkope Boodschappen",url});return}
     await navigator.clipboard.writeText(url); $("share").textContent="Link gekopieerd ✓"; setTimeout(()=>$("share").textContent="Lijst delen",2500);
