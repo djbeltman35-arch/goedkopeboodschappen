@@ -174,6 +174,35 @@ async function ah() {
     if (ps.length < 1000 || (d.page && page + 1 >= d.page.totalPages)) break;
     await slaap(800);
   }
+  // Bonus van volgende week: AH zet die vanaf 'nextPeriodVisibleFrom' (meestal vrijdag) online.
+  try {
+    const A = { headers: { ...H, Authorization: `Bearer ${tok}` } };
+    const meta = await haal('https://api.ah.nl/mobile-services/bonuspage/v3/metadata', A, 'json', 3);
+    const vd = vandaag();
+    for (const per of (meta?.periods || []).filter(x => x.bonusStartDate > vd)) {
+      const segs = new Set();
+      const urls = [...new Set((per.tabs || []).flatMap(t => (t.urlMetadataList || []).map(x => x.url)))];
+      for (const u of urls) {
+        let d; try { d = await haal('https://api.ah.nl/mobile-services/' + u, A, 'json', 2); } catch (e) { continue; }
+        for (const x of d?.bonusGroupOrProducts || []) { const g = x.bonusGroup; if (g?.segmentId) segs.add(g.segmentId); if (x.product?.bonusSegmentId) segs.add(x.product.bonusSegmentId); }
+        await slaap(300);
+      }
+      let n = 0;
+      for (const sid of segs) {
+        let g; try { g = await haal(`https://api.ah.nl/mobile-services/bonuspage/v1/segment?segmentId=${sid}&date=${per.bonusStartDate}`, A, 'json', 2); } catch (e) { continue; }
+        for (const p of g?.products || []) {
+          const was = p.priceBeforeBonus ?? null;
+          const mech = p.bonusMechanism || g.discountDescription;
+          const prijs = p.currentPrice ?? actiePrijs(mech, was);
+          if (!(prijs > 0) || uit.has(p.webshopId)) continue;
+          uit.set(p.webshopId, { s: 'ah', n: p.title, sz: p.salesUnitSize || '', p: r2(prijs), was: was > prijs ? r2(was) : null, lbl: mech || 'Bonus', u: `https://www.ah.nl/producten/product/wi${p.webshopId}`, t: dagVan(p.bonusEndDate || per.bonusEndDate), v: dagVan(p.bonusStartDate || per.bonusStartDate), k: `wi${p.webshopId}`, sc: [p.mainCategory, p.subCategory].filter(Boolean).join(' ') });
+          n++;
+        }
+        await slaap(200);
+      }
+      console.log('AH volgende week:', per.bonusStartDate, segs.size, 'bonusgroepen,', n, 'producten');
+    }
+  } catch (e) { console.warn('AH volgende week niet gelukt:', e.message); }
   return [...uit.values()];
 }
 
