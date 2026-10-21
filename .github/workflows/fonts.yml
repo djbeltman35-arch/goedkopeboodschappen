@@ -14,7 +14,7 @@ jobs:
           mkdir -p site/fonts
           cd site/fonts
           npm pack @fontsource/atkinson-hyperlegible @fontsource/barlow-condensed
-          for f in *.tgz; do mkdir x && tar xzf "$f" -C x && cp x/package/files/*-latin-{400,600,700}-normal.woff2 . 2>/dev/null; rm -rf x "$f"; done
+          for f in *.tgz; do mkdir x && tar xzf "$f" -C x && for w in 400 600 700; do cp x/package/files/*-latin-$w-normal.woff2 . 2>/dev/null || true; done; rm -rf x "$f"; done
           ls -la
           git config user.name "fonts-bot"; git config user.email "fonts-bot@users.noreply.github.com"
           git add . && git commit -m "Lettertypen" && git push origin HEAD:fonts
