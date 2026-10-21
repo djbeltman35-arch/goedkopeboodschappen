@@ -19,7 +19,7 @@ def foto_html(m):
     maker = esc(f["maker"]) + ", " if f["maker"] else ""
     licentie = f'<a href="{lu}" rel="noopener" target="_blank">{lt}</a>' if lu else lt
     return (f'<figure class="mfoto"><img src="/maaltijden-foto/{m["slug"]}-16x9.jpg" srcset="/maaltijden-foto/{m["slug"]}-kaart.jpg 640w, /maaltijden-foto/{m["slug"]}-16x9.jpg 1200w" sizes="(max-width: 760px) 100vw, 720px" width="1200" height="675" alt="{esc(m["naam"])}" fetchpriority="high" decoding="async">'
-            f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">Wikimedia Commons</a> (bijgesneden)</figcaption></figure>')
+            f'<figcaption>Foto: {maker}{licentie}, via <a href="{esc(f["bron"])}" rel="noopener" target="_blank">{esc(f.get("via") or "Wikimedia Commons")}</a> (bijgesneden)</figcaption></figure>')
 MAAL_BEELDEN = {}  # pad -> lijst afbeeldings-url's, voor de afbeeldingen-sitemap
 def beeld_objecten(m):
     """Afbeeldingen als ImageObject met maker en licentie (Google toont dan de juiste bronvermelding)."""
@@ -27,7 +27,7 @@ def beeld_objecten(m):
     if not f: return beelden(m)
     maten = {"16x9": (1200, 675), "4x3": (1200, 900), "1x1": (1200, 1200)}
     return [{"@type": "ImageObject", "url": u, "contentUrl": u, "width": maten[x][0], "height": maten[x][1],
-             "creditText": f"{f['maker'] or 'Wikimedia Commons'} via Wikimedia Commons", "license": lic_url(f["licentie"]) or f["bron"],
+             "creditText": f"{f['maker'] or f.get('via') or 'Wikimedia Commons'} via {f.get('via') or 'Wikimedia Commons'}", "license": lic_url(f["licentie"]) or f["bron"],
              "acquireLicensePage": f["bron"], **({"creator": {"@type": "Person", "name": f["maker"]}} if f["maker"] else {})}
             for x, u in zip(("16x9", "4x3", "1x1"), beelden(m))]
 def beelden(m):

@@ -233,6 +233,25 @@ for m in MAALTIJDEN:
             desc = re.sub(r"<[^>]+>", "", md.get("ImageDescription", {}).get("value", "")).strip()[:200]
             kand.append({"titel": p["title"], "licentie": lic, "maker": artist, "beschrijving": desc, "bron": ii.get("descriptionurl"), "thumb": ii.get("thumburl"), "zoek": q})
         time.sleep(1)
+    # Te weinig op Wikimedia? Dan ook zoeken via Openverse (Flickr en andere sites met vrije licenties: CC0, publiek domein, CC BY, CC BY-SA).
+    if len(kand) < 6:
+        for q in Q.get(slug, [m["naam"]]):
+            if len(kand) >= 6: break
+            try:
+                u = "https://api.openverse.org/v1/images/?" + urllib.parse.urlencode({"q": q, "license": "cc0,pdm,by,by-sa", "page_size": 12, "mature": "false"})
+                r = json.load(urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=30))
+            except Exception as e:
+                print("openverse fout", q, e); continue
+            for x in r.get("results", []):
+                if len(kand) >= 6: break
+                if (x.get("width") or 0) < 900 or x.get("url") in gezien: continue
+                gezien.add(x.get("url"))
+                l, v = (x.get("license") or "").lower(), x.get("license_version") or ""
+                lic = {"cc0": "CC0", "pdm": "Public domain", "by": f"CC BY {v}".strip(), "by-sa": f"CC BY-SA {v}".strip()}.get(l)
+                if not lic: continue
+                kand.append({"titel": x.get("title") or q, "licentie": lic, "maker": x.get("creator") or "", "beschrijving": (x.get("title") or "")[:200],
+                             "bron": x.get("foreign_landing_url") or x.get("url"), "thumb": x.get("url"), "zoek": q, "via": x.get("source") or "openverse"})
+            time.sleep(1)
     kand = kand[:6]
     for i, k in enumerate(kand):
         try:
