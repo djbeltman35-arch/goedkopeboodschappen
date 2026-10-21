@@ -34,7 +34,7 @@ def beelden(m):
     if m["slug"] in FOTO: return [f"{BASE}/maaltijden-foto/{m['slug']}-{x}.jpg" for x in ("16x9", "4x3", "1x1")]
     return [f"{BASE}/maaltijden-img/{m['slug']}-16x9.png", f"{BASE}/maaltijden-img/{m['slug']}-1x1.png"]
 def kaartbeeld(m):
-    if m["slug"] in FOTO: return f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="" loading="lazy">'
+    if m["slug"] in FOTO: return f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="{esc(m['naam'])}" loading="lazy">'
     emo = {k: e_ for k, _, e_ in SOORTEN}.get(m["soort"], "🍽️")
     return f'<div class="mimg mleeg" aria-hidden="true">{emo}</div>'
 
@@ -149,7 +149,8 @@ for m in MAAL:
     top3 = m["rang"][:3]
     (s1, r1) = top3[0]; (sN, rN) = m["rang"][-1]
     naam = m["naam"]; kl = naam[0].lower() + naam[1:]
-    title = f"{naam}: {eur(r1['tot'])} bij {KORT.get(stores[s1]['id'], wnaam(s1))}"
+    _w = KORT.get(stores[s1]['id'], wnaam(s1))
+    title = next((t for t in (f"{naam} recept: {eur(r1['tot'])} bij {_w}", f"{naam}: {eur(r1['tot'])} bij {_w}", f"{naam} recept en prijs", naam) if len(t) <= 64), naam)
     desc = (f"{naam} voor 4 personen: {eur(r1['tot'])} bij {wnaam(s1)} ({pp(r1['tot'])} p.p.). {m['kcal']} kcal per persoon. "
             f"Vergelijk {len(m['rang'])} supermarkten, elke dag bijgewerkt.")
     sp = SOORT_PAD.get(m["soort"])
@@ -369,7 +370,7 @@ if MAAL:
                     [("Wanneer is een maaltijd eiwitrijk?", "Wij noemen een avondmaaltijd eiwitrijk bij minstens 30 gram eiwit per persoon, waarbij ook minstens een vijfde van de calorieën uit eiwit komt. Het eiwit is berekend uit de ingrediënten van het recept, met gemiddelde voedingswaarden."),
                      ("Welke maaltijd heeft het meeste eiwit?", f"{max(eim, key=lambda m: m['eiwit'])['naam']}, met ongeveer {max(eim, key=lambda m: m['eiwit'])['eiwit']} gram eiwit per persoon."),
                      ("Wat is de goedkoopste eiwitrijke maaltijd?", f"{min(eim, key=pprs)['naam']}: {eur(pprs(min(eim, key=pprs)))} voor 4 personen.")])
-    for _dk, _sl, _kort, _h1, _uitleg in [("kip", "met-gevogelte", "Met gevogelte", "Maaltijden met gevogelte: kip en kalkoen", "met gevogelte, zoals kip of kalkoen"),
+    for _dk, _sl, _kort, _h1, _uitleg in [("kip", "met-gevogelte", "Met gevogelte", "Maaltijden met kip en kalkoen", "met gevogelte, zoals kip of kalkoen"),
                                           ("rund", "met-rundvlees", "Met rundvlees", "Maaltijden met rundvlees", "met rundvlees, zoals gehakt, biefstuk of stoofvlees"),
                                           ("varken", "met-varkensvlees", "Met varkensvlees", "Maaltijden met varkensvlees", "met varkensvlees, zoals spekjes, ham, rookworst of half-om-half gehakt"),
                                           ("vis", "met-vis", "Met vis", "Maaltijden met vis", "met vis, zoals zalm, kabeljauw of tonijn"),

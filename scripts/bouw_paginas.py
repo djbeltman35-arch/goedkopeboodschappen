@@ -61,6 +61,23 @@ def uitklap(body):
         pos = nxt
     out.append(body[pos:])
     return "".join(out)
+KB_LINKS = [("/vergelijk/", [("prijs-per-kilo", "Prijs per kilo: zo vergelijk je eerlijk"), ("huismerk-of-a-merk", "Huismerk of A-merk")]),
+            ("/aanbieding", [("aanbiedingen-uitgelegd", "Hoeveel korting is 1+1 gratis echt?"), ("invriezen", "Slim invriezen")]),
+            ("/maaltijden/", [("weekmenu-maken", "Een weekmenu maken"), ("seizoensgroente", "Seizoensgroente")]),
+            ("/categorie/", [("prijs-per-kilo", "Prijs per kilo uitgelegd"), ("huismerk-of-a-merk", "Huismerk of A-merk")]),
+            ("/supermarkt/", [("goedkoopste-supermarkt-uitleg", "Welke supermarkt is het goedkoopst?")]),
+            ("/goedkoopste-supermarkt/", [("goedkoopste-supermarkt-uitleg", "Welke supermarkt is het goedkoopst?")]),
+            ("/boodschappen-per-week/", [("klein-budget", "Boodschappen doen met een klein budget")]),
+            ("/eten-voor-50-euro-per-week/", [("klein-budget", "Boodschappen doen met een klein budget"), ("weekmenu-maken", "Een weekmenu maken")]),
+            ("/studentenboodschappen/", [("klein-budget", "Boodschappen doen met een klein budget")]),
+            ("/besparen/", [("klein-budget", "Klein budget"), ("tht-en-tgt", "THT en TGT"), ("invriezen", "Invriezen")]),
+            ("/huismerk-of-a-merk/", [("huismerk-of-a-merk", "Huismerk of A-merk: wat is het verschil?")]),
+            ("/glutenvrij/", [("dieet-op-het-etiket", "Wat betekent glutenvrij op het etiket?")]),
+            ("/lactosevrij/", [("dieet-op-het-etiket", "Lactosevrij of zuivelvrij?")]),
+            ("/vegan/", [("dieet-op-het-etiket", "Wat betekent vegan?")]),
+            ("/halal/", [("dieet-op-het-etiket", "Wat betekent halal?")]),
+            ("/allergie/", [("dieet-op-het-etiket", "Glutenvrij, lactosevrij, vegan: wat betekent het?")]),
+            ("/voor-hulpverleners/", [("klein-budget", "Boodschappen doen met een klein budget")])]
 def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css="", og_title=None, og_img=None):
     # Google toont ongeveer 60 tekens titel en 155 tekens omschrijving: te lange titels zonder maand/jaar, omschrijvingen netjes inkorten.
     if len(title) > 65: title = re.sub(r"\s*\((januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) \d{4}\)$", "", title)
@@ -73,6 +90,10 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
     if len(title) > 68: title = title[:title.rfind(" ", 0, 64)].rstrip(",:;–-") + "…"
     if len(desc) > 160: desc = desc[:desc.rfind(" ", 0, 155)].rstrip(",;:") + "…"
     body_html = uitklap(body_html)
+    # Interne links naar de kennisbank die bij het onderwerp van de pagina passen (goed voor bezoekers en Google).
+    _kb = next((v for k, v in KB_LINKS if path.startswith(k)), None)
+    if _kb and not path.startswith("/kennisbank/"):
+        body_html += '<p class="note kbtip">📚 Lees ook: ' + " · ".join(f'<a href="/kennisbank/{sl}/">{t}</a>' for sl, t in _kb) + '</p>'
     _t = re.search(r'<nav class="terug".*?</nav>', head_html, re.S)
     if _t: body_html = body_html + _t.group(0).replace('class="terug"', 'class="terug onder"', 1)
     ldtag = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
@@ -368,7 +389,7 @@ for g, gic in GROEPEN:
         path = f"/categorie/{slug(c[0])}/"
         top, n = winnaar(items)
         ch, cld = crumbs(("Categorieën", "/categorie/"), (g, gpath), (c[0], None))
-        title = f"{c[0]}: goedkoopste supermarkt per product ({MAAND})"
+        title = f"{c[0]}: goedkoopste supermarkt per product ({MAAND})" if len(c[0]) < 22 else f"{c[0]}: prijzen vergeleken ({MAAND})"
         desc = (f"Waar koop je {c[0].lower()} het goedkoopst? {len(items)} producten vergeleken bij {AANTAL} supermarkten: " + ", ".join(items[:4]) +
                 f". {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
         head = ch + f"<h1>{c[1]} {esc(c[0])} vergelijken</h1><p class=\"lead\">Per product de goedkoopste supermarkt. {esc(NAMEN[stores[top]['id']])} is bij {n} van de {len(items)} producten het voordeligst.</p>"
@@ -383,7 +404,7 @@ for g, gic in GROEPEN:
     # hoofdgroep: alle subcategorieën onder elkaar
     top, n = winnaar(alle)
     ch, cld = crumbs(("Categorieën", "/categorie/"), (g, None))
-    title = f"{g}: goedkoopste supermarkt per product ({MAAND})"
+    title = f"{g}: goedkoopste supermarkt per product ({MAAND})" if len(g) < 22 else f"{g}: prijzen vergeleken ({MAAND})"
     desc = (f"{g} vergelijken: " + ", ".join(c[0].lower() for c, _ in subs[:5]) + f". {len(alle)} producten bij {AANTAL} supermarkten, "
             f"{NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
     head = (ch + f"<h1>{gic} {esc(g)} vergelijken</h1><p class=\"lead\">{len(alle)} producten in {len(subs)} groepen. {esc(NAMEN[stores[top]['id']])} is bij {n} producten het voordeligst.</p>"
@@ -829,7 +850,7 @@ if GV_LIJST:
     for sl, _, _ in GV_LIJST:
         for p in GV_PER[sl]: perwinkel[p[0]] = perwinkel.get(p[0], 0) + 1
     ww = sorted(perwinkel.items(), key=lambda kv: -kv[1])
-    title = f"Glutenvrije boodschappen vergelijken: {totaal} producten bij {len(ww)} supermarkten"
+    title = f"Glutenvrije boodschappen: {totaal} producten vergeleken"
     desc = f"Glutenvrij brood, pasta, crackers, koek en meer: {totaal} producten zonder gluten bij {len(ww)} supermarkten naast elkaar, op prijs per kilo. Zie waar je glutenvrij het goedkoopst koopt. Elke dag bijgewerkt."
     ch, cld = crumbs(("Glutenvrij", None))
     head = ch + f'<h1>🌾 Glutenvrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{totaal} glutenvrije producten bij {len(ww)} supermarkten. Glutenvrij is vaak duur. Hier zie je waar het het goedkoopst is.</p>'
@@ -1357,6 +1378,7 @@ except Exception as e:
     print("prijsrapport overgeslagen:", e)
 
 # ---------- Seizoen: Sinterklaas en kerst ----------
+PAG_SLUGS = {slug(t) for t in PICKED}
 def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     ts = [t for t in termen if t in PICKED]
     if len(ts) < 4: return
@@ -1401,7 +1423,8 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
     body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}' + allerg
             + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="offers" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
             + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
-    schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)], og_title=h1))
+    _il = {"@context": "https://schema.org", "@type": "ItemList", "name": h1, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/vergelijk/{slug(t)}/", "name": cap(t)} for i, t in enumerate(ts) if slug(t) in PAG_SLUGS] if "PAG_SLUGS" in globals() else []}
+    schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)] + ([_il] if _il["itemListElement"] else []), og_title=h1))
     made.append((path, "0.8"))
     print(path, len(ts), "producten,", len(acties), "acties")
 seizoenpagina("/sinterklaas/", "Sinterklaas", "Sinterklaas: pepernoten, chocoladeletters en speculaas vergelijken",
@@ -1510,7 +1533,7 @@ ch, cld = crumbs(("Dieet en leefstijl", None))
 body = ('<ul class="feesten">' + "".join(f'<li><a href="{p_ or m_}"><span class="fi">{ic}</span><b>{esc(n_)}</b><span class="sub">{esc(t_)}</span></a></li>' for ic, n_, p_, m_, t_ in _dt) + '</ul>'
         + '<h2>Ook maaltijden per soort</h2><ul class="links">' + "".join(f'<li><a href="{m_}">{ic} {esc(n_)} maaltijden</a></li>' for ic, n_, p_, m_, t_ in _dt if n_ != "Allergie")
         + '<li><a href="/maaltijden/vegetarisch/">🥕 Vegetarische maaltijden</a></li></ul><p class="note">In de app kun je bij elke categorie ook op <b>⚙️ Filter</b> tikken om alleen glutenvrij, lactosevrij, vegan, halal, caloriearm of eiwitrijk te zien.</p>')
-schrijf("/dieet/", page("/dieet/", "Dieet en leefstijl: glutenvrij, lactosevrij, vegan en halal vergelijken", "Glutenvrij, lactosevrij, vegan, halal, koosjer, eiwitrijk en caloriearm: per dieet de producten en maaltijden met de goedkoopste supermarkt.",
+schrijf("/dieet/", page("/dieet/", "Dieet en leefstijl: glutenvrij, vegan en halal vergelijken", "Glutenvrij, lactosevrij, vegan, halal, koosjer, eiwitrijk en caloriearm: per dieet de producten en maaltijden met de goedkoopste supermarkt.",
     ch + "<h1>Dieet en leefstijl</h1><p class=\"lead\">Kies wat bij jou past. Je ziet de producten en maaltijden met de goedkoopste supermarkt.</p>", body, [cld]))
 made.append(("/dieet/", "0.7"))
 
@@ -1573,7 +1596,7 @@ _al_body = ('<div class="letop"><b>Let op:</b> we kijken naar de productnaam, ni
     + '<p class="note">In de app tik je bij een categorie op <b>⚙️ Filter</b> om alleen glutenvrij, lactosevrij of vegan te zien.</p>'
     + '<h2>Voor diëtisten en allergie-organisaties</h2><p>Verwijs gerust naar deze pagina. De site is gratis, zonder reclame en zonder account. Vragen of tips: <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'
     + faq_html(_al_faq))
-schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij, lactosevrij, zuivelvrij en eivrij vergelijken",
+schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij, zuivelvrij en eivrij",
     "Voedselallergie of intolerantie? Vergelijk glutenvrije, lactosevrije, zuivelvrije (koemelkallergie) en eivrije producten bij 11 supermarkten en zie waar ze het goedkoopst zijn.",
     ch + "<h1>Boodschappen bij een allergie</h1><p class=\"lead\">Glutenvrij, lactosevrij, zonder koemelk of zonder ei. Zie per product waar het het goedkoopst is.</p>",
     _al_body, [cld, faq_ld(_al_faq)]))
