@@ -1,0 +1,26 @@
+name: Nieuwe weekmenu's (maandag 07:00)
+# Elke maandag om 07:00 (Nederlandse tijd) een nieuwe build, zodat de nieuwe weekmenu's online komen.
+# GitHub rekent in UTC: 05:01 UTC is 07:01 in de zomer, 06:01 UTC is 07:01 in de winter. Het script kijkt zelf of het al 07:00 is.
+on:
+  schedule:
+    - cron: "1 5 * * 1"
+    - cron: "1 6 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ophalen
+  cancel-in-progress: false
+jobs:
+  weekmenu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Nieuwe week aanzetten
+        run: |
+          UUR=$(TZ=Europe/Amsterdam date +%H); WEEK=$(TZ=Europe/Amsterdam date +%G-W%V)
+          if [ "$UUR" -lt 7 ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then echo "Nog geen 07:00 in Nederland ($UUR uur)"; exit 0; fi
+          if [ -f data/weekmenu.txt ] && [ "$(cat data/weekmenu.txt)" = "$WEEK" ]; then echo "Week $WEEK staat al online"; exit 0; fi
+          echo "$WEEK" > data/weekmenu.txt
+          git config user.name "weekmenu-bot"; git config user.email "weekmenu-bot@users.noreply.github.com"
+          git add data/weekmenu.txt && git commit -m "Nieuwe weekmenu's $WEEK" && git pull --rebase -X theirs origin main && git push

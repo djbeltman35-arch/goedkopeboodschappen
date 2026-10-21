@@ -421,27 +421,51 @@ def _weekmenu_samen(ms):
         uit.append((si, sum(r[2] for r in regels), regels))
     return sorted(uit, key=lambda x: x[1]), som
 WEEKMENU_PRIJS = {}
+# Elke week (maandag 07:00) een ander weekmenu. Per weekmenu staan alle maaltijden in een vaste, willekeurige volgorde;
+# week na week komen er 5 nieuwe aan de beurt, zonder herhaling, tot de lijst op is (bij minstens 30 maaltijden dus minstens 6 weken).
+# Daarna begint een nieuwe ronde in een nieuwe willekeurige volgorde.
+import random as _rnd, zoneinfo as _zi
+_AMS = datetime.datetime.now(_zi.ZoneInfo("Europe/Amsterdam")) - datetime.timedelta(hours=7)
+WEEKNR = (_AMS.date() - datetime.date(2026, 10, 19)).days // 7          # week 0 = de week van maandag 19 oktober 2026
+def _ronde(pool, slug_, nr):
+    r = _rnd.Random(f"{slug_}-ronde-{nr}"); lijst = sorted(pool, key=lambda m: m["slug"]); r.shuffle(lijst)
+    weken, rest = [], list(lijst)
+    while len(rest) >= 5:
+        week, soorten = [], set()
+        for m in list(rest):                       # liefst 5 verschillende soorten (aardappel, pasta, rijst ...)
+            if len(week) < 5 and m["soort"] not in soorten: week.append(m); soorten.add(m["soort"]); rest.remove(m)
+        for m in list(rest):
+            if len(week) < 5: week.append(m); rest.remove(m)
+        weken.append(week)
+    return weken
+def weekplan(slug_, pool):
+    """De 5 maaltijden van deze week, plus wat er na deze week nog over is (om een niet-koopbaar gerecht te vervangen)."""
+    nr, w = 0, WEEKNR
+    while True:
+        weken = _ronde(pool, slug_, nr)
+        if not weken: return [], []
+        if w < len(weken): return weken[w], [m for wk in weken[w + 1:] for m in wk]
+        w -= len(weken); nr += 1
 def weekmenu(slug_, kort, h1, lead_extra, pool):
-    ms = _weekmenu_kies(pool, frozenset(WM_GEBRUIKT) if slug_ != "weekmenu" else frozenset())
-    if slug_ == "weekmenu": WM_GEBRUIKT.update(m["slug"] for m in ms)
+    if slug_ == "weekmenu": pool = sorted(pool, key=pprs)[:max(40, len(pool) // 3)]   # goedkoop: uit de goedkoopste maaltijden
+    pool = [m for m in pool if len(m["rang"]) >= 3]
+    ms, reserve = weekplan(slug_, pool)
     if len(ms) < 5: return
     rang, som = _weekmenu_samen(ms)
-    # Lukt het niet om alles bij minstens 3 winkels samen te kopen? Dan het gerecht met de minste winkels vervangen.
-    weg = set()
-    while len(rang) < 3 and len(weg) < 12:
-        slechtst = min(ms, key=lambda m: len(m["rang"])); weg.add(slechtst["slug"])
-        rest = [m for m in pool if m["slug"] not in weg]
-        ms = _weekmenu_kies(rest, frozenset(WM_GEBRUIKT) if slug_ != "weekmenu" else frozenset())
-        if len(ms) < 5: return
-        rang, som = _weekmenu_samen(ms)
+    # Lukt het niet om alles bij minstens 3 winkels samen te kopen? Dan het gerecht met de minste winkels vervangen door een volgend gerecht.
+    pogingen = 0
+    while len(rang) < 3 and reserve and pogingen < 12:
+        slechtst = min(ms, key=lambda m: len(m["rang"])); ms = [m for m in ms if m is not slechtst] + [reserve.pop(0)]
+        rang, som = _weekmenu_samen(ms); pogingen += 1
     if len(rang) < 3: return
+    ms = sorted(ms, key=lambda m: ["aardappel", "pasta", "rijst", "oven", "wereld", "soep", "salade"].index(m["soort"]))
     path = f"/maaltijden/{slug_}/"
     si0, tot0, regels0 = rang[0]
     los = sum(pprs(m) for m in ms)
     ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), (kort, None))
     kcal_gem = round(sum(m["kcal"] for m in ms) / 5 / 5) * 5
     lead = (f"5 avondmaaltijden voor 4 personen, maandag tot en met vrijdag. Samen <b>{eur(tot0)}</b> bij <b>{esc(wnaam(si0))}</b>, "
-            f"{pp(tot0 / 5)} per persoon per maaltijd. {lead_extra}")
+            f"{pp(tot0 / 5)} per persoon per maaltijd. {lead_extra} <b>Elke maandag een nieuw menu.</b>")
     dagen = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag"]
     menu = "".join(f'<li><span class="rk">{d}</span> <a href="/maaltijden/{m["slug"]}/"><b>{esc(m["naam"])}</b></a>{mlabels_kort(m)}<span class="sub">{m["kcal"]} kcal p.p. · {m["tijd"]} min · los vanaf {eur(pprs(m))}</span></li>' for d, m in zip(dagen, ms))
     def os_van(si, regels):
