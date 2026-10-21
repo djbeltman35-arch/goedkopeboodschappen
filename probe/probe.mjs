@@ -3,14 +3,9 @@ const H = { 'User-Agent': 'Appie/8.22.3', 'x-application': 'AHWEBSHOP', 'Content
 const tok = await (await fetch('https://api.ah.nl/mobile-auth/v1/auth/token/anonymous', { method: 'POST', headers: H, body: JSON.stringify({ clientId: 'appie' }) })).json();
 const A = { ...H, Authorization: 'Bearer ' + tok.access_token };
 const uit = {};
-const meta = await (await fetch('https://api.ah.nl/mobile-services/bonuspage/v3/metadata', { headers: A })).json();
-uit.meta = meta;
-const per = meta.periods[0]; const tab = per.tabs.find(t => !/uitgelicht/i.test(t.description)) || per.tabs[0];
-const u = tab.urlMetadataList[0].url;
-const r = await fetch('https://api.ah.nl/mobile-services/' + u + (u.includes('?') ? '&' : '?') + 'date=' + per.bonusStartDate, { headers: A });
-const j = await r.json().catch(() => null);
-uit.sectie_url = u; uit.sectie_status = r.status;
-const items = j?.bonusGroupOrProducts || []; uit.n = items.length;
-uit.vb = items.filter(x => x.product || x.bonusGroup?.products?.length).slice(0, 2);
-uit.vbgroep = items.slice(0, 2);
+const seg = 815112;
+for (const u of [`https://api.ah.nl/mobile-services/product/search/v2?bonusSegmentId=${seg}&size=5&page=0`, `https://api.ah.nl/mobile-services/product/search/v2?filters=${encodeURIComponent('bonusSegmentId=' + seg)}&size=5`, `https://api.ah.nl/mobile-services/bonuspage/v1/segment?segmentId=${seg}&date=2026-10-19`, `https://api.ah.nl/mobile-services/bonuspage/v2/segment/${seg}?date=2026-10-19`, `https://api.ah.nl/mobile-services/product/search/v2?sortOn=RELEVANCE&size=3&page=0&filters=${encodeURIComponent('bonus=Bonus')}`]) {
+  const r = await fetch(u, { headers: A }); const t = await r.text(); uit[u] = r.status + ' ' + t.slice(0, 1800);
+}
+const r2 = await fetch('https://api.ah.nl/mobile-services/product/search/v2?sortOn=RELEVANCE&size=1&page=0&query=bonus', { headers: A }); const j = await r2.json(); uit.bonusfilter = (j.filters || []).filter(f => /bonus/i.test(f.id)).map(f => ({ id: f.id, opties: f.options?.map(o => o.id + '=' + o.label + ':' + o.count) }));
 fs.writeFileSync('probe/uit.json', JSON.stringify(uit, null, 1));
