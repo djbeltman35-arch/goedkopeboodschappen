@@ -16,7 +16,7 @@ def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
     links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV if h != hier)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
-FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
+FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
 <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
@@ -1483,8 +1483,7 @@ FEESTEN = [("/sinterklaas/", "🎁", "Sinterklaas", "Pepernoten, kruidnoten, cho
            ("/ramadan/", "🌙", "Ramadan en Suikerfeest", "Dadels, linzen, halal vlees, Turks brood en noten voor de iftar.", 115 <= _md <= 312),
            ("/pasen/", "🐣", "Pasen", "Eieren, croissants, zalm en asperges voor het paasontbijt en paasdiner.", 301 <= _md <= 406),
            ("/pesach/", "🫓", "Pesach", "Matzes, eieren, appels en walnoten voor de seideravond.", 401 <= _md <= 430),
-           ("/bbq/", "🍖", "Barbecue", "Hamburgers, spareribs, saté, worstjes en houtskool.", 501 <= _md <= 831),
-           ("/lunchtrommel/", "🍎", "Lunchtrommel en schoolontbijt", "Brood, beleg, fruit en drinken voor school.", 815 <= _md <= 915 or 1015 <= _md <= 1110)]
+           ("/bbq/", "🍖", "Barbecue", "Hamburgers, spareribs, saté, worstjes en houtskool.", 501 <= _md <= 831)]
 FEESTEN = [f for f in FEESTEN if os.path.exists(os.path.join(OUT, f[0].strip("/"), "index.html"))]
 FEESTEN.sort(key=lambda f: not f[4])
 ch, cld = crumbs(("Feestdagen", None))
