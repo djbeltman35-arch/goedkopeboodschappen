@@ -396,11 +396,16 @@ async function lidl() {
 async function detailresult(id, gateway, winkel, link) {
   const uit = new Map();
   for (let dep = 1; dep <= 20; dep++) {
-    const q = `{listOffers(department:${dep},store:${winkel}){currentOffers{offerId headerText packaging offerPrice normalPrice endDate products{productId offerPrice normalPrice productInformation{headerText packaging}}}}}`;
+    const velden = 'offerId headerText packaging offerPrice normalPrice startDate endDate products{productId offerPrice normalPrice productInformation{headerText packaging}}';
+    // Ook de acties die nog moeten beginnen (bijvoorbeeld 'vanaf woensdag' of volgende week).
+    const q = `{listOffers(department:${dep},store:${winkel}){currentOffers{${velden}} upcomingOffers{${velden}}}}`;
     let j;
     try { j = await haal(gateway, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) }); }
-    catch (e) { console.warn(id, 'afdeling', dep, e.message); continue; }
-    for (const o of j?.data?.listOffers?.currentOffers || []) {
+    catch (e) { j = null; console.warn(id, 'afdeling', dep, 'komende acties niet beschikbaar:', e.message); }
+    if (!j?.data?.listOffers) { try { j = await haal(gateway, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `{listOffers(department:${dep},store:${winkel}){currentOffers{${velden}}}}` }) }); } catch (e) { console.warn(id, 'afdeling', dep, e.message); continue; } }
+    const vdag = vandaag();
+    for (const o of [...(j?.data?.listOffers?.currentOffers || []), ...(j?.data?.listOffers?.upcomingOffers || [])]) {
+      const start = dagVan(o.startDate);
       // Als geen enkel product een eigen actieprijs heeft, geldt de actie voor de combinatie: dan tonen we de actie zelf.
       const eigen = (o.products || []).filter(p => p && p.offerPrice > 0 && p.offerPrice < p.normalPrice - .004);
       const ps = eigen.length ? eigen : o.products?.length === 1 ? o.products : [{ productId: null, offerPrice: o.offerPrice, normalPrice: o.normalPrice, productInformation: { headerText: o.headerText, packaging: o.packaging } }];
@@ -411,7 +416,7 @@ async function detailresult(id, gateway, winkel, link) {
         const was = p.normalPrice > prijs ? p.normalPrice : o.normalPrice;
         if (!(prijs > 0)) continue;
         const naam = p.productInformation?.headerText || o.headerText;
-        uit.set(o.offerId + ':' + p.productId, { s: id, n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs + .004 ? r2(was) : null, lbl: null, u: link(naam, p.productId), t: dagVan(o.endDate), k: p.productId ? String(p.productId) : null });
+        uit.set(o.offerId + ':' + p.productId, { s: id, n: naam, sz: p.productInformation?.packaging || o.packaging || '', p: r2(prijs), was: was > prijs + .004 ? r2(was) : null, lbl: null, u: link(naam, p.productId), t: dagVan(o.endDate), v: start && start > vdag ? start : null, k: p.productId ? String(p.productId) : null });
       }
     }
     await slaap(300);
