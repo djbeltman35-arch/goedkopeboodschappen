@@ -247,10 +247,10 @@ if MAAL:
            ("Waar komen de recepten vandaan?", "Het zijn gangbare Nederlandse gerechten van bekende receptensites: Allerhande, Jumbo, Leukerecepten, 24Kitchen, Lekker en Simpel en Eef kookt zo. Bij elk gerecht staat een link naar het originele recept."),
            ("Hoe worden de calorieën berekend?", "Uit de ingrediënten van het recept, met de gemiddelde voedingswaarde per 100 gram uit de Nederlandse voedingsmiddelentabel. Het is een schatting per persoon bij 4 personen.")]
     ch, cld = crumbs(("Complete maaltijden", None))
-    title = f"Complete maaltijden: {len(MAAL)} gerechten met prijs per supermarkt"
+    title = f"Goedkope recepten: {len(MAAL)} maaltijden met prijs per supermarkt"
     desc = (f"Wat kost stamppot, spaghetti of nasi voor 4 personen? {len(MAAL)} gewone gerechten met calorieën en de goedkoopste supermarkt, "
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Elke dag bijgewerkt.")
-    head = (ch + f"<h1>Complete maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} avondmaaltijden voor 4 personen. Per gerecht zie je de goedkoopste supermarkt. "
+    head = (ch + f"<h1>Goedkope maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} avondmaaltijden voor 4 personen. Per gerecht zie je de goedkoopste supermarkt. "
             f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span>.</p><p class=\"note mkeus\" hidden></p>"
             '<div class="wmblok dierblok"><p><b>🍽️ Kies wat je wilt eten</b><br><span>Per soort vlees of vis.</span></p><div class="chips wmkeus"><a class="chip" href="/maaltijden/met-vis/">🐟 Vis</a><a class="chip" href="/maaltijden/met-gevogelte/">🍗 Gevogelte</a><a class="chip" href="/maaltijden/met-rundvlees/">🥩 Rundvlees</a><a class="chip" href="/maaltijden/met-varkensvlees/">🥓 Varkensvlees</a><a class="chip" href="/maaltijden/vegetarisch/">🥕 Vegetarisch</a><a class="chip" href="/maaltijden/vegan/">🌱 Vegan</a></div></div>'
             '<div class="wmblok"><p><b>📅 Weekmenu met boodschappenlijst</b><br><span>5 avondmaaltijden, in één keer ingekocht.</span></p><div class="chips wmkeus"><a class="chip" href="/maaltijden/weekmenu/">💶 Goedkoop</a><a class="chip" href="/maaltijden/weekmenu-glutenvrij/">🌾 Glutenvrij</a><a class="chip" href="/maaltijden/weekmenu-vegan/">🌱 Vegan</a><a class="chip" href="/maaltijden/weekmenu/#meer">Meer…</a></div></div>'

@@ -62,7 +62,7 @@ def uitklap(body):
     out.append(body[pos:])
     return "".join(out)
 KB_LINKS = [("/vergelijk/", [("prijs-per-kilo", "Prijs per kilo: zo vergelijk je eerlijk"), ("huismerk-of-a-merk", "Huismerk of A-merk")]),
-            ("/aanbieding", [("aanbiedingen-uitgelegd", "Hoeveel korting is 1+1 gratis echt?"), ("invriezen", "Slim invriezen")]),
+            ("/aanbieding", [("wanneer-nieuwe-aanbiedingen", "Wanneer beginnen de nieuwe aanbiedingen?"), ("aanbiedingen-uitgelegd", "Hoeveel korting is 1+1 gratis echt?")]),
             ("/maaltijden/", [("weekmenu-maken", "Een weekmenu maken"), ("seizoensgroente", "Seizoensgroente")]),
             ("/categorie/", [("prijs-per-kilo", "Prijs per kilo uitgelegd"), ("huismerk-of-a-merk", "Huismerk of A-merk")]),
             ("/supermarkt/", [("goedkoopste-supermarkt-uitleg", "Welke supermarkt is het goedkoopst?")]),
@@ -293,7 +293,7 @@ for t, rows in PICKED.items():
     eh = eenheid(e0)
     vanaf = f"{eur(u0)} per {eh}" if u0 is not None and eh else eur(eff(p0))
     besp = round((1 - u0 / uN) * 100) if u0 and uN and uN > u0 else 0
-    title = f"{name}: vanaf {vanaf} bij {win} ({MAAND})"
+    title = f"{name} prijs: vanaf {vanaf} bij {win} ({MAAND})"
     desc = (f"{name} kost {vanaf} bij {win}" + (f" en {per(uN, eN)} bij {loser}" if uN and u0 and uN > u0 * 1.02 else "") +
             (f". Vergelijk {len(rows)} supermarkten" if len(rows) > 1 else f". Nu alleen te koop bij {win}") + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + ". Elke dag bijgewerkt." + (f" Ongeveer {kcal_txt(t)}." if kcal_txt(t) else ""))
     c = CATOF.get(t)

@@ -106,7 +106,7 @@ KB = [
 ]
 
 ch, cld = crumbs(("Kennisbank", None))
-_kb_body = '<ul class="alkaart">' + "".join(f'<li><p class="alkop">{ic} <a href="/kennisbank/{sl}/"><b>{esc(t)}</b></a></p><p class="sub">{esc(i)}</p></li>' for sl, t, ic, i, *_ in KB) + '</ul>'
+_kb_body = '<p><a href="/kennisbank/wanneer-nieuwe-aanbiedingen/"><b>📅 Wanneer beginnen de nieuwe aanbiedingen?</b></a> Per supermarkt de startdag van de folder.</p><ul class="alkaart">' + "".join(f'<li><p class="alkop">{ic} <a href="/kennisbank/{sl}/"><b>{esc(t)}</b></a></p><p class="sub">{esc(i)}</p></li>' for sl, t, ic, i, *_ in KB) + '</ul>'
 schrijf("/kennisbank/", page("/kennisbank/", "Kennisbank: slim en goedkoop boodschappen doen",
     "Korte uitleg over slim boodschappen doen: prijs per kilo, huismerk of A-merk, aanbiedingen, weekmenu, klein budget, THT en TGT, statiegeld en meer.",
     ch + "<h1>Kennisbank</h1><p class=\"lead\">Korte uitleg over slim en goedkoop boodschappen doen.</p>", _kb_body,
@@ -127,3 +127,29 @@ for sl, titel, ic, intro, secties, faq, links in KB:
     schrijf(path, page(path, titel, desc, ch + f"<h1>{ic} {esc(titel)}</h1><p class=\"lead\">{esc(intro)}</p>", body, [cld, art, faq_ld(faq)]))
     made.append((path, "0.6"))
 print("/kennisbank/:", len(KB), "artikelen")
+
+# ---------- Wanneer beginnen de nieuwe aanbiedingen? (uitgerekend uit de echte einddatums) ----------
+import collections as _col
+_DAG = ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"]
+_start = {}
+for _o in OFFERS:
+    if _o.get("t"):
+        try: _start.setdefault(_o["s"], _col.Counter())[(datetime.date.fromisoformat(_o["t"]).weekday() + 1) % 7] += 1
+        except Exception: pass
+_rij = [(w, c.most_common(1)[0][0]) for w, c in _start.items() if sum(c.values()) >= 10]
+_rij.sort(key=lambda x: (x[1], NAMEN.get(x[0], x[0])))
+if _rij:
+    path = "/kennisbank/wanneer-nieuwe-aanbiedingen/"
+    ch, cld = crumbs(("Kennisbank", "/kennisbank/"), ("Wanneer nieuwe aanbiedingen?", None))
+    _tab = ('<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th>Nieuwe acties op</th></tr></thead><tbody>'
+            + "".join(f'<tr><td><a href="/aanbiedingen/{w}/"><b>{esc(NAMEN.get(w, w))}</b></a></td><td>{_DAG[d]}</td></tr>' for w, d in _rij) + "</tbody></table></div>")
+    _faq = [(f"Wanneer begint de nieuwe {'AH Bonus' if w == 'ah' else NAMEN.get(w, w) + ' folder'}?", f"De nieuwe weekacties van {NAMEN.get(w, w)} beginnen op {_DAG[d]}. Dat zien we aan de einddatums van de huidige acties.") for w, d in _rij[:6]]
+    _faq.append(("Kan ik de aanbiedingen van volgende week al zien?", "Ja, zodra de supermarkt ze online zet. Albert Heijn doet dat meestal op vrijdag. Op onze pagina's 'volgende week' per supermarkt staan ze dan meteen."))
+    _body = (_tab + '<p class="note">Uitgerekend uit de einddatums van alle aanbiedingen van deze week. Sommige acties lopen korter of langer.</p>'
+             + '<h2>Aanbiedingen van volgende week</h2><ul class="links">' + "".join(f'<li><a href="/aanbiedingen/{w}/volgende-week/">{"AH Bonus" if w == "ah" else esc(NAMEN.get(w, w)) + " folder"} volgende week</a></li>' for w, d in _rij) + "</ul>"
+             + faq_html(_faq))
+    schrijf(path, page(path, "Wanneer beginnen de nieuwe aanbiedingen? Per supermarkt",
+        "Op welke dag beginnen de nieuwe aanbiedingen van AH, Jumbo, Lidl, Aldi, Dirk en de andere supermarkten? Per supermarkt de startdag van de nieuwe folder.",
+        ch + "<h1>📅 Wanneer beginnen de nieuwe aanbiedingen?</h1><p class=\"lead\">Per supermarkt de dag waarop de nieuwe folder begint.</p>", _body, [cld, faq_ld(_faq)]))
+    made.append((path, "0.7"))
+    print("/kennisbank/wanneer-nieuwe-aanbiedingen/:", _rij)
