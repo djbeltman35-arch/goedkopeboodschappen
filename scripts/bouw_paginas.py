@@ -17,7 +17,7 @@ def header(actief=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -1106,7 +1106,7 @@ if PAK and _huis_vb:
     title = f"Besparen op boodschappen: 8 tips met echte prijzen ({MAAND})"
     desc = f"Hoe bespaar je op boodschappen? Huismerken zijn nu gemiddeld {round(med * 100)}% goedkoper en {nm(w['si'])} scheelt {eur(l['tot'] - w['tot'])} per mandje met {nm(l['si'])}. 8 tips, onderbouwd met de prijzen van vandaag."
     head = ch + f'<h1>Besparen op boodschappen: 8 tips met echte prijzen</h1><p class="lead">Wat het vandaag écht scheelt, met de prijzen van {len([s_ for s_ in stores if s_.get("count")])} supermarkten. Bijgewerkt op {DATUM}.</p>'
-    body = tiphtml + '<h2>Meer weten</h2><ul class="links"><li><a href="/eten-voor-50-euro-per-week/">Eten voor 50 euro per week</a></li><li><a href="/studentenboodschappen/">Studentenboodschappen</a></li><li><a href="/prijsrapport/">Prijsrapport van deze maand</a></li><li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: per product vergeleken</a></li><li><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a></li><li><a href="/prijsindex/">Worden boodschappen duurder? De prijsindex</a></li></ul>' + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
+    body = tiphtml + '<h2>Meer weten</h2><ul class="links"><li><a href="/eten-voor-50-euro-per-week/">Eten voor 50 euro per week</a></li><li><a href="/studentenboodschappen/">Studentenboodschappen</a></li><li><a href="/prijsrapport/">Prijsrapport van deze maand</a></li><li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: per product vergeleken</a></li><li><a href="/voor-hulpverleners/">Voor budgetcoaches en schuldhulpverlening</a></li><li><a href="/boodschappen-per-week/">Wat kosten boodschappen per week?</a></li><li><a href="/prijsindex/">Worden boodschappen duurder? De prijsindex</a></li></ul>' + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>'
     schrijf("/besparen/", page("/besparen/", title, desc, head, body, [cld, faq_ld(faq)], og_title="Besparen op boodschappen: 8 tips met echte prijzen"))
     made.append(("/besparen/", "0.9"))
     print("/besparen/:", len(_huis_vb), "huismerkvergelijkingen, mediaan", round(med * 100), "%")
@@ -1466,14 +1466,80 @@ _dt = [("🌾", "Glutenvrij", "/glutenvrij/", "/maaltijden/glutenvrij/", "Zonder
        ("🍗", "Halal", "/halal/", "/maaltijden/halal/", "Halal vlees en kip, en maaltijden zonder varkensvlees en alcohol."),
        ("✡️", "Koosjer", "/koosjer/", "/maaltijden/koosjer/", "Maaltijden zonder varkensvlees en zonder vlees met zuivel."),
        ("💪", "Eiwitrijk", "/eiwitrijk/", "/maaltijden/eiwitrijk/", "De goedkoopste eiwitten en maaltijden met minstens 30 gram eiwit."),
-       ("🥗", "Caloriearm", None, "/maaltijden/caloriearm/", "Avondmaaltijden met hoogstens 550 kcal per persoon.")]
+       ("🥗", "Caloriearm", None, "/maaltijden/caloriearm/", "Avondmaaltijden met hoogstens 550 kcal per persoon."),
+       ("⚠️", "Allergie", "/allergie/", "/maaltijden/glutenvrij/", "Glutenvrij, lactosevrij, zonder koemelk of zonder ei.")]
 ch, cld = crumbs(("Dieet en leefstijl", None))
 body = ('<ul class="feesten">' + "".join(f'<li><a href="{p_ or m_}"><span class="fi">{ic}</span><b>{esc(n_)}</b><span class="sub">{esc(t_)}</span></a></li>' for ic, n_, p_, m_, t_ in _dt) + '</ul>'
-        + '<h2>Ook maaltijden per soort</h2><ul class="links">' + "".join(f'<li><a href="{m_}">{ic} {esc(n_)} maaltijden</a></li>' for ic, n_, p_, m_, t_ in _dt)
+        + '<h2>Ook maaltijden per soort</h2><ul class="links">' + "".join(f'<li><a href="{m_}">{ic} {esc(n_)} maaltijden</a></li>' for ic, n_, p_, m_, t_ in _dt if n_ != "Allergie")
         + '<li><a href="/maaltijden/vegetarisch/">🥕 Vegetarische maaltijden</a></li></ul><p class="note">In de app kun je bij elke categorie ook op <b>⚙️ Filter</b> tikken om alleen glutenvrij, lactosevrij, vegan, halal, caloriearm of eiwitrijk te zien.</p>')
 schrijf("/dieet/", page("/dieet/", "Dieet en leefstijl: glutenvrij, lactosevrij, vegan en halal vergelijken", "Glutenvrij, lactosevrij, vegan, halal, koosjer, eiwitrijk en caloriearm: per dieet de producten en maaltijden met de goedkoopste supermarkt.",
     ch + "<h1>Dieet en leefstijl</h1><p class=\"lead\">Kies wat bij jou past. Je ziet de producten en maaltijden met de goedkoopste supermarkt.</p>", body, [cld]))
 made.append(("/dieet/", "0.7"))
+
+# ---------- Voor budgetcoaches en schuldhulpverlening ----------
+_g = globals()
+_heeft_bedrag = all(k in _g for k in ("bedrag", "lo", "_wm", "avond_pp"))
+_hv_rows = ("".join(f'<tr><td><b>{n} {"persoon" if n == 1 else "personen"}</b></td><td class="p">{eur(bedrag(n, lo[1]))}</td><td class="p">{eur(bedrag(n, lo[1]) * 52 / 12)}</td></tr>' for n in (1, 2, 3, 4))
+            if _heeft_bedrag else "")
+ch, cld = crumbs(("Voor hulpverleners", None))
+_hv_faq = [("Is het echt gratis?", "Ja. Er is geen reclame, geen abonnement en geen betaalde plek voor supermarkten. Ik verdien er niets aan."),
+           ("Moet mijn klant een account maken?", "Nee. Er is geen account, geen e-mailadres en geen cookies nodig. De boodschappenlijst blijft alleen op de eigen telefoon of computer."),
+           ("Kloppen de prijzen?", "De prijzen komen elke dag van de webshops van de supermarkten, inclusief aanbiedingen. In de winkel kan een prijs soms anders zijn; de kassa is leidend."),
+           ("Mag ik naar de site verwijzen of hem in een folder zetten?", "Graag! Gebruik de tekst of de printversie op deze pagina. Een vraag of idee? Mail naar goedkopeboodschappen@proton.me."),
+           ("Werkt het ook voor mensen die niet handig zijn met internet?", "Ja. Zoek een product, tik op + en je ziet welke winkel het goedkoopst is. De lijst kun je printen of via WhatsApp delen, zodat iemand anders kan meekijken.")]
+_hv_deel = "Bespaar op je boodschappen. Op boodschappenvergelijk.nl zie je gratis bij welke supermarkt je boodschappen het goedkoopst zijn. Met weekmenu's en boodschappenlijst. Geen reclame, geen account."
+_hv_body = ('<div class="hvkaart"><h2>Wat heeft je klant eraan?</h2><ul>'
+    f'<li><b>Prijzen van {AANTAL} supermarkten</b>, elke dag bijgewerkt.</li>'
+    '<li><b>Boodschappenlijst</b>: je ziet meteen welke winkel voor de hele lijst het goedkoopst is.</li>'
+    + (f'<li><b>Goedkoop weekmenu</b>: 5 avondmaaltijden voor 4 personen voor {eur(_wm[0])}, met boodschappenlijst.</li>' if _heeft_bedrag else '<li><b>Goedkoop weekmenu</b> met boodschappenlijst.</li>')
+    + '<li><b>Printen of delen</b> via WhatsApp.</li><li><b>Geen account, geen cookies</b>, geen gegevens.</li><li>Werkt op <b>elke telefoon</b> en kan als app op het beginscherm.</li></ul></div>'
+    + (f'<h2>Wat kost eten per week?</h2><p>Zuinig eten bij de goedkoopste supermarkt, met de prijzen van {DATUM}. Ontbijt, lunch en 7 avondmaaltijden.</p>'
+       f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Huishouden</th><th style="text-align:right">Per week</th><th style="text-align:right">Per maand</th></tr></thead><tbody>{_hv_rows}</tbody></table></div>'
+       '<p class="note">Drinken, snacks en verzorging tellen niet mee. <a href="/boodschappen-per-week/">Zo is het berekend</a>.</p>' if _hv_rows else "")
+    + '<h2>Zo gebruik je het in een gesprek</h2><ol class="hvstap"><li><b>Open de site samen</b> op de telefoon van je klant.</li><li><b>Zet de vaste boodschappen op de lijst.</b> Of tik op “Start met 15 gewone weekboodschappen”.</li><li><b>Kijk welke winkel het goedkoopst is.</b> Kies eventueel alleen de winkels in de buurt.</li><li><b>Print de lijst</b> of deel hem, zodat je later samen kunt kijken.</li></ol>'
+    + '<h2>Pagina’s om door te sturen</h2><ul class="links">'
+      '<li><a href="/maaltijden/weekmenu/">📅 Goedkoop weekmenu met boodschappenlijst</a></li>'
+      '<li><a href="/boodschappen-per-week/">💶 Wat kosten boodschappen per week?</a></li>'
+      '<li><a href="/eten-voor-50-euro-per-week/">Eten voor 50 euro per week</a></li>'
+      '<li><a href="/maaltijden/goedkoop-avondeten/">De 10 goedkoopste maaltijden</a></li>'
+      '<li><a href="/besparen/">8 bespaartips met echte prijzen</a></li>'
+      '<li><a href="/huismerk-of-a-merk/">Huismerk of A-merk: hoeveel scheelt het?</a></li>'
+      '<li><a href="/aanbiedingen/">🔥 Aanbiedingen van deze week</a></li>'
+      '<li><a href="/studentenboodschappen/">Studentenboodschappen</a></li>'
+      '<li><a href="/allergie/">Boodschappen bij een allergie</a></li></ul>'
+    + f'<h2>Tekst om te delen</h2><div class="hvdeel"><p id="hvtekst">{esc(_hv_deel)}</p><button type="button" class="btn" data-kopieer="hvtekst">📋 Kopieer tekst</button></div>'
+    + '<h2>Folder om uit te printen</h2><p>Een A4’tje om mee te geven of op te hangen.</p><p><button type="button" class="btn btn-line" onclick="document.body.classList.add(\'printfolder\');window.print();setTimeout(()=>document.body.classList.remove(\'printfolder\'),500)">🖨️ Print de folder</button></p>'
+    + f'<div class="folder"><p class="fkop">🛒 Goedkoper boodschappen doen?</p><p class="furl">boodschappenvergelijk.nl</p><ul><li>Zie bij welke supermarkt je boodschappen het goedkoopst zijn</li><li>Prijzen van {AANTAL} supermarkten, elke dag nieuw</li><li>Goedkope weekmenu’s met boodschappenlijst</li><li>Gratis, geen reclame, geen account</li></ul><p class="fhoe"><b>Zo werkt het:</b> zoek een product, tik op <b>+</b> en zie waar je het minst betaalt.</p></div>'
+    + faq_html(_hv_faq)
+    + '<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-kopieer]");if(!b)return;const t=document.getElementById(b.dataset.kopieer).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="✓ Gekopieerd"}).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById(b.dataset.kopieer));const s=getSelection();s.removeAllRanges();s.addRange(r)})});</script>')
+schrijf("/voor-hulpverleners/", page("/voor-hulpverleners/", "Gratis boodschappen-tool voor budgetcoaches en schuldhulpverlening",
+    "Gratis hulpmiddel voor budgetcoaches, schuldhulpverleners en maatschappelijk werk: boodschappen vergelijken bij 11 supermarkten, weekmenu's met boodschappenlijst en echte bedragen per week. Geen reclame, geen account.",
+    ch + "<h1>Voor budgetcoaches en schuldhulpverlening</h1><p class=\"lead\">Een gratis hulpmiddel voor mensen met een krap budget. Geen reclame, geen account, geen cookies.</p>",
+    _hv_body, [cld, faq_ld(_hv_faq)]))
+made.append(("/voor-hulpverleners/", "0.8"))
+
+# ---------- Boodschappen bij een allergie of intolerantie ----------
+ch, cld = crumbs(("Dieet en leefstijl", "/dieet/"), ("Allergie", None))
+_al = [("🌾", "Coeliakie of glutenintolerantie", "Glutenvrij brood, pasta, koek en meer.", [("/glutenvrij/", "Glutenvrije producten"), ("/maaltijden/glutenvrij/", "Glutenvrije maaltijden"), ("/maaltijden/weekmenu-glutenvrij/", "Glutenvrij weekmenu")]),
+       ("🥛", "Lactose-intolerantie", "Lactosevrije melk, yoghurt en kaas.", [("/lactosevrij/", "Lactosevrije producten"), ("/maaltijden/lactosevrij/", "Lactosevrije maaltijden"), ("/maaltijden/weekmenu-lactosevrij/", "Lactosevrij weekmenu")]),
+       ("🚫", "Koemelkallergie (zuivelvrij)", "Plantaardige melk, yoghurt, kaas en boter, zonder koemelk.", [("/vegan/melk/", "Plantaardige melk"), ("/vegan/yoghurt/", "Plantaardige yoghurt"), ("/vegan/kaas/", "Vegan kaas"), ("/vegan/boter/", "Plantaardige boter")]),
+       ("🥚", "Ei-allergie (eivrij)", "Vegan producten en maaltijden zijn zonder ei.", [("/vegan/", "Vegan producten"), ("/maaltijden/vegan/", "Vegan maaltijden"), ("/maaltijden/weekmenu-vegan/", "Vegan weekmenu")])]
+_al_faq = [("Waar koop je goedkoop glutenvrij?", "Op onze pagina glutenvrij staan alle glutenvrije producten van de supermarkten naast elkaar, per soort van goedkoop naar duur. Zo zie je in één keer waar je het minst betaalt."),
+           ("Wat kun je eten bij een koemelkallergie?", "Plantaardige melk, yoghurt, kaas en boter zijn zonder koemelk. Ze staan per soort op onze vegan pagina’s, met de goedkoopste supermarkt. Let op: lactosevrij is níet hetzelfde als zuivelvrij; lactosevrije melk is nog steeds koemelk."),
+           ("Is een vegan product ook eivrij?", "Ja, vegan producten bevatten geen ei, melk of andere dierlijke ingrediënten. Kijk bij een allergie wel altijd naar de waarschuwing ‘kan sporen bevatten’ op de verpakking."),
+           ("Hoe weet de site of iets glutenvrij of lactosevrij is?", "We kijken naar de productnaam: staat er glutenvrij, lactosevrij of vegan in, dan tonen we het. We lezen het etiket niet. Controleer bij een allergie altijd de verpakking of de webshop."),
+           ("Zijn er ook allergievrije feestboodschappen?", "Ja. Op de pagina’s voor Sinterklaas, Kerst en Pasen staat een tabel met glutenvrije, lactosevrije en vegan varianten van de feestproducten.")]
+_al_body = ('<div class="letop"><b>Let op:</b> we kijken naar de productnaam, niet naar het etiket. Controleer bij een allergie altijd de verpakking.</div>'
+    + '<ul class="alkaart">' + "".join(f'<li><p class="alkop">{ic} <b>{esc(t)}</b></p><p class="sub">{esc(u)}</p><p class="allinks">' + " · ".join(f'<a href="{h}">{esc(n)}</a>' for h, n in ls) + '</p></li>' for ic, t, u, ls in _al) + '</ul>'
+    + '<h2>Feestdagen zonder allergenen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas</a>: glutenvrije en vegan pepernoten en chocoladeletters</li><li><a href="/kerst/">🎄 Kerst</a>: allergievrije varianten van het kerstdiner</li><li><a href="/feestdagen/">Alle feestdagen</a></li></ul>'
+    + '<p class="note">In de app tik je bij een categorie op <b>⚙️ Filter</b> om alleen glutenvrij, lactosevrij of vegan te zien.</p>'
+    + '<h2>Voor diëtisten en allergie-organisaties</h2><p>Verwijs gerust naar deze pagina. De site is gratis, zonder reclame en zonder account. Vragen of tips: <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'
+    + faq_html(_al_faq))
+schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij, lactosevrij, zuivelvrij en eivrij vergelijken",
+    "Voedselallergie of intolerantie? Vergelijk glutenvrije, lactosevrije, zuivelvrije (koemelkallergie) en eivrije producten bij 11 supermarkten en zie waar ze het goedkoopst zijn.",
+    ch + "<h1>Boodschappen bij een allergie</h1><p class=\"lead\">Glutenvrij, lactosevrij, zonder koemelk of zonder ei. Zie per product waar het het goedkoopst is.</p>",
+    _al_body, [cld, faq_ld(_al_faq)]))
+made.append(("/allergie/", "0.8"))
 
 # ---------- 404, sitemap, robots ----------
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",

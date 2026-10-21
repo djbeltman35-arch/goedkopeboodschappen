@@ -450,3 +450,16 @@ html body .chips,html body .mfbalk .mfilters{flex-wrap:wrap;overflow:visible}
  html body .ptable .add{padding:6px 8px;font-size:13px;white-space:normal}
  html body .ptable .shop{white-space:normal}
 }
+/* Hulpverleners en allergie */
+.hvkaart{background:var(--green-soft);border-radius:14px;padding:12px 16px;margin:12px 0}
+.hvkaart h2{margin:0 0 6px;font-size:18px}.hvkaart ul{margin:0;padding-left:20px}.hvkaart li{margin:3px 0}
+.hvstap{padding-left:22px}.hvstap li{margin:5px 0}
+.hvdeel{background:var(--surface);border:1px dashed var(--green);border-radius:12px;padding:12px 14px}.hvdeel p{margin:0 0 10px}
+.folder{display:none}
+@media print{body.printfolder *{visibility:hidden}body.printfolder .folder,body.printfolder .folder *{visibility:visible}body.printfolder .folder{display:block;position:absolute;left:0;top:0;width:100%;padding:30px;font-size:22px;color:#000}
+ .folder .fkop{font-size:40px;font-weight:800;margin:0 0 6px}.folder .furl{font-size:34px;font-weight:800;color:#0b6b3f;margin:0 0 24px}.folder li{margin:10px 0}}
+.letop{background:#fff6e0;border:1px solid #f0d58a;border-radius:12px;padding:10px 14px;font-size:14px;margin:10px 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .letop{background:#3a2e10;border-color:#6b5420}}
+.alkaart{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}
+.alkaart li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.alkaart p{margin:0}.alkaart .alkop{font-size:16px}.alkaart .sub{display:block;font-size:13px;color:var(--muted);margin:2px 0 6px}.alkaart .allinks{font-size:14px}
