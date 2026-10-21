@@ -288,4 +288,8 @@ K2 = {
  "babyvoeding": 70, "fruithapje": 60, "groentehapje": 60, "opvolgmelk": 480, "zuigelingenmelk": 500, "babybiscuits": 420, "babypap": 400,
  "knijpzakje fruit": 60, "nutrilon": 500, "hero baby": 480, "bambix": 400, "babysnack": 400, "dreumesmelk": 470, "peutermelk": 460,
  "groeimelk": 470,
+ # aangevuld: ontbrekende soorten
+ "worteltjes geraspt": 35, "champignons in pot": 20, "medjoul dadels": 280, "boerenkool diepvries": 40, "wokgroente diepvries": 30,
+ "turks brood": 270, "matze crackers": 390, "kipfilet beleg": 105, "kipspiesjes": 150, "lamskotelet": 250, "filodeeg": 300,
+ **_ml(havermelk=45, sojamelk=40, capri_sun=40, pils_beugelflessen=42),
 }

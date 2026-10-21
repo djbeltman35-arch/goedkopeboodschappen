@@ -385,3 +385,68 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .mfbalk .mfilters::-webkit-scrollbar{display:none}
 .mfbalk .mfilters .btn{flex:none;white-space:nowrap;padding:6px 11px;font-size:14px}
 .mfbalk .mdier{margin-top:6px}
+.mfbalk .mdieet{flex-wrap:wrap;overflow:visible}
+/* Rustiger: "Klopt niet?" als klein grijs linkje in plaats van rode knop */
+.fout{border:0;background:none;color:var(--muted,#6b7280);font:500 12px var(--text);padding:2px 0;text-decoration:underline;text-underline-offset:2px}
+.fout::before{content:none}
+.fout:hover,.fout:focus-visible{background:none;color:var(--ink)}
+.mfbalk .meerf,.mfbalk .meerf:hover,.mfbalk .meerf:focus{background:var(--surface);color:var(--green-dark);border-color:var(--green)}
+/* Compacter: uitlegteksten kleiner */
+html body .lead{font-size:16px;line-height:1.45}
+html body .hero .lead{font-size:15.5px}
+html body .note{font-size:13px}
+html body .wmblok span{font-size:13px}
+html body .wmblok{padding:12px 14px}
+html body .res .meta,html body #results .meta{font-size:13.5px}
+html body .promise{font-size:13px;gap:2px 14px;margin-top:10px}
+html body .mystores summary .sub{font-size:13px}
+html body .feiten{font-size:14px}
+html body .faq p,html body details.faq p{font-size:14.5px}
+/* Strak en compact: knoppen en linkknoppen dicht bij elkaar */
+html body .chips{gap:5px}
+html body .chip,html body ul.chips a{padding:5px 11px;font-size:14px;border-width:1.5px;gap:4px}
+html body ul.chips{gap:5px;margin-bottom:12px}
+html body .chips.dieet{gap:5px;margin:4px 0}
+html body .terug{gap:6px;margin-bottom:6px}
+html body .terug .tknop{padding:5px 11px;font-size:14px;border-width:1.5px}
+html body #results nav.terug.app{padding-top:6px;padding-bottom:6px}
+body:has(#results nav.terug.app){padding-top:44px}
+html body .mfbalk .mfilters .btn{padding:5px 10px;font-size:13.5px}
+html body .mfbalk{padding:6px 0}
+html body .wmblok{margin:10px 0 12px}
+html body .wmblok + .wmblok{margin-top:-2px}
+html body .wmkeus{gap:5px}
+html body .filterknop{padding:5px 11px;font-size:13.5px}
+html body .kc,html body .wk{margin-top:0;font-size:12.5px;line-height:1.35}
+/* Uitklapmenu's per soort */
+.subblokken{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.subblok{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.subblok>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:12px 14px;font-weight:700;font-size:16px}
+.subblok>summary::-webkit-details-marker{display:none}
+.subblok>summary .subnaam{flex:1}
+.subblok>summary .subn{font-size:12.5px;font-weight:600;color:var(--muted);background:var(--soft);border-radius:999px;padding:2px 8px}
+.subblok>summary::after{content:"▾";color:var(--green-dark);font-size:16px;transition:transform .15s}
+.subblok[open]>summary::after{transform:rotate(180deg)}
+.subblok[open]>summary{border-bottom:1px solid var(--line);background:var(--green-soft)}
+.subblok .rows{margin:0;border:0;border-radius:0}
+.subblok .offers{padding:8px;margin:0}
+.subblok .pakkop{margin:10px 14px 2px;font-size:13px;color:var(--muted)}
+.subblok>summary h2.subnaam{margin:0;font-size:16px;font-weight:700;line-height:1.3}
+.subblok .subin{padding:4px 10px 8px}
+.subblok .subin .tblwrap{margin:6px 0}
+/* Nergens horizontaal scrollen: knoppenrijen lopen door op de volgende regel */
+html body .chips,html body .mfbalk .mfilters{flex-wrap:wrap;overflow:visible}
+.kiezers{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.kiezers select{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 14px var(--text)}
+@media (max-width:360px){.kiezers{grid-template-columns:1fr}}
+/* Tabellen passen altijd in het scherm */
+@media (max-width:640px){
+ html body .ptable{font-size:13px;table-layout:auto}
+ html body .ptable th,html body .ptable td{padding:7px 6px;overflow-wrap:anywhere;word-break:break-word}
+ html body .ptable thead th{font-size:12px}
+ html body .ptable td.p,html body .ptable td.c,html body .ptable.hist td.p{white-space:normal}
+ html body .ptable .tag{font-size:16px;padding:3px 6px}
+ html body .ptable .unit,html body .ptable .was{font-size:12px;white-space:normal}
+ html body .ptable .add{padding:6px 8px;font-size:13px;white-space:normal}
+ html body .ptable .shop{white-space:normal}
+}

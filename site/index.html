@@ -40,12 +40,22 @@
 @media (min-width:560px){.quick.tegels{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .quick.tegels .chip{flex-direction:column;justify-content:center;gap:2px;white-space:normal;text-align:center;border-radius:14px;padding:9px 6px;font-size:13px;line-height:1.2;min-height:64px}
 .quick.tegels .chip .ic{font-size:22px;line-height:1}
+.quick.tegels{display:block}
+.quick.tegels .start,.quick.tegels .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.quick.tegels .start{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:560px){.quick.tegels .cats{grid-template-columns:repeat(5,minmax(0,1fr))}.quick.tegels .start{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.quick.tegels .start .chip{min-height:84px;font-size:15px;font-weight:800}
+.quick.tegels .start .chip small{display:block;font-weight:600;font-size:11.5px;opacity:.8}
+.quick.tegels .start .chip.mt{background:#e9f6ef;border-color:#b8dfc8;color:#0b6b3f}
+.tegelkop{margin:14px 0 8px;font-weight:700;color:var(--muted);font-size:14px}
+.filterknop{display:inline-flex;align-items:center;gap:6px;margin:4px 0 8px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--text);cursor:pointer}
+.filterknop[aria-expanded=true]{border-color:var(--green);color:var(--green-dark)}
 .keus{margin:8px 0 4px}.keus p{margin:0 0 6px;font-weight:700}
 .keus .chips{flex-wrap:wrap;overflow:visible;gap:6px}.keus .chip{padding:6px 11px;font-size:14px}
 .res h2{font-size:21px;margin:16px 0 4px}
 .res .meta{color:var(--muted);font-size:15px;margin:0 0 8px}
 .rows{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.row{display:grid;grid-template-columns:minmax(0,1fr) auto 46px;gap:12px;align-items:center;padding:12px 12px 12px 14px;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto 44px;gap:10px;align-items:center;padding:9px 10px 9px 12px;border-top:1px solid var(--line)}
 .row:first-child{border-top:none}
 .row.win{background:var(--tag-soft)}
 .row .who{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
@@ -197,20 +207,20 @@
   <div class="wrap bar">
     <a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
     <nav class="nav" aria-label="Menu"><a class="pill aanb" href="/aanbiedingen/"><span class="ic">🔥 </span>Aanbiedingen</a><a class="pill mt" href="/maaltijden/"><span class="ic">🍽️ </span>Maaltijden</a><a class="feest" href="/feestdagen/">🎉 Feestdagen</a><a class="wide" href="/categorie/">Categorieën</a></nav>
-    <nav class="snel" aria-label="Populair"><a class="sk best" href="/goedkoopste-supermarkt/">🏆 Goedkoopste<span class="lg2"> supermarkt</span></a><a class="sk wm" href="/maaltijden/weekmenu/">📅 Weekmenu<span class="lg2"> met boodschappenlijst</span></a></nav>
+    
   </div>
 </header>
 
 <main>
   <section class="wrap hero">
     <h1>Boodschappen vergelijken</h1>
-    <p class="lead">Waar zijn je boodschappen het goedkoopst? Zoek een product, zet het op je lijst en zie meteen bij welke supermarkt je het minst betaalt.</p>
+    <p class="lead">Vergelijk je boodschappen bij {{AANTAL}} supermarkten. Zoek een product en zie meteen waar het het goedkoopst is.</p>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Bijvoorbeeld halfvolle melk of pindakaas" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn">Zoek</button>
     </form>
-    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen en aanbiedingen</li><li>Onafhankelijk: geen reclame, ik verdien er niets aan</li></ul>
+    <ul class="promise"><li>{{AANTAL}} supermarkten</li><li>Elke dag nieuwe prijzen</li><li>Onafhankelijk, zonder reclame</li></ul>
     <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies de winkels waar jij boodschappen doet</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
@@ -224,14 +234,6 @@
   <div class="wrap app">
     <section class="res" aria-label="Zoekresultaten">
       <div class="chips quick tegels" id="quick" role="group" aria-label="Categorieën"></div>
-      <div class="handig" aria-label="Handig"><b>Handig:</b>
-        <button type="button" class="hchip" data-handig="plak">📋 Hele lijst plakken</button>
-        <button type="button" class="hchip" data-handig="buurt">📍 Winkels bij mij</button>
-        <button type="button" class="hchip" data-handig="mail">🔔 Mail bij aanbiedingen</button>
-        <button type="button" class="hchip" data-handig="alarm">⏰ Prijsalarm</button>
-        <a class="hchip" href="/besparen/">💡 Bespaartips</a>
-        <a class="hchip" href="/prijsindex/">📈 Worden boodschappen duurder?</a>
-      </div>
       <div id="results" aria-live="polite"><p class="loading">Prijzen laden…</p></div>
     </section>
 
@@ -256,7 +258,7 @@
         <button type="button" class="btn-line" id="share">Lijst delen</button>
         <button type="button" class="btn-line" id="print">Printen</button>
       </div>
-      <p class="src" id="src">Prijzen van de webshops van de supermarkten, elke dag bijgewerkt. De prijs aan de kassa is leidend.</p>
+      <p class="src" id="src">Prijzen van de webshops, elke dag bijgewerkt. De kassa is leidend.</p>
     </aside>
   </div>
 
@@ -264,13 +266,13 @@
   <section class="wrap how" aria-labelledby="hw">
     <h2 id="hw">Zo werkt het</h2>
     <ol>
-      <li><b>Zoek wat je nodig hebt</b>Je ziet direct de goedkoopste versie per supermarkt, per kilo of liter.</li>
-      <li><b>Zet het op je lijst</b>Je lijst blijft vanzelf bewaard op je telefoon of computer.</li>
-      <li><b>Kies je winkel</b>We rekenen uit waar je hele lijst het goedkoopst is, en of twee winkels combineren loont.</li>
+      <li><b>Zoek een product</b>Je ziet per supermarkt de goedkoopste.</li>
+      <li><b>Zet het op je lijst</b>Je lijst blijft bewaard.</li>
+      <li><b>Kies je winkel</b>Wij rekenen uit waar alles samen het goedkoopst is.</li>
     </ol>
     <div class="why">
-      <div><h3>Kom gerust terug</h3><p>Bij je volgende bezoek zie je meteen of je lijst goedkoper of duurder is geworden, en wat ervan in de aanbieding is.</p></div>
-      <div><h3>Ik verdien er niets aan</h3><p>Geen reclame, geen betaalde plekken en geen commissie van supermarkten. Deze site is gratis en onafhankelijk. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p></div>
+      <div><h3>Kom gerust terug</h3><p>Je ziet meteen wat goedkoper is geworden.</p></div>
+      <div><h3>Ik verdien er niets aan</h3><p>Geen reclame en geen betaalde plekken. Gratis en onafhankelijk. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p></div>
     </div>
   </section>
   <!--SEO-->
@@ -279,7 +281,7 @@
 <footer class="foot">
   <div class="wrap">
     <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
-    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/dieet/">Dieet en leefstijl</a><a href="/feestdagen/">Feestdagen</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
     <p class="small">Gemaakt door Erik · Versie {{VERSIE}}</p>
     <p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p>
   </div>
@@ -419,7 +421,22 @@ const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk
 // Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
 const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.vg||isVegan(naam))&&(!S.dieet.hl||HALAL_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
 function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
-const dieetChips=()=>`<div class="chips dieet" role="group" aria-label="Dieet"><button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Alleen glutenvrij</button><button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Alleen lactosevrij</button><button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Alleen vegan</button><button type="button" class="chip" data-dieet="hl" aria-pressed="${!!S.dieet.hl}">Alleen halal</button><button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Alleen caloriearm</button><button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Alleen eiwitrijk</button></div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.hl?"Alleen producten met halal in de naam (vooral vlees en kip); groente, fruit en andere producten zonder vlees zie je dan niet. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
+const dieetAan=()=>["gv","lv","vg","hl","arm","eiw"].filter(k=>S.dieet[k]).length;
+// Alleen filters tonen die bij deze producten iets uitmaken (bij bier of wasmiddel dus geen "eiwitrijk").
+const DIEET_K=["gv","lv","vg","hl","arm","eiw"], DIEET_TXT={gv:"glutenvrij",lv:"lactosevrij",vg:"vegan",hl:"halal",arm:"caloriearm",eiw:"eiwitrijk"};
+const GEEN_DIEET=new Set(["Bier en wijn","Huishouden","Verzorging en baby","Huisdieren"]);
+const DIEET_REL={};
+function dieetRel(sleutel,termen){
+  if(DIEET_REL[sleutel])return DIEET_REL[sleutel];
+  const n={gv:0,lv:0,vg:0,hl:0,arm:0,eiw:0};
+  for(const t of termen){const kt=KCAL[String(t).toLowerCase()];
+    if(kcalArm(kt))n.arm++; if(eiwitrijk(t,kt))n.eiw++;
+    for(const p of matches0(t).slice(0,60)){if(GV_RE.test(p[1]))n.gv++;if(LV_RE.test(p[1]))n.lv++;if(isVegan(p[1]))n.vg++;if(HALAL_RE.test(p[1]))n.hl++;}}
+  return DIEET_REL[sleutel]=DIEET_K.filter(k=>n[k]>=(k==="arm"||k==="eiw"?1:2));
+}
+let DIEET_NU=DIEET_K;
+const dieetChips=(rel)=>{DIEET_NU=(rel||DIEET_K).concat(DIEET_K.filter(k=>S.dieet[k]&&!(rel||DIEET_K).includes(k)));if(!DIEET_NU.length)return "";const voorb=DIEET_NU.slice(0,3).map(k=>DIEET_TXT[k]).join(", ");return `<button type="button" class="filterknop" data-dieetopen aria-expanded="${!!(S.dieetOpen||dieetAan())}">⚙️ Filter${dieetAan()?` (${dieetAan()})`:`: ${voorb}${DIEET_NU.length>3?"…":""}`}</button>`+(S.dieetOpen||dieetAan()?dieetChips0():"")};
+const dieetChips0=()=>`<div class="chips dieet" role="group" aria-label="Dieet">${DIEET_NU.includes("gv")?`<button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Glutenvrij</button>`:""}${DIEET_NU.includes("lv")?`<button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Lactosevrij</button>`:""}${DIEET_NU.includes("vg")?`<button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Vegan</button>`:""}${DIEET_NU.includes("hl")?`<button type="button" class="chip" data-dieet="hl" aria-pressed="${!!S.dieet.hl}">Halal</button>`:""}${DIEET_NU.includes("arm")?`<button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Caloriearm</button>`:""}${DIEET_NU.includes("eiw")?`<button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Eiwitrijk</button>`:""}</div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.hl?"Alleen producten met halal in de naam (vooral vlees en kip); groente, fruit en andere producten zonder vlees zie je dan niet. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
 function matches0(q,prefix=true,pool=S.prods,basis=false){
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
@@ -474,14 +491,17 @@ const isVegan=n=>!!n&&VG_RE.test(n)&&!VG_NIET.test(n);
 const HALAL_RE=/\bhalal\b/i;
 // EU-regel 'rijk aan eiwitten': minstens 20% van de energie uit eiwit (en minstens 5 g per 100 g).
 function eiwitrijk(t,kt){const g=EIWIT[(t||"").toLowerCase()];if(!g||g<5)return false;const m=/^(\d+(?:[.,]\d+)?) kcal per 100/.exec(kt||"");const k=m?parseFloat(m[1].replace(",",".")):0;return k>0?g*4/k>=.2:g>=10}
-const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(isVegan(naam)?'<span class="lbl vg">🌱 Vegan</span>':"")+(HALAL_RE.test(naam||"")?'<span class="lbl hl">Halal</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
+const labels=(naam,kt,t)=>(GV_RE.test(naam||"")?'<span class="lbl gv">🌾 Glutenvrij</span>':"")+(LV_RE.test(naam||"")&&!isVegan(naam)?'<span class="lbl lv">🥛 Lactosevrij</span>':"")+(isVegan(naam)?'<span class="lbl vg">🌱 Vegan</span>':"")+(HALAL_RE.test(naam||"")?'<span class="lbl hl">Halal</span>':"")+(kcalArm(kt)?'<span class="lbl arm">🥗 Caloriearm</span>':"")+(eiwitrijk(t,kt)?'<span class="lbl eiw">💪 Eiwitrijk</span>':"");
 // Knopje "Klopt niet?" (afgehandeld in /fout.js)
 const foutKnop=(p,term)=>`<button type="button" class="fout" data-fout="${esc(JSON.stringify({term:term||"",winkel:sname(p[0]),naam:p[1]+(p[4]?" "+p[4]:""),link:link(p),prijs:eur(eff(p))}))}">Klopt niet?</button>`;
+// Calorieën: van de zoekterm, anders van de langste bekende soort in de productnaam.
+const KCAL_SL=Object.keys(KCAL).sort((a,b)=>b.length-a.length), KCAL_C=new Map();
+function kcalVoor(t,naam){const k=KCAL[String(t||"").toLowerCase()];if(k)return k;const ck=t+"|"+naam;if(KCAL_C.has(ck))return KCAL_C.get(ck);const n=" "+norm(naam)+" ";const tw=norm(t||"").split(" ").filter(Boolean),tn=tw.join(" ");const s=KCAL_SL.find(x=>x.length>tn.length&&tw.every(w=>(" "+x+" ").includes(" "+w+" "))&&n.includes(" "+x+" "));const r=s?KCAL[s]:"";KCAL_C.set(ck,r);return r}
 function rowHtml(p,i,term){
   const o=offerOf(p), price=eff(p), u=effUnit(p);
   const added=S.list.some(x=>x.link===link(p));
   return `<li class="row${i===0?" win":""}"><div><div class="who"><span class="shop">${esc(sname(p[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${i===0?'<span class="win-label">Goedkoopst</span>':""}${isMijn(p[0])?'<span class="mijnlbl">⭐ Jouw winkel</span>':""}${i>=0?laag(p,term):""}</div>
-  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${labels(p[1],KCAL[(term||"").toLowerCase()],term)}${i>=0?foutKnop(p,term):""}</div>
+  <a class="nm" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])}</a> <span class="sz">${esc(sizeTxt(p))}</span>${(k=>k?`<span class="kc">${esc(k)}</span>`:"")(kcalVoor(term,p[1]))}${labels(p[1],kcalVoor(term,p[1]),term)}${i>=0?foutKnop(p,term):""}</div>
   <div class="pr">${tag(price,o?"deal":"")}${o?`<span class="was">${eur(p[3])}</span>`:""}<span class="unit">${p.bad?"":u!=null?esc(unitTxt(u,p[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
   ${added?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(term)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</li>`;
 }
@@ -539,9 +559,9 @@ function search(fromUser){
   const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
-  $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips()}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
+  $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips(dieetRel("q"+norm(q),[q]))}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
-  ${mijnBlok(best,kop)}${keus}${alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
+  ${S.demo?"":mijnBlok(best,kop)}${keus}${S.demo?"":alarmHtml(kop,lo)}${PAGINAS.has(norm(q))?`<p class="meta"><a href="/vergelijk/${PAGINAS.get(norm(q))}/">Prijsverloop en alle winkels voor ${esc(q)} bekijken</a></p>`:""}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
@@ -559,13 +579,15 @@ function kiesPrecies(q){
 }
 /* Snelkeuze: aanbiedingen en categorieën */
 function quick(){
-  const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
-  $("quick").innerHTML=`<button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?` (${n})`:""}</button>`+
-    seizoenTegels()+`<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu's</a>`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
-    `<a class="chip" href="/eiwitrijk/"><span class="ic">💪</span>Eiwitrijk</a><a class="chip" href="/glutenvrij/"><span class="ic">🌾</span>Glutenvrij</a><a class="chip" href="/lactosevrij/"><span class="ic">🥛</span>Lactosevrij</a><a class="chip" href="/vegan/"><span class="ic">🌱</span>Vegan</a><a class="chip" href="/halal/"><span class="ic">🍗</span>Halal</a><a class="chip" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden</a><a class="chip" href="/besparen/"><span class="ic">💡</span>Bespaartips</a>`;
+  const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
+  $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen${n?`<small>${n} acties</small>`:""}</button>`+
+    `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a>`+
+    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>prijs per supermarkt</small></a>`+feest+`</div>`+
+    `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+GROEPEN.map((g,i)=>`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${g[1]}</span>${esc(g[0])}</button>`).join("")+
+    `<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a></div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
-function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
+function seizoenTegels(max){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),t=[];
   if(md>=1001&&md<=1205)t.push(["/sinterklaas/","🎁","Sinterklaas"]);
   if(md>=1115&&md<=1226)t.push(["/kerst/","🎄","Kerst"]);
   if(md>=1210||md<=101)t.push(["/oud-en-nieuw/","🎆","Oud en nieuw"]);
@@ -575,16 +597,17 @@ function seizoenTegels(){const d=new Date(),md=(d.getMonth()+1)*100+d.getDate(),
   if(md>=401&&md<=430)t.push(["/pesach/","🫓","Pesach"]);
   if(md>=501&&md<=831)t.push(["/bbq/","🍖","Barbecue"]);
   if((md>=815&&md<=915)||(md>=1015&&md<=1110))t.push(["/lunchtrommel/","🍎","Lunchtrommel"]);
-  return t.map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}</a>`).join("")}
+  return t.slice(0,max||9).map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}<small>feestboodschappen</small></a>`).join("")}
 // Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
 const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
 function renderView(){
   quick();
   if(S.view==="deals") return renderOffers();
   const g=GROEPEN[+S.view], subs=CATS.filter(c=>c[3]===g[0]);
-  const blok=c=>{const rows=c[2].map(t=>{const v=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b));return {t,b:v[0],v}}).filter(r=>r.b); return rows.length?`${subs.length>1?`<h3 class="subkop" id="sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</h3>`:""}${perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("")}`:""};
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2>${dieetChips()}<p class="meta">Per product de goedkoopste supermarkt. Tik op een naam voor alle winkels naast elkaar.</p>
-  ${subs.length>1?`<div class="chips subchips">${subs.map(c=>`<a class="chip" href="#sub-${S.view}-${CATS.indexOf(c)}">${c[1]} ${esc(c[0])}</a>`).join("")}</div>`:""}${subs.map(blok).join("")}`;
+  const blok=c=>{const rows=c[2].map(t=>{const v=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b));return {t,b:v[0],v}}).filter(r=>r.b); if(!rows.length)return "";const inh=perPak(c[2],rows.map(r=>r.t)).map(([k,ts])=>`${k?`<h4 class="pakkop">${esc(k)}</h4>`:""}<ul class="rows">${rijen(ts.map(t=>rows.find(r=>r.t===t)))}</ul>`).join("");
+    return subs.length>1?`<details class="subblok" id="sub-${S.view}-${CATS.indexOf(c)}"${dieetAan()||OPEN.has("sub-"+S.view+"-"+CATS.indexOf(c))?" open":""}><summary><span class="subnaam">${c[1]} ${esc(c[0])}</span><span class="subn">${rows.length}</span></summary>${inh}</details>`:inh};
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>${g[1]} ${esc(g[0])}</h2>${GEEN_DIEET.has(g[0])?"":dieetChips(dieetRel("g"+S.view,subs.flatMap(c=>c[2])))}<p class="meta">${subs.length>1?"Tik op een soort om de producten te zien.":"Tik op een product voor alle prijzen."}</p>
+  <div class="subblokken">${subs.map(blok).join("")}</div>`;
 }
 // Drank per verpakking onder een eigen kopje (krat, flesjes, blikjes), zodat je gelijke verpakkingen naast elkaar ziet.
 // Zelfde indeling als pak_groep in scripts/bouw_paginas.py.
@@ -627,7 +650,7 @@ function mijnBlok(best,q){
   if(v.d<.05) return `<p class="mijnblok goed">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> kost het ${eur(eff(pm))}, bijna even goedkoop als bij ${esc(sname(pb[0]))}. <button type="button" class="kies" data-mijnwijzig>Wijzigen</button></p>`;
   return `<p class="mijnblok">⭐ Bij jouw winkel <b>${esc(mijnNaam())}</b> kost het ${eur(eff(pm))}. Bij <b>${esc(sname(pb[0]))}</b> bespaar je ${v.per?"voor dezelfde hoeveelheid ":""}<b>${eur(v.d)}</b>. <button type="button" class="kies" data-mijnwijzig>Wijzigen</button></p>`;
 }
-const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?"Alleen bij ":`Bij ${v.length} winkels: `}${v.map(p=>esc(sname(p[0]))).join(", ")}</span>`:"";
+const winkels=v=>v&&v.length?`<span class="wk">🏪 ${v.length===1?`Alleen bij ${esc(sname(v[0][0]))}`:v.length<=3?`Bij ${v.map(p=>esc(sname(p[0]))).join(", ")}`:`Bij ${v.length} winkels`}</span>`:"";
 function mijnRij(b,v){if(!S.mijn||isMijn(b[0]))return S.mijn&&isMijn(b[0])?'<span class="mijnlbl">⭐ Jouw winkel is het goedkoopst</span>':"";
   const pm=(v||[]).find(p=>isMijn(p[0]));if(!pm)return "";const d=mijnVerschil(pm,b).d;
   return d>=.05?`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: daar betaal je ${eur(d)} meer</span>`:`<span class="mijnrij">⭐ Bij ${esc(mijnNaam())} ${eur(eff(pm))}: bijna even goedkoop</span>`}
@@ -652,17 +675,18 @@ function renderOffers(){
   if(S.ofc!=="alle"&&!cats.has(S.ofc)){S.ofc="alle";return renderOffers()}
   $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2>${dieetChips()}
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
-  <div class="chips" role="group" aria-label="Supermarkt"><button type="button" class="chip" data-ofs="alle" aria-pressed="${S.ofs==="alle"}">Alle winkels</button>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<button type="button" class="chip" data-ofs="${s}" aria-pressed="${S.ofs===s}">${esc(STORENAMES[s]||s)} (${n})</button>`).join("")}</div>
-  <div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-ofc="alle" aria-pressed="${S.ofc==="alle"}">Alle categorieën</button>${order.map(c=>`<button type="button" class="chip" data-ofc="${esc(c)}" aria-pressed="${S.ofc===c}"><span class="ic">${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])}</span>${esc(c)} (${cats.get(c)})</button>`).join("")}</div>
+  <div class="kiezers"><label><span class="sr">Supermarkt</span><select data-ofsel="s"><option value="alle">🏪 Alle winkels</option>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<option value="${s}"${S.ofs===s?" selected":""}>${esc(STORENAMES[s]||s)} (${n})</option>`).join("")}</select></label>
+  <label><span class="sr">Categorie</span><select data-ofsel="c"><option value="alle">📂 Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label></div>
   <div class="tools"><label><span class="sr">Zoek in aanbiedingen</span><input type="search" id="ofq" placeholder="Zoek in de aanbiedingen" value="${esc(S.ofq)}"></label>
 
   <label><span class="sr">Sorteren</span><select id="ofsort"><option value="korting"${S.ofsort==="korting"?" selected":""}>Grootste korting eerst</option><option value="prijs"${S.ofsort==="prijs"?" selected":""}>Laagste prijs eerst</option><option value="eenheid"${S.ofsort==="eenheid"?" selected":""}>Laagste prijs per kilo of liter</option></select></label></div>
-  <p class="meta" style="margin-top:10px">${f.length} aanbiedingen${S.merk==="zonder"?" (zonder huismerken)":S.merk==="huis"?" (alleen huismerken)":""}. Bij acties als 1+1 gratis zie je de prijs per stuk als je de actie benut.</p>
+  <p class="meta" style="margin-top:10px">${f.length} aanbiedingen${S.merk==="zonder"?" (zonder huismerken)":S.merk==="huis"?" (alleen huismerken)":""}. Bij 1+1 gratis zie je de prijs per stuk.</p>
   ${list.length?ofSecties(list,f):`<div class="empty">Geen aanbiedingen gevonden. Probeer een ander woord of kies “Alle winkels”.</div>`}
   ${f.length>list.length?`<button type="button" class="btn-line" data-ofmore style="margin-top:12px">Meer aanbiedingen tonen (${f.length-list.length})</button>`:""}`;
-  for(const b of $("results").querySelectorAll('[data-ofc][aria-pressed="true"],[data-ofs][aria-pressed="true"]')){const r=b.parentElement;r.scrollLeft=b.offsetLeft-r.offsetLeft-16}
 }
 // Aanbiedingen in dezelfde indeling als de producten: per hoofdgroep, en binnen een groep per categorie (Bier, Wijn ...).
+document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-ofsel]");if(!x)return;if(x.dataset.ofsel==="s"){S.ofs=x.value;gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel")}else{S.ofc=x.value;gc("aanbiedingen/categorie/"+S.ofc,"Aanbiedingen per categorie")}S.ofn=60;renderOffers()});
+const OPEN=new Set();document.addEventListener("toggle",e=>{const d=e.target;if(d.classList&&d.classList.contains("subblok")&&d.id){d.open?OPEN.add(d.id):OPEN.delete(d.id)}},true);
 function ofSecties(list,f){
   const groep=S.ofc!=="alle", subs=groep?CATS.filter(c=>c[3]===S.ofc):[];
   const sleutel=o=>groep?(o.sc&&subs.some(c=>c[0]===o.sc)?o.sc:"Overig"):(o.c||"Overig");
@@ -673,8 +697,7 @@ function ofSecties(list,f){
   const tel=new Map(); for(const o of f){const k=sleutel(o);tel.set(k,(tel.get(k)||0)+1)}
   const keys=volg.filter(k=>per.has(k));
   if(keys.length<2) return `<ul class="offers">${list.map(offerCard).join("")}</ul>`;
-  return (groep?`<div class="chips subchips">${keys.map(k=>`<a class="chip" href="#ofsub-${volg.indexOf(k)}"><span class="ic">${ic(k)}</span>${esc(naam(k))} (${tel.get(k)})</a>`).join("")}</div>`:"")+
-    keys.map(k=>`<h3 class="subkop" id="ofsub-${volg.indexOf(k)}">${ic(k)} ${esc(naam(k))}</h3><ul class="offers">${per.get(k).map(offerCard).join("")}</ul>`).join("");
+  return `<div class="subblokken">`+keys.map(k=>`<details class="subblok" id="ofsub-${volg.indexOf(k)}"${OPEN.has("ofsub-"+volg.indexOf(k))?" open":""}><summary><span class="subnaam">${ic(k)} ${esc(naam(k))}</span><span class="subn">${tel.get(k)||per.get(k).length}</span></summary><ul class="offers">${per.get(k).map(offerCard).join("")}</ul></details>`).join("")+`</div>`;
 }
 function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
@@ -721,7 +744,7 @@ function renderList(){
     return `<li class="it${x.done&&!S.edit?" done":""}${sel?" sel":""}">${S.edit?`<input type="checkbox" class="chk selbox" data-pick="${i}"${sel?" checked":""} aria-label="${esc(x.term)} selecteren om te verwijderen">`:`<input type="checkbox" class="chk" data-done="${i}"${x.done?" checked":""} aria-label="${esc(x.term)} afvinken">`}
     <div><div class="t">${esc(x.term)}</div><div class="p"><span class="shop">${esc(STORENAMES[x.s]||x.s)}</span> <a href="${esc(x.link)}" target="_blank" rel="noopener" data-out="${esc(x.s)}">${esc(x.name)}</a></div></div>
     <div class="pq">${tag(c*q)}${q>1?`<span class="each">${q} × ${eur(c)}</span>`:""}${ch}<span class="qty"><button type="button" data-q="${i}" data-d="-1" aria-label="Eén minder ${esc(x.term)}">−</button><span aria-label="Aantal">${q}</span><button type="button" data-q="${i}" data-d="1" aria-label="Eén meer ${esc(x.term)}">+</button></span></div><button type="button" class="del" data-del="${i}" aria-label="${esc(x.term)} verwijderen" title="Verwijderen">×</button></li>`}).join(""):
-    `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<p style="margin:10px 0 4px"><button type="button" class="btn" data-startlijst>🛒 Start met 15 gewone weekboodschappen</button></p><p class="hint" style="margin:0 0 8px">Melk, brood, eieren, kaas, groente en fruit: je ziet meteen welke winkel voor jou het goedkoopst is. Daarna kun je alles aanpassen.</p><ul><li>Je lijst blijft vanzelf bewaard.</li><li>Kom je terug, dan zie je meteen wat goedkoper is geworden.</li><li>Wat er van je lijst in de aanbieding is, zie je hier ook.</li></ul></li>`;
+    `<li class="lempty">Je lijst is nog leeg. Zoek hierboven een product en tik op <b>+</b>.<p style="margin:10px 0 4px"><button type="button" class="btn" data-startlijst>🛒 Start met 15 gewone weekboodschappen</button></p><p class="hint" style="margin:0 0 8px">Melk, brood, eieren en meer. Daarna kun je alles aanpassen. Je lijst blijft bewaard.</p></li>`;
   renderBar();
   renderMaal();
   renderForList();
@@ -1073,7 +1096,7 @@ function storesUi(){
   const k=ids.filter(id=>!S.off.has(id)).length;
   $("mysum").textContent=`Mijn supermarkten: ${k===ids.length?"alle "+k:k+" van "+ids.length}`;
   const aan=ids.filter(id=>!S.off.has(id)).map(id=>STORENAMES[id]||id);
-  $("mysub").textContent=k===ids.length?"Kom je niet overal? Kies hier je eigen winkels.":k?aan.join(", "):"Kies minstens één supermarkt";
+  $("mysub").textContent=k===ids.length?"Kies je eigen winkels.":k?aan.join(", "):"Kies minstens één supermarkt";
   buurtLijst();
   if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"zonder huismerken":"alleen huismerken");
   merkenUi();
@@ -1101,9 +1124,10 @@ document.addEventListener("click",e=>{
   // daarom na het tekenen nog een paar keer bijsturen zodat je precies bij het gekozen kopje uitkomt.
   const ank=e.target.closest('a[href^="#"]');
   if(ank&&ank.getAttribute("href").length>1){const doel=document.getElementById(decodeURIComponent(ank.getAttribute("href").slice(1)));
-    if(doel){e.preventDefault();const ga=()=>doel.scrollIntoView({block:"start"});ga();requestAnimationFrame(()=>{ga();setTimeout(ga,120);setTimeout(ga,350);setTimeout(ga,700)});
+    if(doel){e.preventDefault();if(doel.tagName==="DETAILS")doel.open=true;const ga=()=>doel.scrollIntoView({block:"start"});ga();requestAnimationFrame(()=>{ga();setTimeout(ga,120);setTimeout(ga,350);setTimeout(ga,700)});
       try{history.replaceState(history.state,"",ank.getAttribute("href"))}catch(x){}return}}
   if(e.target.closest("[data-startlijst]")){startLijst();return}
+  if(e.target.closest("[data-dieetopen]")){S.dieetOpen=!S.dieetOpen;if(S.view)renderView();else search();return}
   if(e.target.closest("[data-mijnwijzig]")){const d=$("mystores");if(d){d.open=true;jump("mystores");setTimeout(()=>$("mijnsel")?.focus(),400)}return}
   const out=e.target.closest("[data-out]"); if(out){gc("naar/"+out.dataset.out,"Doorklik naar "+(STORENAMES[out.dataset.out]||out.dataset.out));return}
   const hd=e.target.closest("[data-handig]"); if(hd){const k=hd.dataset.handig;gc("handig/"+k,"Handig: "+k);
