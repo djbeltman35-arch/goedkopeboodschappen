@@ -1186,7 +1186,7 @@ document.addEventListener("click",e=>{
   const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
-  const v=e.target.closest("[data-view]"); if(v){S.view=S.view===v.dataset.view?null:v.dataset.view; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
+  const v=e.target.closest("[data-view]"); if(v){S.view=v.dataset.view; if(S.view==="deals")S.ofsoon=false; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
   const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel");return}
   const fc=e.target.closest("[data-ofc]"); if(fc){S.ofc=fc.dataset.ofc;S.ofn=60;renderOffers();gc("aanbiedingen/categorie/"+S.ofc,"Aanbiedingen per categorie");return}
   const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
