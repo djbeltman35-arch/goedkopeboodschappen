@@ -44,3 +44,7 @@ jobs:
           git diff --cached --quiet || git commit -m "Prijzen bijgewerkt $(date -u +%F)"
           git pull --rebase -X theirs origin main
           git push
+      - name: Pagina's melden bij Bing (IndexNow)
+        run: |
+          sleep 240
+          python3 scripts/indexnow.py || echo "IndexNow mislukt"

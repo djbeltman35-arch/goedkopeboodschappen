@@ -1,3 +1,8 @@
+/* Lettertypen zelf gehost: sneller en geen verbinding met Google */
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:optional;src:url(/fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:optional;src:url(/fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:optional;src:url(/fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:optional;src:url(/fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
 /* Goedkope Boodschappen: één stijl voor alle pagina's.
    Fris groen voor acties en besparen, geel schapkaartje voor elke prijs, tomatenrood voor aanbiedingen. */
 :root{
