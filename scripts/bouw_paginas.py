@@ -16,9 +16,9 @@ def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
     links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV if h != hier)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
-FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
+FOOTER = f'''<footer class="foot"><div class="wrap"><p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a></p><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="mailto:goedkopeboodschappen@proton.me">Contact: goedkopeboodschappen@proton.me</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small">Meer gratis van Erik: <a href="https://goedkopertanken.netlify.app/">Tankwijzer (goedkoper tanken)</a> · <a href="https://vluchtwijzer.netlify.app/">Vluchtwijzer</a> · <a href="https://vakantietoppers.netlify.app/">Vakantiewijzer</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -1556,6 +1556,50 @@ body = ('<ul class="feesten">' + "".join(f'<li><a href="{p_ or m_}"><span class=
 schrijf("/dieet/", page("/dieet/", "Dieet en leefstijl: glutenvrij, vegan en halal vergelijken", "Glutenvrij, lactosevrij, vegan, halal, koosjer, eiwitrijk en caloriearm: per dieet de producten en maaltijden met de goedkoopste supermarkt.",
     ch + "<h1>Dieet en leefstijl</h1><p class=\"lead\">Kies wat bij jou past. Je ziet de producten en maaltijden met de goedkoopste supermarkt.</p>", body, [cld]))
 made.append(("/dieet/", "0.7"))
+
+# ---------- Tips en contact: formulier met woordfilter ----------
+ch, cld = crumbs(("Tips en contact", None))
+_tip_faq = [("Wat gebeurt er met mijn tip?", "Ik lees elke tip zelf. Goede tips verwerk ik op de site: een ontbrekend product, een prijs die niet klopt of een lekker goedkoop recept. Zo wordt de site voor iedereen beter."),
+            ("Moet ik mijn naam of e-mailadres invullen?", "Nee, dat mag leeg blijven. Wil je antwoord? Vul dan je e-mailadres in; ik gebruik het alleen om je terug te mailen."),
+            ("Kan ik ook mailen?", "Ja: goedkopeboodschappen@proton.me."),
+            ("Waarom wordt mijn bericht geweigerd?", "Berichten met vloeken, scheldwoorden of seksueel getinte woorden komen niet door. Pas je bericht aan en probeer het opnieuw.")]
+_tip_form = """<form class="tipform" id="tipform" novalidate>
+<label>Waar gaat het over?<select name="soort"><option value="tip">💡 Bespaartip of goedkoper product</option><option value="product">🛒 Product of winkel mist</option><option value="fout">⚠️ Fout gezien (prijs, product, link)</option><option value="idee">✨ Idee voor de site</option><option value="vraag">❓ Vraag</option><option value="anders">Iets anders</option></select></label>
+<label>Je bericht<textarea name="bericht" rows="6" maxlength="1500" required placeholder="Bijvoorbeeld: bij Lidl is de halfvolle melk deze week goedkoper dan op de site staat."></textarea></label>
+<div class="tiprij"><label>Naam <small>(mag leeg)</small><input name="naam" maxlength="60" autocomplete="name"></label><label>E-mail <small>(alleen als je antwoord wilt)</small><input name="email" type="email" maxlength="120" autocomplete="email"></label></div>
+<label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+<p class="tipmelding" id="tipmelding" role="status" aria-live="polite"></p>
+<button type="submit" class="btn">Versturen</button>
+<p class="note">Ik bewaar alleen je bericht (en je naam en e-mail als je die invult). Geen cookies, geen nieuwsbrief, geen reclame.</p>
+</form>
+<script type="module">
+import { verbodenWoorden } from "/woordfilter.mjs";
+const f = document.getElementById("tipform"), m = document.getElementById("tipmelding"), t0 = Date.now();
+const zeg = (t, goed) => { m.textContent = t; m.className = "tipmelding " + (goed ? "goed" : "fout"); };
+f.bericht.addEventListener("input", () => { if (verbodenWoorden(f.bericht.value).length) zeg("Je bericht bevat woorden die we niet toestaan.", false); else if (m.classList.contains("fout")) zeg("", true); });
+f.addEventListener("submit", async e => {
+  e.preventDefault();
+  const tekst = f.bericht.value.trim();
+  if (tekst.length < 10) return zeg("Schrijf iets meer: minstens 10 tekens.", false);
+  if (verbodenWoorden(tekst + " " + f.naam.value).length) return zeg("Je bericht bevat woorden die we niet toestaan. Pas het aan en probeer het opnieuw.", false);
+  const knop = f.querySelector("button"); knop.disabled = true; knop.textContent = "Bezig…";
+  try {
+    const r = await fetch("/api/tip", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ soort: f.soort.value, bericht: tekst, naam: f.naam.value, email: f.email.value, website: f.website.value, pagina: document.referrer ? new URL(document.referrer).pathname : "", ms: Date.now() - t0 }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) { f.reset(); zeg("Dank je wel! Ik lees elke tip zelf en doe er echt iets mee.", true); try { window.goatcounter?.count?.({ path: "tip/verstuurd", title: "Tip verstuurd", event: true }); } catch (x) {} }
+    else zeg(j.fout || "Versturen lukte niet. Probeer het later nog eens.", false);
+  } catch (x) { zeg("Versturen lukte niet. Controleer je internetverbinding.", false); }
+  knop.disabled = false; knop.textContent = "Versturen";
+});
+</script>"""
+_tip_body = (_tip_form + '<h2>Waar kun je mee helpen?</h2><ul class="links"><li>Een product dat elders goedkoper is dan op de site</li><li>Een product, merk of supermarkt die je mist</li><li>Een prijs of product die niet klopt</li><li>Een lekker en goedkoop recept</li><li>Een idee om de site nog handiger te maken</li></ul>'
+             + faq_html(_tip_faq))
+schrijf("/tips/", page("/tips/", "Tips en contact: help boodschappen goedkoper te maken",
+    "Heb je een bespaartip, mis je een product of winkel, of zie je een fout? Laat het weten via het tipsformulier van Goedkope Boodschappen. Gratis en zonder account.",
+    ch + "<h1>💡 Heb jij een tip? Ik hoor het graag!</h1><p class=\"lead\">Ik maak deze site om iedereen te helpen besparen op boodschappen, gratis en zonder er iets aan te verdienen. Jouw tip helpt mij én alle andere bezoekers.</p>", _tip_body,
+    [cld, faq_ld(_tip_faq), {"@context": "https://schema.org", "@type": "ContactPage", "name": "Tips en contact", "url": f"{BASE}/tips/",
+     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "goedkopeboodschappen@proton.me"}}]))
+made.append(("/tips/", "0.6"))
 
 # ---------- Voor budgetcoaches en schuldhulpverlening ----------
 _g = globals()
