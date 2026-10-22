@@ -30,7 +30,7 @@ def beeld_objecten(m):
     maten = {"16x9": (1200, 675), "4x3": (1200, 900), "1x1": (1200, 1200)}
     return [{"@type": "ImageObject", "url": u, "contentUrl": u, "width": maten[x][0], "height": maten[x][1],
              "creditText": f"{f['maker'] or f.get('via') or 'Wikimedia Commons'} via {f.get('via') or 'Wikimedia Commons'}", "license": lic_url(f["licentie"]) or f["bron"],
-             "acquireLicensePage": f["bron"], **({"creator": {"@type": "Person", "name": f["maker"]}} if f["maker"] else {})}
+             "acquireLicensePage": f["bron"], "copyrightNotice": f"© {f['maker'] or f.get('via') or 'Wikimedia Commons'}" + (f" ({f['licentie']})" if f.get("licentie") else ""), **({"creator": {"@type": "Person", "name": f["maker"]}} if f["maker"] else {})}
             for x, u in zip(("16x9", "4x3", "1x1"), beelden(m))]
 def beelden(m):
     if m["slug"] in FOTO: return [f"{BASE}/maaltijden-foto/{m['slug']}-{x}.jpg" for x in ("16x9", "4x3", "1x1")]
