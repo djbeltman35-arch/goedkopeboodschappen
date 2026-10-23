@@ -7,6 +7,8 @@ def hoev(q, eenheid_):
 def pp(v): return eur(v / 4)
 # Echte foto's (vrije licentie, Wikimedia Commons); maaltijden zonder foto houden de grafische afbeelding.
 FOTO = json.load(open(os.path.join(ROOT, "scripts", "maaltijd_fotos.json")))
+for _f in FOTO.values():  # makernaam altijd kort en op één regel (Google keurt lange teksten af)
+    _f["maker"] = re.sub(r"\s+", " ", (_f.get("maker") or "").split("\n")[0]).strip()[:80]
 LIC = {"CC0": "https://creativecommons.org/publicdomain/zero/1.0/deed.nl"}
 def lic_url(l):
     if l in LIC: return LIC[l]
