@@ -56,6 +56,9 @@ def ingredient_prijzen(sleutel, q):
                 if inhoud <= 0: continue
                 n = max(1, math.ceil(nodig / inhoud - 0.05))  # 5% speling: 480 g in een pak van 500 g telt als 1 pak
                 kassa, gebruik = n * eff(p), v * nodig
+                # Los per kilo (Dirk, DekaMarkt: "Gember los, 1 kg"): je koopt wat je nodig hebt, minstens één stuk (of 100 g).
+                if u == "kg" and "los" in p[7] and nodig < inhoud:
+                    n, kassa = 1, round(v * min(inhoud, max(nodig, stuk or .1)), 2)
                 if si not in best or kassa < best[si][0] - 1e-9 or (abs(kassa - best[si][0]) < 1e-9 and gebruik < best[si][3]):
                     best[si] = (kassa, p, n, gebruik)
     return best

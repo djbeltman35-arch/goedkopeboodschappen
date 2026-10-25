@@ -290,7 +290,9 @@
   "letter",
   "stol",
   "stroopwaf",
-  "koekjes"
+  "koekjes",
+  "kletsmajoor",
+  "kletsmajoors"
  ],
  "parmezaan": [
   "worst",
@@ -1194,7 +1196,9 @@
   "doritos",
   "tortilla",
   "nacho",
-  "hot"
+  "hot",
+  "cookies",
+  "cookie"
  ],
  "amandelspijs": [
   "speculaas",
@@ -1848,5 +1852,11 @@
   "alcoholvrij",
   "alcoholvrije",
   "alkoholfrei"
+ ],
+ "ice tea perzik": [
+  "siroop",
+  "limonadesiroop",
+  "slimpie",
+  "pouch"
  ]
 }

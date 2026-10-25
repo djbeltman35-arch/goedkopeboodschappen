@@ -11,7 +11,7 @@ Per recept staat de bron (Allerhande, Jumbo, Leukerecepten, 24Kitchen, Lekker en
 # kcal per 100 g/ml, gewicht van 1 stuk in kg (voor producten die per stuk verkocht worden), woorden die niet mogen.
 NIET_ALGEMEEN = ["taart", "cake", "koek", "crouton", "snack", "chips", "olvarit", "baby", "pizza", "delicup", "kat",
                  "hond", "salade", "soep", "saus", "dressing", "mix", "kruiden", "smaak", "vega", "vegan", "plantaardig",
-                 "maaltijd", "ovenschotel", "spread", "vlaai", "pastei", "kroket", "borrel"]
+                 "maaltijd", "ovenschotel", "spread", "vlaai", "pastei", "kroket", "borrel", "bonbebe", "biomenu"]
 I = {
     "aardappelen": (["kruimige aardappelen", "aardappelen kruimig", "aardappelen"], 80, None, ["zoete", "puree", "partjes", "schijfjes", "frites", "krieltjes", "gekookt"]),
     "krieltjes": (["krieltjes"], 75, None, ["gekruid", "rozemarijn"]),
@@ -32,7 +32,7 @@ I = {
     "tonijn": (["tonijn in water", "tonijnstukken in water", "tonijn"], 115, None, ["pizza", "salade", "delicup", "kat", "spread", "olijfolie", "zonnebl"]),
     "eieren": (["scharreleieren", "eieren"], 140, .06, ["paas", "gekookt", "chocolade"]),
     "halfvolle melk": (["halfvolle melk"], 46, None, ["lactose", "langlekker", "chocolade", "koffie", "poeder"]),
-    "roomboter": (["roomboter ongezouten", "ongezouten roomboter", "roomboter"], 740, None, ["taart", "cake", "koek", "vla", "speculaas", "cakejes", "croissant", "brioche", "sprits", "bladerdeeg", "kruimel", "amandel", "carre", "kano", "puntjes", "vrucht", "gebak", "wafel", "krakeling", "appel", "duo", "naturelcake", "bolus", "stroopwafel", "becel", "palm", "assorti", "koekjes", "kuiken", "selec", "paas", "kerst", "sint", "hart", "letter", "bitter", "stol", "halvarine", "margarine", "plantaardig"]),
+    "roomboter": (["roomboter ongezouten", "ongezouten roomboter", "roomboter"], 740, None, ["taart", "cake", "koek", "vla", "speculaas", "cakejes", "croissant", "brioche", "sprits", "bladerdeeg", "kruimel", "amandel", "carre", "kano", "puntjes", "vrucht", "gebak", "wafel", "krakeling", "appel", "duo", "naturelcake", "bolus", "stroopwafel", "becel", "palm", "assorti", "koekjes", "kuiken", "selec", "paas", "kerst", "sint", "hart", "letter", "bitter", "stol", "kletsmajoor", "halvarine", "margarine", "plantaardig"]),
     "geraspte kaas": (["geraspte kaas", "geraspte jong belegen kaas"], 360, None, ["cheddar", "mozzarella", "parmezaan", "grana", "pizza", "light"]),
     "mozzarella": (["mozzarella"], 250, None, ["geraspt", "pizza", "mini", "light"]),
     "parmezaanse kaas": (["parmezaanse kaas", "parmigiano reggiano", "grana padano"], 400, None, []),

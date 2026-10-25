@@ -26,6 +26,8 @@ for si,s in enumerate(d):
     ok=0;conflict=0
     for p in items:
         if not p.get('p'): continue
+        # Speelgoed-miniaturen (LidlMini) en prijzen van een paar cent zijn geen echte boodschappen.
+        if p['p']<0.05 or 'lidlmini' in p['n'].lower().replace(' ',''): continue
         v,u=parse(p.get('s',''),p['n'])
         # Staat er in de naam een andere hoeveelheid dan in de maat ("Kipfilet 1000 g" met maat "150 g"), dan klopt een van beide niet:
         # dan geen prijs per kilo/liter, zodat het product niet onterecht als goedkoopste bovenaan komt.
