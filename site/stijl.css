@@ -611,3 +611,5 @@ html body .promise li.brk::before{content:none}
 .tipmelding.goed{color:var(--green-dark)}.tipmelding.fout{color:var(--deal)}
 .tiplink{margin:6px 0 10px;text-align:center}
 .tiplink a{display:inline-block;padding:8px 14px;border:2px solid var(--line);border-radius:999px;background:var(--green-soft);color:var(--green-dark);font-weight:700;text-decoration:none}
+/* Snelheid: onderdelen onder de vouw pas opmaken als je erheen scrolt (Google leest ze gewoon) */
+.wrap.maal,.wrap.how,.wrap.seo,.foot{content-visibility:auto;contain-intrinsic-size:auto 1200px}

@@ -493,6 +493,11 @@ _od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 _n = sum(_deel_in(o) for o in _od.get("offers", []))
 for o in OFFERS: _deel_in(o)
 json.dump(_od, open(os.path.join(OUT, "data", "aanbiedingen.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+# Ook in kleine delen (data/aanbiedingen-0.json ...): de app leest die zonder dat de telefoon hapert. Aantal staat in winkels.json.
+_ao = _od.get("offers", [])
+AANB_DELEN = max(1, -(-len(_ao) // 1500))
+for k in range(AANB_DELEN):
+    json.dump({"offers": _ao[k * 1500:(k + 1) * 1500]}, open(os.path.join(OUT, "data", f"aanbiedingen-{k}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 print(_n, "van", len(_od.get("offers", [])), "aanbiedingen in een subcategorie ingedeeld")
 OFFJS = '''<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&li.dataset.c!==v;li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
 per_winkel = {}
@@ -762,12 +767,20 @@ print(len(_kern), "van", _n, "producten in producten-kern.json")
 os.makedirs(os.path.join(OUT, "p"), exist_ok=True)
 _per = {}
 for i, p_ in enumerate(_pd["products"]): _per.setdefault((p_[0], i in _kern), []).append(p_)
-_tel = {}
+_tel, _delen = {}, {}
+# Elk deel hooguit DEEL producten: een telefoon leest zo'n stuk in één korte stap in, zonder te haperen.
+DEEL = 2500
 for si_, s_ in enumerate(_pd["stores"]):
+    _delen[s_["id"]] = []
     for deel, k_ in (("kern", True), ("rest", False)):
-        json.dump(_per.get((si_, k_), []), open(os.path.join(OUT, "p", f"{s_['id']}-{deel}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+        lst = _per.get((si_, k_), [])
+        json.dump(lst, open(os.path.join(OUT, "p", f"{s_['id']}-{deel}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+        stukken = [lst[i:i + DEEL] for i in range(0, len(lst), DEEL)] or [[]]
+        for k, st in enumerate(stukken):
+            json.dump(st, open(os.path.join(OUT, "p", f"{s_['id']}-{deel}-{k}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+        _delen[s_["id"]].append(len(stukken))
     _tel[s_["id"]] = len(_per.get((si_, True), [])) + len(_per.get((si_, False), []))
-json.dump({"stores": _pd["stores"], "n": _tel}, open(os.path.join(OUT, "winkels.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+json.dump({"stores": _pd["stores"], "n": _tel, "delen": _delen, "aanb": AANB_DELEN, "aanbUpd": _od.get("updated")}, open(os.path.join(OUT, "winkels.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # Prijzen per soort en winkel voor het weekoverzicht per mail (netlify/functions/weekoverzicht.mjs):
 # {soort: {"w": {winkel: prijs}, "n": naam van het goedkoopste product, "s": winkel daarvan}}
 _tp = {}

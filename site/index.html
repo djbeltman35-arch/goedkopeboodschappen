@@ -408,7 +408,7 @@ const HUISMERK=["ah","jumbo","jumbo's","plus","pcd","1 de beste","g'woon","gwoon
 const eersteWoord=n=>(String(n).toLowerCase().match(/[a-z0-9à-ÿ'&+-]+/g)||[]);
 // De A-merken (merknaam vooraan bij minstens 3 supermarkten) rekent de site al uit bij het bouwen.
 const AMERK={{AMERK}};
-function merkenBepalen(){S.amerk=new Set(AMERK);for(const p of S.prods) p.merk=merkVan(p[1],sid(p[0]))}
+function merkenBepalen(){S.amerk=new Set(AMERK)}
 // Ook voor aanbiedingen: zelfde regels, op naam en winkel.
 const HUIS1=new Set(HUISMERK.map(h=>h.split(" ")[0]));
 function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a-z0-9à-ÿ'&+-]+/)||[])[0];
@@ -443,7 +443,7 @@ function merkRel(sleutel,termen){if(sleutel in MERK_REL)return MERK_REL[sleutel]
 const merkChips=ok=>ok||S.merk!=="alle"?`<div class="chips merkkeus" role="group" aria-label="Merk">${[["alle","Beide"],["zonder","A-merken"],["huis","Huismerken"]].map(([k,t])=>`<button type="button" class="chip" data-merk="${k}" aria-pressed="${S.merk===k}">${t}</button>`).join("")}</div>`:"";
 const dieetChips=(rel)=>{DIEET_NU=(rel||DIEET_K).concat(DIEET_K.filter(k=>S.dieet[k]&&!(rel||DIEET_K).includes(k)));if(!DIEET_NU.length)return "";const voorb=DIEET_NU.slice(0,3).map(k=>DIEET_TXT[k]).join(", ");return `<button type="button" class="filterknop" data-dieetopen aria-expanded="${!!(S.dieetOpen||dieetAan())}">⚙️ Filter${dieetAan()?` (${dieetAan()})`:`: ${voorb}${DIEET_NU.length>3?"…":""}`}</button>`+(S.dieetOpen||dieetAan()?dieetChips0():"")};
 const dieetChips0=()=>`<div class="chips dieet" role="group" aria-label="Dieet">${DIEET_NU.includes("gv")?`<button type="button" class="chip" data-dieet="gv" aria-pressed="${S.dieet.gv}">🌾 Glutenvrij</button>`:""}${DIEET_NU.includes("lv")?`<button type="button" class="chip" data-dieet="lv" aria-pressed="${!!S.dieet.lv}">🥛 Lactosevrij</button>`:""}${DIEET_NU.includes("vg")?`<button type="button" class="chip" data-dieet="vg" aria-pressed="${!!S.dieet.vg}">🌱 Vegan</button>`:""}${DIEET_NU.includes("hl")?`<button type="button" class="chip" data-dieet="hl" aria-pressed="${!!S.dieet.hl}">Halal</button>`:""}${DIEET_NU.includes("arm")?`<button type="button" class="chip" data-dieet="arm" aria-pressed="${S.dieet.arm}">🥗 Caloriearm</button>`:""}${DIEET_NU.includes("eiw")?`<button type="button" class="chip" data-dieet="eiw" aria-pressed="${!!S.dieet.eiw}">💪 Eiwitrijk</button>`:""}</div>${S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?`<p class="meta dieetuitleg">${S.dieet.gv?"Alleen producten met glutenvrij in de naam. ":""}${S.dieet.lv?"Alleen producten die lactosevrij zijn: met lactosevrij in de naam, of plantaardig/vegan. ":""}${S.dieet.hl?"Alleen producten met halal in de naam (vooral vlees en kip); groente, fruit en andere producten zonder vlees zie je dan niet. ":""}${S.dieet.vg?"Alleen plantaardige producten: vegan of 100% plantaardig in de naam, tofu, tempeh en plantaardige merken. ":""}${S.dieet.arm?"Alleen soorten met hooguit 40 kcal per 100 g of 20 kcal per 100 ml. ":""}${S.dieet.eiw?"Alleen soorten waarvan minstens 20% van de calorieën uit eiwit komt. ":""}Controleer bij een allergie altijd het etiket.</p>`:""}`;
-function matches0(q,prefix=true,pool=S.prods,basis=false){
+function matches0(q,prefix=true,pool=S.prods,basis=false){klaar();
   const t=norm(q).split(" ").filter(Boolean); if(!t.length) return [];
   if(!basis&&VARNORM.has(t.join(" "))) return variant(VARNORM.get(t.join(" ")),pool);
   // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
@@ -531,7 +531,7 @@ const SYNONIEM={"wc papier":"toiletpapier","wcpapier":"toiletpapier","wc rol":"t
   "afwastabletten":"vaatwastabletten","pindasaus":"satesaus","satésaus":"satesaus","mayo":"mayonaise","ketsjup":"ketchup","sambal oelek":"sambal","choco":"chocoladepasta","nutella":"hazelnootpasta",
   "kattenbak":"kattenbakvulling","hondenbrok":"hondenbrokken","kattenbrok":"kattenbrokken"};
 let VOCAB=null;
-function woordenlijst(){if(VOCAB&&VOCAB.n===S.prods.length)return VOCAB;const m=new Map();for(const p of S.prods)for(const w of p.hay)if(w.length>=3&&!/\d/.test(w))m.set(w,(m.get(w)||0)+1);VOCAB={m,n:S.prods.length};return VOCAB}
+function woordenlijst(){klaar();if(VOCAB&&VOCAB.n===S.prods.length)return VOCAB;const m=new Map();for(const p of S.prods)for(const w of p.hay)if(w.length>=3&&!/\d/.test(w))m.set(w,(m.get(w)||0)+1);VOCAB={m,n:S.prods.length};return VOCAB}
 function bewerkAfstand(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;let v=Array.from({length:b.length+1},(_,i)=>i);
   for(let i=1;i<=a.length;i++){let prev=v[0],min=v[0]=i;for(let j=1;j<=b.length;j++){const t=v[j];v[j]=Math.min(v[j]+1,v[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=t;if(v[j]<min)min=v[j]}if(min>max)return max+1}return v[b.length]}
 function verbeter(q){
@@ -708,7 +708,7 @@ function rijen(rows){
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
 }
-function renderOffers(){
+function renderOffers(){klaarA();
   const all=S.offers.filter(o=>!S.off.has(o.s)&&merkOk(o)&&dieetOk(o.n,o.kc,o.tm));
   const pool=all.filter(o=>S.ofsoon?o.v&&o.v>today:nu(o));
   const soonN=all.filter(o=>o.v&&o.v>today).length;
@@ -882,6 +882,7 @@ function renderWhere(){
 // Aanbiedingen die passen bij wat er op je lijst staat.
 function renderForList(){
   if(!S.list.length||!S.offers.length){$("forlist").innerHTML="";return}
+  klaarA();
   const seen=new Set(S.list.map(x=>x.link)), out=[];
   for(const x of S.list){
     const t=norm(x.term).split(" ").filter(w=>w.length>1&&!/^\d/.test(w)); if(!t.length) continue;
@@ -1271,11 +1272,31 @@ $("print").addEventListener("click",printList);
 
 // De rest van de prijslijst (producten buiten de categorieën) op de achtergrond erbij laden.
 // Producten toevoegen aan de app (zoekwoorden, link, merk). Gebruikt bij het opstarten en bij later bijladen.
-function voegToe(arr){for(const p of arr){p.i=S.prods.length;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);p.merk=S.amerk?merkVan(p[1],sid(p[0])):"";S.byLink.set(p.lk,p);S.prods.push(p)}}
+function voegToe(arr){for(const p of arr){p.i=S.prods.length;S.prods.push(p)}achtergrond()}
+// Product opzoeken op link: de links worden pas uitgerekend als iemand ze nodig heeft (of op de achtergrond).
+class Links extends Map{get(k){linksKlaar();return super.get(k)}has(k){linksKlaar();return super.has(k)}}
+S.todoL=0;
+function linksKlaar(){const P=S.prods;for(;S.todoL<P.length;S.todoL++){const p=P[S.todoL];p.lk=link(p);Map.prototype.set.call(S.byLink,p.lk,p)}}
+// Zoekwoorden en merk per product: niet allemaal tegelijk bij het opstarten (dan hapert de telefoon even),
+// maar op de achtergrond in kleine porties. Zoekt iemand eerder, dan rekent klaar() de rest direct af.
+S.todo=0;S.todoA=0;
+function prep(p){p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.merk=S.amerk?merkVan(p[1],sid(p[0])):""}
+function prepA(o){o.merk=merkVan(o.n,o.s);o.hay=norm(o.n+" "+(o.sz||"")).split(" ")}
+function klaar(){linksKlaar();const P=S.prods;for(;S.todo<P.length;S.todo++)prep(P[S.todo])}
+function klaarA(){const O=S.offers;for(;S.todoA<O.length;S.todoA++)prepA(O[S.todoA])}
+let achterBezig=false;
+function achtergrond(){if(achterBezig)return;achterBezig=true;
+  const stap=()=>{const t0=performance.now(),P=S.prods,O=S.offers;
+    while(performance.now()-t0<8){if(S.todoL<P.length){const p=P[S.todoL++];p.lk=link(p);Map.prototype.set.call(S.byLink,p.lk,p)}else if(S.todo<P.length)prep(P[S.todo++]);else if(S.todoA<O.length)prepA(O[S.todoA++]);else{achterBezig=false;return}}
+    setTimeout(stap,0)};
+  setTimeout(stap,0)}
 // Per winkel laden: eerst de producten uit de categorieën (kern), daarna de rest. Alleen voor winkels die aan staan.
 S.kern=new Set();S.rest=new Set();
+// Prijsbestanden per winkel staan in kleine delen (p/<winkel>-kern-0.json, -1.json ...), zodat het inlezen de telefoon niet laat haperen.
+function deelUrls(id,deel){const n=S.delen?.[id]?.[deel==="kern"?0:1];return n?Array.from({length:n},(_,k)=>`/p/${id}-${deel}-${k}.json`):[`/p/${id}-${deel}.json`]}
+const haalDelen=(id,deel)=>Promise.all(deelUrls(id,deel).map(u=>fetch(u).then(r=>r.ok?r.json():Promise.reject()))).then(a=>a.flat());
 async function laadWinkels(ids,deel){
-  const lijsten=await Promise.all(ids.map(id=>fetch(`/p/${id}-${deel}.json`).then(r=>r.ok?r.json():null).catch(()=>null)));
+  const lijsten=await Promise.all(ids.map(id=>haalDelen(id,deel).catch(()=>null)));
   ids.forEach((id,i)=>{if(lijsten[i]){voegToe(lijsten[i]);(deel==="kern"?S.kern:S.rest).add(id)}});
 }
 async function laadRest(){
@@ -1289,36 +1310,46 @@ async function laadRest(){
 async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cache:"no-cache"});if(r.ok)return await r.json()}catch(e){}}return null}
 fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste=j;if(S.prods.length){if(S.view)renderView();else search()}}}).catch(()=>{});
 // Opstarten: welke winkels er zijn (winkels.json), daarna alleen de prijzen van de winkels die aan staan.
+const winkelsP=fetch("/winkels.json").then(r=>r.ok?r.json():null).catch(()=>null);
+// Aanbiedingen in delen (zie winkels.json "aanb"); lukt dat niet, dan het hele bestand.
+async function aanbLaden(){const w=await winkelsP;
+  if(w?.aanb){try{const a=await Promise.all(Array.from({length:w.aanb},(_,k)=>fetch(`/data/aanbiedingen-${k}.json`).then(r=>r.ok?r.json():Promise.reject())));return {updated:w.aanbUpd,offers:a.flatMap(x=>x.offers)}}catch(e){}}
+  return laadJson("aanbiedingen.json")}
 async function prijzenLaden(){
   const uit=new Set(store.get("winkels-uit")||[]);{const mw=store.get("mijn-winkel");if(mw)uit.delete(mw)}
-  try{const w=await (await fetch("/winkels.json")).json();
+  try{const w=await winkelsP; if(!w) throw 0;
     let ids=w.stores.map(s=>s.id).filter(id=>!uit.has(id)); if(!ids.length) ids=w.stores.map(s=>s.id);
-    S.prods=[];S.byLink=new Map();S.stores=w.stores;S.winkelN=w.n;S.perWinkel=true;
-    const lijsten=await Promise.all(ids.map(id=>fetch(`/p/${id}-kern.json`).then(r=>r.ok?r.json():Promise.reject())));
+    S.prods=[];S.byLink=new Links();S.todoL=0;S.todo=0;S.stores=w.stores;S.winkelN=w.n;S.delen=w.delen||null;S.perWinkel=true;
+    const lijsten=await Promise.all(ids.map(id=>haalDelen(id,"kern")));
     return {stores:w.stores,products:lijsten.flat(),totaal:1,ids};
   }catch(e){S.perWinkel=false;return fetch("/producten-kern.json").then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch("/producten.json").then(r=>r.json()))}
 }
 // Tegels meteen tonen (zonder te wachten op de prijzen), zodat de pagina niet verspringt.
 try{quick()}catch(e){}
-Promise.all([prijzenLaden(),laadJson("aldi.json"),laadJson("aanbiedingen.json")]).then(([d,aldi,offers])=>{
+Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]).then(([d,aldi,offers])=>{
   S.stores=d.stores; S.prods=d.products; if(d.ids) for(const id of d.ids) S.kern.add(id);
   // Aldi staat altijd achteraan in de winkellijst.
   const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
   if(aldi?.products) for(const r of aldi.products) S.prods.push([ai,...r]);
   S.sidx=new Map(S.stores.map((s,i)=>[s.id,i]));
-  S.byLink=new Map();
-  S.prods.forEach((p,i)=>{p.i=i;p.hay=norm(p[1]+" "+(p[4]||"")).split(" ");p.lk=link(p);S.byLink.set(p.lk,p)});
+  S.byLink=new Links();S.todoL=0;S.todo=0;
+  S.prods.forEach((p,i)=>{p.i=i});
   merkenBepalen();
-  if(d.totaal) setTimeout(laadRest,0);
+  // De rest van de prijslijst pas laden als iemand iets doet (tikken, typen, scrollen) of na 20 seconden.
+  if(d.totaal){let gedaan=false;const go=()=>{if(gedaan)return;gedaan=true;laadRest()};
+    for(const ev of ["pointerdown","keydown","touchstart","scroll","wheel"]) addEventListener(ev,go,{once:true,passive:true});
+    $("q").addEventListener("focus",go,{once:true});setTimeout(go,20000)}
   // Door 3 of meer bezoekers als "klopt niet" gemeld: tijdelijk weglaten (zie netlify/functions/betwist.mjs).
   fetch("/api/betwist").then(r=>r.ok?r.json():null).then(j=>{if(j?.links?.length){S.betwist=new Set(j.links);pickCache.clear();renderAll()}}).catch(()=>{});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);
   if(S.perWinkel) S.stores.forEach(s=>{if(S.winkelN?.[s.id]) s.count=S.winkelN[s.id]});
   if(offers?.offers){
     S.offers=offers.offers.filter(o=>S.sidx.has(o.s)&&o.p>0&&(!o.t||o.t>=today));
-    S.offers.forEach((o,i)=>{o.i=i;o.merk=merkVan(o.n,o.s);o.pct=o.was>o.p?(o.was-o.p)/o.was:0;o.hay=norm(o.n+" "+(o.sz||"")).split(" ");if(o.k)S.okey.set(o.s+"|"+o.k,o)});
+    S.offers.forEach((o,i)=>{o.i=i;o.pct=o.was>o.p?(o.was-o.p)/o.was:0;if(o.k)S.okey.set(o.s+"|"+o.k,o)});
     S.offersUpdated=offers.updated;
   }
+  // Na het eerste beeld: zoekwoorden op de achtergrond voorbereiden (even wachten tot de pagina staat).
+  setTimeout(achtergrond,1500);
   S.off=new Set((store.get("winkels-uit")||[]).filter(id=>S.sidx.has(id)));
   {const mw=store.get("mijn-winkel");S.mijn=mw&&S.sidx.has(mw)?mw:null;if(S.mijn)S.off.delete(S.mijn)}
   S.merk=["alle","zonder","huis"].includes(store.get("merken"))?store.get("merken"):"alle";{const d=store.get("dieet");if(d&&typeof d==="object")S.dieet={gv:!!d.gv,arm:!!d.arm,lv:!!d.lv,eiw:!!d.eiw}}

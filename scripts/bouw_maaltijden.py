@@ -41,7 +41,10 @@ def kaartbeeld(m):
     if m["slug"] in FOTO:
         _img = f'<img class="mimg" src="/maaltijden-foto/{m["slug"]}-kaart.jpg" width="640" height="360" alt="{esc(m['naam'])}" loading="lazy" decoding="async">'
         if os.path.exists(os.path.join(ROOT, "site", "maaltijden-foto", f'{m["slug"]}-kaart.webp')):
-            return f'<picture><source type="image/webp" srcset="/maaltijden-foto/{m["slug"]}-kaart.webp">{_img}</picture>'
+            _s = os.path.exists(os.path.join(ROOT, "site", "maaltijden-foto", f'{m["slug"]}-kaart-s.webp'))
+            _set = (f'/maaltijden-foto/{m["slug"]}-kaart-s.webp 320w, /maaltijden-foto/{m["slug"]}-kaart.webp 640w" sizes="(min-width: 760px) 270px, 94vw'
+                    if _s else f'/maaltijden-foto/{m["slug"]}-kaart.webp')
+            return f'<picture><source type="image/webp" srcset="{_set}">{_img}</picture>'
         return _img
     emo = {k: e_ for k, _, e_ in SOORTEN}.get(m["soort"], "🍽️")
     return f'<div class="mimg mleeg" aria-hidden="true">{emo}</div>'
