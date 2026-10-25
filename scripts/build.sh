@@ -15,7 +15,7 @@ else
 fi
 
 # 2. Vaste bestanden en de dagelijkse data (aanbiedingen, Aldi, status)
-cp -r site/icons site/deel site/fout.js site/woordfilter.mjs site/maaltijden-img site/maaltijden-foto site/manifest.webmanifest site/stijl.css site/fonts site/sw.js site/google2c5158ed8322f460.html site/a120d17eeccff77c778d735d4429aac0.txt "$OUT"/
+cp site/llms.txt "$OUT"/ && cp -r site/icons site/deel site/fout.js site/woordfilter.mjs site/maaltijden-img site/maaltijden-foto site/manifest.webmanifest site/stijl.css site/fonts site/sw.js site/google2c5158ed8322f460.html site/a120d17eeccff77c778d735d4429aac0.txt "$OUT"/
 cp data/aanbiedingen.json data/aldi.json data/status.json "$OUT/data/"
 [ -d data/social ] && cp -r data/social "$OUT/data/"
 

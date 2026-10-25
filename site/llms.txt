@@ -1,0 +1,22 @@
+# Goedkope Boodschappen (boodschappenvergelijk.nl)
+
+> Gratis Nederlandse boodschappenvergelijker zonder reclame of verdienmodel. Vergelijkt elke dag de prijzen en aanbiedingen van Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk, Hoogvliet, DekaMarkt, SPAR, Vomar en Poiesz, per product en per kilo, liter of stuk. Je zet producten op een boodschappenlijst en ziet bij welke supermarkt het totaal het laagst is.
+
+Prijzen komen uit de webshops van de supermarkten (via de open dataset van Checkjebon) en de actiefolders; ze worden elke dag bijgewerkt. De prijs aan de kassa is leidend. De site heeft geen advertenties, affiliatelinks of betaalde plaatsingen en gebruikt geen tracking-cookies.
+
+## Belangrijkste pagina's
+
+- [Startpagina en boodschappenlijst](https://boodschappenvergelijk.nl/): zoek een product, zet het op je lijst en zie per supermarkt wat je totaal kost. Zoeken kan ook via `https://boodschappenvergelijk.nl/?q=<product>`.
+- [Alle producten vergelijken](https://boodschappenvergelijk.nl/vergelijk/): per product (bijv. /vergelijk/halfvolle-melk/) de goedkoopste supermarkt, prijs per eenheid en prijsverloop.
+- [Categorieën](https://boodschappenvergelijk.nl/categorie/): hoofdgroepen en subcategorieën, ook per verpakking (blikjes, kratten, flessen) en vers/diepvries/pot.
+- [Aanbiedingen van deze week](https://boodschappenvergelijk.nl/aanbiedingen/): alle acties per supermarkt.
+- [Goedkoopste supermarkt](https://boodschappenvergelijk.nl/goedkoopste-supermarkt/): vast boodschappenpakket doorgerekend bij elke supermarkt.
+- [Complete maaltijden](https://boodschappenvergelijk.nl/maaltijden/): recepten met de kassaprijs voor 4 personen per supermarkt, calorieën en glutenvrij/caloriearm; met link naar het originele recept.
+- [Dieet en allergie](https://boodschappenvergelijk.nl/dieet/): goedkoopste producten voor glutenvrij, lactosevrij, vegan en caloriearm.
+- [Zo vergelijken wij](https://boodschappenvergelijk.nl/zo-vergelijken-wij/): uitleg over bronnen, prijs per eenheid en hoe de goedkoopste wordt gekozen.
+
+## Over
+
+- [Over de site](https://boodschappenvergelijk.nl/over/): gemaakt door Erik, zonder verdienmodel.
+- [Privacy](https://boodschappenvergelijk.nl/privacy/)
+- Contact: goedkopeboodschappen@proton.me

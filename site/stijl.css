@@ -9,7 +9,7 @@
   --page:#f4f7f1; --surface:#ffffff; --ink:#1e2a22; --muted:#5d6a61; --line:#e1e7dc; --soft:#eef3ea;
   --green:#0e7c4a; --green-dark:#0a6239; --green-soft:#e2f2e8; --on-green:#ffffff;
   --tag:#ffd43b; --tag-ink:#1e2a22; --tag-soft:#fff6cc;
-  --deal:#e0472f; --deal-soft:#fde9e5; --on-deal:#ffffff;
+  --deal:#c4381f; --deal-soft:#fde9e5; --on-deal:#ffffff;
   --text:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   --num:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --r:14px;
@@ -86,7 +86,7 @@ h3{font:700 18px/1.3 var(--text);margin:18px 0 4px}
 .tblwrap{overflow-x:auto;border-radius:var(--r)}
 .links{list-style:none;padding:0;margin:0;columns:3 200px;column-gap:24px}
 .links li{padding:4px 0;break-inside:avoid}
-.links a{text-decoration:none;font-weight:700}
+.links a{text-decoration:none;font-weight:700;display:inline-block;padding:2px 0;min-height:24px}
 .links a:hover{text-decoration:underline}
 .cta{display:inline-block;margin:20px 0 0;background:var(--green);color:var(--on-green);font-weight:700;padding:13px 20px;border-radius:12px;text-decoration:none}
 .cta:hover{background:var(--green-dark);color:var(--on-green)}
@@ -276,8 +276,8 @@ ul.offers>li.offer,.rows>li.row{content-visibility:auto;contain-intrinsic-size:a
 .feesten li.nu a{border-color:#e0472f;background:#fff4f1}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .feesten li.nu a{background:#3a1f19}}
 /* Duidelijke knop Feestdagen rechtsboven */
-.nav a.feest,.nav a.feest:hover,.nav a.feest[aria-current=page]{background:#e0472f;color:#fff;border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #b8341f}
-.nav a.feest:hover{background:#c93c25}
+.nav a.feest,.nav a.feest:hover,.nav a.feest[aria-current=page]{background:#c4381f;color:#fff;border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #962a16}
+.nav a.feest:hover{background:#a92f1a}
 .feesten .pill{justify-self:start;margin:2px 0 0}
 /* Kopbalk past altijd: op smalle schermen kleiner, en nooit breder dan het scherm */
 .bar{min-width:0}.nav{min-width:0}
@@ -392,7 +392,7 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .mfbalk .mdier{margin-top:6px}
 .mfbalk .mdieet{flex-wrap:wrap;overflow:visible}
 /* Rustiger: "Klopt niet?" als klein grijs linkje in plaats van rode knop */
-.fout{border:0;background:none;color:var(--muted,#6b7280);font:500 12px var(--text);padding:2px 0;text-decoration:underline;text-underline-offset:2px}
+.fout{border:0;background:none;color:var(--muted,#6b7280);font:500 12px var(--text);padding:5px 0;min-height:24px;text-decoration:underline;text-underline-offset:2px}
 .fout::before{content:none}
 .fout:hover,.fout:focus-visible{background:none;color:var(--ink)}
 .mfbalk .meerf,.mfbalk .meerf:hover,.mfbalk .meerf:focus{background:var(--surface);color:var(--green-dark);border-color:var(--green)}
@@ -613,3 +613,7 @@ html body .promise li.brk::before{content:none}
 .tiplink a{display:inline-block;padding:8px 14px;border:2px solid var(--line);border-radius:999px;background:var(--green-soft);color:var(--green-dark);font-weight:700;text-decoration:none}
 /* Snelheid: onderdelen onder de vouw pas opmaken als je erheen scrolt (Google leest ze gewoon) */
 .wrap.maal,.wrap.how,.wrap.seo,.foot{content-visibility:auto;contain-intrinsic-size:auto 1200px}
+
+/* Toegankelijkheid: vinkjes en keuzerondjes minstens 24x24 px (tikdoel) */
+:where(input[type=checkbox],input[type=radio]){width:24px;height:24px;flex:none}
+.foot a{display:inline-block;padding:3px 0;min-height:24px}
