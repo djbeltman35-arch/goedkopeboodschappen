@@ -20,10 +20,10 @@ def dag(map_):
     import vergelijk as v
     uit, eh = {}, {}
     for t in v.TERMS:
-        rows = v.per_store(v.matches(t))
+        rows = v.per_store(v.matches(t), t)
         for si, p in rows.items():
             u = v.eff_unit(p)
-            if u is None or id(p) in v.BAD or not 0 < u < 1000: continue
+            if u is None or not v.vergelijkbaar(t, p) or not 0 < u < 1000: continue
             uit.setdefault(t, {})[v.stores[si]["id"]] = round(u, 2)
             eh.setdefault(t, {}).setdefault(p[6], 0); eh[t][p[6]] += 1
     return {"termen": uit, "eenheid": {t: max(c, key=c.get) for t, c in eh.items()}}

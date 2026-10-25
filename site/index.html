@@ -460,19 +460,27 @@ const vreemd=(x,t)=>!t.includes(x)&&!t.some(w=>w.length>=5&&x.endsWith(w))&&(EXC
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
 const rank=p=>p.bad?1e6+eff(p):vglUnit(p)??(eff(p)*1000);
 // Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
-function markBad(arr){const u=arr.map(vglUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=vglUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
+function markBad(arr){for(const p of arr)p.bad=false;const u=arr.map(vglUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=vglUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
+// Afgekeurd door de mediaan over alle eenheden samen, maar zelfde eenheid als bij de meeste winkels, korte naam en een prijs
+// die past bij de rest in die eenheid: dan telt het gewoon mee (avocado per stuk tussen avocado's per kilo). Gelijk aan redden() in vergelijk.py.
+function redden(cand,gmin){const eh=p=>p.lit?"l":p[6],n={},z=new Set();for(const p of cand){if(vglUnit(p)==null)continue;const k=p[0]+"|"+eh(p);if(z.has(k))continue;z.add(k);n[eh(p)]=(n[eh(p)]||0)+1}
+  const ks=Object.keys(n);if(!ks.length)return;const w=e=>n[e]*10+({kg:2,l:1}[e]||0),dom=ks.sort((a,b)=>w(b)-w(a))[0];
+  const u=cand.filter(p=>vglUnit(p)!=null&&eh(p)===dom).map(vglUnit).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];
+  for(const p of cand)if(p.bad&&eh(p)===dom&&words(p)<=gmin+1){const v=vglUnit(p);if(v>=med/3&&v<=med*3)p.bad=false}}
 // Per supermarkt het best passende goedkoopste product: alleen producten die ongeveer even kort benoemd zijn als de beste treffer.
 function perStore(m){
   if(!m.length) return new Map();
   markBad(m);
   const gmin=Math.min(...m.map(words)), by=new Map();
   for(const p of m){ if(words(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
+  redden([...by.values()].flat(),gmin);
   const res=new Map();
   for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
+  res.st=[...res.values()].map(p=>[p,p.bad]);
   return res;
 }
 const pickCache=new Map();
-function pick(term){if(!pickCache.has(term))pickCache.set(term,perStore(matches(term,false)));return pickCache.get(term)}
+function pick(term){if(!pickCache.has(term))pickCache.set(term,perStore(matches(term,false)));const r=pickCache.get(term);for(const [p,b] of r.st||[])p.bad=b;return r}
 
 // "Laagste prijs sinds juni": de prijs per eenheid ligt nu onder alles wat we bij deze winkel sinds de eerste meting zagen.
 // Prijs tegenover de geschiedenis: "Laagste prijs sinds juni", anders "x% goedkoper dan normaal" of "Duurder dan normaal".
@@ -573,7 +581,7 @@ function search(fromUser){
   const keus=kiesPrecies(q);
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
   const top=best[0], last=best[best.length-1];
-  const ok=best.filter(p=>!p.bad&&effUnit(p)!=null), lo=ok[0], hi=ok[ok.length-1];
+  const ok0=best.filter(p=>!p.bad&&effUnit(p)!=null), ok=ok0.filter(p=>p[6]===ok0[0][6]), lo=ok[0], hi=ok[ok.length-1];
   const diff=ok.length>1?Math.round((1-effUnit(lo)/effUnit(hi))*100):0;
   const kop=bedoeld||q;
   $("results").innerHTML=`${S.demo?"":terugNav("Alle categorieën")}${dieetChips(dieetRel("q"+norm(q),[q]))}${S.demo?"":merkChips(merkRel("q"+norm(q),[q]))}${bedoeld?`<p class="bedoeld">Geen resultaten voor “${esc(q)}”. Bedoelde je <b>${esc(bedoeld)}</b>? Hieronder de resultaten daarvoor.</p>`:""}<h2>${esc(kop[0].toUpperCase()+kop.slice(1))}</h2>

@@ -195,18 +195,39 @@ def matches(term, basis=False):
     m = [prods[i] for i in sorted(set.intersection(*sets))]
     clean = [p for p in m if not any(_vreemd_woord(x, t) for x in p[7])]
     return _verfijn(clean or m, t)
-def per_store(m):
+SLECHT = {}  # per zoekterm: producten waarvan de prijs per eenheid niet te vergelijken is (andere eenheid of foute maat)
+GERED = {}   # per zoekterm: producten die de mediaan over alle eenheden samen afkeurde, maar in de gewone eenheid gewoon kloppen
+def per_store(m, t=None):
     if not m: return {}
-    mark_bad(m)
+    bad = mark_bad(m)
     gmin = min(words(p) for p in m); by = {}
     for p in m:
         if words(p) > gmin + 2: continue
         by.setdefault(p[0], []).append(p)
+    ok = redden([p for arr in by.values() for p in arr], gmin, bad)
+    slecht = bad - ok
+    if t is not None: SLECHT[t], GERED[t] = slecht, ok
+    def key(p):
+        if id(p) in slecht: return 1e6 + eff(p)
+        u = vgl_unit(p)
+        return u if u is not None else eff(p) * 1000
     res = {}
     for si, arr in by.items():
         mn = min(words(p) for p in arr)
-        res[si] = sorted([p for p in arr if words(p) <= mn + 1], key=rank)[0]
-    return res
+        res[si] = sorted([p for p in arr if words(p) <= mn + 1], key=key)[0]
+    return dict(sorted(res.items(), key=lambda kv: key(kv[1])))
+def redden(cand, gmin, bad):
+    """Afgekeurd door de mediaan over alle eenheden samen, maar het product heeft dezelfde eenheid als de meeste winkels,
+    een korte naam (echt het gezochte product) en een prijs die past bij de rest in die eenheid: dan telt het gewoon mee."""
+    n = {}
+    for si, e in {(p[0], vgl_eh(p)) for p in cand if vgl_unit(p) is not None}: n[e] = n.get(e, 0) + 1
+    if not n: return set()
+    dom = max(n, key=lambda e: (n[e], {"kg": 2, "l": 1}.get(e, 0)))
+    u = sorted(vgl_unit(p) for p in cand if vgl_unit(p) is not None and vgl_eh(p) == dom)
+    if len(u) < 3: return set()
+    med = u[len(u) // 2]
+    return {id(p) for p in cand if id(p) in bad and vgl_eh(p) == dom and words(p) <= gmin + 1 and med / 3 <= vgl_unit(p) <= med * 3}
+def vergelijkbaar(t, p): return id(p) not in SLECHT[t] if t in SLECHT else id(p) not in BAD
 BAD = set()
 from kcal import kcal_van
 def kcal_txt(t):
@@ -232,14 +253,15 @@ def toon_unit(p):
 def vgl_unit(p):
     l = LITERS.get(id(p))
     return eff(p) / l if l else eff_unit(p)
+def vgl_eh(p): return "l" if id(p) in LITERS else p[6]
 def mark_bad(arr):
     # Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
     u = sorted(v for v in (vgl_unit(p) for p in arr) if v is not None)
-    if len(u) < 3: return
+    if len(u) < 3: return set()
     med = u[len(u) // 2]
-    for p in arr:
-        v = vgl_unit(p)
-        if v is not None and (v > med * 3 or v < med / 3): BAD.add(id(p))
+    bad = {id(p) for p in arr if vgl_unit(p) is not None and (vgl_unit(p) > med * 3 or vgl_unit(p) < med / 3)}
+    BAD.update(bad)
+    return bad
 def rank(p):
     if id(p) in BAD: return 1e6 + eff(p)
     u = vgl_unit(p)
@@ -314,7 +336,7 @@ PICKED = {}
 KERN = set()  # alle producten die bij een categorie-soort horen: de app laadt die eerst (producten-kern.json)
 for t in TERMS:
     _m = matches(t); KERN.update(map(id, _m))
-    rows = sorted(per_store(_m).items(), key=lambda kv: rank(kv[1]))
+    rows = list(per_store(_m, t).items())
     if rows: PICKED[t] = rows
 
 def term_offers(t, n=6):
@@ -339,9 +361,9 @@ OMREKEN = {"komkommer": {"kg": .4}, "appels": {"st": 6}, "uien": {"st": 8}, "ban
 def pakket_kosten():
     tabel = {}
     for term, q, u in PAKKET:
-        rows = dict(per_store(matches(term)).items())
+        rows = per_store(matches(term), term)
         for si, p in rows.items():
-            if id(p) in BAD or eff_unit(p) is None or not 0 < eff_unit(p) < 500: continue
+            if not vergelijkbaar(term, p) or eff_unit(p) is None or not 0 < eff_unit(p) < 500: continue
             if p[6] == u: tabel.setdefault(term, {})[si] = (eff_unit(p) * q, p)
             elif p[6] in OMREKEN.get(term, {}): tabel.setdefault(term, {})[si] = (eff_unit(p) * OMREKEN[term][p[6]], p)
     # Eerlijk vergelijken: alleen boodschappen die bij álle meegenomen winkels te vinden zijn.

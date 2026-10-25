@@ -286,8 +286,9 @@ for _t in PICKED:
 # ---------- productpagina's ----------
 for t, rows in PICKED.items():
     name = cap(t); sl = slug(t); path = f"/vergelijk/{sl}/"
-    goed = [r for r in rows if id(r[1]) not in BAD] or rows
-    (si0, p0), (siN, pN) = goed[0], goed[-1]
+    goed = [r for r in rows if vergelijkbaar(t, r[1])] or rows
+    (si0, p0) = goed[0]
+    (siN, pN) = [r for r in goed if toon_unit(r[1])[1] == toon_unit(p0)[1]][-1]  # duurste in dezelfde eenheid (niet per stuk tegen per kilo)
     win, loser = NAMEN.get(stores[si0]["id"], stores[si0]["name"]), NAMEN.get(stores[siN]["id"], stores[siN]["name"])
     (u0, e0), (uN, eN) = toon_unit(p0), toon_unit(pN)
     eh = eenheid(e0)
@@ -301,7 +302,7 @@ for t, rows in PICKED.items():
     trs = ""
     for i, (si, p) in enumerate(rows):
         o = offer_of(p)
-        unit = "" if id(p) in BAD else (per(*toon_unit(p)) or "inhoud onbekend")
+        unit = "" if not vergelijkbaar(t, p) else (per(*toon_unit(p)) or "inhoud onbekend")
         trs += (f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(NAMEN.get(stores[si]["id"], stores[si]["name"]))}</span>{" <b class=sub style=display:inline;color:var(--green-dark)>Goedkoopst</b>" if i == 0 else ""}{" <span class=pill>" + esc(o["lbl"] or "aanbieding") + "</span>" if o else ""}<br>'
                 f'<a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{labels(p[1], kcal_txt(t), t)}{fout_knop(t, si, p)}{addbtn(p, t)}</td>'
                 f'<td class="p">{tag(eff(p), "deal" if o else "")}{"<br><span class=was>" + eur(p[3]) + "</span>" if o else ""}<br><span class="unit">{esc(unit)}</span></td></tr>')
@@ -320,7 +321,7 @@ for t, rows in PICKED.items():
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
-            f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and id(p) not in BAD), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
+            f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and vergelijkbaar(t, p)), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
     # Eén product (de soort) met een AggregateOffer: zo kan Google de prijsrange "van € x tot € y bij n winkels" tonen.
     _pr = [eff(p) for _, p in rows]
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "Product", "name": cap(name), "description": desc,
@@ -465,7 +466,7 @@ def _oordeel(o, term):
     _oordeel0(o, term); _historie_check(o, term)
 def _oordeel0(o, term):
     if not o.get("pp") or not o.get("eh") or term not in PICKED: return
-    gewoon = [(p[5], si) for si, p in PICKED[term] if p[6] == o["eh"] and p[5] and id(p) not in BAD]
+    gewoon = [(p[5], si) for si, p in PICKED[term] if p[6] == o["eh"] and p[5] and vergelijkbaar(term, p)]
     if len(gewoon) < 2: return
     best, bsi = min(gewoon)
     if o["pp"] < best * .3 or o["pp"] > best * 4: return  # waarschijnlijk een andere maat of soort: geen oordeel
@@ -697,7 +698,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <p>Online prijzen kunnen afwijken van de winkel. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe kiezen we het vergelijkbare product?</h2><ul>
 <li>Per product zoeken we bij elke supermarkt het <b>voordeligste vergelijkbare</b> product: dezelfde soort, met huismerken en A-merken door elkaar.</li>
-<li>We vergelijken de <b>prijs per kilo, liter of stuk</b>, zodat een grote en een kleine verpakking eerlijk naast elkaar staan.</li>
+<li>We vergelijken de <b>prijs per kilo, liter of stuk</b>, zodat een grote en een kleine verpakking eerlijk naast elkaar staan. Verkopen de meeste winkels iets per stuk (komkommer, avocado), dan vergelijken we per stuk; een product met een andere eenheid of een prijs die niet kan kloppen, zetten we onderaan zonder prijs per kilo.</li>
 <li>Varianten zoals lactosevrij, biologisch of light tellen alleen mee als je daar zelf naar zoekt.</li>
 <li>Producten waarvan we de inhoud niet kunnen lezen, zetten we onderaan in plaats van ze te raden.</li></ul>
 <h2>Aanbiedingen</h2><p>Lopende aanbiedingen rekenen we mee in de prijs, maar alleen in de dagen dat ze echt geldig zijn. We bewaren elke dag de prijzen. Daarmee zie je bij een product of de prijs nu <b>lager of hoger dan normaal</b> is. Normaal is het midden van de laatste 30 metingen bij die winkel. Zo zie je meteen of een "aanbieding" echt voordelig is.</p>
@@ -771,8 +772,8 @@ json.dump({"stores": _pd["stores"], "n": _tel}, open(os.path.join(OUT, "winkels.
 # {soort: {"w": {winkel: prijs}, "n": naam van het goedkoopste product, "s": winkel daarvan}}
 _tp = {}
 for t_, rows in PICKED.items():
-    w = {stores[si]["id"]: round(eff(p_), 2) for si, p_ in rows if id(p_) not in BAD}
-    u = {stores[si]["id"]: round(vgl_unit(p_), 3) for si, p_ in rows if id(p_) not in BAD and vgl_unit(p_) is not None}
+    w = {stores[si]["id"]: round(eff(p_), 2) for si, p_ in rows if vergelijkbaar(t_, p_)}
+    u = {stores[si]["id"]: round(vgl_unit(p_), 3) for si, p_ in rows if vergelijkbaar(t_, p_) and vgl_unit(p_) is not None}
     if w:
         si0, p0_ = rows[0]
         _tp[t_.lower()] = {"t": t_, "w": w, "u": u, "n": p0_[1], "s": stores[si0]["id"]}

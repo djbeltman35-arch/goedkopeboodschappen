@@ -429,7 +429,10 @@
   "wafel",
   "tortilla",
   "salsa",
-  "mexicana"
+  "mexicana",
+  "flatbread",
+  "wrap",
+  "wraps"
  ],
  "suiker": [
   "siroop",
@@ -1858,5 +1861,9 @@
   "limonadesiroop",
   "slimpie",
   "pouch"
+ ],
+ "mentos": [
+  "piementos",
+  "padron"
  ]
 }
