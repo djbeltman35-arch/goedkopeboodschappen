@@ -814,6 +814,61 @@ if len(_data_regels) == 5:
     app = app.replace('<div id="printsheet" aria-hidden="true"></div>\n', '<div id="printsheet" aria-hidden="true"></div>\n<script src="/appdata.js?v=' + quote(VERSIE) + '"></script>\n', 1)
 else:
     print("LET OP: appdata niet gesplitst", len(_data_regels))
+# Snelheid (Largest Contentful Paint): de tegels staan al in de HTML, zodat de pagina bij de eerste weergave compleet is.
+# De app-scripts laden daarna (na het eerste beeld) en tekenen dezelfde tegels opnieuw: niets verspringt.
+# Zelfde opbouw als quick() en seizoenTegels() in site/index.html; feestdata komen uit die JS, zodat ze gelijk blijven.
+def _js_data(naam):
+    m = re.search(r"\b" + naam + r"=\{([^}]*)\}", app)
+    return {int(k): v for k, v in re.findall(r'(\d{4}):"(\d\d-\d\d)"', m.group(1))} if m else {}
+def _pasen(y):
+    a, b, c = y % 19, y // 100, y % 100; d, e = b // 4, b % 4; f = (b + 8) // 25; g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30; i, k = c // 4, c % 4; l = (32 + 2 * e + 2 * i - h - k) % 7; m = (a + 11 * h + 22 * l) // 451
+    return datetime.date(y, (h + l - 7 * m + 114) // 31, (h + l - 7 * m + 114) % 31 + 1)
+def _volgend_feest():
+    sk, ps, ch = _js_data("SUIKER"), _js_data("PESACH"), _js_data("CHANOEKA")
+    vd = datetime.date.fromisoformat(VANDAAG); r = []
+    for y in (vd.year, vd.year + 1):
+        md = lambda t: datetime.date.fromisoformat(f"{y}-{t[y]}") if y in t else None
+        r += [("/sinterklaas/", "🎁", "Sinterklaas", datetime.date(y, 12, 5)), ("/kerst/", "🎄", "Kerst", datetime.date(y, 12, 26)),
+              ("/oud-en-nieuw/", "🎆", "Oud en nieuw", datetime.date(y, 12, 31)), ("/ramadan/", "🌙", "Ramadan", md(sk)),
+              ("/pasen/", "🐣", "Pasen", _pasen(y) + datetime.timedelta(days=1)), ("/pesach/", "🫓", "Pesach", md(ps)),
+              ("/bbq/", "🍖", "Barbecue", datetime.date(y, 8, 31)), ("/chanoeka/", "🕎", "Chanoeka", md(ch))]
+    r = sorted((x for x in r if x[3] and x[3] >= vd), key=lambda x: x[3])
+    return r[0] if r else None
+def _tegels():
+    n = sum(1 for o in _ao if (not o.get("v") or o["v"] <= VANDAAG) and (not o.get("t") or o["t"] >= VANDAAG))
+    f = _volgend_feest()
+    feest = f'<a class="chip seizoen" href="{f[0]}"><span class="ic">{f[1]}</span>{f[2]}<small>boodschappen</small></a>' if f else ""
+    gr = [gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)]
+    m = re.search(r"const CAT_VOLG=(\[.*?\]);", app); volg = json.loads(m.group(1)) if m else []
+    idx = []
+    for nmv in volg:
+        if nmv == "DIEET": idx.append(-1); continue
+        i = next((j for j, gg in enumerate(gr) if gg[0] == nmv), -1)
+        if i >= 0: idx.append(i)
+    idx += [i for i in range(len(gr)) if i not in idx]
+    e = lambda s: str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    return ('<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="false"><span class="ic">🔥</span>Aanbiedingen<small>' + (f"{n} acties" if n else "deze week") + '</small></button>'
+            '<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>'
+            '<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a><a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>' + feest +
+            '<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a></div>'
+            '<p class="tegelkop">Of kies een categorie</p><div class="cats">' +
+            "".join('<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>' if i < 0 else
+                    f'<button type="button" class="chip" data-view="{i}" aria-pressed="false"><span class="ic">{gr[i][1]}</span>{e(gr[i][0])}</button>' for i in idx) + "</div>")
+_leeg = '<div class="chips quick tegels" id="quick" role="group" aria-label="Categorieën"></div>'
+if _leeg in app: app = app.replace(_leeg, _leeg[:-6] + _tegels() + "</div>", 1)
+else: print("LET OP: tegels niet vooraf in de HTML gezet")
+# De app zelf in een los bestand dat pas na het eerste beeld laadt (blokkeert de weergave niet meer, en de browser bewaart het).
+_m = re.search(r'<script src="/appdata\.js\?v=[^"]*"></script>\s*<script>\n?(.*?)</script>\s*</body>', app, re.S)
+if _m:
+    open(os.path.join(OUT, "app.js"), "w").write(_m.group(1))
+    _v = quote(VERSIE)
+    _lader = ('<script>(function(){var k=0;function go(){if(k++)return;["/appdata.js?v=' + _v + '","/app.js?v=' + _v + '"].forEach(function(s){'
+              'var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e)})}'
+              'requestAnimationFrame(function(){setTimeout(go,0)});setTimeout(go,800)})()</script>\n</body>')
+    app = app[:_m.start()] + _lader + app[_m.end():]
+else:
+    print("LET OP: app-script niet apart gezet")
 # Alleen het kleine winkelbestand vooraf; de grote prijsbestanden zouden de pagina zelf vertragen.
 _pre = '<link rel="preload" href="/winkels.json" as="fetch" crossorigin>'
 app = app.replace("</head>", _pre + "</head>", 1)

@@ -1,12 +1,12 @@
 // Goedkope Boodschappen. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
 // zodat de browser deze service worker vernieuwt, de oude cache weggooit en bezoekers de nieuwste versie krijgen.
-const C = 'gb-v79-__BOUW__';
+const C = 'gb-v80-__BOUW__';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  if (u.pathname === '/producten.json' || u.pathname === '/producten-kern.json' || u.pathname === '/producten-rest.json' || u.pathname === '/winkels.json' || u.pathname.startsWith('/p/') || u.pathname === '/stijl.css' || u.pathname.startsWith('/icons/')) {
+  if (u.pathname === '/producten.json' || u.pathname === '/producten-kern.json' || u.pathname === '/producten-rest.json' || u.pathname === '/winkels.json' || u.pathname.startsWith('/p/') || u.pathname === '/stijl.css' || u.pathname === '/app.js' || u.pathname === '/appdata.js' || u.pathname.startsWith('/icons/')) {
     // Altijd eerst de nieuwste versie van de server (goedkoop: 304 als er niets veranderd is); alleen zonder internet de bewaarde versie.
     e.respondWith(caches.open(C).then(async c => {
       try {
