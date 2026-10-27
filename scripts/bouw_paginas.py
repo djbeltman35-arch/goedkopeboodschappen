@@ -284,6 +284,7 @@ for _t in PICKED:
                 if _m not in MAAL_PER_TERM.get(_t, []): MAAL_PER_TERM.setdefault(_t, []).append(_m)
 
 # ---------- productpagina's ----------
+EEN_WINKEL = 0
 for t, rows in PICKED.items():
     name = cap(t); sl = slug(t); path = f"/vergelijk/{sl}/"
     goed = [r for r in rows if vergelijkbaar(t, r[1])] or rows
@@ -321,16 +322,22 @@ for t, rows in PICKED.items():
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
-            f'<a class="cta" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and vergelijkbaar(t, p)), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
+            f'<a class="cta" rel="nofollow" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and vergelijkbaar(t, p)), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
     # Eén product (de soort) met een AggregateOffer: zo kan Google de prijsrange "van € x tot € y bij n winkels" tonen.
     _pr = [eff(p) for _, p in rows]
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "Product", "name": cap(name), "description": desc,
           "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{min(_pr):.2f}", "highPrice": f"{max(_pr):.2f}", "offerCount": len(rows),
                      "offers": [{"@type": "Offer", "name": p[1], "price": f"{eff(p):.2f}", "priceCurrency": "EUR", "url": plink(p), "availability": "https://schema.org/InStock",
                                  "seller": {"@type": "Organization", "name": NAMEN.get(stores[si]["id"], stores[si]["name"])}} for si, p in rows]}}]
-    schrijf(path, page(path, title, desc, head, body, ld, og_title=f"{name}: waar is het goedkoopst?"))
-    made.append((path, "0.7"))
-print(len(PICKED), "productpagina's")
+    _html = page(path, title, desc, head, body, ld, og_title=f"{name}: waar is het goedkoopst?")
+    # Bij maar één supermarkt valt er niets te vergelijken: pagina blijft voor bezoekers, maar niet in Google en niet in de sitemap
+    # (dunne pagina's drukken de kwaliteit van de hele site). Zodra een tweede winkel het product heeft, komt hij vanzelf terug.
+    if len(rows) < 2:
+        _html = _html.replace('<meta name="robots" content="index,follow,max-image-preview:large">', '<meta name="robots" content="noindex,follow">', 1); EEN_WINKEL += 1
+    else:
+        made.append((path, "0.7"))
+    schrijf(path, _html)
+print(len(PICKED), "productpagina's,", EEN_WINKEL, "met maar één winkel (noindex)")
 
 # ---------- categorieën: hoofdgroepen met subcategorieën ----------
 def winkels_txt(t):
