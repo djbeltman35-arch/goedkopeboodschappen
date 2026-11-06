@@ -11,11 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: WINKELS=lidl node ophalen/ophalen.mjs
+      - run: node probe/lidl.mjs
       - run: |
-          node -e '
-          const d=require("./data/aanbiedingen.json");const L=d.offers.filter(o=>o.s==="lidl");
-          const out={n:L.length,volgende:L.filter(o=>o.v),folder:L.filter(o=>!o.was&&!o.sz).slice(0,40),cats:L.reduce((a,o)=>(a[o.c]=(a[o.c]||0)+1,a),{})};
-          require("fs").writeFileSync("probe/lidl-uit.json",JSON.stringify(out,null,1));'
           git config user.name "probe"; git config user.email "probe@users.noreply.github.com"
           git add probe/lidl-uit.json && git commit -m "probe uitvoer [skip netlify]" && git push
