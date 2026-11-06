@@ -417,6 +417,30 @@ async function lidl() {
       uit.set(sleutel, { s: 'lidl', n: String(x.fullTitle).replace(/[®™]/g, '').replace(/\s+/g, ' ').trim(), sz: pr.packaging?.text || lp?.price?.packaging?.text || '', p: r2(p), was: was > p + .004 ? r2(was) : null, lbl, u: x.canonicalUrl ? new URL(x.canonicalUrl, 'https://www.lidl.nl').href : 'https://www.lidl.nl/c/aanbiedingen/a10008785', t: tot, v: van && van > vd ? van : null });
     }
   } catch (e) { console.warn('lidl actiepagina mislukt', e.message); }
+  // De folders zelf: vullen de week aan en bevatten al vanaf donderdag de folder van volgende week.
+  // Alleen eten en drinken; de folder geeft geen oude prijs of inhoud, dus die laten we leeg.
+  try {
+    const sp = await haal('https://www.lidl.nl/c/service-contact-folders/s10008124', {}, 'text');
+    const ids = [...new Set([...sp.matchAll(/folders\/(hah-wk\d+(?:-weekenddeals)?-\d{4})\//g)].map(m => m[1]))];
+    const vd = vandaag();
+    const norm = s => zonderAccent(String(s).toLowerCase()).replace(/[^a-z0-9]+/g, ' ').trim();
+    const namen = new Set([...uit.values()].map(o => norm(o.n)));
+    for (const id of ids) {
+      const j = await haal(`https://endpoints.leaflets.schwarz/v4/flyer?flyer_identifier=${id}&region_id=0&region_code=0`);
+      const f = j.flyer || j;
+      const van = dagVan(f.offerStartDate || f.startDate), tot = dagVan(f.offerEndDate || f.endDate);
+      if (!tot || tot < vd) continue;
+      for (const x of Object.values(f.products || {})) {
+        const cat = `${x.categoryPrimary || ''} ${x.wonCategoryPrimary || ''}`;
+        if (!/eten|drank|drinken|food/i.test(cat) || /non.?food|huishoud|verzorging|dier/i.test(cat)) continue;
+        const n = String(x.title || '').replace(/[®™]/g, '').replace(/\s+/g, ' ').trim(), p = getal(x.price);
+        if (!n || !(p > 0) || namen.has(norm(n))) continue;
+        namen.add(norm(n));
+        uit.set('folder-' + (x.productId || n), { s: 'lidl', n, sz: '', p: r2(p), was: null, lbl: null, u: x.url || (x.canonicalUrl ? new URL(x.canonicalUrl, 'https://www.lidl.nl').href : 'https://www.lidl.nl/c/service-contact-folders/s10008124'), t: tot, v: van && van > vd ? van : null, sc: x.categoryPrimary || '' });
+      }
+      await slaap(400);
+    }
+  } catch (e) { console.warn('lidl folders mislukt', e.message); }
   if (!uit.size) throw new Error('geen Lidl-aanbiedingen gevonden');
   return [...uit.values()];
 }
