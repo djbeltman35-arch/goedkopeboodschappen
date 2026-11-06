@@ -1,0 +1,108 @@
+{
+ "pages": [
+  {
+   "u": "https://www.lidl.nl/c/aanbiedingen/a10008785",
+   "status": 200,
+   "title": "Aanbiedingen",
+   "n": 51,
+   "ranges": {
+    "2026-11-01..2026-11-08": 31,
+    "2026-11-04..2026-11-08": 18,
+    "2026-11-04..2026-11-11": 2
+   },
+   "voorbeeld": [
+    {
+     "n": "Bio wortels",
+     "p": 1.69,
+     "lp": true,
+     "van": "2026-11-01",
+     "tot": "2026-11-08",
+     "cat": "Food",
+     "ribbons": "",
+     "keys": "imageList_V1,imageList_V2,regions,havingVideos,hasColors,multipack,productOrigin,title,regionsPrices,highlightedSeals,isLidlGiftCard,disclaimers,havingPrice,price,havingThreesixty,lidlPlus,storeStartDate,dealOfDay,isUsedProduct,productType,nat,image,fullTitle,productId,canonicalUrl,renderedTs,store,flashSales,ians,quickAddToCart,keyfacts,itemId,erpNumber,storeEndDate,regionsV2,preventSelling,canonicalPath,online,timezoneId,ageRestriction,designTheme,image_V1,category,imageList,displayFreeDelivery,stockAvailability,position,listId,listName,additionalHighlightProducts"
+    },
+    {
+     "n": "Lente ui",
+     "p": 0.89,
+     "lp": true,
+     "van": "2026-11-01",
+     "tot": "2026-11-08",
+     "cat": "Food",
+     "ribbons": "",
+     "keys": "imageList_V1,imageList_V2,regions,havingVideos,hasColors,multipack,productOrigin,title,regionsPrices,highlightedSeals,isLidlGiftCard,disclaimers,havingPrice,price,havingThreesixty,lidlPlus,storeStartDate,dealOfDay,isUsedProduct,productType,nat,image,fullTitle,productId,canonicalUrl,renderedTs,store,flashSales,ians,quickAddToCart,keyfacts,itemId,erpNumber,storeEndDate,regionsV2,preventSelling,canonicalPath,online,timezoneId,ageRestriction,designTheme,image_V1,category,imageList,displayFreeDelivery,stockAvailability,position,listId,listName,additionalHighlightProducts"
+    },
+    {
+     "n": "Aubergine",
+     "p": 0.75,
+     "lp": true,
+     "van": "2026-11-01",
+     "tot": "2026-11-08",
+     "cat": "F+V",
+     "ribbons": "",
+     "keys": "imageList_V1,imageList_V2,regions,havingVideos,hasColors,multipack,productOrigin,title,regionsPrices,highlightedSeals,isLidlGiftCard,disclaimers,havingPrice,price,havingThreesixty,lidlPlus,storeStartDate,dealOfDay,isUsedProduct,productType,nat,image,fullTitle,productId,canonicalUrl,renderedTs,store,flashSales,ians,quickAddToCart,keyfacts,itemId,erpNumber,storeEndDate,regionsV2,preventSelling,canonicalPath,online,timezoneId,ageRestriction,designTheme,image_V1,category,imageList,displayFreeDelivery,stockAvailability,position,listId,listName,additionalHighlightProducts"
+    },
+    {
+     "n": "Fijngesneden andijvie",
+     "p": 1.29,
+     "lp": true,
+     "van": "2026-11-01",
+     "tot": "2026-11-08",
+     "cat": "Food",
+     "ribbons": "",
+     "keys": "imageList_V1,imageList_V2,regions,havingVideos,hasColors,multipack,productOrigin,title,regionsPrices,highlightedSeals,isLidlGiftCard,disclaimers,havingPrice,price,havingThreesixty,lidlPlus,storeStartDate,dealOfDay,isUsedProduct,brand,productType,nat,image,fullTitle,productId,canonicalUrl,renderedTs,store,flashSales,ians,quickAddToCart,keyfacts,itemId,erpNumber,storeEndDate,regionsV2,preventSelling,canonicalPath,online,timezoneId,ageRestriction,designTheme,image_V1,category,imageList,displayFreeDelivery,stockAvailability,position,listId,listName,additionalHighlightProducts"
+    }
+   ]
+  }
+ ],
+ "links": [],
+ "zoek": {
+  "total": 239,
+  "keys": [
+   "type",
+   "version",
+   "engine",
+   "variant",
+   "xPayload",
+   "id",
+   "q",
+   "locale",
+   "assortment",
+   "resultType",
+   "rendering",
+   "masterQuery",
+   "numFound",
+   "offset",
+   "fetchsize",
+   "maxfetchsize",
+   "sort",
+   "selections",
+   "sorts",
+   "facets",
+   "items",
+   "breadcrumbs",
+   "details",
+   "teasers",
+   "advisors"
+  ],
+  "n": 60,
+  "ranges": {
+   "2026-11-22..2026-11-29": 2,
+   "null..2026-09-06": 1,
+   "2026-11-08..2026-11-15": 2,
+   "null..2026-09-27": 2,
+   "null..null": 28,
+   "2026-12-09..2026-12-13": 1,
+   "null..2026-10-18": 4,
+   "null..2026-10-25": 3,
+   "2026-11-11..2026-11-15": 1,
+   "null..2026-10-04": 1,
+   "null..2026-11-01": 2,
+   "2026-11-04..2026-11-08": 3,
+   "null..2026-12-31": 1,
+   "2026-11-29..2026-12-06": 1,
+   "2026-11-01..2026-11-08": 6,
+   "2026-12-27..2027-01-03": 1,
+   "null..2026-09-20": 1
+  }
+ }
+}
