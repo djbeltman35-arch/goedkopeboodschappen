@@ -748,11 +748,13 @@ function ofSecties(list,f){
   if(keys.length<2) return `<ul class="offers">${list.map(offerCard).join("")}</ul>`;
   return `<div class="subblokken">`+keys.map(k=>`<details class="subblok" id="ofsub-${volg.indexOf(k)}"${OPEN.has("ofsub-"+volg.indexOf(k))?" open":""}><summary><span class="subnaam">${ic(k)} ${esc(naam(k))}</span><span class="subn">${tel.get(k)||per.get(k).length}</span></summary><ul class="offers">${per.get(k).map(offerCard).join("")}</ul></details>`).join("")+`</div>`;
 }
+// Hoe vaak eerder in de aanbieding (zelfde tekst als freq_txt in scripts/bouw_paginas.py)
+function freqTxt([n,c]){if(!c)return[n>=8?`Zeldzaam: de afgelopen ${n} weken niet in de aanbieding`:`De afgelopen ${n} weken niet in de aanbieding`,"zeld"];if(c>=n*.5)return[`Vaak in de aanbieding: ${c} van de afgelopen ${n} weken, geen haast`,"vaak"];return[`${c} van de afgelopen ${n} weken ook in de aanbieding`,"af"]}
 function offerCard(o){
   const added=S.list.some(x=>x.link===o.u);
   return `<li class="offer"><span class="top2"><span class="shop">${esc(STORENAMES[o.s]||o.s)}</span>${o.lbl?`<span class="pill">${esc(o.lbl)}</span>`:""}${o.v&&o.v>today?`<span class="soon">vanaf ${dagKort(o.v)}</span>`:""}</span>
   <span><a class="on" href="${esc(o.u)}" target="_blank" rel="noopener" data-out="${esc(o.s)}">${esc(o.n)}</a> <span class="sz">${esc(o.sz||"")}</span></span>${o.kc?`<span class="kc">${esc(o.kc)}</span>`:""}${labels(o.n,o.kc,o.tm)}
-  <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>${o.ds?`<span class="oordeel ${o.ds}">${o.ds==="top"?"🔥":o.ds==="ok"?"👍":o.ds==="let"?"ℹ️":"⚠️"} ${esc(o.dt)}</span>`:""}
+  <span class="prow">${tag(o.p,"deal")}${o.was?`<span class="was">${eur(o.was)}</span>`:""}${o.pp?`<span class="unit">${esc(unitTxt(o.pp,o.eh))}</span>`:""}</span>${o.ds?`<span class="oordeel ${o.ds}">${o.ds==="top"?"🔥":o.ds==="ok"?"👍":o.ds==="let"?"ℹ️":"⚠️"} ${esc(o.dt)}</span>`:""}${o.fh?`<span class="fq ${freqTxt(o.fh)[1]}">📅 ${esc(freqTxt(o.fh)[0])}</span>`:""}${o.tm&&PAGINAS.has(norm(o.tm))?`<a class="pv" href="/vergelijk/${PAGINAS.get(norm(o.tm))}/">📈 Alle ${esc(o.tm)} vergelijken, met prijsverloop</a>`:""}
   ${o.t?`<span class="till">t/m ${dagKort(o.t)}</span>`:""}
   ${added?'<span class="add on">✓ Op je lijst</span>':`<button type="button" class="add" data-offer="${o.i}">+ Op mijn lijst</button>`}</li>`;
 }

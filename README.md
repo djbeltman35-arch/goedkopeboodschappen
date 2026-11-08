@@ -7,6 +7,8 @@ Gratis boodschappenvergelijker zonder reclame: https://boodschappenvergelijk.nl/
 - **Elke ochtend** (GitHub Action "Prijzen ophalen", `ophalen/ophalen.mjs`) worden de aanbiedingen opgehaald van
   Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk, DekaMarkt, Hoogvliet en Poiesz, plus het Aldi-assortiment.
   Resultaat in `data/`: `aanbiedingen.json`, `aldi.json` en `status.json` (aantallen en fouten per winkel).
+  Daarna houdt `scripts/actiehistorie.py` in `data/actiehistorie.json` bij hoe vaak elk product in de aanbieding was
+  (te zien bij elke actie: "De afgelopen 3 weken niet in de aanbieding", "Vaak in de aanbieding: 5 van de 8 weken").
   Faalt een winkel, dan blijven de vorige acties van die winkel staan.
 - **Netlify bouwt de site** bij elke wijziging op `main` (dus ook na de dagelijkse prijzen-commit) met `scripts/build.sh`:
   1. de nieuwste gewone prijzen uit de open dataset van [Checkjebon](https://github.com/supermarkt/checkjebon) (`scripts/prep.py`),

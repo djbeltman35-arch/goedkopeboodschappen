@@ -72,7 +72,7 @@ function maaltijd(off){const el=document.getElementById("mdata");if(!el)return;c
  document.getElementById("mlead").innerHTML=`Bij jouw supermarkten kosten alle ingrediënten voor 4 personen het minst bij <b>${h(N[ord[0]])}</b>: <b>${e(b.t)}</b>. Daarvan gebruik je ${e(b.g)} in dit recept; de rest houd je over.`+(ord.length>1?` Bij ${h(N[ord[ord.length-1]])} betaal je ${e(l.t-b.t)} meer.`:"");
  document.getElementById("mtoph").textContent=t3.length===3?"De 3 goedkoopste supermarkten":t3.length===2?"Jouw 2 supermarkten":"Jouw supermarkt";document.getElementById("mtop").innerHTML=t3.map((s,i)=>`<li class="${i?"":"w"}"><span class="rk">${i+1}e goedkoopst</span><b style="font-size:19px">${h(N[s])}</b>${tg(D.st[s].t,i?"":"big")}<span class="muted">${e(D.st[s].t/4)} per persoon</span><button type="button" class="add addall" data-m="${D.slug}" data-os="${h(JSON.stringify(D.st[s].os))}">+ Alles op mijn lijst</button></li>`).join("");
  let j=0,rows="";for(const g of D.ing){if(g[2]){rows+=`<tr class="vk"><td>${h(g[0])}<span class="sub">uit de voorraadkast, niet meegeteld</span></td>${t3.map(()=>'<td class="c">–</td>').join("")}</tr>`;continue}
-  rows+=`<tr><td><b>${h(g[0])}</b><span class="sub">${h(g[1])}${g[3]?" · optioneel":""}</span></td>${t3.map(s=>{const c=D.st[s].c[j];return c?`<td class="c"><a href="${h(c[2])}" rel="nofollow noopener" target="_blank" data-out="${s}" title="${h(c[1])}">${e(c[0])}</a>${c[3]>1?`<span class="sub">${c[3]} pakken</span>`:""}</td>`:'<td class="c"><span class="muted">niet gevonden</span></td>'}).join("")}</tr>`;j++}
+  rows+=`<tr><td><b>${h(g[0])}</b><span class="sub">${h(g[1])}${g[3]==2?" · optioneel, niet in het totaal (niet overal te koop)":g[3]?" · optioneel":""}</span></td>${t3.map(s=>{const c=D.st[s].c[j];return c?`<td class="c"><a href="${h(c[2])}" rel="nofollow noopener" target="_blank" data-out="${s}" title="${h(c[1])}">${e(c[0])}</a>${c[3]>1?`<span class="sub">${c[3]} pakken</span>`:""}</td>`:'<td class="c"><span class="muted">niet gevonden</span></td>'}).join("")}</tr>`;j++}
  rows+=`<tr class="win"><td><b>Totaal voor 4 personen</b></td>${t3.map(s=>`<td class="c"><b>${e(D.st[s].t)}</b></td>`).join("")}</tr>`;
  document.getElementById("mtab").innerHTML=`<thead><tr><th>Ingrediënt</th>${t3.map(s=>`<th style="text-align:right">${h(K[s]||N[s])}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>`;
  document.getElementById("malle").innerHTML=ord.map((s,i)=>`<tr${i?"":' class="win"'}><td><b>${i+1}. ${h(N[s])}</b></td><td class="p">${tg(D.st[s].t)}</td><td class="p">${e(D.st[s].t/4)}</td></tr>`).join("")}
@@ -167,7 +167,7 @@ for m in MAAL:
     sp = SOORT_PAD.get(m["soort"])
     ch, cld = crumbs(("Complete maaltijden", "/maaltijden/"), *([(sp[1], f"/maaltijden/{sp[0]}/")] if sp else []), (naam, None))
     # top 3
-    ingdata = [[g["naam"], hoev(g["q"], "l" if g["sleutel"] in ("halfvolle melk", "kookroom", "mayonaise") else "kg"), 1 if g["voorraad"] else 0, 1 if g["optioneel"] else 0] for g in m["regels"]]
+    ingdata = [[g["naam"], hoev(g["q"], "l" if g["sleutel"] in ("halfvolle melk", "kookroom", "mayonaise") else "kg"), 1 if g["voorraad"] else 0, (2 if g.get("buiten") else 1) if g["optioneel"] else 0] for g in m["regels"]]
     stdata = {}
     for si, r in m["rang"]:
         stdata[stores[si]["id"]] = {"t": round(r["tot"], 2),
@@ -197,7 +197,7 @@ for m in MAAL:
                 k, p, nn, gb = g["prijzen"][si]
                 cellen += f'<td class="c"><a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[si]["id"]}" title="{esc(p[1])} {esc(p[4] or "")}">{eur(k)}</a>{f"<span class=sub>{nn} pakken</span>" if nn > 1 else ""}</td>'
             else: cellen += '<td class="c"><span class="muted">niet gevonden</span></td>'
-        rijen += f'<tr><td><b>{esc(g["naam"])}</b><span class="sub">{hv}{" · optioneel" if g["optioneel"] else ""}</span></td>{cellen}</tr>'
+        rijen += f'<tr><td><b>{esc(g["naam"])}</b><span class="sub">{hv}{" · optioneel, niet in het totaal (niet overal te koop)" if g.get("buiten") else " · optioneel" if g["optioneel"] else ""}</span></td>{cellen}</tr>'
     rijen += '<tr class="win"><td><b>Totaal voor 4 personen</b></td>' + "".join(f'<td class="c"><b>{eur(r["tot"])}</b></td>' for _, r in top3) + "</tr>"
     alle = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. {esc(wnaam(si))}</b></td><td class="p">{tag(r["tot"])}</td><td class="p">{pp(r["tot"])}</td></tr>' for i, (si, r) in enumerate(m["rang"]))
     bnaam, burl = m["bron"]

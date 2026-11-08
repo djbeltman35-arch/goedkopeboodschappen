@@ -381,6 +381,8 @@ h1,h2,h3{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
 .low{display:inline-block;font:700 13px var(--text);color:var(--green-dark);background:var(--green-soft);padding:2px 8px;border-radius:6px}
 .hoger{display:inline-block;font:700 13px var(--text);color:var(--deal);background:var(--deal-soft);padding:2px 8px;border-radius:6px}
 .oordeel.let{color:var(--muted);font-weight:600}
+.fq{display:block;font-size:13.5px;line-height:1.35;color:var(--muted)}.fq.zeld{color:var(--green-dark);font-weight:700}
+.offer .pv{font-size:14px;color:var(--green-dark);overflow-wrap:anywhere}
 .deel{margin:4px 0 14px}.deelknop{display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:7px 14px;border-radius:999px;font-weight:700}
 .lbl.hl{background:#eef7f2;color:#1f5e44;border:1px solid #c6e3d4}.lbl.ks{background:#eef2fb;color:#2a4a86;border:1px solid #c9d5ef}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .lbl.hl{background:#14281f;color:#a6dcc2;border-color:#2c4c3d}:root:not([data-theme=light]) .lbl.ks{background:#171f33;color:#adc3ef;border-color:#2e3d60}}

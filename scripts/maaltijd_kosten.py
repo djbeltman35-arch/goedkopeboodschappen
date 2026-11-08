@@ -84,6 +84,14 @@ def bereken(m):
                 k, p, n, gb = g["prijzen"][si]; tot += k; gebruik += gb; lijst.append((g["naam"], k, p, n, gb))
             else: lijst.append((g["naam"], None, None, 0, 0))
         winkels[si] = {"tot": tot, "gebruik": gebruik, "regels": lijst}
+    # Eerlijk vergelijken: een optioneel ingrediënt dat niet bij elke winkel te koop is, telt bij geen enkele winkel mee
+    # (anders lijkt de winkel zonder dat product goedkoper, terwijl je daar minder krijgt).
+    for g in regels:
+        if g["optioneel"] and not all(si in g["prijzen"] for si in winkels):
+            g["buiten"] = True
+            for si, w in winkels.items():
+                if si in g["prijzen"]:
+                    w["tot"] -= g["prijzen"][si][0]; w["gebruik"] -= g["prijzen"][si][3]
     rang = sorted(winkels.items(), key=lambda kv: kv[1]["tot"])
     return {"kcal": round(kcal / 4 / 5) * 5, "rang": rang, "regels": regels}
 

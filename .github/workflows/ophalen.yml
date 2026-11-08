@@ -38,6 +38,8 @@ jobs:
         run: |
           curl -fsSL --max-time 180 -o /tmp/supermarkets.json https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json \
             && python3 scripts/historie.py bijwerken /tmp/supermarkets.json || echo "geschiedenis mislukt"
+      - name: Actiegeschiedenis (hoe vaak in de aanbieding)
+        run: python3 scripts/actiehistorie.py bijwerken || echo "actiegeschiedenis mislukt"
       - name: Opslaan
         run: |
           git config user.name "prijzen-bot"

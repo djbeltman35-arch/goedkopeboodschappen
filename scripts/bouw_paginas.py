@@ -169,23 +169,28 @@ def deel_html(tekst, path):
     return f'<p class="deel"><a class="btn-line deelknop" href="https://wa.me/?text={quote(tekst + " " + url)}" target="_blank" rel="noopener" data-deel="{esc(json.dumps({"t": tekst, "u": url}, ensure_ascii=False))}">📤 Delen</a></p>'
 def faq_ld(faq): return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
 def faq_html(faq): return '<section class="faq"><h2>Veelgestelde vragen</h2><div class="subblokken">' + "".join(f'<details class="subblok faqv"><summary><h3 class="subnaam">{esc(q)}</h3></summary><div class="subin"><p>{esc(a)}</p></div></details>' for q, a in faq) + "</div></section>"
+def ajs(d):
+    """JSON voor een HTML-attribuut tussen enkele aanhalingstekens: veel korter dan met &quot; (scheelt honderden KB op de aanbiedingenpagina's)."""
+    return html.escape(json.dumps(d, ensure_ascii=False, separators=(",", ":")), quote=False).replace("'", "&#39;")
 def addbtn(p, term):
     o = {"s": stores[p[0]]["id"], "n": p[1], "sz": p[4] or "", "p": round(eff(p), 2), "u": plink(p), "r": 1, "term": term}
-    return f'<button type="button" class="add" data-o="{esc(json.dumps(o, ensure_ascii=False))}">+ Op mijn lijst</button>'
+    return f"<button type=\"button\" class=\"add\" data-o='{ajs(o)}'>+ Op mijn lijst</button>"
 def offerbtn(o):
     d_ = {k: o.get(k) for k in ("s", "n", "sz", "p", "u", "t")}
-    return f'<button type="button" class="add" data-o="{esc(json.dumps(d_, ensure_ascii=False))}">+ Op mijn lijst</button>'
+    return f"<button type=\"button\" class=\"add\" data-o='{ajs(d_)}'>+ Op mijn lijst</button>"
 def offer_card(o):
     lbl = f'<span class="pill">{esc(o["lbl"])}</span>' if o.get("lbl") else ""
     soon = f'<span class="soon">vanaf {kortdag(o["v"])}</span>' if o.get("v") and o["v"] > VANDAAG else ""
     was = f'<span class="was">{eur(o["was"])}</span>' if o.get("was") else ""
     pp = f'<span class="unit">{esc(per(o.get("pp"), o.get("eh")))}</span>' if o.get("pp") else ""
     t = f'<span class="till">t/m {kortdag(o["t"])}</span>' if o.get("t") else ""
-    return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
+    return (f'<li class="offer" data-c="{esc(o.get("c") or "Overig")}"{" data-z=1" if o.get("fh") and o["fh"][1] == 0 else ""}><span class="top2"><span class="shop">{esc(KORT.get(o["s"], NAMEN[o["s"]]))}</span>{lbl}{soon}</span>'
             f'<span><a class="on" href="{esc(o["u"])}" rel="nofollow noopener" target="_blank" data-out="{o["s"]}">{esc(o["n"])}</a> <span class="sz">{esc(o.get("sz") or "")}</span>{labels(o["n"], o.get("kc"), o.get("tm", ""))}</span>'
             + (f'<span class="kc">{esc(o["kc"])}</span>' if o.get("kc") else "") +
             f'<span class="prow">{tag(o["p"], "deal")}{was}{pp}</span>'
             + (f'<span class="oordeel {o["ds"]}">{"🔥" if o["ds"] == "top" else "👍" if o["ds"] == "ok" else "ℹ️" if o["ds"] == "let" else "⚠️"} {esc(o["dt"])}</span>' if o.get("ds") else "")
+            + (f'<span class="fq {freq_txt(o["fh"])[1]}">📅 {esc(freq_txt(o["fh"])[0])}</span>' if o.get("fh") else "")
+            + (f'<a class="pv" href="/vergelijk/{slug(o["tm"])}/">📈 Alle {esc(o["tm"])} vergelijken, met prijsverloop</a>' if o.get("tm") in PICKED else "")
             + f'{t}{offerbtn(o)}</li>')
 def fout_knop(t, si, p):
     """Knopje "Klopt niet?" (afgehandeld in /fout.js)."""
@@ -499,6 +504,27 @@ def _oordeel0(o, term):
 _od = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 _n = sum(_deel_in(o) for o in _od.get("offers", []))
 for o in OFFERS: _deel_in(o)
+# Hoe vaak was dit product eerder in de aanbieding? (data/actiehistorie.json, dagelijks bijgewerkt door de prijzen-bot)
+import actiehistorie as _ah
+try: ACTIEH = json.load(open(_ah.PAD))
+except Exception: ACTIEH = {"sinds": {}, "p": {}}
+def _frequentie(o):
+    """o["fh"] = [n, c]: in de n weken vóór deze actie was hij c keer eerder in de aanbieding (alleen als we minstens 3 weken weten)."""
+    s = o.get("s")
+    if s not in ACTIEH["sinds"] or not o.get("t"): return
+    t = _ah.dag(o["t"]); start = _ah.dag(o["v"]) if o.get("v") else min(t - 6, _ah.dag(VANDAAG))
+    n = min(26, (start - _ah.dag(ACTIEH["sinds"][s])) // 7)
+    if n < 3: return
+    eerder = {_ah.datum(x) for x in ACTIEH["p"].get(_ah.sleutel(o), []) if start - n * 7 <= x < start}
+    o["fh"] = [n, len({datetime.date.fromisoformat(x).isocalendar()[:2] for x in eerder})]
+for o in _od.get("offers", []): _frequentie(o)
+for o in OFFERS: _frequentie(o)
+def freq_txt(fh):
+    """(tekst, soort) bij o["fh"]; zelfde tekst als freqTxt() in de app."""
+    n, c = fh
+    if c == 0: return (f"Zeldzaam: de afgelopen {n} weken niet in de aanbieding" if n >= 8 else f"De afgelopen {n} weken niet in de aanbieding"), "zeld"
+    if c >= n * .5: return f"Vaak in de aanbieding: {c} van de afgelopen {n} weken, geen haast", "vaak"
+    return f"{c} van de afgelopen {n} weken ook in de aanbieding", "af"
 json.dump(_od, open(os.path.join(OUT, "data", "aanbiedingen.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # Ook in kleine delen (data/aanbiedingen-0.json ...): de app leest die zonder dat de telefoon hapert. Aantal staat in winkels.json.
 _ao = _od.get("offers", [])
@@ -506,7 +532,7 @@ AANB_DELEN = max(1, -(-len(_ao) // 1500))
 for k in range(AANB_DELEN):
     json.dump({"offers": _ao[k * 1500:(k + 1) * 1500]}, open(os.path.join(OUT, "data", f"aanbiedingen-{k}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 print(_n, "van", len(_od.get("offers", [])), "aanbiedingen in een subcategorie ingedeeld")
-OFFJS = '''<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&li.dataset.c!==v;li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
+OFFJS = '''<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&(v==="zeld"?li.dataset.z!=="1":li.dataset.c!==v);li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
 per_winkel = {}
 for o in OFFERS: per_winkel.setdefault(o["s"], []).append(o)
 winkels_o = sorted(per_winkel, key=lambda s: NAMEN[s])
@@ -557,10 +583,15 @@ def offers_page(cur, lst):
     # De aanbiedingen zijn ingedeeld in de hoofdgroepen (groepen.json), niet in de subcategorieën.
     order = [g for g, _ in GROEPEN if g in cnt] + (["Overig"] if "Overig" in cnt else [])
     icon = dict(GROEPEN)
-    sel = ('<div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-fc="" aria-pressed="true">Alle categorieën</button>' + "".join(f'<button type="button" class="chip" data-fc="{esc(c)}" aria-pressed="false"><span class="ic">{icon.get(c, "🛒")}</span>{esc(c)} ({cnt[c]})</button>' for c in order) + "</div>") if len(order) > 1 else ""
-    # De 240 grootste kortingen, plus per categorie de beste 30, zodat elke categorieknop genoeg laat zien.
-    toon = set(map(id, nu_[:240]))
-    for c in order: toon |= set(map(id, [o for o in nu_ if (o.get("c") or "Overig") == c][:30]))
+    zeld = [o for o in nu_ if o.get("fh") and o["fh"][1] == 0]
+    sel = ('<div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-fc="" aria-pressed="true">Alle categorieën</button>'
+           + (f'<button type="button" class="chip" data-fc="zeld" aria-pressed="false"><span class="ic">📅</span>Lang niet in de aanbieding geweest ({len(zeld)})</button>' if zeld else "")
+           + "".join(f'<button type="button" class="chip" data-fc="{esc(c)}" aria-pressed="false"><span class="ic">{icon.get(c, "🛒")}</span>{esc(c)} ({cnt[c]})</button>' for c in order) + "</div>") if len(order) > 1 else ""
+    # De 180 grootste kortingen, plus per categorie de beste 20, zodat elke categorieknop genoeg laat zien (de rest staat in de app;
+    # minder kaarten = lichtere pagina op telefoons).
+    toon = set(map(id, nu_[:180]))
+    for c in order: toon |= set(map(id, [o for o in nu_ if (o.get("c") or "Overig") == c][:20]))
+    toon |= set(map(id, zeld[:30]))  # genoeg voor de knop "Lang niet in de aanbieding geweest"
     toon = [o for o in nu_ if id(o) in toon]
     ch, cld = crumbs(*([("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], None)] if cur else [("Aanbiedingen", None)]))
     body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' +
@@ -794,7 +825,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <h2>Aanbiedingen</h2><p>Lopende aanbiedingen rekenen we mee in de prijs, maar alleen in de dagen dat ze echt geldig zijn. We bewaren elke dag de prijzen. Daarmee zie je bij een product of de prijs nu <b>lager of hoger dan normaal</b> is. Normaal is het midden van de laatste 30 metingen bij die winkel. Zo zie je meteen of een "aanbieding" echt voordelig is.</p>
 <p>Persoonlijke aanbiedingen (zoals een persoonlijke bonus op je klantenkaart) en zegeltjes kunnen we niet zien. Die tellen dus niet mee.</p>
 <h2>Welke supermarkt is het goedkoopst?</h2><p>Daarvoor gebruiken we een vast boodschappenmandje van {len(PAKTERMEN)} gewone producten, van melk en brood tot wasmiddel. Per winkel tellen we het voordeligste vergelijkbare product op, voor dezelfde hoeveelheid. We nemen alleen producten mee die bij álle vergeleken winkels te koop zijn. Zo wordt geen winkel goedkoper omdat hij iets niet verkoopt. Een winkel waar online te veel ontbreekt, laten we in deze ranglijst weg.</p>
-<h2>Complete maaltijden</h2><p>Bij maaltijden rekenen we met <b>hele verpakkingen</b>, zoals aan de kassa: heb je 300 gram nodig en zit het per 500 gram, dan betaal je 500 gram. Olie, zout en kruiden uit de voorraadkast tellen niet mee. De recepten komen van bekende receptensites; bij elk gerecht staat de bron.</p>
+<h2>Hoe vaak in de aanbieding?</h2><p>Bij een actie staat hoe vaak hetzelfde product bij dezelfde supermarkt de weken ervoor in de aanbieding was, en over hoeveel weken we dat weten. Eén actie telt één keer, ook als hij over twee kalenderweken loopt. "Vaak in de aanbieding" betekent: in minstens de helft van die weken. Dan hoef je niet te hamsteren. We houden dit bij sinds oktober 2026.</p><h2>Complete maaltijden</h2><p>Bij maaltijden rekenen we met <b>hele verpakkingen</b>, zoals aan de kassa: heb je 300 gram nodig en zit het per 500 gram, dan betaal je 500 gram. Olie, zout en kruiden uit de voorraadkast tellen niet mee. Is een optioneel ingrediënt niet bij elke supermarkt te koop, dan telt het bij geen enkele winkel mee, zodat je overal hetzelfde krijgt voor de prijs. De recepten komen van bekende receptensites; bij elk gerecht staat de bron.</p>
 <h2>Fout gezien?</h2><p>Bij elk product staat een knop <b>Klopt niet?</b>. Daarmee meld je met één tik een verkeerde prijs of een product dat niet klopt. Ik kijk elke melding na. Je kunt ook mailen naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>
 <p><a href="/over/">Over deze site</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a> · <a href="/privacy/">Privacy</a></p>''').replace(f"{_nprod:,}", f"{_nprod:,}".replace(",", "."))
 _zfaq = [("Krijgt Goedkope Boodschappen geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis en ik verdien er niets aan."),
