@@ -774,7 +774,7 @@ over = f'''<div class="panel"><h2 style="margin-top:0">Ik verdien er niets aan</
 <p>Supermarkten kunnen in de winkel een andere prijs hanteren dan online. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe vergelijken we?</h2><p>Per product zoeken we bij elke supermarkt het voordeligste vergelijkbare product en vergelijken we de prijs per kilo, liter of stuk. Varianten als lactosevrij of biologisch tellen alleen mee als je ernaar zoekt. Lopende aanbiedingen rekenen we mee.</p>
 <h2>Contact</h2><p>Een fout gezien of een idee? Mail naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'''
-schrijf("/over/", page("/over/", "Over Goedkope Boodschappen: gratis, onafhankelijk en zonder reclame", "Goedkope Boodschappen is een gratis hobbyproject zonder reclame of commissie. Lees waar de prijzen vandaan komen en hoe we vergelijken.",
+schrijf("/over/", page("/over/", "Over Goedkope Boodschappen: gratis, onafhankelijk, zonder reclame", "Goedkope Boodschappen is een gratis hobbyproject zonder reclame of commissie. Lees waar de prijzen vandaan komen en hoe we vergelijken.",
     crumbs(("Over deze site", None))[0] + "<h1>Over deze site</h1><p class=\"lead\">Gratis, onafhankelijk en zonder reclame. Gemaakt om je geld te besparen, niet om aan je te verdienen.</p>", over))
 # ---------- Zo vergelijken wij: open over de werkwijze, zodat iedereen ziet dat er geen winkel voorgaat ----------
 _nprod = sum(1 for p in prods if stores[p[0]].get("count"))
@@ -1155,7 +1155,7 @@ if VG_LIJST:
     body = (f'<ul class="links">{blok}</ul>'
             + '<h2>Vegan koken</h2><p><a href="/maaltijden/weekmenu-vegan/">📅 Vegan weekmenu</a>: 5 plantaardige avondmaaltijden, samen ingekocht, met boodschappenlijst.</p><p><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden met prijs per supermarkt</a>: complete avondmaaltijden zonder vlees, vis, zuivel en ei, met de goedkoopste winkel voor alle ingrediënten. In de app kun je bij elke categorie ook op <b>🌱 Alleen vegan</b> tikken.</p>'
             + f'<p class="note">Bijgewerkt op {DATUM}.</p>' + faq_html(faq) + '<p><a href="/lactosevrij/">Lactosevrij</a> · <a href="/glutenvrij/">Glutenvrij</a> · <a href="/eiwitrijk/">Eiwitrijk</a></p>')
-    schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen vergelijken: {_vg_n} producten bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
+    schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen: {_vg_n} producten vergeleken bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
     made.append(("/vegan/", "0.8"))
     print("/vegan/:", _vg_n, "producten in", len(VG_LIJST), "soorten:", {sl: len(VG_PER[sl]) for sl, _, _ in VG_LIJST})
 
@@ -1212,7 +1212,7 @@ body = ('<div class="panel"><p style="margin:0">Eerlijk is eerlijk: supermarkten
         + '<h2>Koosjer koken</h2><ul class="links"><li><a href="/maaltijden/koosjer/">Koosjere maaltijden met prijs per supermarkt</a></li><li><a href="/maaltijden/weekmenu-koosjer/">📅 Koosjer weekmenu met boodschappenlijst</a></li><li><a href="/chanoeka/">🕎 Chanoeka</a> · <a href="/pesach/">Pesach</a></li></ul>'
         + (f'<h2>Matzes per supermarkt</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, "matzes")}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>' for p in _mz[:20]) + '</tbody></table></div><p class="note">Voor Pesach heb je matzes nodig die koosjer voor Pesach zijn; kijk op de verpakking.</p>' if _mz else "")
         + faq_html(faq))
-schrijf("/koosjer/", page("/koosjer/", "Koosjer boodschappen: maaltijden, matzes en prijzen per supermarkt", "Koosjer koken met supermarktboodschappen: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen bij 11 supermarkten.", head, body, [cld, faq_ld(faq)]))
+schrijf("/koosjer/", page("/koosjer/", "Koosjer boodschappen: maaltijden, matzes en prijs per supermarkt", "Koosjer koken met supermarktboodschappen: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen bij 11 supermarkten.", head, body, [cld, faq_ld(faq)]))
 made.append(("/koosjer/", "0.6"))
 
 # ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
@@ -1791,7 +1791,7 @@ _hv_body = ('<div class="hvkaart"><h2>Wat heeft je klant eraan?</h2><ul>'
     + f'<div class="folder"><p class="fkop">🛒 Goedkoper boodschappen doen?</p><p class="furl">boodschappenvergelijk.nl</p><ul><li>Zie bij welke supermarkt je boodschappen het goedkoopst zijn</li><li>Prijzen van {AANTAL} supermarkten, elke dag nieuw</li><li>Goedkope weekmenu’s met boodschappenlijst</li><li>Gratis, geen reclame, geen account</li></ul><p class="fhoe"><b>Zo werkt het:</b> zoek een product, tik op <b>+</b> en zie waar je het minst betaalt.</p></div>'
     + faq_html(_hv_faq)
     + '<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-kopieer]");if(!b)return;const t=document.getElementById(b.dataset.kopieer).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="✓ Gekopieerd"}).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById(b.dataset.kopieer));const s=getSelection();s.removeAllRanges();s.addRange(r)})});</script>')
-schrijf("/voor-hulpverleners/", page("/voor-hulpverleners/", "Gratis boodschappen-tool voor budgetcoaches en schuldhulpverlening",
+schrijf("/voor-hulpverleners/", page("/voor-hulpverleners/", "Gratis boodschappentool voor budgetcoaches en schuldhulpverlening",
     "Gratis hulpmiddel voor budgetcoaches, schuldhulpverleners en maatschappelijk werk: boodschappen vergelijken bij 11 supermarkten, weekmenu's met boodschappenlijst en echte bedragen per week. Geen reclame, geen account.",
     ch + "<h1>Voor budgetcoaches en schuldhulpverlening</h1><p class=\"lead\">Een gratis hulpmiddel voor mensen met een krap budget. Geen reclame, geen account, geen cookies.</p>",
     _hv_body, [cld, faq_ld(_hv_faq)]))

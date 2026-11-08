@@ -151,8 +151,11 @@
   "confituur",
   "cool",
   "drink",
+  "frisss",
   "gedroogd",
   "jam",
+  "kcal",
+  "kcl",
   "limonade",
   "rozijn",
   "sap",
@@ -1865,5 +1868,12 @@
  "mentos": [
   "piementos",
   "padron"
+ ],
+ "dille": [
+  "augurk",
+  "haring",
+  "kaas",
+  "mosterd",
+  "saus"
  ]
 }

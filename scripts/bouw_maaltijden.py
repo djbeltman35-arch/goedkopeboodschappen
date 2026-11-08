@@ -388,7 +388,7 @@ if MAAL:
                                           ("", "vegetarisch", "Vegetarisch", "Vegetarische maaltijden", "zonder vlees en vis")]:
         _ms = sorted([m for m in MAAL if (_dk in m.get("dier", []) if _dk else not m.get("dier"))], key=pprs)
         if len(_ms) < 3: continue
-        themapagina(_sl, _kort, f"{_h1}: goedkoop koken per supermarkt", f"{_h1}: {len(_ms)} recepten met prijs per supermarkt",
+        themapagina(_sl, _kort, f"{_h1}: goedkoop koken per supermarkt", (f"{_h1}: {len(_ms)} recepten met prijs per supermarkt" if len(f"{_h1}: {len(_ms)} recepten met prijs per supermarkt") <= 65 else f"{_h1}: {len(_ms)} recepten, prijs per winkel"),
                     f"{len(_ms)} gewone avondmaaltijden {_uitleg}, met calorieën en de supermarkt waar je het minst betaalt. Al vanaf <span data-vanaf><b>{eur(pprs(_ms[0]))}</b></span> voor 4 personen.", _ms)
     st = sorted([m for m in MAAL if any(w in m["slug"] for w in ("stamppot", "hutspot", "boerenkool"))], key=pprs)
     if len(st) >= 2:

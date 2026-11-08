@@ -24,7 +24,7 @@ I = {
     "ontbijtspek": (["ontbijtspek"], 400, None, []),
     "gehakt": (["gemengd gehakt", "half om half gehakt", "rundergehakt"], 230, None, ["kip", "kruim", "vivera", "vega", "italiaans", "kogeltjes", "balletjes"]),
     "rundergehakt": (["rundergehakt"], 200, None, ["vega", "kruim"]),
-    "runderlappen": (["runderlappen", "sucadelappen", "runderriblappen", "riblappen"], 150, None, ["varken", "vega", "kip"]),
+    "runderlappen": (["runderlappen", "sucadelappen", "runderriblappen", "riblappen", "runderlap", "riblap", "sukadelap", "sukadelappen", "hacheevlees", "rund stoofvlees"], 150, None, ["varken", "vega", "kip", "chef", "puree", "hutspot", "stoofperen", "gegaard", "croquet", "kroket", "fries", "coertjens", "oven"]),
     "kipfilet": (["kipfilet"], 110, None, ["gerookt", "gerookte", "chili", "gemarineerd", "mexicaan", "tandoori", "piri", "kebab", "pikant", "honing", "shoarma", "gegrild", "kruiden", "sweet", "beleg", "plakken", "vleeswaren", "gebraden"]),
     "kipdijfilet": (["kipdijfilet"], 160, None, ["gemarineerd", "shoarma", "kruiden", "saté", "sate", "gegrild"]),
     "gerookte kip": (["gerookte kipfilet", "kipfilet gerookt"], 110, None, ["plakjes"]),

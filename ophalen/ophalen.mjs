@@ -472,14 +472,28 @@ function netteMaat(sz) {
     .replace(/(\d)\.(\d)/g, '$1,$2');
   return /^[A-Z0-9 ,.]+$/.test(t) && /[A-Z]{3}/.test(t) ? t.toLowerCase() : t;
 }
-const sleutelNaam = s => zonderAccent(s).replace(/[^a-z0-9]+/g, ' ').trim();
+// "100 gram voor 1,59" of "100 gram 1,59" -> 15.9 (euro per kilo); "per kilo 9,99" / "1 kilo voor 9,99" -> 9.99; anders null.
+function gewichtsActie(lbl) {
+  const t = String(lbl || '').toLowerCase().replace(/\s+/g, ' ');
+  let m = t.match(/^(?:per )?(\d+) ?(?:gram|gr|g) (?:voor )?(\d+(?:[.,]\d+)?)$/);
+  if (m && +m[1] > 0) return getal(m[2]) * 1000 / +m[1];
+  m = t.match(/^(?:per |1 )?(?:kilo|kg) (?:voor )?(\d+(?:[.,]\d+)?)$/);
+  return m ? getal(m[1]) : null;
+}
+const sleutelNaam = s =>zonderAccent(s).replace(/[^a-z0-9]+/g, ' ').trim();
 function opschonen(lijst) {
   const gezien = new Map();
   for (const o of lijst) {
     o.n = String(o.n || '').replace(/[®™]/g, '').replace(/\s+/g, ' ').trim();
     o.sz = netteMaat(o.sz);
     if (o.sz && sleutelNaam(o.n).endsWith(sleutelNaam(o.sz))) o.sz = '';
-    const [pp, eh] = perEenheid(o.p, o.sz || o.n);
+    // Actie per gewicht ("100 gram voor 1,59", "per kilo 9,99"): de prijs geldt per 100 g/kilo, niet per verpakking.
+    const kg = gewichtsActie(o.lbl);
+    if (kg) {
+      const i = inhoud(o.sz || o.n);
+      if (i && i.eenheid === 'kg' && i.hoeveelheid > 0 && !/\d\s*-\s*\d/.test(o.sz || '')) o.p = r2(kg * i.hoeveelheid);  // niet bij "schalen à 300-800 g"
+    }
+    const [pp, eh] = kg ? [r2(kg), 'kg'] : perEenheid(o.p, o.sz || o.n);
     if (pp != null && pp < 2000) { o.pp = pp; o.eh = eh; }
     if (o.was != null && !(o.was > o.p + .004)) o.was = null;
     // Labels als "VOOR 0.99" of "1+1 GRATIS" -> "Voor 0,99", "1+1 gratis"

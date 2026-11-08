@@ -343,6 +343,8 @@ def term_offers(t, n=6):
     w = [x for x in norm(t) if len(x) > 1]
     m = [o for o in NU_GELDIG if all(any(h == x or (len(x) >= 5 and h.endswith(x)) for h in o["hay"]) for x in w) and not any(h in EXCL and h not in w for h in o["hay"])
          and sum(1 for h in o["hay"] if not re.match(r"^[\d,.%+]+[a-z]*$", h) and h not in UNITW) <= len(w) + 3]
+    niet = [x for x in VERFIJN.get(" ".join(norm(t)), []) if not any(x in y for y in w)]  # zelfde uitsluitwoorden als bij de producten
+    if niet: m = [o for o in m if not any(x in h for h in o["hay"] for x in niet)]
     m.sort(key=lambda o: (o.get("pp") or o["p"] * 1000))
     return m[:n]
 
