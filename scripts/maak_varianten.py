@@ -145,7 +145,7 @@ V["paprika mix"] = {"zoek": ["paprika mix", "paprika's mix", "mix paprika", "pap
         "niet": ["punt", "snack", "chips", "soep", "poeder", "saus", "gegrild", "pot", "glas", "spread", "kruiden", "rood", "groen", "geel", "kip", "pretty", "silvo", "mini"]}
 
 # Vis
-V["zalmfilet"] = {"zoek": ["zalmfilet", "zalmfilets", "zalm filet", "zalmmoot", "zalmmoten", "zalm"], "niet": ["gerookt", "gerookte", "blik", "salade", "pokebowl", "poke", "roomkaas", "ovenschotel", "spread", "snack", "salm", "kattenvoer", "katten", "sushi", "burger", "worst", "pate", "rolletjes", "carpaccio", "spies", "princes", "statesman", "roze", "maaltijd", "pasta", "quiche", "wrap", "hond", "snippers", "stukjes"]}
+V["zalmfilet"] = {"zoek": ["zalmfilet", "zalmfilets", "zalm filet", "zalmmoot", "zalmmoten", "zalm"], "niet": ["gerookt", "gerookte", "blik", "salade", "pokebowl", "poke", "roomkaas", "ovenschotel", "spread", "snack", "salm", "kattenvoer", "katten", "sushi", "burger", "worst", "pate", "rolletjes", "carpaccio", "spies", "princes", "statesman", "roze", "maaltijd", "pasta", "quiche", "wrap", "hond", "snippers", "stukjes", "tartaar", "tartare"]}
 V["tonijn in water"] = {"zoek": ["tonijn"], "wel": ["water", "eigen nat"], "niet": ["sandwich", "salade", "spread", "steak", "pizza", "katten", "kattenvoer", "pasta", "olie"]}
 V["tonijn in olie"] = {"zoek": ["tonijn"], "wel": ["olie", "zonnebloemolie", "olijfolie", "zonnebl", "oil"], "niet": ["sandwich", "salade", "spread", "steak", "pizza", "katten", "kattenvoer", "pasta", "water"]}
 

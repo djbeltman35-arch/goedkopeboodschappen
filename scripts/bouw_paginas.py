@@ -950,11 +950,19 @@ def _volgend_feest():
               ("/pasen/", "🐣", "Pasen", _pasen(y) + datetime.timedelta(days=1)), ("/pesach/", "🫓", "Pesach", md(ps)),
               ("/bbq/", "🍖", "Barbecue", datetime.date(y, 8, 31)), ("/chanoeka/", "🕎", "Chanoeka", md(ch))]
     r = sorted((x for x in r if x[3] and x[3] >= vd), key=lambda x: x[3])
-    return r[0] if r else None
+    u, gezien = [], set()
+    for x in r:
+        if x[0] not in gezien: gezien.add(x[0]); u.append(x)
+    return u
 def _tegels():
     n = sum(1 for o in _ao if (not o.get("v") or o["v"] <= VANDAAG) and (not o.get("t") or o["t"] >= VANDAAG))
-    f = _volgend_feest()
-    feest = f'<a class="chip seizoen" href="{f[0]}"><span class="ic">{f[1]}</span>{f[2]}<small>boodschappen</small></a>' if f else ""
+    fl = _volgend_feest(); f = fl[0] if fl else None
+    _ft = lambda f: f'<a class="chip seizoen" href="{f[0]}"><span class="ic">{f[1]}</span>{f[2]}<small>boodschappen</small></a>'
+    feest = _ft(f) if f else ""
+    # zelfde regel als tweedeFeest(): het feest daarna binnen 60 dagen krijgt de plek van Lunchtrommel
+    _k = next((x for x in fl[1:] if x[0] == "/kerst/"), None) if fl and fl[0][0] != "/kerst/" else None
+    _2 = _k or (fl[1] if len(fl) > 1 else None)
+    tweede = _ft(_2) if _2 and (_2[3] - datetime.date.fromisoformat(VANDAAG)).days <= 60 else ""
     gr = [gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)]
     m = re.search(r"const CAT_VOLG=(\[.*?\]);", app); volg = json.loads(m.group(1)) if m else []
     idx = []
@@ -967,7 +975,7 @@ def _tegels():
     return ('<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="false"><span class="ic">🔥</span>Aanbiedingen<small>' + (f"{n} acties" if n else "deze week") + '</small></button>'
             '<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>'
             '<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a><a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>' + feest +
-            '<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a></div>'
+            (tweede or '<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a>') + '</div>'
             '<p class="tegelkop">Of kies een categorie</p><div class="cats">' +
             "".join('<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>' if i < 0 else
                     f'<button type="button" class="chip" data-view="{i}" aria-pressed="false"><span class="ic">{gr[i][1]}</span>{e(gr[i][0])}</button>' for i in idx) + "</div>")
@@ -1584,14 +1592,14 @@ except Exception as e:
 
 # ---------- Seizoen: Sinterklaas en kerst ----------
 PAG_SLUGS = {slug(t) for t in PICKED}
-def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
+def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra="", boven="", lead_extra="", faq_voor=()):
     ts = [t for t in termen if t in PICKED]
     if len(ts) < 4: return
     acties = sorted([o for o in OFFERS if any(re.search(r"\b" + w, o["n"].lower()) for w in woorden)], key=lambda o: -o.get("pct", 0))[:24]
     top, n_top = winnaar(ts)
     ch, cld = crumbs(("Feestdagen", "/feestdagen/"), (kort, None))
-    head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead} Nu het vaakst het goedkoopst: <b>{esc(nm(top))}</b>.</p>'
-    faq = [(f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
+    head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead_extra or lead + " Nu het vaakst het goedkoopst: <b>" + esc(nm(top)) + "</b>."}</p>'
+    faq = [*faq_voor, (f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
            ("Hoe actueel zijn de prijzen?", "Elke dag bijgewerkt met de prijzen en aanbiedingen van de webshops van de supermarkten.")]
     # Allergievriendelijk: per product een glutenvrije en/of lactosevrije variant (als die er is), en alle zulke feestproducten.
     def _var(rx, kw):
@@ -1625,11 +1633,11 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra=""):
                f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th>Glutenvrij</th><th>Lactosevrij</th><th>Vegan</th></tr></thead><tbody>{arij}</tbody></table></div>' if arij else "")
               + (f'<h3>Meer glutenvrije, lactosevrije en vegan feestproducten</h3><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td>{labels(p[1])}<b>{esc(p[1])}</b><span class="sub">{esc(nm(p[0]))} · {esc(p[4] or "")}</span>{addbtn(p, p[1])}</td><td class="p">{tag(eff(p))}</td></tr>' for p in sorted(extra_v, key=eff)) + '</tbody></table></div>' if extra_v else "")
               + _feestmaal + '<p><a href="/glutenvrij/">Alle glutenvrije boodschappen</a> · <a href="/lactosevrij/">Alle lactosevrije boodschappen</a> · <a href="/vegan/">Alle vegan boodschappen</a></p>')
-    body = (f'<h2>Prijzen per product</h2>{cat_tabel(ts)}' + allerg
+    body = (boven + f'<h2>Prijzen per product</h2>{cat_tabel(ts)}' + allerg
             + (f'<h2>{kort}-aanbiedingen</h2><p class="note">{len(acties)} acties die nu of binnenkort lopen.</p><ul class="offers" id="grid">' + "".join(offer_card(o) for o in acties) + "</ul>" if acties else "")
             + extra + faq_html(faq) + '<a class="cta" href="/">Maak je boodschappenlijst</a>')
     _il = {"@context": "https://schema.org", "@type": "ItemList", "name": h1, "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"{BASE}/vergelijk/{slug(t)}/", "name": cap(t)} for i, t in enumerate(ts) if slug(t) in PAG_SLUGS] if "PAG_SLUGS" in globals() else []}
-    schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead)[:150], head, body, [cld, faq_ld(faq)] + ([_il] if _il["itemListElement"] else []), og_title=h1))
+    schrijf(path, page(path, title, re.sub(r"<[^>]+>", "", lead_extra or lead)[:155].rsplit(" ", 1)[0] + ("…" if len(re.sub(r"<[^>]+>", "", lead_extra or lead)) > 155 else ""), head, body, [cld, faq_ld(faq)] + ([_il] if _il["itemListElement"] else []), og_title=h1))
     made.append((path, "0.8"))
     print(path, len(ts), "producten,", len(acties), "acties")
 seizoenpagina("/sinterklaas/", "Sinterklaas", "Sinterklaas: pepernoten, chocoladeletters en speculaas vergelijken",
@@ -1640,14 +1648,35 @@ seizoenpagina("/sinterklaas/", "Sinterklaas", "Sinterklaas: pepernoten, chocolad
     ["pepernot", "kruidnot", "chocoladeletter", "chocolade letter", "speculaas", "marsepein", "taai", "schuimpjes", "sint", "amandelsta", "borstplaat"],
     [("Wat is het verschil tussen pepernoten en kruidnoten?", "Kruidnoten zijn de kleine, harde, ronde koekjes met speculaaskruiden. Echte pepernoten zijn zachter en taaier, gemaakt met roggemeel en anijs. In de winkel heten kruidnoten vaak ook pepernoten."),
      ("Hoe vergelijk je pepernoten eerlijk?", "Op prijs per kilo: zakken verschillen veel in gewicht. Op deze pagina staat per product de voordeligste verpakking per kilo.")])
-seizoenpagina("/kerst/", "Kerst", "Kerst: kerstdiner en kersthapjes per supermarkt vergelijken",
-    f"Goedkoop kerstdiner: gourmet, wild en champagne vergeleken ({MAAND})",
+_KJ = datetime.date.fromisoformat(VANDAAG).year + (1 if VANDAAG[5:] > "12-26" else 0)
+# Kerstmandje: vast kerstdiner voor 4 personen, elke dag bij alle supermarkten doorgerekend (KERSTPAKKET in vergelijk.py).
+# Andere sites doen zo'n mandje één keer per jaar in een paar winkels; hier staat het elke ochtend opnieuw.
+_KM, _KM_LEAD, _KM_FAQ = "", "", ()
+if len(KERST) >= 3:
+    _kq = {t: (q, u) for t, q, u in KERSTPAKKET}
+    _kw, _kd = KERST[0], KERST[-1]
+    _hoev = lambda t: f"{str(_kq[t][0]).replace('.', ',')} {'liter' if _kq[t][1] == 'l' else 'kilo' if _kq[t][1] == 'kg' else 'stuks'}"
+    _rijen = "".join(f'<tr><td>{i + 1}</td><td><a href="/supermarkt/{stores[r["si"]]["id"]}/">{esc(nm(r["si"]))}</a></td><td class="p">{tag(r["tot"])}</td><td>{"goedkoopst" if i == 0 else "+ " + eur(r["tot"] - _kw["tot"])}</td></tr>' for i, r in enumerate(KERST))
+    _inh = "".join(f'<li>{esc(cap({"pate": "paté"}.get(t, t)))} ({_hoev(t)}): {esc(p[1])}, {eur(c)}</li>' for t, c, p, _ in _kw["regels"])
+    _KM = (f'<h2>Ons kerstmandje: kerstdiner voor 4 personen</h2>'
+           f'<p>{len(KERSTTERMEN)} vaste kerstboodschappen, van soep en pasteitjes tot zalm, cava en glühwein. Elke ochtend opnieuw doorgerekend bij {len(KERST)} supermarkten, steeds met het goedkoopste vergelijkbare product. Aanbiedingen tellen mee.</p>'
+           f'<div class="tblwrap"><table class="ptable"><thead><tr><th>#</th><th>Supermarkt</th><th>Kerstmandje</th><th>Verschil</th></tr></thead><tbody>{_rijen}</tbody></table></div>'
+           f'<p>Bij {esc(nm(_kw["si"]))} betaal je {eur(_kd["tot"] - _kw["tot"])} minder dan bij {esc(nm(_kd["si"]))}. Per persoon is dat vanaf {eur(_kw["tot"] / 4)}.</p>'
+           f'<details class="panel"><summary>Wat zit er in het kerstmandje bij {esc(nm(_kw["si"]))}?</summary><ul>{_inh}</ul></details>'
+           f'<p class="note">Bijgewerkt op {DATUM}. Supermarkten waar niet alle producten online te vinden zijn, tellen niet mee. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>')
+    _KM_LEAD = (f"Ons kerstmandje voor 4 personen ({len(KERSTTERMEN)} vaste kerstboodschappen) kost vandaag <b>{eur(_kw['tot'])} bij {esc(nm(_kw['si']))}</b> en {eur(_kd['tot'])} bij {esc(nm(_kd['si']))}. "
+                "Daaronder alle kersthapjes, gourmet, wild en bubbels per supermarkt, elke dag bijgewerkt.")
+    _KM_FAQ = ((f"Wat kost een kerstdiner voor 4 personen?", f"Ons kerstmandje met {len(KERSTTERMEN)} vaste boodschappen (soep, paté, pasteitjes met ragout, zalm, kipfilet, krieltjes, appelmoes, slagroom, cava en glühwein) kost op {DATUM} {eur(_kw['tot'])} bij {nm(_kw['si'])}, dat is {eur(_kw['tot'] / 4)} per persoon. Bij {nm(_kd['si'])} kost hetzelfde mandje {eur(_kd['tot'])}."),
+               ("Welke supermarkt is het goedkoopst met kerst?", f"Voor ons kerstmandje is dat op {DATUM} {nm(_kw['si'])} ({eur(_kw['tot'])}), gevolgd door {nm(KERST[1]['si'])} ({eur(KERST[1]['tot'])}) en {nm(KERST[2]['si'])} ({eur(KERST[2]['tot'])}). De volgorde kan elke dag veranderen door aanbiedingen."))
+seizoenpagina("/kerst/", "Kerst", f"Kerstboodschappen {_KJ}: kerstdiner en kersthapjes per supermarkt vergelijken",
+    f"Kerstboodschappen {_KJ}: goedkoop kerstdiner per supermarkt",
     "Gourmetschotels, rollade, hertenbiefstuk, kaasfondue, zalm, garnalen, kerststol en bubbels bij alle supermarkten naast elkaar.",
     ["gourmetschotel", "rollade", "hertenbiefstuk", "kaasfondue", "zalmfilet", "garnalen", "paté", "kerststol", "amandelstaaf", "oliebollen", "appelflappen",
      "champagne", "cava", "prosecco", "glühwein", "advocaat"],
     ["kerst", "gourmet", "fondue", "rollade", "hert", "wild", "kalkoen", "stol", "champagne", "cava", "prosecco", "glühwein", "oliebol"],
     [("Wat kost gourmetten per persoon?", "Een gourmetschotel kost bij de supermarkt meestal tussen de 4 en 8 euro per persoon. Hierboven zie je per supermarkt de voordeligste schotel."),
      ("Wanneer komen de kerstaanbiedingen?", "De meeste supermarkten starten de kerstacties in de weken voor kerst; de grootste kortingen op vlees, vis en drank zie je meestal in de laatste week. Deze pagina werkt dagelijks bij.")],
+    boven=_KM, lead_extra=_KM_LEAD, faq_voor=_KM_FAQ,
     extra='<h2>Kerstmenu met prijs per supermarkt</h2><p>Liever een compleet menu? Bekijk de <a href="/maaltijden/">complete maaltijden</a> of het <a href="/maaltijden/weekmenu/">goedkope weekmenu</a> met boodschappenlijst.</p>')
 seizoenpagina("/oud-en-nieuw/", "Oud en nieuw", "Oud en nieuw: oliebollen, champagne en krat bier vergelijken",
     f"Oliebollen, champagne en krat bier: waar het goedkoopst? ({MAAND})",

@@ -613,7 +613,7 @@ function quick(){
   const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties`:"deze week"}</small></button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>`+
-    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>`+feest+`<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a></div>`+
+    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>`+feest+(tweedeFeest()||`<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a>`)+`</div>`+
     `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
@@ -625,10 +625,13 @@ function feestDatums(y){const d=(md)=>md?new Date(y+"-"+md+"T23:59:59"):null,r=[
   ["/ramadan/","🌙","Ramadan",d(SUIKER[y])],["/pasen/","🐣","Pasen",(p=>(p.setDate(p.getDate()+1),p.setHours(23,59),p))(pasen(y))],["/pesach/","🫓","Pesach",d(PESACH[y])],
   ["/bbq/","🍖","Barbecue",new Date(y,7,31,23,59)],["/chanoeka/","🕎","Chanoeka",d(CHANOEKA[y])]];
   return r.filter(x=>x[3])}
-function seizoenTegels(max){const nu=new Date(),y=nu.getFullYear();
+function feestLijst(){const nu=new Date(),y=nu.getFullYear();
   const t=[...feestDatums(y),...feestDatums(y+1)].filter(x=>x[3]>=nu).sort((a,b)=>a[3]-b[3]);const gezien=new Set(),u=[];
-  for(const x of t){if(gezien.has(x[0]))continue;gezien.add(x[0]);u.push(x)}
-  return u.slice(0,max||9).map(([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}<small>boodschappen</small></a>`).join("")}
+  for(const x of t){if(gezien.has(x[0]))continue;gezien.add(x[0]);u.push(x)}return u}
+const feestTegel=([h,i,n])=>`<a class="chip seizoen" href="${h}"><span class="ic">${i}</span>${n}<small>boodschappen</small></a>`;
+function seizoenTegels(max){return feestLijst().slice(0,max||9).map(feestTegel).join("")}
+// Tweede feesttegel (in plaats van Lunchtrommel) als het feest daarna binnen 60 dagen valt; kerst gaat voor (in november al in beeld).
+function tweedeFeest(){const u=feestLijst(),k=u[0]&&u[0][0]!=="/kerst/"?u.slice(1).find(x=>x[0]==="/kerst/"):null,x=k||u[1];return x&&(x[3]-new Date())/864e5<=60?feestTegel(x):""}
 // Terug naar het overzicht of naar Home, bovenaan categorieën, aanbiedingen en zoekresultaten.
 const terugNav=(wat)=>`<nav class="terug app" aria-label="Terug">${wat?`<button type="button" class="tknop" data-terug>← ${esc(wat)}</button>`:""}<button type="button" class="tknop home" data-home>🏠 Home</button></nav>`;
 function renderView(){

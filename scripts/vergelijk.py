@@ -360,7 +360,7 @@ PAKKET = [("halfvolle melk", 2, "l"), ("yoghurt", 1, "l"), ("eieren", 10, "st"),
 # Andere eenheden waarin winkels hetzelfde verkopen (komkommer per stuk of per kilo, appels per kilo of per stuk).
 OMREKEN = {"komkommer": {"kg": .4}, "appels": {"st": 6}, "uien": {"st": 8}, "bananen": {"st": 6}, "roomboter": {"st": 1},
            "thee": {"kg": .04}, "volkoren brood": {"st": 1}, "tomaten": {"st": 5}, "paprika": {"st": 3}, "eieren": {}}
-def pakket_kosten():
+def pakket_kosten(PAKKET=PAKKET, OMREKEN=OMREKEN, minimum=15):
     tabel = {}
     for term, q, u in PAKKET:
         rows = per_store(matches(term), term)
@@ -373,7 +373,7 @@ def pakket_kosten():
     winkels = [si for si, s in enumerate(stores) if s["count"] and sum(1 for t in tabel if si in tabel[t]) >= 0.75 * len(PAKKET)]
     while True:
         termen = [t for t, _, _ in PAKKET if t in tabel and all(si in tabel[t] for si in winkels)]
-        if len(termen) >= 15 or len(winkels) <= 3: break
+        if len(termen) >= minimum or len(winkels) <= 3: break
         winkels.remove(min(winkels, key=lambda si: sum(1 for t in tabel if si in tabel[t])))
     res = []
     for si in winkels:
@@ -390,4 +390,9 @@ if os.environ.get('DEBUG_PAKKET'):
             _t.setdefault(stores[si]['id'], []).append(term if ok else term.upper()+'('+str(p[6])+')')
     for k, v in _t.items(): print(k, len([x for x in v if x.islower()]), v)
 PAKRANG = {r["si"]: i + 1 for i, r in enumerate(PAK)}
+# Kerstmandje: een eenvoudig kerstdiner voor 4 personen, elke dag bij alle supermarkten doorgerekend (zelfde regels als hierboven).
+KERSTPAKKET = [("tomatensoep", 1, "l"), ("pate", .1, "kg"), ("ragout", .4, "kg"), ("bladerdeeg", .45, "kg"), ("zalmfilet", .5, "kg"),
+               ("kipfilet", .5, "kg"), ("krieltjes", .75, "kg"), ("appelmoes", .7, "kg"), ("roomboter", .25, "kg"), ("slagroom", .25, "l"),
+               ("cava", .75, "l"), ("glühwein", 1, "l")]
+KERST, KERSTTERMEN = pakket_kosten(KERSTPAKKET, {"roomboter": {"st": 1}}, minimum=10)
 
