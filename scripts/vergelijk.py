@@ -390,7 +390,7 @@ if os.environ.get('DEBUG_PAKKET'):
             _t.setdefault(stores[si]['id'], []).append(term if ok else term.upper()+'('+str(p[6])+')')
     for k, v in _t.items(): print(k, len([x for x in v if x.islower()]), v)
 PAKRANG = {r["si"]: i + 1 for i, r in enumerate(PAK)}
-# Kerstmandje: een eenvoudig kerstdiner voor 4 personen, elke dag bij alle supermarkten doorgerekend (zelfde regels als hierboven).
+# Kerstmandje: een eenvoudig kerstdiner voor 4 personen, bij elke build bij alle supermarkten doorgerekend (zelfde regels als hierboven).
 KERSTPAKKET = [("tomatensoep", 1, "l"), ("pate", .1, "kg"), ("ragout", .4, "kg"), ("bladerdeeg", .45, "kg"), ("zalmfilet", .5, "kg"),
                ("kipfilet", .5, "kg"), ("krieltjes", .75, "kg"), ("appelmoes", .7, "kg"), ("roomboter", .25, "kg"), ("slagroom", .25, "l"),
                ("cava", .75, "l"), ("glühwein", 1, "l")]

@@ -1649,8 +1649,8 @@ seizoenpagina("/sinterklaas/", "Sinterklaas", "Sinterklaas: pepernoten, chocolad
     [("Wat is het verschil tussen pepernoten en kruidnoten?", "Kruidnoten zijn de kleine, harde, ronde koekjes met speculaaskruiden. Echte pepernoten zijn zachter en taaier, gemaakt met roggemeel en anijs. In de winkel heten kruidnoten vaak ook pepernoten."),
      ("Hoe vergelijk je pepernoten eerlijk?", "Op prijs per kilo: zakken verschillen veel in gewicht. Op deze pagina staat per product de voordeligste verpakking per kilo.")])
 _KJ = datetime.date.fromisoformat(VANDAAG).year + (1 if VANDAAG[5:] > "12-26" else 0)
-# Kerstmandje: vast kerstdiner voor 4 personen, elke dag bij alle supermarkten doorgerekend (KERSTPAKKET in vergelijk.py).
-# Andere sites doen zo'n mandje één keer per jaar in een paar winkels; hier staat het elke ochtend opnieuw.
+# Kerstmandje: vast kerstdiner voor 4 personen, bij elke build bij alle supermarkten doorgerekend (KERSTPAKKET in vergelijk.py).
+# Andere sites doen zo'n mandje één keer per jaar in een paar winkels; hier bij elke build opnieuw.
 _KM, _KM_LEAD, _KM_FAQ = "", "", ()
 if len(KERST) >= 3:
     _kq = {t: (q, u) for t, q, u in KERSTPAKKET}
@@ -1659,13 +1659,13 @@ if len(KERST) >= 3:
     _rijen = "".join(f'<tr><td>{i + 1}</td><td><a href="/supermarkt/{stores[r["si"]]["id"]}/">{esc(nm(r["si"]))}</a></td><td class="p">{tag(r["tot"])}</td><td>{"goedkoopst" if i == 0 else "+ " + eur(r["tot"] - _kw["tot"])}</td></tr>' for i, r in enumerate(KERST))
     _inh = "".join(f'<li>{esc(cap({"pate": "paté"}.get(t, t)))} ({_hoev(t)}): {esc(p[1])}, {eur(c)}</li>' for t, c, p, _ in _kw["regels"])
     _KM = (f'<h2>Ons kerstmandje: kerstdiner voor 4 personen</h2>'
-           f'<p>{len(KERSTTERMEN)} vaste kerstboodschappen, van soep en pasteitjes tot zalm, cava en glühwein. Elke ochtend opnieuw doorgerekend bij {len(KERST)} supermarkten, steeds met het goedkoopste vergelijkbare product. Aanbiedingen tellen mee.</p>'
+           f'<p>{len(KERSTTERMEN)} vaste kerstboodschappen, van soep en pasteitjes tot zalm, cava en glühwein. Meerdere keren per week opnieuw doorgerekend bij {len(KERST)} supermarkten, steeds met het goedkoopste vergelijkbare product. Aanbiedingen tellen mee.</p>'
            f'<div class="tblwrap"><table class="ptable"><thead><tr><th>#</th><th>Supermarkt</th><th>Kerstmandje</th><th>Verschil</th></tr></thead><tbody>{_rijen}</tbody></table></div>'
            f'<p>Bij {esc(nm(_kw["si"]))} betaal je {eur(_kd["tot"] - _kw["tot"])} minder dan bij {esc(nm(_kd["si"]))}. Per persoon is dat vanaf {eur(_kw["tot"] / 4)}.</p>'
            f'<details class="panel"><summary>Wat zit er in het kerstmandje bij {esc(nm(_kw["si"]))}?</summary><ul>{_inh}</ul></details>'
            f'<p class="note">Bijgewerkt op {DATUM}. Supermarkten waar niet alle producten online te vinden zijn, tellen niet mee. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>')
-    _KM_LEAD = (f"Ons kerstmandje voor 4 personen ({len(KERSTTERMEN)} vaste kerstboodschappen) kost vandaag <b>{eur(_kw['tot'])} bij {esc(nm(_kw['si']))}</b> en {eur(_kd['tot'])} bij {esc(nm(_kd['si']))}. "
-                "Daaronder alle kersthapjes, gourmet, wild en bubbels per supermarkt, elke dag bijgewerkt.")
+    _KM_LEAD = (f"Ons kerstmandje voor 4 personen ({len(KERSTTERMEN)} vaste kerstboodschappen) kost op {DATUM} <b>{eur(_kw['tot'])} bij {esc(nm(_kw['si']))}</b> en {eur(_kd['tot'])} bij {esc(nm(_kd['si']))}. "
+                "Daaronder alle kersthapjes, gourmet, wild en bubbels per supermarkt.")
     _KM_FAQ = ((f"Wat kost een kerstdiner voor 4 personen?", f"Ons kerstmandje met {len(KERSTTERMEN)} vaste boodschappen (soep, paté, pasteitjes met ragout, zalm, kipfilet, krieltjes, appelmoes, slagroom, cava en glühwein) kost op {DATUM} {eur(_kw['tot'])} bij {nm(_kw['si'])}, dat is {eur(_kw['tot'] / 4)} per persoon. Bij {nm(_kd['si'])} kost hetzelfde mandje {eur(_kd['tot'])}."),
                ("Welke supermarkt is het goedkoopst met kerst?", f"Voor ons kerstmandje is dat op {DATUM} {nm(_kw['si'])} ({eur(_kw['tot'])}), gevolgd door {nm(KERST[1]['si'])} ({eur(KERST[1]['tot'])}) en {nm(KERST[2]['si'])} ({eur(KERST[2]['tot'])}). De volgorde kan elke dag veranderen door aanbiedingen."))
 seizoenpagina("/kerst/", "Kerst", f"Kerstboodschappen {_KJ}: kerstdiner en kersthapjes per supermarkt vergelijken",
