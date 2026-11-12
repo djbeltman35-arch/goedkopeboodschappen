@@ -619,3 +619,42 @@ html body .promise li.brk::before{content:none}
 /* Toegankelijkheid: vinkjes en keuzerondjes minstens 24x24 px (tikdoel) */
 :where(input[type=checkbox],input[type=radio]){width:24px;height:24px;flex:none}
 .foot a{display:inline-block;padding:3px 0;min-height:24px}
+/* Startpagina op de telefoon: maaltijden als veegrij in plaats van 6 kaarten onder elkaar (scheelt ruim 2 schermen scrollen) */
+@media (max-width:700px){
+  .wrap.maal .mgrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:2px 2px 10px;margin-right:-16px;scrollbar-width:thin}
+  .wrap.maal .mgrid>li{flex:0 0 80%;scroll-snap-align:start}
+}
+/* Startpagina op de telefoon compact houden (doel: hooguit 5 schermen) */
+@media (max-width:700px){
+  .wrap.how ol{gap:8px}
+  .wrap.how ol{grid-template-columns:repeat(3,1fr);margin-top:8px}
+  .wrap.how ol li{padding:8px 6px;min-height:0;font-size:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .wrap.how ol li::before{position:static;width:26px;height:26px;font-size:16px;line-height:26px}
+  .wrap.how ol b{font-size:13.5px;line-height:1.2}
+  .wrap.how .why{grid-template-columns:1fr 1fr;gap:8px}
+  .wrap.how .why>div{padding:10px 12px}
+  .wrap.how .why>div:nth-child(n+3){grid-column:1/-1}
+  .wrap.how .why h3{font-size:15px;margin:0 0 2px}
+  .wrap.how .why p{font-size:14px;margin:0}
+  .wrap.seo>p:first-of-type{font-size:15px}
+  .wrap.how>.lead{display:none}
+  .wrap.how .fczbox{padding:12px 14px;margin-top:10px}
+  .wrap.how .fczbox h2{font-size:19px}
+  .wrap.how .fczbox p{font-size:14px;margin:2px 0 8px}
+  .wrap.how .fczbox p.small{font-size:13px;margin:6px 0 0}
+  .wrap.seo .subblok>summary,.wrap.seo .faq .subblok>summary{padding:8px 12px;font-size:15px}
+  .wrap.seo .subblokken{gap:6px}
+  .wrap.maal .mgrid .mws,.wrap.maal .mgrid .mlbls{display:none}
+  .foot .wrap{padding-block:16px 20px;gap:8px}
+  .foot .free{font-weight:600;font-size:14px}
+  .foot nav{gap:0 14px}
+  .wrap.app{padding-bottom:12px}
+  .wrap.maal h2,.wrap.how h2,.wrap.seo h2{font-size:21px;margin-top:12px}
+  .wrap.maal>.meta{font-size:15px;margin:4px 0}
+  .wrap.maal .mgrid .mimg{aspect-ratio:2/1;height:auto;object-fit:cover}
+  .wrap.maal>.cta{font-size:15px;padding:10px 14px}
+  .wrap.how .why>div:nth-child(n+3) p{font-size:14px}
+  .wrap.how .fczbox p.small{font-size:12px}
+  .wrap.how .tiplink{margin:8px 0}
+  .wrap.seo p{font-size:14px;margin:6px 0}
+}
