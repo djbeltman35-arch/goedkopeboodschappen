@@ -302,7 +302,7 @@ for t, rows in PICKED.items():
     besp = round((1 - u0 / uN) * 100) if u0 and uN and uN > u0 else 0
     title = f"{name} prijs: vanaf {vanaf} bij {win} ({MAAND})"
     desc = (f"{name} kost {vanaf} bij {win}" + (f" en {per(uN, eN)} bij {loser}" if uN and u0 and uN > u0 * 1.02 else "") +
-            (f". Vergelijk {len(rows)} supermarkten" if len(rows) > 1 else f". Nu alleen te koop bij {win}") + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + ". Elke dag bijgewerkt." + (f" Ongeveer {kcal_txt(t)}." if kcal_txt(t) else ""))
+            (f". Vergelijk {len(rows)} supermarkten" if len(rows) > 1 else f". Nu alleen te koop bij {win}") + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + f". Prijzen van {DATUM}." + (f" Ongeveer {kcal_txt(t)}." if kcal_txt(t) else ""))
     c = CATOF.get(t)
     ch, cld = crumbs(*([(c[3], f"/categorie/{slug(c[3])}/"), (c[0], f"/categorie/{slug(c[0])}/")] if c else [("Alle producten", "/vergelijk/")]), (name, None))
     trs = ""
@@ -323,7 +323,7 @@ for t, rows in PICKED.items():
     mm = MAAL_PER_TERM.get(t, [])[:6]
     maalhtml = (f'<h2>Complete maaltijden met {esc(t)}</h2><ul class="links">' + "".join(f'<li><a href="/maaltijden/{x["slug"]}/">{esc(x["naam"])}</a></li>' for x in mm) + '</ul>') if mm else ""
     relhtml = (f"<h2>Meer uit {esc(c[0].lower())}</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk/{slug(x)}/">{esc(cap(x))}</a></li>' for x in rel) + "</ul>") if rel else ""
-    head = ch + f"<h1>{esc(name)}: waar is het goedkoopst?</h1><p class=\"lead\">{esc(name)} koop je nu het voordeligst bij <b>{esc(win)}</b>" + (f": {esc(vanaf)}" if vanaf else "") + (f", {besp}% goedkoper dan bij {esc(loser)}." if besp >= 5 else ".") + "</p>"
+    head = ch + f"<h1>{esc(name)}: waar is het goedkoopst?</h1><p class=\"lead\">{esc(name)} koop je nu het voordeligst bij <b>{esc(win)}</b>" + (f": {esc(vanaf)}" if vanaf else "") + (f", {besp}% goedkoper dan bij {esc(loser)}." if besp >= 5 else ".") + f" <span class=\"sub\">Prijzen van {DATUM}.</span></p>"
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
@@ -404,7 +404,7 @@ for g, gic in GROEPEN:
         ch, cld = crumbs(("Categorieën", "/categorie/"), (g, gpath), (c[0], None))
         title = f"{c[0]}: goedkoopste supermarkt per product ({MAAND})" if len(c[0]) < 22 else f"{c[0]}: prijzen vergeleken ({MAAND})"
         desc = (f"Waar koop je {c[0].lower()} het goedkoopst? {len(items)} producten vergeleken bij {AANTAL} supermarkten: " + ", ".join(items[:4]) +
-                f". {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
+                f". {NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Prijzen van {DATUM}.")
         head = ch + f"<h1>{c[1]} {esc(c[0])} vergelijken</h1><p class=\"lead\">Per product de goedkoopste supermarkt. {esc(NAMEN[stores[top]['id']])} is bij {n} van de {len(items)} producten het voordeligst.</p>"
         broers = [x for x, _ in subs if x is not c]
         _ct = cat_tabel(items)
@@ -419,8 +419,8 @@ for g, gic in GROEPEN:
     ch, cld = crumbs(("Categorieën", "/categorie/"), (g, None))
     title = f"{g}: goedkoopste supermarkt per product ({MAAND})" if len(g) < 22 else f"{g}: prijzen vergeleken ({MAAND})"
     desc = (f"{g} vergelijken: " + ", ".join(c[0].lower() for c, _ in subs[:5]) + f". {len(alle)} producten bij {AANTAL} supermarkten, "
-            f"{NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Elke dag bijgewerkt.")
-    head = (ch + f"<h1>{gic} {esc(g)} vergelijken</h1><p class=\"lead\">{len(alle)} producten in {len(subs)} groepen. {esc(NAMEN[stores[top]['id']])} is bij {n} producten het voordeligst.</p>"
+            f"{NAMEN[stores[top]['id']]} is het vaakst de goedkoopste. Prijzen van {DATUM}.")
+    head = (ch + f"<h1>{gic} {esc(g)} vergelijken</h1><p class=\"lead\">{len(alle)} producten in {len(subs)} groepen. {esc(NAMEN[stores[top]['id']])} is bij {n} producten het voordeligst. <span class=\"sub\">Prijzen van {DATUM}.</span></p>"
             + ('<p class="note">Tik op een soort om de producten te zien.</p>' if len(subs) > 1 else ""))
     body = ('<div class="subblokken">' + "".join(f'<details class="subblok" id="{slug(c[0])}"><summary><h2 class="subnaam">{c[1]} {esc(c[0])}</h2><span class="subn">{len(items)}</span></summary><div class="subin">{cat_tabel(items)}<p class="note"><a href="/categorie/{slug(c[0])}/">Alles over {esc(c[0].lower())}</a></p></div></details>' for c, items in subs) + '</div>'
             if len(subs) > 1 else "".join(cat_tabel(items) for c, items in subs))
@@ -438,7 +438,7 @@ body = ('<div class="catlijst">' + "".join(_cl(f"/categorie/{slug(g)}/", f"{gi} 
 schrijf("/categorie/", page("/categorie/", f"Alle categorieën: boodschappen vergelijken ({MAAND})", f"Vergelijk {len(PICKED)} boodschappen in {len(catpaths)} categorieën bij {AANTAL} supermarkten: groente, diepvries, zuivel, vlees, frisdrank, bier, huishouden en meer.", head, body, actief="/categorie/"))
 made.append(("/categorie/", "0.6"))
 lis = "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in sorted(PICKED))
-schrijf("/vergelijk/", page("/vergelijk/", f"Alle {len(PICKED)} producten vergelijken bij {AANTAL} supermarkten", f"Van halfvolle melk tot wasmiddel: zie voor {len(PICKED)} producten bij welke supermarkt ze het goedkoopst zijn. Elke dag bijgewerkt.",
+schrijf("/vergelijk/", page("/vergelijk/", f"Alle {len(PICKED)} producten vergelijken bij {AANTAL} supermarkten", f"Van halfvolle melk tot wasmiddel: zie voor {len(PICKED)} producten bij welke supermarkt ze het goedkoopst zijn. Prijzen van {DATUM}.",
     crumbs(("Alle producten", None))[0] + f"<h1>Alle producten vergelijken</h1><p class=\"lead\">Kies een product en zie bij welke supermarkt het nu het goedkoopst is.</p>", f'<ul class="links">{lis}</ul><a class="cta" href="/">Maak je boodschappenlijst</a>'))
 made.append(("/vergelijk/", "0.6"))
 
@@ -569,13 +569,13 @@ def offers_page(cur, lst):
         title = (f"AH Bonus folder week {_wk}: {len(nu_)} aanbiedingen vergeleken" if cur == "ah" else f"{nm} folder week {_wk}: {len(nu_)} aanbiedingen vergeleken")
         if eind and len(title) <= 50: title += f" t/m {kortdag(eind)}"
         desc = (f"Alle {len(nu_)} {naam_actie} van {nm}" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Per actie zie je of het elders goedkoper is"
-                + (f": {n_top} zijn de laagste prijs per kilo van alle supermarkten." if n_top else ".") + " Elke dag bijgewerkt.")
+                + (f": {n_top} zijn de laagste prijs per kilo van alle supermarkten." if n_top else ".") + f" Prijzen van {DATUM}.")
         h1 = f"{'AH Bonus folder' if cur == 'ah' else nm + ' folder en aanbiedingen'} deze week (week {_wk})"
         lead = (f"<span id=\"cnt\">{len(nu_)}</span> acties van {esc(nm)}, de grootste korting eerst." + (f" Plus {len(straks)} acties die binnenkort beginnen." if straks else "")
                 + (f" Wij vergelijken elke actie met de andere supermarkten: <b>{n_top}</b> {'is' if n_top == 1 else 'zijn'} de laagste prijs per kilo van allemaal" + (f", bij {n_let} is een vergelijkbaar product zonder actie al goedkoper" if n_let else "") + "." if n_top or n_let else ""))
     else:
         title = f"Supermarkt aanbiedingen week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]}: {len(nu_)} acties bij {len(winkels_o)} winkels"
-        desc = f"De aanbiedingen van {', '.join(NAMEN[s] for s in winkels_o[:-1])} en {NAMEN[winkels_o[-1]]} op één plek, de grootste korting eerst. Elke dag bijgewerkt." if winkels_o else "Supermarktaanbiedingen van deze week."
+        desc = f"De aanbiedingen van {', '.join(NAMEN[s] for s in winkels_o[:-1])} en {NAMEN[winkels_o[-1]]} op één plek, de grootste korting eerst. Prijzen van {DATUM}." if winkels_o else "Supermarktaanbiedingen van deze week."
         h1 = "Alle supermarktaanbiedingen van deze week"
         lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {len(winkels_o)} supermarkten. De grootste korting staat bovenaan."
     cnt = {}
@@ -667,7 +667,7 @@ if PAK:
     w, l = PAK[0], PAK[-1]
     verschil = l["tot"] - w["tot"]
     title = f"Goedkoopste supermarkt {VANDAAG[:4]}: {nm(w['si'])} (update {MAAND.split()[0]}) – ranglijst {len(PAK)} supermarkten"
-    desc = f"We vergeleken {len(PAKTERMEN)} vaste boodschappen bij {len(PAK)} supermarkten. {nm(w['si'])} is het goedkoopst met {eur(w['tot'])}, bij {nm(l['si'])} betaal je {eur(verschil)} meer. Elke dag bijgewerkt."
+    desc = f"We vergeleken {len(PAKTERMEN)} vaste boodschappen bij {len(PAK)} supermarkten. {nm(w['si'])} is het goedkoopst met {eur(w['tot'])}, bij {nm(l['si'])} betaal je {eur(verschil)} meer. Prijzen van {DATUM}."
     trs = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. <a href="/supermarkt/{stores[r["si"]]["id"]}/">{esc(nm(r["si"]))}</a></b>{"<span class=sub>" + str(r["mist"]) + " niet gevonden, gerekend met de middenprijs</span>" if r["mist"] else ""}</td><td class="p">{tag(r["tot"])}</td><td class="p">{"" if i == 0 else "+ " + eur(r["tot"] - w["tot"])}<br><span class="unit">{"" if i == 0 else "+" + str(round((r["tot"] / w["tot"] - 1) * 100)) + "%"}</span></td></tr>' for i, r in enumerate(PAK))
     mand = "".join(f"<li>{esc(cap(t))} ({esc(str(q).replace('.', ','))} {esc({'l': 'liter', 'kg': 'kilo', 'st': 'stuks'}[u])})</li>" for t, q, u in PAKKET if t in PAKTERMEN)
     detail = ""
@@ -707,13 +707,17 @@ if PAK:
         wins_a = sum(1 for t in PICKED if PICKED[t][0][0] == a); wins_b = sum(1 for t in PICKED if PICKED[t][0][0] == b)
         regels = "".join(f'<tr><td>{esc(cap(t))}</td><td class="p">{eur(va)}</td><td class="p">{eur(vb)}</td></tr>' for (t, va, _, _), (_, vb, _, _) in zip(ra["regels"], rb["regels"]))
         title = f"{nm(a)} of {nm(b)}: {nm(win['si'])} is {pct}% goedkoper ({MAAND})"
-        desc = f"Dezelfde {len(PAKTERMEN)} boodschappen kosten bij {nm(win['si'])} {eur(win['tot'])} en bij {nm(lose['si'])} {eur(lose['tot'])}. Bekijk per product wie goedkoper is. Elke dag bijgewerkt."
+        desc = f"Dezelfde {len(PAKTERMEN)} boodschappen kosten bij {nm(win['si'])} {eur(win['tot'])} en bij {nm(lose['si'])} {eur(lose['tot'])}. Bekijk per product wie goedkoper is. Prijzen van {DATUM}."
         ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), (f"{nm(a)} of {nm(b)}", None))
         faq = [(f"Is {nm(a)} goedkoper dan {nm(b)}?", f"{'Ja' if win['si'] == a else 'Nee'}. Voor dezelfde {len(PAKTERMEN)} boodschappen betaal je bij {nm(win['si'])} {eur(win['tot'])} en bij {nm(lose['si'])} {eur(lose['tot'])}: {eur(diff)} ({pct}%) verschil.")]
-        head = ch + f"<h1>{esc(nm(a))} of {esc(nm(b))}: wie is goedkoper?</h1><p class=\"lead\">{esc(nm(win['si']))} is {pct}% goedkoper: {eur(win['tot'])} tegen {eur(lose['tot'])} voor dezelfde {len(PAKTERMEN)} boodschappen.</p>"
+        _vs = sorted(((t, va, vb) for (t, va, _, _), (_, vb, _, _) in zip(ra["regels"], rb["regels"])), key=lambda x: -abs(x[1] - x[2]))[:3]
+        _grootst = "".join(f"<li>{esc(cap(t))}: {eur(abs(va - vb))} goedkoper bij {esc(nm(a) if va < vb else nm(b))}</li>" for t, va, vb in _vs if abs(va - vb) >= .05)
+        head = ch + f"<h1>{esc(nm(a))} of {esc(nm(b))}: wie is goedkoper?</h1><p class=\"lead\">{esc(nm(win['si']))} is {pct}% goedkoper: {eur(win['tot'])} tegen {eur(lose['tot'])} voor dezelfde {len(PAKTERMEN)} boodschappen" + (" (een klein verschil)" if pct <= 3 else "") + f". <span class=\"sub\">Prijzen van {DATUM}.</span></p>"
         body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Boodschap</th><th style="text-align:right">{esc(nm(a))}</th><th style="text-align:right">{esc(nm(b))}</th></tr></thead><tbody>{regels}'
                 f'<tr class="win"><td><b>Totaal</b></td><td class="p">{tag(ra["tot"])}</td><td class="p">{tag(rb["tot"])}</td></tr></tbody></table></div>'
-                f'<p class="note">Van de {len(PICKED)} producten op deze site is {esc(nm(a))} bij {wins_a} het goedkoopst en {esc(nm(b))} bij {wins_b}. Bijgewerkt op {DATUM}.</p>'
+                + (f'<h2>De grootste verschillen</h2><ul>{_grootst}</ul>' if _grootst else "")
+                + f'<p class="note">Van de {len(PICKED)} producten op deze site is {esc(nm(a))} bij {wins_a} het goedkoopst en {esc(nm(b))} bij {wins_b}. Bijgewerkt op {DATUM}. '
+                'We vergelijken steeds het goedkoopste vergelijkbare product, inclusief aanbiedingen. Prijzen kunnen per winkel en per dag verschillen; de kassa is leidend. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
                 f'{faq_html(faq)}<p><a href="/supermarkt/{stores[a]["id"]}/">Alles over {esc(nm(a))}</a> · <a href="/supermarkt/{stores[b]["id"]}/">Alles over {esc(nm(b))}</a> · <a href="/goedkoopste-supermarkt/">Alle supermarkten</a></p><a class="cta" href="/">Vergelijk je eigen lijst</a>')
         schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/"))
         made.append((path, "0.6"))
@@ -862,10 +866,10 @@ seo = (f'<section class="wrap seo" aria-labelledby="sh"><h2 id="sh">Boodschappen
        + (f'<p><b>Goedkoopste supermarkt van {MAAND}:</b> <a href="/goedkoopste-supermarkt/">{esc(nm(PAK[0]["si"]))}</a>, gevolgd door {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))}.</p>' if len(PAK) > 2 else "")
        + '<h3>Populaire producten</h3><ul class="links">' + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in pop) + '<li><a href="/vergelijk/">Alle producten</a></li></ul>'
        + '<h3>Aanbiedingen per supermarkt</h3><ul class="links">' + "".join(f'<li><a href="/aanbiedingen/{s}/">{"AH Bonus" if s == "ah" else esc(NAMEN[s]) + " aanbiedingen"}</a></li>' for s in winkels_o) + '</ul>'
-       + '<h3>Complete maaltijden</h3><ul class="links">' + "".join(f'<li><a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></li>' for m in MAAL) + '<li><a href="/maaltijden/">Alle maaltijden</a></li></ul>'
+       + '<h3>Complete maaltijden</h3><ul class="links">' + "".join(f'<li><a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></li>' for m in sorted([m for m in MAAL if m["rang"]], key=lambda m: m["rang"][0][1]["tot"])[:12]) + f'<li><a href="/maaltijden/">Alle {len(MAAL)} maaltijden</a></li></ul>'
        + '<h3>Categorieën</h3><ul class="links">' + "".join(f'<li><a href="{p}">{c[1]} {esc(c[0])}</a></li>' for c, p, _ in catpaths) + '</ul>'
        + faq_html(faq) + "</section>")
-ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "url": BASE + "/", "inLanguage": "nl-NL",
+ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
       {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me"},
       faq_ld(faq)]
@@ -1041,7 +1045,7 @@ if GV_LIJST:
         w = bestl[0]; n_w = len(best)
         path = f"/glutenvrij/{sl}/"
         title = f"{naam_} vergelijken: goedkoopst bij {nm(w[0])} ({MAAND})"
-        desc = f"{len(arr)} producten {naam_.lower().replace('glutenvrij ', '').replace('glutenvrije ', '')} zonder gluten bij {n_w} supermarkten naast elkaar, op prijs per kilo. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Elke dag bijgewerkt."
+        desc = f"{len(arr)} producten {naam_.lower().replace('glutenvrij ', '').replace('glutenvrije ', '')} zonder gluten bij {n_w} supermarkten naast elkaar, op prijs per kilo. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Prijzen van {DATUM}."
         ch, cld = crumbs(("Glutenvrij", "/glutenvrij/"), (naam_, None))
         head = ch + f'<h1>{ic} {esc(naam_)}: waar is het goedkoopst?</h1><p class="lead">{len(arr)} glutenvrije producten bij {n_w} supermarkten. Nu het goedkoopst: <b>{esc(w[1])}</b> bij <b>{esc(nm(w[0]))}</b>.</p>'
         faq = [(f"Waar koop je {naam_.lower()} het goedkoopst?", f"Op {DATUM} is {w[1]} bij {nm(w[0])} het voordeligst: {eur(eff(w))}" + (f" ({_ut(w)})" if _ut(w) else "") + "."),
@@ -1064,11 +1068,11 @@ if GV_LIJST:
         for p in GV_PER[sl]: perwinkel[p[0]] = perwinkel.get(p[0], 0) + 1
     ww = sorted(perwinkel.items(), key=lambda kv: -kv[1])
     title = f"Glutenvrije boodschappen: {totaal} producten vergeleken"
-    desc = f"Glutenvrij brood, pasta, crackers, koek en meer: {totaal} producten zonder gluten bij {len(ww)} supermarkten naast elkaar, op prijs per kilo. Zie waar je glutenvrij het goedkoopst koopt. Elke dag bijgewerkt."
+    desc = f"Glutenvrij brood, pasta, crackers, koek en meer: {totaal} producten zonder gluten bij {len(ww)} supermarkten naast elkaar, op prijs per kilo. Zie waar je glutenvrij het goedkoopst koopt. Prijzen van {DATUM}."
     ch, cld = crumbs(("Glutenvrij", None))
     head = ch + f'<h1>🌾 Glutenvrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{totaal} glutenvrije producten bij {len(ww)} supermarkten. Glutenvrij is vaak duur. Hier zie je waar het het goedkoopst is.</p>'
     faq = [("Welke supermarkt heeft de meeste glutenvrije producten?", f"Online vinden we nu de meeste glutenvrije producten bij {nm(ww[0][0])} ({ww[0][1]}), gevolgd door {nm(ww[1][0])} ({ww[1][1]})." if len(ww) > 1 else ""),
-           ("Hoe komen jullie aan deze producten?", "We tonen alle producten met glutenvrij of gluten free in de productnaam uit de webshops van de supermarkten, elke dag bijgewerkt. Groente, fruit, vlees en vis zijn van nature glutenvrij en staan hier niet apart."),
+           ("Hoe komen jullie aan deze producten?", f"We tonen alle producten met glutenvrij of gluten free in de productnaam uit de webshops van de supermarkten, bijgewerkt op {DATUM}. Groente, fruit, vlees en vis zijn van nature glutenvrij en staan hier niet apart."),
            ("Is dit geschikt bij coeliakie?", "Gebruik het als prijsvergelijking. Controleer bij coeliakie altijd het etiket en het glutenvrij-logo (de doorgestreepte aar).")]
     faq = [f for f in faq if f[1]]
     body = (f'<ul class="links gvlijst">{blok}</ul><h2>Glutenvrij per supermarkt</h2><ul class="links">' + "".join(f"<li>{esc(nm(si))}: {n} producten</li>" for si, n in ww) + "</ul>"
@@ -1146,7 +1150,7 @@ if _lv_n >= 20:
            ("Zit er lactose in kaas?", "Harde, belegen en oude kaas bevatten van nature bijna geen lactose; veel mensen met lactose-intolerantie kunnen die gewoon eten. Bij zachte kaas, melk en yoghurt is lactosevrij wel handig.")]
     head = ch + f'<h1>🥛 Lactosevrije boodschappen: waar is het goedkoopst?</h1><p class="lead">{_lv_n} lactosevrije producten bij {len(winkels_lv)} supermarkten. Per soort van goedkoop naar duur.</p>'
     body = blok + f'<p class="note">Alle producten met lactosevrij in de naam, bijgewerkt op {DATUM}. Controleer bij een allergie altijd het etiket. In de app kun je bij elke categorie op <b>🥛 Alleen lactosevrij</b> tikken.</p>' + '<h2>Lactosevrij koken</h2><p><a href="/maaltijden/weekmenu-lactosevrij/">📅 Lactosevrij weekmenu</a> en alle <a href="/maaltijden/lactosevrij/">lactosevrije maaltijden met prijs per supermarkt</a>.</p>' + faq_html(faq) + '<p><a href="/glutenvrij/">Glutenvrije boodschappen vergelijken →</a></p>'
-    schrijf("/lactosevrij/", page("/lactosevrij/", f"Lactosevrij vergelijken: {_lv_n} producten bij {len(winkels_lv)} supermarkten", f"Lactosevrije melk, yoghurt, kaas, boter en meer: {_lv_n} producten bij {len(winkels_lv)} supermarkten naast elkaar op prijs per liter of kilo. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    schrijf("/lactosevrij/", page("/lactosevrij/", f"Lactosevrij vergelijken: {_lv_n} producten bij {len(winkels_lv)} supermarkten", f"Lactosevrije melk, yoghurt, kaas, boter en meer: {_lv_n} producten bij {len(winkels_lv)} supermarkten naast elkaar op prijs per liter of kilo. Prijzen van {DATUM}.", head, body, [cld, faq_ld(faq)]))
     made.append(("/lactosevrij/", "0.7"))
     print("/lactosevrij/:", _lv_n, "producten")
 
@@ -1164,7 +1168,7 @@ if VG_LIJST:
         bestl = sorted(best.values(), key=_gv_sort); w = bestl[0]; n_w = len(best)
         path = f"/vegan/{sl}/"
         title = f"{naam_} vergelijken: goedkoopst bij {nm(w[0])} ({MAAND})"
-        desc = f"{len(arr)} producten: {naam_.lower()} bij {n_w} supermarkten naast elkaar, op prijs per kilo of liter. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Elke dag bijgewerkt."
+        desc = f"{len(arr)} producten: {naam_.lower()} bij {n_w} supermarkten naast elkaar, op prijs per kilo of liter. Nu het voordeligst: {w[1]} bij {nm(w[0])} voor {eur(eff(w))}. Prijzen van {DATUM}."
         ch, cld = crumbs(("Vegan", "/vegan/"), (naam_, None))
         head = (ch + f'<h1>{ic} {esc(naam_)}: waar is het goedkoopst?</h1><p class="lead">{len(arr)} vegan producten bij {n_w} supermarkten. Nu het goedkoopst: <b>{esc(w[1])}</b> bij <b>{esc(nm(w[0]))}</b>.</p>'
                 + '<ul class="chips">' + "".join(f'<li><a href="/vegan/{s2}/"{" aria-current=\"page\"" if s2 == sl else ""}>{i2} {esc(n2)}</a></li>' for s2, n2, i2 in VG_LIJST) + '</ul>')
@@ -1194,7 +1198,7 @@ if VG_LIJST:
     body = (f'<ul class="links">{blok}</ul>'
             + '<h2>Vegan koken</h2><p><a href="/maaltijden/weekmenu-vegan/">📅 Vegan weekmenu</a>: 5 plantaardige avondmaaltijden, samen ingekocht, met boodschappenlijst.</p><p><a href="/maaltijden/vegan/">🍽️ Vegan maaltijden met prijs per supermarkt</a>: complete avondmaaltijden zonder vlees, vis, zuivel en ei, met de goedkoopste winkel voor alle ingrediënten. In de app kun je bij elke categorie ook op <b>🌱 Alleen vegan</b> tikken.</p>'
             + f'<p class="note">Bijgewerkt op {DATUM}.</p>' + faq_html(faq) + '<p><a href="/lactosevrij/">Lactosevrij</a> · <a href="/glutenvrij/">Glutenvrij</a> · <a href="/eiwitrijk/">Eiwitrijk</a></p>')
-    schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen: {_vg_n} producten vergeleken bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
+    schrijf("/vegan/", page("/vegan/", f"Vegan boodschappen: {_vg_n} producten vergeleken bij {len(ww)} supermarkten", f"Plantaardige melk, vegan kaas, vleesvervangers, tofu en meer: {_vg_n} vegan producten bij {len(ww)} supermarkten naast elkaar op prijs per kilo of liter. Prijzen van {DATUM}.", head, body, [cld, faq_ld(faq)], og_title="Vegan boodschappen: waar is het goedkoopst?"))
     made.append(("/vegan/", "0.8"))
     print("/vegan/:", _vg_n, "producten in", len(VG_LIJST), "soorten:", {sl: len(VG_PER[sl]) for sl, _, _ in VG_LIJST})
 
@@ -1237,7 +1241,7 @@ if _hl_n >= 5:
     head = ch + f'<h1>Halal boodschappen: waar is het goedkoopst?</h1><p class="lead">{_hl_n} halal producten bij {len(_hlw)} supermarkten. Ook halal maaltijden en een halal weekmenu.</p>'
     body = (blok + '<h2>Halal koken</h2><ul class="links"><li><a href="/maaltijden/halal/">Halal maaltijden met prijs per supermarkt</a>: zonder varkensvlees en alcohol</li><li><a href="/maaltijden/weekmenu-halal/">📅 Halal weekmenu met boodschappenlijst</a></li><li><a href="/ramadan/">🌙 Ramadan en Suikerfeest: iftar-boodschappen vergelijken</a></li><li><a href="/vegan/">🌱 Vegan producten</a> (zonder vlees en gelatine)</li></ul>'
             + f'<p class="note">Producten met halal in de naam, bijgewerkt op {DATUM}. Controleer altijd het keurmerk op de verpakking.</p>' + faq_html(faq))
-    schrijf("/halal/", page("/halal/", f"Halal boodschappen vergelijken: {_hl_n} producten bij {len(_hlw)} supermarkten", f"Halal kip, gehakt, vleeswaren en meer bij {len(_hlw)} supermarkten naast elkaar op prijs per kilo. Met halal maaltijden en een halal weekmenu. Elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    schrijf("/halal/", page("/halal/", f"Halal boodschappen vergelijken: {_hl_n} producten bij {len(_hlw)} supermarkten", f"Halal kip, gehakt, vleeswaren en meer bij {len(_hlw)} supermarkten naast elkaar op prijs per kilo. Met halal maaltijden en een halal weekmenu. Prijzen van {DATUM}.", head, body, [cld, faq_ld(faq)]))
     made.append(("/halal/", "0.7"))
     print("/halal/:", _hl_n, "producten")
 # Koosjer: supermarkten zetten het hechsjer zelden online; daarom eerlijke uitleg, matzes en koosjere maaltijden.
@@ -1304,12 +1308,12 @@ for sl, naam_, pat, uit, termen, *merk in AANB_PRODUCT:
     title = f"{naam_} aanbieding week {_wk}: " + (f"{len(nu_)} acties, goedkoopst bij {NAMEN.get(goed['s'], goed['s'])}" if goed else "prijzen per supermarkt")
     if not nu_:
         desc = (f"Is {naam_} deze week in de aanbieding? Nu is er geen {naam_.lower()}-actie" + (f"; vanaf {kortdag(straks[0]['v'])} wel bij {NAMEN.get(straks[0]['s'], straks[0]['s'])}" if straks else "")
-                + f". Bekijk de gewone prijzen per supermarkt en zie meteen wanneer er een nieuwe aanbieding is. Elke dag bijgewerkt.")
+                + f". Bekijk de gewone prijzen per supermarkt en zie meteen wanneer er een nieuwe aanbieding is. Prijzen van {DATUM}.")
     else: desc = (f"Alle {len(nu_)} {naam_.lower()}-aanbiedingen van {', '.join(NAMEN.get(w, w) for w in winkels_)} naast elkaar" + (f", op prijs per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'}" if met_eh else "")
-            + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + ". Elke dag bijgewerkt.")
+            + (f". Nu het voordeligst: {goed['n'][:60]} voor {eur(goed['p'])}" if goed else "") + f". Prijzen van {DATUM}.")
     ch, cld = crumbs(("Aanbiedingen", "/aanbiedingen/"), (f"{naam_} aanbieding", None))
     head = ch + (f'<h1>{esc(naam_)} aanbieding deze week</h1><p class="lead">Week {_wk}: <b>{len(nu_)}</b> acties bij {len(winkels_)} supermarkten'
-                 + (f", de voordeligste per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'} eerst" if met_eh else ", de goedkoopste eerst") + ". Elke dag bijgewerkt met de nieuwe acties.</p>" + deel_html(f"{naam_} in de aanbieding deze week: alle supermarkten naast elkaar", path))
+                 + (f", de voordeligste per {'liter' if goed and goed.get('eh') == 'l' else 'kilo'} eerst" if met_eh else ", de goedkoopste eerst") + f". Prijzen van {DATUM} met de nieuwe acties.</p>" + deel_html(f"{naam_} in de aanbieding deze week: alle supermarkten naast elkaar", path))
     faq = []
     if goed: faq.append((f"Waar is {naam_.lower()} deze week in de aanbieding?", f"In week {_wk} hebben {', '.join(NAMEN.get(w, w) for w in winkels_)} {naam_.lower()} in de aanbieding. Het voordeligst is nu {goed['n']} bij {NAMEN.get(goed['s'], goed['s'])} voor {eur(goed['p'])}" + (f" ({goed['lbl']})" if goed.get('lbl') else "") + "."))
     if ts:
@@ -1396,7 +1400,7 @@ if _huis_vb:
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Product</th><th style="text-align:right">Scheelt</th></tr></thead><tbody>{rij}</tbody></table></div>'
             f'<p class="note">Vergeleken op {DATUM}: per product het goedkoopste huismerk en het goedkoopste A-merk bij alle supermarkten, op prijs per kilo, liter of stuk. Lopende aanbiedingen tellen mee.</p>'
             + faq_html(faq) + '<p><a href="/besparen/">Meer bespaartips →</a></p><a class="cta" href="/">Vergelijk je eigen lijst</a>')
-    schrijf("/huismerk-of-a-merk/", page("/huismerk-of-a-merk/", f"Huismerk of A-merk: gemiddeld {round(med * 100)}% goedkoper ({MAAND})", f"Huismerk vs A-merk: bij {len(_huis_vb)} producten is het huismerk vandaag gemiddeld {round(med * 100)}% goedkoper per kilo of liter. Per product vergeleken, elke dag bijgewerkt.", head, body, [cld, faq_ld(faq)]))
+    schrijf("/huismerk-of-a-merk/", page("/huismerk-of-a-merk/", f"Huismerk of A-merk: gemiddeld {round(med * 100)}% goedkoper ({MAAND})", f"Huismerk vs A-merk: bij {len(_huis_vb)} producten is het huismerk vandaag gemiddeld {round(med * 100)}% goedkoper per kilo of liter. Per product vergeleken, bijgewerkt op {DATUM}.", head, body, [cld, faq_ld(faq)]))
     made.append(("/huismerk-of-a-merk/", "0.8"))
 
 # ---------- Wat kosten boodschappen per week? ----------
@@ -1520,7 +1524,7 @@ try:
         ch, cld = crumbs(("Besparen", "/besparen/"), ("Prijsindex", None))
         faq = [("Worden boodschappen duurder?", f"Ons vaste mandje van {len(_bt)} basisboodschappen kostte in {MN[int(mnd[0][0][5:]) - 1]} gemiddeld {eur(basis)} en in {MN[int(mnd[-1][0][5:]) - 1]} {eur(laatst)}: {pct_nl(verschil)}. Boodschappen zijn in die periode dus {richting} geworden."),
                ("Hoe meten jullie dit?", "Elke dag slaan we per product de prijs per kilo, liter of stuk op bij alle supermarkten. Voor de index nemen we per product de middelste prijs van alle supermarkten en rekenen we een vast mandje uit. Aanbiedingen tellen niet mee, zodat je de gewone prijzen ziet."),
-               ("Wat zegt het CBS?", "Het CBS meet de inflatie voor alle uitgaven, ook voedsel. Onze index is kleiner (alleen basisboodschappen) maar wordt elke dag bijgewerkt.")]
+               ("Wat zegt het CBS?", f"Het CBS meet de inflatie voor alle uitgaven, ook voedsel. Onze index is kleiner (alleen basisboodschappen), maar we werken hem meerdere keren per week bij; deze stand is van {DATUM}.")]
         head = ch + f'<h1>Worden boodschappen duurder? Prijsindex {MAAND}</h1><p class="lead">Een vast mandje van {len(_bt)} basisboodschappen kost nu gemiddeld <b>{eur(laatst)}</b>, {pct_nl(verschil)} ten opzichte van {MN[int(mnd[0][0][5:]) - 1]}. Elke dag gemeten bij alle supermarkten.</p>'
         body = (f'<h2>Het mandje per dag</h2>{svg}<div class="tblwrap"><table class="ptable"><thead><tr><th>Maand</th><th style="text-align:right">Gemiddeld</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{mrows}</tbody></table></div>'
                 f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>'
@@ -1600,7 +1604,7 @@ def seizoenpagina(path, kort, h1, title, lead, termen, woorden, faq, extra="", b
     ch, cld = crumbs(("Feestdagen", "/feestdagen/"), (kort, None))
     head = ch + f'<h1>{esc(h1)}</h1><p class="lead">{lead_extra or lead + " Nu het vaakst het goedkoopst: <b>" + esc(nm(top)) + "</b>."}</p>'
     faq = [*faq_voor, (f"Waar zijn {kort.lower()}-boodschappen het goedkoopst?", f"Op {DATUM} is {nm(top)} bij {n_top} van de {len(ts)} vergeleken producten het voordeligst."), *faq,
-           ("Hoe actueel zijn de prijzen?", "Elke dag bijgewerkt met de prijzen en aanbiedingen van de webshops van de supermarkten.")]
+           ("Hoe actueel zijn de prijzen?", f"Deze pagina is bijgewerkt op {DATUM}, met de prijzen en aanbiedingen van de webshops van de supermarkten. In de app op de startpagina zie je elke dag de nieuwste prijzen.")]
     # Allergievriendelijk: per product een glutenvrije en/of lactosevrije variant (als die er is), en alle zulke feestproducten.
     def _var(rx, kw):
         arr = [p for p in prods if stores[p[0]].get("count") and rx.search(p[1]) and re.search(r"\b" + re.escape(kw), p[1].lower())]
@@ -1751,7 +1755,7 @@ ch, cld = crumbs(("Feestdagen", None))
 head = ch + '<h1>Feestdagen: waar zijn de feestboodschappen het goedkoopst?</h1><p class="lead">Per feest de boodschappen bij alle supermarkten naast elkaar. Met de acties van nu.</p>'
 body = ('<ul class="feesten">' + "".join(f'<li class="{"nu" if f[4] else ""}"><a href="{f[0]}"><span class="fi">{f[1]}</span><b>{esc(f[2])}</b>{"<span class=pill>nu</span>" if f[4] else ""}<span class="sub">{esc(f[3])}</span></a></li>' for f in FEESTEN) + "</ul>"
         + '<h2>Ook handig</h2><ul class="links"><li><a href="/maaltijden/weekmenu/">Goedkoop weekmenu met boodschappenlijst</a></li><li><a href="/aanbieding/krat-bier/">Krat bier aanbieding</a></li><li><a href="/aanbiedingen/">Alle aanbiedingen van deze week</a></li><li><a href="/goedkoopste-supermarkt/">De goedkoopste supermarkt</a></li></ul>')
-schrijf("/feestdagen/", page("/feestdagen/", f"Feestdagen: Sinterklaas, kerst, Ramadan, Pasen en meer goedkoop ({MAAND})", "Sinterklaas, kerst, oud en nieuw, Chanoeka, Ramadan, Pasen, Pesach en de barbecue: per feest de boodschappen bij alle supermarkten naast elkaar, met de acties van nu. Elke dag bijgewerkt.", head, body, [cld], actief="/feestdagen/"))
+schrijf("/feestdagen/", page("/feestdagen/", f"Feestdagen: Sinterklaas, kerst, Ramadan, Pasen en meer goedkoop ({MAAND})", f"Sinterklaas, kerst, oud en nieuw, Chanoeka, Ramadan, Pasen, Pesach en de barbecue: per feest de boodschappen bij alle supermarkten naast elkaar, met de acties van nu. Prijzen van {DATUM}.", head, body, [cld], actief="/feestdagen/"))
 made.append(("/feestdagen/", "0.8"))
 
 # ---------- Dieet en leefstijl: één eenvoudig overzicht ----------
@@ -1828,7 +1832,7 @@ _hv_faq = [("Is het echt gratis?", "Ja. Er is geen reclame, geen abonnement en g
            ("Werkt het ook voor mensen die niet handig zijn met internet?", "Ja. Zoek een product, tik op + en je ziet welke winkel het goedkoopst is. De lijst kun je printen of via WhatsApp delen, zodat iemand anders kan meekijken.")]
 _hv_deel = "Bespaar op je boodschappen. Op boodschappenvergelijk.nl zie je gratis bij welke supermarkt je boodschappen het goedkoopst zijn. Met weekmenu's en boodschappenlijst. Geen reclame, geen account."
 _hv_body = ('<div class="hvkaart"><h2>Wat heeft je klant eraan?</h2><ul>'
-    f'<li><b>Prijzen van {AANTAL} supermarkten</b>, elke dag bijgewerkt.</li>'
+    f'<li><b>Prijzen van {AANTAL} supermarkten</b>, bijgewerkt op {DATUM}.</li>'
     '<li><b>Boodschappenlijst</b>: je ziet meteen welke winkel voor de hele lijst het goedkoopst is.</li>'
     + (f'<li><b>Goedkoop weekmenu</b>: 5 avondmaaltijden voor 4 personen voor {eur(_wm[0])}, met boodschappenlijst.</li>' if _heeft_bedrag else '<li><b>Goedkoop weekmenu</b> met boodschappenlijst.</li>')
     + '<li><b>Printen of delen</b> via WhatsApp.</li><li><b>Geen account, geen cookies</b>, geen gegevens.</li><li>Werkt op <b>elke telefoon</b> en kan als app op het beginscherm.</li></ul></div>'
