@@ -998,6 +998,12 @@ if _m:
     app = app[:_m.start()] + _lader + app[_m.end():]
 else:
     print("LET OP: app-script niet apart gezet")
+# Startpagina: stijlblad direct in de HTML (geen apart verzoek dat het eerste beeld ophoudt; PageSpeed: renderblokkering).
+_css = open(os.path.join(ROOT, "site", "stijl.css"), encoding="utf-8").read()
+app, _n = re.subn(r'<link rel="stylesheet" href="/stijl\.css\?v=[^"]*">', lambda m: "<style>" + _css + "</style>", app, count=1)
+if not _n: print("LET OP: stijl.css niet in de startpagina gezet")
+# Maaltijdkaarten staan op de telefoon in een veegrij van ca. 80% breed: kleinere foto volstaat.
+app = app.replace('sizes="(min-width: 760px) 270px, 94vw"', 'sizes="(min-width: 760px) 270px, (max-width: 700px) calc(80vw - 26px), 94vw"')
 # Alleen het kleine winkelbestand vooraf; de grote prijsbestanden zouden de pagina zelf vertragen.
 _pre = '<link rel="preload" href="/winkels.json" as="fetch" crossorigin>'
 app = app.replace("</head>", _pre + "</head>", 1)

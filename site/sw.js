@@ -1,8 +1,11 @@
 // Goedkope Boodschappen. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
 // zodat de browser deze service worker vernieuwt, de oude cache weggooit en bezoekers de nieuwste versie krijgen.
-const C = 'gb-v83-__BOUW__';
+const C = 'gb-v84-__BOUW__';
 self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k))))
+  // Navigation preload: de browser vraagt de pagina al op terwijl de service worker opstart (scheelt wachttijd, TTFB).
+  .then(() => self.registration.navigationPreload && self.registration.navigationPreload.enable().catch(() => {}))
+  .then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
@@ -19,7 +22,15 @@ self.addEventListener('fetch', e => {
     }));
   } else if (e.request.mode === 'navigate') {
     // Pagina's altijd vers; zonder internet de laatst bekeken versie.
-    e.respondWith(fetch(e.request, { cache: 'no-cache' }).then(r => { const k = r.clone(); caches.open(C).then(c => c.put(e.request, k)); return r; }).catch(() => caches.match(e.request).then(r => r || caches.match('/'))));
+    e.respondWith((async () => {
+      try {
+        const r = (await e.preloadResponse) || await fetch(e.request, { cache: 'no-cache' });
+        if (r && r.ok) { const k = r.clone(); caches.open(C).then(c => c.put(e.request, k)); }
+        return r;
+      } catch (_) {
+        return (await caches.match(e.request)) || (await caches.match('/')) || Response.error();
+      }
+    })());
   }
 });
 

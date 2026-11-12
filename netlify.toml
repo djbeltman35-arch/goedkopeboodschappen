@@ -372,3 +372,14 @@
   for = "/appdata.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# app.js en fout.js worden altijd met ?v=<versie> geladen: mogen een jaar in de browsercache (PageSpeed: cachelevensduur)
+[[headers]]
+  for = "/app.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fout.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

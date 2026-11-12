@@ -651,7 +651,6 @@ html body .promise li.brk::before{content:none}
   .wrap.app{padding-bottom:12px}
   .wrap.maal h2,.wrap.how h2,.wrap.seo h2{font-size:21px;margin-top:12px}
   .wrap.maal>.meta{font-size:15px;margin:4px 0}
-  .wrap.maal .mgrid .mimg{aspect-ratio:2/1;height:auto;object-fit:cover}
   .wrap.maal>.cta{font-size:15px;padding:10px 14px}
   .wrap.how .why>div:nth-child(n+3) p{font-size:14px}
   .wrap.how .fczbox p.small{font-size:12px}
