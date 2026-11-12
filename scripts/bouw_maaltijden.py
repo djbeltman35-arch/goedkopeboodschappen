@@ -262,7 +262,7 @@ if MAAL:
     desc = (f"Wat kost stamppot, spaghetti of nasi voor 4 personen? {len(MAAL)} gewone gerechten met calorieën en de goedkoopste supermarkt, "
             f"vanaf {eur(goedkoopst['rang'][0][1]['tot'])}. Prijzen van {DATUM}.")
     head = (ch + f"<h1>Goedkope maaltijden: waar kook je het goedkoopst?</h1><p class=\"lead\">{len(MAAL)} avondmaaltijden voor 4 personen. Per gerecht zie je de goedkoopste supermarkt. "
-            f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span>.</p><p class=\"note mkeus\" hidden></p>"
+            f"Al vanaf <span data-vanaf><b>{eur(goedkoopst['rang'][0][1]['tot'])}</b></span>.</p><p class=\"note mkeus\">Prijzen van alle {AANTAL} supermarkten. <a href=\"/#mystores\">Kies je eigen winkels</a></p>"
             '<div class="wmblok dierblok"><p><b>🍽️ Kies wat je wilt eten</b><br><span>Per soort vlees of vis.</span></p><div class="chips wmkeus"><a class="chip" href="/maaltijden/met-vis/">🐟 Vis</a><a class="chip" href="/maaltijden/met-gevogelte/">🍗 Gevogelte</a><a class="chip" href="/maaltijden/met-rundvlees/">🥩 Rundvlees</a><a class="chip" href="/maaltijden/met-varkensvlees/">🥓 Varkensvlees</a><a class="chip" href="/maaltijden/vegetarisch/">🥕 Vegetarisch</a><a class="chip" href="/maaltijden/vegan/">🌱 Vegan</a></div></div>'
             '<div class="wmblok"><p><b>📅 Weekmenu met boodschappenlijst</b><br><span>5 avondmaaltijden, in één keer ingekocht.</span></p><div class="chips wmkeus"><a class="chip" href="/maaltijden/weekmenu/">💶 Goedkoop</a><a class="chip" href="/maaltijden/weekmenu-glutenvrij/">🌾 Glutenvrij</a><a class="chip" href="/maaltijden/weekmenu-vegan/">🌱 Vegan</a><a class="chip" href="/maaltijden/weekmenu/#meer">Meer…</a></div></div>'
             f'<div class="mfbalk" id="mfbalk"><p class="mfilters"><button type="button" class="btn btn-line meerf" aria-expanded="false" data-meerf>⚙️ Filter: vlees, vis, glutenvrij…</button></p><p class="mfilters mdier mdieet" hidden><button type="button" class="btn btn-line" data-flt="kip" aria-pressed="false">🍗 Gevogelte</button> <button type="button" class="btn btn-line" data-flt="rund" aria-pressed="false">🥩 Rund</button> <button type="button" class="btn btn-line" data-flt="varken" aria-pressed="false">🥓 Varken</button> <button type="button" class="btn btn-line" data-flt="vis" aria-pressed="false">🐟 Vis</button> <button type="button" class="btn btn-line" data-flt="vega" aria-pressed="false">🥕 Vegetarisch</button> <button type="button" class="btn btn-line" data-flt="arm" aria-pressed="false">Caloriearm (tot {KCAL_ARM} kcal)</button> <button type="button" class="btn btn-line" data-flt="gv" aria-pressed="false">Glutenvrij</button> <button type="button" class="btn btn-line" data-flt="lv" aria-pressed="false">Lactosevrij</button> <button type="button" class="btn btn-line" data-flt="vg" aria-pressed="false">Vegan</button> <button type="button" class="btn btn-line" data-flt="eiw" aria-pressed="false">Eiwitrijk</button> <button type="button" class="btn btn-line" data-flt="hl" aria-pressed="false">Halal</button> <button type="button" class="btn btn-line" data-flt="ks" aria-pressed="false">Koosjer</button></p><p class="meta mfltn" id="mfltn" aria-live="polite" hidden></p></div>')
@@ -281,7 +281,7 @@ if MAAL:
         keuze += ms[:2]
     keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])[:6]
     MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><h2 id="mh">🍽️ Complete maaltijden</h2>'
-                 f'<p class="meta">Wat kost avondeten voor 4 personen? Gewone gerechten met calorieën en de goedkoopste supermarkt.</p><p class="note mkeus" hidden></p><ul class="mgrid">'
+                 f'<p class="meta">Wat kost avondeten voor 4 personen? Gewone gerechten met calorieën en de goedkoopste supermarkt.</p><p class="note mkeus">Prijzen van alle {AANTAL} supermarkten. <a href="/#mystores">Kies je eigen winkels</a></p><ul class="mgrid">'
                  + "".join(kaart(m) for m in keuze) + f'</ul><a class="cta" href="/maaltijden/">Alle {len(MAAL)} maaltijden: aardappel, pasta, rijst, salades en meer</a></section>' + MKJS)
 else:
     MAAL_HOME = ""
@@ -312,7 +312,7 @@ def themapagina(slug_, kort, h1, title, lead, ms, faq_extra=()):
     schrijf(path, page(path, title, d_, crumbs_head(ch, h1, zicht_lead(lead)), body, [cld, il, faq_ld(faq)], actief="/maaltijden/", og_title=h1))
     made.append((path, "0.8"))
 def lead_txt(h): return re.sub(r"<[^>]+>", "", h)
-def crumbs_head(ch, h1, lead): return ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p><p class=\"note mkeus\" hidden></p>"
+def crumbs_head(ch, h1, lead): return ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p><p class=\"note mkeus\">Prijzen van alle {AANTAL} supermarkten. <a href=\"/#mystores\">Kies je eigen winkels</a></p>"
 pprs = lambda m: m["rang"][0][1]["tot"]
 if MAAL:
     alle = sorted(MAAL, key=pprs)

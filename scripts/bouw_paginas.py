@@ -871,7 +871,8 @@ seo = (f'<section class="wrap seo" aria-labelledby="sh"><h2 id="sh">Boodschappen
        + faq_html(faq) + "</section>")
 ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
-      {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me"},
+      {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me",
+       "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"]},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
 # Prijslijst in twee delen, zodat de app snel start: eerst alle producten die bij een categorie horen (ongeveer de helft),
@@ -1889,7 +1890,26 @@ exec(open(os.path.join(ROOT, "scripts", "kennisbank.py")).read())
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
     '<form action="/" class="tools" style="max-width:520px"><label><span class="sr">Zoek een product</span><input type="search" name="q" placeholder="Bijvoorbeeld pindakaas"></label></form><a class="cta" href="/">Naar de startpagina</a>'))
 _beeld = lambda p: "".join(f"<image:image><image:loc>{u}</image:loc></image:image>" for u in MAAL_BEELDEN.get(p, []))
+# Eerlijke lastmod: alleen een nieuwe datum als de inhoud van de pagina echt veranderd is (prijzen, acties, tekst).
+# Google negeert lastmod als die altijd 'vandaag' is. De vingerafdrukken van de vorige build halen we van de live site.
+import hashlib, urllib.request
+try:
+    _oud = json.loads(urllib.request.urlopen(urllib.request.Request(BASE + "/data/paginas.json", headers={"User-Agent": "bouw"}), timeout=20).read())
+except Exception as _e:
+    print("vorige paginavingerafdrukken niet gevonden:", _e); _oud = {}
+_ruis = re.compile("|".join(re.escape(x) for x in {DATUM, VANDAAG, MAAND, VERSIE} if x) + r"|\?v=[^\"'&]+|gb-v\d+-\d+")
+_nieuw = {}
+for _p, _ in made:
+    try:
+        _f = os.path.join(OUT, _p.strip("/"), "index.html") if _p.endswith("/") else os.path.join(OUT, _p.lstrip("/"))
+        _h = hashlib.sha1(_ruis.sub("", open(_f, encoding="utf-8").read()).encode()).hexdigest()[:16]
+    except Exception:
+        _h = ""
+    _o = _oud.get(_p)
+    _nieuw[_p] = [_h, _o[1] if _o and _o[0] == _h and _h else VANDAAG]
+json.dump(_nieuw, open(os.path.join(OUT, "data", "paginas.json"), "w"), separators=(",", ":"))
+print(sum(1 for v in _nieuw.values() if v[1] == VANDAAG), "van", len(_nieuw), "pagina's veranderd")
 open(os.path.join(OUT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
-    "".join(f"  <url><loc>{BASE}{p}</loc><lastmod>{VANDAAG}</lastmod><changefreq>daily</changefreq><priority>{pr}</priority>{_beeld(p)}</url>\n" for p, pr in made) + "</urlset>\n")
+    "".join(f"  <url><loc>{BASE}{p}</loc><lastmod>{_nieuw[p][1]}</lastmod>{_beeld(p)}</url>\n" for p, pr in made) + "</urlset>\n")
 open(os.path.join(OUT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n")
 print(len(made), "pagina's in de sitemap")

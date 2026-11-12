@@ -41,6 +41,9 @@ jobs:
             && python3 scripts/historie.py bijwerken /tmp/supermarkets.json || echo "geschiedenis mislukt"
       - name: Actiegeschiedenis (hoe vaak in de aanbieding)
         run: python3 scripts/actiehistorie.py bijwerken || echo "actiegeschiedenis mislukt"
+      - name: Dag van de week
+        id: dag
+        run: echo "dag=$(TZ=Europe/Amsterdam date +%u)" >> "$GITHUB_OUTPUT"
       - name: Opslaan
         run: |
           git config user.name "prijzen-bot"
@@ -53,6 +56,8 @@ jobs:
           git pull --rebase -X theirs origin main
           git push
       - name: Pagina's melden bij Bing (IndexNow)
+        # alleen op dagen dat de site opnieuw gebouwd wordt; ongewijzigde pagina's elke dag melden ziet Bing als ruis
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(fromJSON('["3","5"]'), steps.dag.outputs.dag) }}
         run: |
           sleep 240
           python3 scripts/indexnow.py || echo "IndexNow mislukt"
