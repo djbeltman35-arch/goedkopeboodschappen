@@ -2,7 +2,8 @@ name: Prijzen ophalen
 
 # Elke ochtend Aldi-assortiment en aanbiedingen ophalen en in data/ zetten.
 # De site leest data/*.json rechtstreeks van raw.githubusercontent.com.
-# Netlify-credits: alleen de commit van woensdag start een build (maandag bouwt de weekmenu-workflow al);
+# Netlify-credits: alleen de commits van woensdag en vrijdag starten een build (maandag bouwt de weekmenu-workflow al;
+# vrijdag staan o.a. de Lidl-folder van volgende week en de weekendacties erin);
 # de andere dagen "[skip netlify]" - de app toont nieuwe prijzen toch, want die komen live van GitHub.
 on:
   schedule:
@@ -45,7 +46,8 @@ jobs:
           git config user.name "prijzen-bot"
           git config user.email "prijzen-bot@users.noreply.github.com"
           SKIP=" [skip netlify]"
-          if [ "$(TZ=Europe/Amsterdam date +%u)" = "3" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then SKIP=""; fi
+          DAG=$(TZ=Europe/Amsterdam date +%u)
+          if [ "$DAG" = "3" ] || [ "$DAG" = "5" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then SKIP=""; fi
           git add data
           git diff --cached --quiet || git commit -m "Prijzen bijgewerkt $(date -u +%F)$SKIP"
           git pull --rebase -X theirs origin main
