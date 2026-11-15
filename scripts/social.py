@@ -155,7 +155,7 @@ if top:
     regels = "\n".join(f"🛒 {NAMEN[o['s']]}: {o['n']} voor {eur(o['p'])}" + (f" (was {eur(o['was'])})" if o.get("was") else "") for o in top)
     tekst = (f"{thema} 💰\n\nDe beste aanbiedingen van {datum}:\n\n{regels}\n\n"
              f"Bekijk alle {len(nu)} aanbiedingen van {len(set(o['s'] for o in nu))} supermarkten en zie waar jouw boodschappenlijst het goedkoopst is. Gratis en zonder reclame.\n"
-             f"👉 {SITE}/aanbiedingen/\n\n#aanbiedingen #boodschappen #besparen #goedkoop #supermarkt #korting #bonus")
+             f"👉 {SITE}/aanbiedingen/\n\n#aanbiedingen #boodschappen #besparen #supermarkt #korting")
     posts.append({"soort": "aanbiedingen", "tijd": "12:00", "tekst": tekst, "afbeelding": f"{SITE}/data/social/{png}", "link": f"{SITE}/aanbiedingen/"})
 # Avondbericht: per supermarkt de grootste klapper (een tweede moment op de dag met andere inhoud).
 avond = beste([o for o in nu if o.get("c") in ETEN - {"Huishouden"} and o not in top], 5)
