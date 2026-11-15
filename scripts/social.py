@@ -116,6 +116,38 @@ def kaart(titel, sub, regels, voet, bestand):
     d.text(((W - d.textlength(voet, font=fv)) / 2, H - 82), voet, font=fv, fill=GEEL)
     img.save(bestand, optimize=True)
 
+# Afbeeldingen en video's via GitHub: de site wordt niet elke dag opnieuw gebouwd, GitHub heeft ze direct na het opslaan.
+RAW = "https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/social/"
+
+def maak_reel(png_pad, naam):
+    """Staande video van 9 s (1080x1920) voor Instagram Reels: de afbeelding met een rustige zoom en een kop erboven."""
+    import shutil, subprocess
+    if not shutil.which("ffmpeg"): return None
+    W2, H2 = 1080, 1920
+    achter = Image.new("RGB", (W2, H2), DONKER)
+    dr = ImageDraw.Draw(achter)
+    fk = lettertype("tekst", 60)
+    for i, r in enumerate(["Waar zijn je boodschappen", "het goedkoopst?"]):
+        dr.text(((W2 - dr.textlength(r, font=fk)) / 2, 80 + i * 78), r, font=fk, fill=WIT)
+    fo = lettertype("tekst", 46)
+    for i, r in enumerate(["Vergelijk 11 supermarkten gratis", "Link in bio"]):
+        dr.text(((W2 - dr.textlength(r, font=fo)) / 2, 1700 + i * 70), r, font=fo, fill=GEEL if i else WIT)
+    achtergrond = os.path.join(OUT, "_reel_achter.png"); achter.save(achtergrond)
+    uit = os.path.join(OUT, naam)
+    # Kaart in het midden, daarna het hele beeld heel rustig inzoomen (max. 4%, valt alleen in de lege randen weg).
+    filt = ("[1:v]scale=1080:-2[k];[0:v][k]overlay=0:(H-h)/2,"
+            "zoompan=z='min(1+0.00015*on,1.04)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=270:s=1080x1920:fps=30,format=yuv420p")
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", achtergrond, "-i", png_pad,
+                        "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-filter_complex", filt, "-t", "9",
+                        "-c:v", "libx264", "-preset", "veryfast", "-crf", "30", "-r", "30", "-c:a", "aac", "-b:a", "64k", "-shortest",
+                        "-movflags", "+faststart", uit], check=True, timeout=180)
+    except Exception as e:
+        print("reel mislukt:", e); return None
+    finally:
+        os.remove(achtergrond)
+    return naam
+
 # ---------- keuze van de aanbiedingen ----------
 d = json.load(open(os.path.join(ROOT, "data", "aanbiedingen.json")))
 nu = [o for o in d["offers"] if o.get("p") and (not o.get("v") or o["v"] <= VANDAAG) and (not o.get("t") or o["t"] >= VANDAAG) and o.get("s") in NAMEN]
@@ -135,7 +167,7 @@ def beste(lst, n, per_winkel=1, uitsluiten=()):
     return gekozen
 
 os.makedirs(OUT, exist_ok=True)
-for f in glob.glob(os.path.join(OUT, "*.png")):
+for f in glob.glob(os.path.join(OUT, "*.png")) + glob.glob(os.path.join(OUT, "*.mp4")):
     m = re.search(r"(\d{4}-\d{2}-\d{2})", f)
     if m and (NU.date() - datetime.date.fromisoformat(m.group(1))).days > 10: os.remove(f)
 
@@ -156,7 +188,7 @@ if top:
     tekst = (f"{thema} 💰\n\nDe beste aanbiedingen van {datum}:\n\n{regels}\n\n"
              f"Bekijk alle {len(nu)} aanbiedingen van {len(set(o['s'] for o in nu))} supermarkten en zie waar jouw boodschappenlijst het goedkoopst is. Gratis en zonder reclame.\n"
              f"👉 {SITE}/aanbiedingen/\n\n#aanbiedingen #boodschappen #besparen #supermarkt #korting")
-    posts.append({"soort": "aanbiedingen", "tijd": "12:00", "tekst": tekst, "afbeelding": f"{SITE}/data/social/{png}", "link": f"{SITE}/aanbiedingen/"})
+    posts.append({"soort": "aanbiedingen", "tijd": "12:00", "tekst": tekst, "afbeelding": RAW + png, "link": f"{SITE}/aanbiedingen/"})
 # Avondbericht: per supermarkt de grootste klapper (een tweede moment op de dag met andere inhoud).
 avond = beste([o for o in nu if o.get("c") in ETEN - {"Huishouden"} and o not in top], 5)
 if avond:
@@ -166,6 +198,10 @@ if avond:
     tekst = (f"Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇\n\n{regels}\n\n"
              f"Zet je boodschappen op een lijst en zie in één keer bij welke supermarkt je het minst betaalt. Je lijst blijft bewaard, en als je terugkomt zie je meteen wat goedkoper is geworden.\n"
              f"👉 {SITE}\n\n#boodschappenlijst #besparen #supermarkt #aanbiedingen #goedkoop")
-    posts.append({"soort": "avond", "tijd": "19:30", "tekst": tekst, "afbeelding": f"{SITE}/data/social/{png}", "link": SITE})
+    posts.append({"soort": "avond", "tijd": "19:30", "tekst": tekst, "afbeelding": RAW + png, "link": SITE})
+    # Reel (alleen op de dagen dat er op Instagram gepost wordt: ma, wo, za). Reels komen ook bij niet-volgers.
+    if NU.weekday() in (0, 2, 5) or os.environ.get("REEL_ALTIJD"):
+        mp4 = maak_reel(os.path.join(OUT, png), f"reel-{VANDAAG}.mp4")
+        if mp4: posts[-1]["video"] = RAW + mp4
 json.dump({"datum": VANDAAG, "posts": posts}, open(os.path.join(OUT, "vandaag.json"), "w"), ensure_ascii=False, indent=1)
 print(f"{len(posts)} berichten voor {VANDAAG}")
