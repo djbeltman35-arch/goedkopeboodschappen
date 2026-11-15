@@ -657,3 +657,10 @@ html body .promise li.brk::before{content:none}
   .wrap.how .tiplink{margin:8px 0}
   .wrap.seo p{font-size:14px;margin:6px 0}
 }
+/* Duidelijkere schaduwen onder kaarten en vakken, en een lichte verloopbalk achter Terug/Home */
+:root{--schaduw:0 2px 4px rgba(20,40,28,.07),0 14px 28px -14px rgba(20,40,28,.34);--schaduw-k:0 1px 2px rgba(20,40,28,.12),0 4px 10px -6px rgba(20,40,28,.3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--schaduw:0 2px 4px rgba(0,0,0,.4),0 14px 28px -12px rgba(0,0,0,.75);--schaduw-k:0 1px 2px rgba(0,0,0,.45),0 4px 10px -6px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--schaduw:0 2px 4px rgba(0,0,0,.4),0 14px 28px -12px rgba(0,0,0,.75);--schaduw-k:0 1px 2px rgba(0,0,0,.45),0 4px 10px -6px rgba(0,0,0,.7)}
+html body .panel,html body .ptable,html body ul.offers>li.offer,html body .offer,html body .mcard,html body .mtop li,html body .mgrid>li,html body .kcal,html body .subblok,html body .alkaart li,html body .catlijst,html body .row.duo .dk,html body .fczbox,html body .list,html body .rows,html body .mystores,html body .wmblok,html body .hvdeel,html body .feesten a,html body .card,html body .mkaart,html body .alarm{box-shadow:var(--schaduw)}
+html body .chip,html body ul.chips a,html body .terug .tknop,html body .filterknop,html body .hchip,html body #quick .start .chip,html body .quick.tegels .start .chip,html body .quick.tegels .start .chip.hot,html body .quick.tegels .start .chip.wm,html body .quick.tegels .start .chip.mt,html body .quick.tegels .start a.chip.dieet,html body .quick.tegels .start a.chip.seizoen{box-shadow:var(--schaduw-k)}
+html body nav.terug.vast,html body #results nav.terug.app{background:linear-gradient(180deg,var(--surface) 0%,var(--page) 100%);border-bottom:1px solid var(--line);box-shadow:0 8px 14px -12px rgba(20,40,28,.45)}
