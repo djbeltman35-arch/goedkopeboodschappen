@@ -383,3 +383,18 @@
   for = "/fout.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Vangnet: als een supermarkt (tijdelijk) geen gegevens heeft, bestaat zijn pagina niet.
+# Zonder force geldt dit alleen als de pagina ontbreekt; komt de supermarkt terug, dan wordt gewoon de pagina getoond.
+[[redirects]]
+  from = "/supermarkt/spar/"
+  to = "/goedkoopste-supermarkt/"
+  status = 302
+[[redirects]]
+  from = "/aanbiedingen/spar/"
+  to = "/aanbiedingen/"
+  status = 302
+[[redirects]]
+  from = "/aanbiedingen/vomar/"
+  to = "/aanbiedingen/"
+  status = 302
