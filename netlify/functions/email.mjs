@@ -60,7 +60,8 @@ export default async (req, context) => {
 
   if (req.method === 'GET') {
     const t = url.searchParams.get('token');
-    if (!t) return json({ aan });
+    // Zonder token is het antwoord voor iedereen gelijk: laat het CDN het bewaren, zodat drukte de functie niet raakt.
+    if (!t) return Response.json({ aan }, { headers: { 'Cache-Control': 'public, max-age=300', 'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=900', 'Netlify-Vary': 'query' } });
     const a = geldigToken(t) ? await store.get('t-' + t, { type: 'json' }).catch(() => null) : null;
     return json({ aan, status: a ? (a.bevestigd ? 'bevestigd' : 'wacht') : 'onbekend', adres: a ? a.email.replace(/^(.).*(@.*)$/, '$1…$2') : null, week: !!a?.week });
   }

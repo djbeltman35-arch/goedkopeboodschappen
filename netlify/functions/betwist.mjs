@@ -8,7 +8,7 @@ export default async () => {
     const b = await s.get(key, { type: 'json' }).catch(() => null);
     if (b?.verborgen && b.verborgen >= grens && b.link) links.push(b.link);
   }
-  return Response.json({ links }, { headers: { 'Cache-Control': 'public, max-age=600' } });
+  return Response.json({ links }, { headers: { 'Cache-Control': 'public, max-age=600', 'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=600' } });
 };
 
 export const config = { path: '/api/betwist', method: ['GET'] };
