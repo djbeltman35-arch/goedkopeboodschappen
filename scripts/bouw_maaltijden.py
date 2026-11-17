@@ -280,10 +280,9 @@ if MAAL:
     for key, _, _ in SOORTEN:
         ms = sorted([m for m in MAAL if m["soort"] == key], key=lambda m: m["rang"][0][1]["tot"])
         keuze += ms[:2]
-    keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])[:6]
-    MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><h2 id="mh">🍽️ Complete maaltijden</h2>'
-                 f'<p class="meta">Wat kost avondeten voor 4 personen? Gewone gerechten met calorieën en de goedkoopste supermarkt.</p><p class="note mkeus">Prijzen van alle {AANTAL} supermarkten. <a href="/#mystores">Kies je eigen winkels</a></p><ul class="mgrid">'
-                 + "".join(kaart(m) for m in keuze) + f'</ul><a class="cta" href="/maaltijden/">Alle {len(MAAL)} maaltijden: aardappel, pasta, rijst, salades en meer</a></section>' + MKJS)
+    keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])[:3]
+    MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><h2 id="mh">🍽️ Goedkoop avondeten</h2><ul class="mgrid">'
+                 + "".join(kaart(m) for m in keuze) + f'</ul><a class="cta" href="/maaltijden/">Alle {len(MAAL)} maaltijden</a></section>' + MKJS)
 else:
     MAAL_HOME = ""
 

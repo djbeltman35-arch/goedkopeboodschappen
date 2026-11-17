@@ -207,16 +207,16 @@
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
-    <nav class="nav" aria-label="Menu"><a class="pill aanb" href="/aanbiedingen/" data-volgendeweek>📅 Acties binnenkort</a><a class="nbknop" href="/nieuwsbrief/">📬 Nieuwsbrief</a><a class="wide" href="/categorie/">Categorieën</a></nav>
+    <nav class="nav rustig" aria-label="Menu"><a href="/aanbiedingen/" data-volgendeweek>Acties binnenkort</a><a href="/nieuwsbrief/">Nieuwsbrief</a><a class="wide" href="/categorie/">Categorieën</a></nav>
     
   </div>
 </header>
 
 <main>
   <section class="wrap hero">
-    <div class="bekend" aria-label="Bekend van"><a class="bk" href="https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker" target="_blank" rel="noopener" title="Bekijk de uitzending"><svg class="tv" viewBox="0 0 48 44" aria-hidden="true"><path d="M17 3l7 8 7-8" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><rect x="3" y="11" width="42" height="28" rx="8" fill="currentColor"/><rect x="8" y="16" width="25" height="18" rx="4" fill="#fff"/><path d="M14 26.5c1.6-3.2 6.4-3.2 6.4 0 0-3.2 4.8-3.2 6.4 0-1.6 3.6-6.4 6.4-6.4 6.4s-4.8-2.8-6.4-6.4z" fill="#e0472f"/><circle cx="39" cy="20" r="2.4" fill="#fff"/><circle cx="39" cy="28" r="2.4" fill="#fff"/></svg><span><small>Bekend van</small><b>Hart van Nederland</b></span></a><a class="bk" href="https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite" target="_blank" rel="noopener" title="Lees het artikel"><svg class="tv" viewBox="0 0 48 44" aria-hidden="true"><path d="M17 3l7 8 7-8" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><rect x="3" y="11" width="42" height="28" rx="8" fill="currentColor"/><rect x="8" y="16" width="25" height="18" rx="4" fill="#fff"/><path d="M14 26.5c1.6-3.2 6.4-3.2 6.4 0 0-3.2 4.8-3.2 6.4 0-1.6 3.6-6.4 6.4-6.4 6.4s-4.8-2.8-6.4-6.4z" fill="#e0472f"/><circle cx="39" cy="20" r="2.4" fill="#fff"/><circle cx="39" cy="28" r="2.4" fill="#fff"/></svg><span><small>Bekend van</small><b>RTV Oost</b></span></a></div>
+    <p class="bekendregel">Bekend van <a href="https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker" target="_blank" rel="noopener">Hart van Nederland</a> en <a href="https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite" target="_blank" rel="noopener">RTV Oost</a></p>
     <h1>Boodschappen vergelijken</h1>
-    <ul class="promise"><li>Elke dag nieuwe prijzen</li><li>Gratis vergelijken</li><li class="brk" aria-hidden="true"></li><li>Onafhankelijk</li><li>Zonder reclame</li></ul>
+    <p class="rustpromise">Elke dag nieuwe prijzen van 11 supermarkten · gratis</p>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Zoek een product" autocomplete="off" enterkeyhint="search">
@@ -266,17 +266,11 @@
   <!--MAALTIJDEN-->
   <section class="wrap how" aria-labelledby="hw">
     <h2 id="hw">Zo werkt het</h2>
-    <p class="lead">Zoek een product en zie direct welke van de {{AANTAL}} supermarkten het goedkoopst is.</p>
     <ol>
       <li><b>Zoek een product</b>Je ziet per supermarkt de goedkoopste.</li>
       <li><b>Zet het op je lijst</b>Je lijst blijft bewaard.</li>
       <li><b>Kies je winkel</b>Wij rekenen uit waar alles samen het goedkoopst is.</li>
     </ol>
-    <p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a> <a href="/steun/">❤️ Steun de site</a></p>
-    <div class="why">
-      <div><h3>Kom gerust terug</h3><p>Je ziet meteen wat goedkoper is geworden.</p></div>
-      <div><h3>Eerlijk en onafhankelijk</h3><p>Geen reclame en geen betaalde plekken. Gratis voor iedereen. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a> · <a href="/steun/">Steun de site</a></p></div>
-    </div>
   </section>
   <!--SEO-->
 </main>
@@ -623,11 +617,12 @@ function kiesPrecies(q){
 const CAT_VOLG=["Vlees en vis","Zuivel en eieren","Groente en aardappelen","Koffie en thee","Frisdrank en sap","Bier en wijn","Huishouden","Verzorging en baby","Fruit","Kaas","Brood en ontbijt","Koek en snoep","Chips en noten","Diepvries","Pasta, rijst en wereldkeuken","Broodbeleg","Vleeswaren en tapas","Soep, conserven en bakken","Sauzen, olie en kruiden","Huisdieren"];
 function catVolgorde(){const r=[];for(const n of CAT_VOLG){if(n==="DIEET"){r.push(-1);continue}const i=GROEPEN.findIndex(g=>g[0]===n);if(i>=0)r.push(i)}GROEPEN.forEach((g,i)=>{if(!r.includes(i))r.push(i)});return r}
 function quick(){
-  const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length, feest=seizoenTegels(1);
+  const n=S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length;
+  const fl=feestLijst(),fk=fl[0]&&fl[0][0]!=="/kerst/"?fl.slice(1).find(x=>x[0]==="/kerst/"):null,extra=[fl[0],fk||fl[1]].filter(Boolean).map(x=>`<a class="chip" href="${x[0]}"><span class="ic">${x[1]}</span>${esc(x[2])}</a>`).join("");
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties`:"deze week"}</small></button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>`+
-    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a>`+`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>`+feest+(tweedeFeest()||`<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a>`)+`</div>`+
-    `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+catVolgorde().map(i=>i<0?`<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
+    `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a></div>`+
+    `<p class="tegelkop">Of kies een categorie</p><div class="cats">`+extra+catVolgorde().map(i=>i<0?`<a class="chip" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div>`;
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
 // Seizoenstegel: altijd het eerstvolgende feest. Is de feestdag voorbij, dan schuift de tegel vanzelf door naar het volgende feest.

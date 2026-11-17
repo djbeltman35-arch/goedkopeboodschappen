@@ -705,3 +705,25 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .nbblok .nbuit{margin:8px 0 0;font-size:14px}
 .nbblok .nbuit:empty{display:none}
 .nbweg{position:absolute;top:6px;right:8px;border:0;background:none;font-size:22px;line-height:1;color:inherit;opacity:.55;cursor:pointer;padding:4px 8px}
+
+/* ---------- Rustige startpagina (nov 2026): minder kleur en blokken, zoeken staat centraal ---------- */
+html body .nav.rustig a{background:none!important;border:0!important;box-shadow:none!important;color:var(--green-dark);font-weight:600;font-size:14px;padding:6px 8px;border-radius:8px}
+html body .nav.rustig a:hover{background:var(--green-soft)!important}
+html body .hero .bekendregel{margin:0 0 6px;text-align:center;font-size:13px;color:var(--muted)}
+html body .hero .bekendregel a{color:inherit;font-weight:700;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+html body .hero h1{margin-bottom:6px}
+html body .hero .rustpromise{margin:0 0 16px;text-align:center;font-size:14px;color:var(--muted)}
+html body .hero .search input{font-size:18px;padding:16px 16px;border-width:2px}
+html body .hero .search .btn{font-size:17px;padding:0 22px}
+html body .hero .mystores{margin-top:12px}
+html body .quick.tegels .start{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px}
+html body .quick.tegels .start>*{grid-column:auto!important}
+html body .quick.tegels .start .chip,html body .quick.tegels .start .chip.hot,html body .quick.tegels .start .chip.wm,html body .quick.tegels .start .chip.mt{background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--ink)!important;box-shadow:none!important;min-height:66px;font-size:14px;font-weight:700}
+html body .quick.tegels .start .chip small{color:var(--muted);font-weight:500}
+html body .quick.tegels .cats{display:flex!important;flex-wrap:wrap;gap:6px}
+html body .quick.tegels .cats .chip,html body .quick.tegels .cats a.chip{flex:none;min-height:0!important;padding:7px 11px!important;font-size:13.5px!important;font-weight:600;border:1px solid var(--line)!important;background:var(--surface)!important;color:var(--ink)!important;border-radius:999px!important;box-shadow:none!important;white-space:nowrap;text-decoration:none}
+html body .quick.tegels .cats .chip .ic{font-size:15px!important}
+html body .quick.tegels .cats .chip[aria-pressed=true]{border-color:var(--green)!important;background:var(--green-soft)!important}
+html body .tegelkop{margin:16px 0 8px;font-size:13px;font-weight:600}
+html body .hero .mystores{background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+html body .hero .mystores summary{background:none!important}
