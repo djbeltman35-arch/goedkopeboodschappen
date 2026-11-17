@@ -16,7 +16,7 @@ def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
     links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV if h != hier)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
-FOOTER = f'''<footer class="foot"><div class="wrap"><p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a> <a href="/steun/">❤️ Steun de site</a></p><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan. <a href="/steun/">Wat kost de site?</a></p>
+FOOTER = f'''<footer class="foot"><div class="wrap"><p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a> <a href="/steun/">❤️ Steun de site</a></p><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie. <a href="/steun/">Wat kost de site?</a></p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
 <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
@@ -817,12 +817,24 @@ if PAK and os.path.exists(STEDEN_PAD):
     except FileNotFoundError: pass
     _si_van = {stores[r["si"]]["id"]: r["si"] for r in PAK}
     _maand = MAAND
-    for naam, osmnaam, regio in STEDEN:
+    # De vaste lijst (Twente en grote steden) plus elke andere plaats met minstens 3 ketens die we vergelijken.
+    _vast = {o for _, o, _ in STEDEN}
+    _alle = STEDEN + [(o, o, "") for o in sorted(_osm) if o not in _vast and len(_osm[o]) >= 3]
+    _slugs = set()
+    for naam, osmnaam, regio in _alle:
         tel = _osm.get(osmnaam) or {}
         rijen = sorted((r for r in PAK if stores[r["si"]]["id"] in tel), key=lambda r: r["tot"])
-        if len(rijen) < 2: continue
-        STADPAGINAS.append((naam, slug(naam), regio, rijen, tel))
-    for naam, sl, regio, rijen, tel in STADPAGINAS:
+        if len(rijen) < 2 or slug(naam) in _slugs: continue
+        _slugs.add(slug(naam))
+        STADPAGINAS.append((naam, slug(naam), regio, rijen, tel, osmnaam))
+    # Plaatsen in de buurt (op afstand tussen de middens van de winkels in OpenStreetMap).
+    _mid = _sd.get("midden", {})
+    def _buren(osmnaam, n=6):
+        if osmnaam not in _mid: return []
+        la, lo = _mid[osmnaam]
+        kand = [(((_mid[x[5]][0] - la) * 111) ** 2 + ((_mid[x[5]][1] - lo) * 68) ** 2, x) for x in STADPAGINAS if x[5] != osmnaam and x[5] in _mid]
+        return [x for d2, x in sorted(kand, key=lambda t: t[0])[:n] if d2 < 40 ** 2]
+    for naam, sl, regio, rijen, tel, osmnaam in STADPAGINAS:
         path = f"/goedkoopste-supermarkt-in/{sl}/"
         w, l = rijen[0], rijen[-1]; vers = l["tot"] - w["tot"]; n_fil = sum(tel.values())
         title = f"Goedkoopste supermarkt in {naam} ({_maand}): {nm(w['si'])}"
@@ -838,7 +850,7 @@ if PAK and os.path.exists(STEDEN_PAD):
                 f'Doe je dat elke week, dan scheelt dat ongeveer <b>{eur(vers * 52)} per jaar</b>.</p>'
                 f'<p>Het goedkoopst is niet altijd voor elk product dezelfde winkel. <a href="/">Zet je eigen boodschappenlijst erin</a> en kies alleen de supermarkten in {esc(naam)}: dan zie je precies waar jouw boodschappen het minst kosten.</p>'
                 f'<h2>Aanbiedingen deze week in {esc(naam)}</h2><ul class="links">' + "".join(f'<li><a href="/aanbiedingen/{stores[r["si"]]["id"]}/">{"AH Bonus" if stores[r["si"]]["id"] == "ah" else esc(nm(r["si"])) + " aanbiedingen"}</a></li>' for r in rijen) + '</ul>'
-                + (f'<h2>Meer in {esc(regio)}</h2><ul class="links">' + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{s2}/">Goedkoopste supermarkt in {esc(n2)}</a></li>' for n2, s2, r2_, _, _ in STADPAGINAS if r2_ == regio and n2 != naam) + '</ul>' if regio and sum(1 for x in STADPAGINAS if x[2] == regio) > 1 else "")
+                + ((lambda bb: f'<h2>Supermarkten in de buurt van {esc(naam)}</h2><ul class="links">' + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{x[1]}/">Goedkoopste supermarkt in {esc(x[0])}</a></li>' for x in bb) + '</ul>' if bb else "")(_buren(osmnaam)))
                 + f'<p class="note">Prijzen van {DATUM}, gelijk aan de prijzen in de webwinkel van elke keten; in een enkele winkel kan de prijs afwijken. Welke supermarkten er in {esc(naam)} zitten, komt uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Mist er een winkel? <a href="/tips/">Laat het weten</a>. <a href="/goedkoopste-supermarkt/">Ranglijst van heel Nederland</a> · <a href="/goedkoopste-supermarkt-in/">Alle steden</a></p>')
         faq = [(f"Wat is de goedkoopste supermarkt in {naam}?", f"In {_maand} is {nm(w['si'])} de goedkoopste supermarkt in {naam}: {len(PAKTERMEN)} vaste boodschappen kosten daar {eur(w['tot'])}." + (f" Daarna volgt {nm(rijen[1]['si'])} ({eur(rijen[1]['tot'])})." if len(rijen) > 1 else "")),
                (f"Welke supermarkten zitten er in {naam}?", f"Van de ketens die wij vergelijken zitten in {naam}: " + ", ".join(f"{nm(r['si'])} ({tel[stores[r['si']]['id']]})" for r in rijen) + ".")]
@@ -846,17 +858,18 @@ if PAK and os.path.exists(STEDEN_PAD):
         schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/"))
         made.append((path, "0.6"))
     if STADPAGINAS:
-        def _blok(titel, lijst): return f"<h2>{titel}</h2><ul class=\"links\">" + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{s2}/">{esc(n2)}</a> <span class="muted">· {esc(nm(r_[0]["si"]))}</span></li>' for n2, s2, _, r_, _ in lijst) + "</ul>"
-        tw = [x for x in STADPAGINAS if x[2] in ("Twente", "Overijssel")]; ov = sorted([x for x in STADPAGINAS if x not in tw], key=lambda x: x[0])
+        def _blok(titel, lijst): return f"<h2>{titel}</h2><ul class=\"links\">" + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{s2}/">{esc(n2)}</a> <span class="muted">· {esc(nm(r_[0]["si"]))}</span></li>' for n2, s2, _, r_, _, _ in lijst) + "</ul>"
+        tw = [x for x in STADPAGINAS if x[2] in ("Twente", "Overijssel")]; gr = sorted([x for x in STADPAGINAS if x[5] in _vast and x not in tw], key=lambda x: x[0])
+        ov = sorted([x for x in STADPAGINAS if x[5] not in _vast], key=lambda x: x[0].lower())
         ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), ("Per stad", None))
         head = ch + f'<h1>Goedkoopste supermarkt per stad</h1><p class="lead">Niet elke supermarkt zit in elke stad. Kies je stad en zie welke supermarkt daar het goedkoopst is, op een vast mandje van {len(PAKTERMEN)} boodschappen.</p>'
-        body = _blok("Twente en Overijssel", tw) + _blok("Grote steden", ov) + f'<p class="note">Winkels per stad uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Prijzen van {DATUM}.</p>'
+        body = _blok("Twente en Overijssel", tw) + _blok("Grote steden", gr) + _blok("Alle andere plaatsen", ov) + f'<p class="note">Winkels per stad uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Prijzen van {DATUM}.</p>'
         schrijf("/goedkoopste-supermarkt-in/", page("/goedkoopste-supermarkt-in/", f"Goedkoopste supermarkt per stad ({_maand}) | Goedkope Boodschappen", f"Welke supermarkt is het goedkoopst in jouw stad? Ranglijsten voor {len(STADPAGINAS)} steden, van Rijssen en Enschede tot Amsterdam en Rotterdam.", head, body, [cld], actief="/goedkoopste-supermarkt/"))
         made.append(("/goedkoopste-supermarkt-in/", "0.7"))
     print("stadspagina's:", len(STADPAGINAS))
 
 # ---------- over en privacy ----------
-over = f'''<div class="panel"><h2 style="margin-top:0">Ik verdien er niets aan</h2><p>Goedkope Boodschappen is een hobbyproject van Erik. Er staat geen reclame op, supermarkten kunnen geen plek kopen en er zitten geen affiliatelinks in: als je doorklikt naar een supermarkt, krijg ik daar niets voor. De volgorde is altijd gewoon: goedkoopste eerst. <a href="/zo-vergelijken-wij/">Lees precies hoe we vergelijken</a>.</p></div>
+over = f'''<div class="panel"><h2 style="margin-top:0">Eerlijk vergelijken, zonder reclame</h2><p>Goedkope Boodschappen is een hobbyproject van Erik. Er staat geen reclame op, supermarkten kunnen geen plek kopen en er zitten geen affiliatelinks in: als je doorklikt naar een supermarkt, krijg ik daar niets voor. De volgorde is altijd gewoon: goedkoopste eerst. <a href="/zo-vergelijken-wij/">Lees precies hoe we vergelijken</a>.</p></div>
 <h2>Waarom deze site?</h2><p>Boodschappen zijn duur en iedere supermarkt is ergens anders goedkoop. Met deze site zie je in een paar seconden waar jouw lijst het minst kost, zonder dat je zelf tien folders hoeft door te bladeren.</p>
 <h2>Waar komen de prijzen vandaan?</h2><p>Elke dag halen we automatisch de prijzen en aanbiedingen op van de webshops van {AANTAL} supermarkten: {", ".join(NAMEN[s] for s in ACTIEF if s in NAMEN)}. De gewone prijzen komen deels uit de open dataset van <a href="https://www.checkjebon.nl/" rel="noopener">Checkjebon</a> (MIT-licentie). Vomar, SPAR, Jan Linders en Nettorama zetten hun acties niet als losse prijzen online; daarvan tonen we alleen de gewone prijzen waar die beschikbaar zijn. Coop is inmiddels PLUS geworden.</p>
 <p>Supermarkten kunnen in de winkel een andere prijs hanteren dan online. De prijs aan de kassa is altijd leidend.</p>
@@ -871,7 +884,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <li><b>Geen betaalde plekken.</b> Supermarkten en merken kunnen niets kopen: geen advertenties, geen gesponsorde producten, geen "uitgelicht".</li>
 <li><b>Geen commissie.</b> Klik je door naar een webshop, dan krijg ik daar niets voor. Er zitten geen affiliatelinks in.</li>
 <li><b>Voor elke winkel dezelfde regels.</b> Albert Heijn, Lidl of Vomar: alles gaat door dezelfde berekening.</li>
-<li><b>Ik verdien er niets aan.</b> Dit is een gratis hobbyproject van Erik, zonder reclame of abonnement. De kosten betaal ik zelf; <a href="/steun/">wil je helpen</a>, dan kan dat.</li></ul></div>
+<li><b>Gratis.</b> Dit is een hobbyproject van Erik, zonder reclame of abonnement. De kosten betaal ik zelf; <a href="/steun/">wil je helpen</a>, dan kan dat.</li></ul></div>
 <h2>Waar komen de prijzen vandaan?</h2><p>Elke dag halen we automatisch de prijzen en aanbiedingen op van de webshops van {AANTAL} supermarkten: {", ".join(NAMEN[s] for s in ACTIEF if s in NAMEN)}. Een deel van de gewone prijzen komt uit de open dataset van <a href="https://www.checkjebon.nl/" rel="noopener">Checkjebon</a>. Nu zitten er <b>{_nprod:,}</b> producten in de vergelijking; de laatste update was op {DATUM}.</p>
 <p>Online prijzen kunnen afwijken van de winkel. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe kiezen we het vergelijkbare product?</h2><ul>
@@ -885,7 +898,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <h2>Hoe vaak in de aanbieding?</h2><p>Bij een actie staat hoe vaak hetzelfde product bij dezelfde supermarkt de weken ervoor in de aanbieding was, en over hoeveel weken we dat weten. Eén actie telt één keer, ook als hij over twee kalenderweken loopt. "Vaak in de aanbieding" betekent: in minstens de helft van die weken. Dan hoef je niet te hamsteren. We houden dit bij sinds oktober 2026.</p><h2>Complete maaltijden</h2><p>Bij maaltijden rekenen we met <b>hele verpakkingen</b>, zoals aan de kassa: heb je 300 gram nodig en zit het per 500 gram, dan betaal je 500 gram. Olie, zout en kruiden uit de voorraadkast tellen niet mee. Is een optioneel ingrediënt niet bij elke supermarkt te koop, dan telt het bij geen enkele winkel mee, zodat je overal hetzelfde krijgt voor de prijs. De recepten komen van bekende receptensites; bij elk gerecht staat de bron.</p>
 <h2>Fout gezien?</h2><p>Bij elk product staat een knop <b>Klopt niet?</b>. Daarmee meld je met één tik een verkeerde prijs of een product dat niet klopt. Ik kijk elke melding na. Je kunt ook mailen naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>
 <p><a href="/over/">Over deze site</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a> · <a href="/privacy/">Privacy</a></p>''').replace(f"{_nprod:,}", f"{_nprod:,}".replace(",", "."))
-_zfaq = [("Krijgt Goedkope Boodschappen geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis en ik verdien er niets aan."),
+_zfaq = [("Krijgt Goedkope Boodschappen geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis."),
          ("Kan een supermarkt hoger in de lijst komen?", "Nee. De volgorde komt alleen uit de prijs per kilo, liter of stuk. Voor elke winkel gelden dezelfde regels."),
          ("Hoe vaak worden de prijzen bijgewerkt?", "Elke dag, automatisch. Aanbiedingen tellen alleen mee in de dagen dat ze geldig zijn.")]
 schrijf("/zo-vergelijken-wij/", page("/zo-vergelijken-wij/", "Zo vergelijken wij: onafhankelijk en zonder betaalde plekken", "Hoe Goedkope Boodschappen prijzen vergelijkt: elke dag nieuwe prijzen, prijs per kilo of liter, geen reclame, geen commissie en voor elke supermarkt dezelfde regels.",
@@ -998,7 +1011,7 @@ app = open(os.path.join(ROOT, "site", "index.html")).read()
 pop = ["halfvolle melk", "eieren", "jonge kaas", "pindakaas", "hagelslag", "volkoren brood", "koffiebonen", "bananen", "kipfilet", "gehakt", "spaghetti", "rijst", "coca cola", "chips", "toiletpapier", "wasmiddel", "roomboter", "aardappelen", "tomaten", "olijfolie"]
 pop = [t for t in pop if t in PICKED]
 faq = [("Welke supermarkt is het goedkoopst?", f"In {MAAND} is {nm(PAK[0]['si'])} het goedkoopst voor een vast boodschappenmandje van {len(PAKTERMEN)} producten ({eur(PAK[0]['tot'])}), gevolgd door {nm(PAK[1]['si'])} ({eur(PAK[1]['tot'])})." if len(PAK) > 1 else "Dat verschilt per product. Zoek je boodschappen op en zie het meteen."),
-       ("Is Goedkope Boodschappen gratis?", "Ja. Er is geen account nodig, er staat geen reclame op en ik verdien er niets aan. Supermarkten betalen niet voor een plek."),
+       ("Is Goedkope Boodschappen gratis?", "Ja. Er is geen account nodig en er staat geen reclame op. Supermarkten betalen niet voor een plek."),
        ("Hoe actueel zijn de prijzen?", "De prijzen en aanbiedingen worden elke dag automatisch opgehaald van de webshops van de supermarkten. De prijs aan de kassa is leidend."),
        ("Blijft mijn boodschappenlijst bewaard?", "Ja, je lijst wordt bewaard in je eigen browser. Kom je terug, dan zie je meteen welke producten goedkoper of duurder zijn geworden en wat er in de aanbieding is.")]
 seo = (f'<section class="wrap seo" aria-labelledby="sh"><h2 id="sh">Boodschappen vergelijken bij {AANTAL} supermarkten</h2>'
@@ -1972,7 +1985,7 @@ _heeft_bedrag = all(k in _g for k in ("bedrag", "lo", "_wm", "avond_pp"))
 _hv_rows = ("".join(f'<tr><td><b>{n} {"persoon" if n == 1 else "personen"}</b></td><td class="p">{eur(bedrag(n, lo[1]))}</td><td class="p">{eur(bedrag(n, lo[1]) * 52 / 12)}</td></tr>' for n in (1, 2, 3, 4))
             if _heeft_bedrag else "")
 ch, cld = crumbs(("Voor hulpverleners", None))
-_hv_faq = [("Is het echt gratis?", "Ja. Er is geen reclame, geen abonnement en geen betaalde plek voor supermarkten. Ik verdien er niets aan."),
+_hv_faq = [("Is het echt gratis?", "Ja. Er is geen reclame, geen abonnement en geen betaalde plek voor supermarkten."),
            ("Moet mijn klant een account maken?", "Nee. Er is geen account, geen e-mailadres en geen cookies nodig. De boodschappenlijst blijft alleen op de eigen telefoon of computer."),
            ("Kloppen de prijzen?", "De prijzen komen elke dag van de webshops van de supermarkten, inclusief aanbiedingen. In de winkel kan een prijs soms anders zijn; de kassa is leidend."),
            ("Mag ik naar de site verwijzen of hem in een folder zetten?", "Graag! Gebruik de tekst of de printversie op deze pagina. Een vraag of idee? Mail naar goedkopeboodschappen@proton.me."),

@@ -28,12 +28,12 @@ export async function stuurBevestiging(site, a) {
     await v.stuur(bericht({
       van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email,
       onderwerp: a.nieuws && !a.termen.length ? 'Bevestig je aanmelding voor de nieuwsbrief' : 'Bevestig je e-mailmeldingen', afmelden: uit,
-      tekst: `Hallo!\n\nBevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame. Ik verdien er niets aan.\nhttps://boodschappenvergelijk.nl`,
+      tekst: `Hallo!\n\nBevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame.\nhttps://boodschappenvergelijk.nl`,
       html: opmaak({
         titel: 'Bevestig je e-mailmeldingen',
         inhoud: `<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Tik op de knop, dan krijg je voortaan ${esc(wat)}.</p><p style="margin:0;font-size:15px;line-height:1.5;color:#5d6a61">Heb je dit niet aangevraagd? Negeer deze mail dan. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.</p>`,
         knop: 'Ja, aanmelden', knopUrl: link,
-        voet: 'Goedkope Boodschappen is gratis en onafhankelijk: geen reclame, geen commissie, ik verdien er geen cent aan.',
+        voet: 'Goedkope Boodschappen is gratis en onafhankelijk: geen reclame en geen commissie.',
       }),
     }));
   } finally { await v.sluit(); }
