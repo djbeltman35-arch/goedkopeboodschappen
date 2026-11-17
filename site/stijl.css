@@ -745,3 +745,10 @@ html body .maal .maalkop h2{margin-bottom:10px}
 html body .maal .maalkop a{flex:none;font-weight:700;font-size:15px;color:var(--green-dark);text-decoration:none;white-space:nowrap}
 @media (max-width:920px){html body main:has(>.wrap.app)>*{width:100%;max-width:100%;box-sizing:border-box;margin-left:0;margin-right:0}html body main:has(>.wrap.app)>.wrap.app>.res,html body main:has(>.wrap.app)>.wrap.app>.list{box-sizing:border-box;min-width:0}html body main:has(>.wrap.app)>.wrap.app>.list{width:auto;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}}
 @media (max-width:920px){html body main:has(>.wrap.app)>*,html body main:has(>.wrap.app)>.wrap.app>*{min-width:0}}
+/* Startpagina: de vier uitklapblokken compact en dicht op elkaar */
+html body .snellinks{margin-top:6px!important;gap:6px!important}
+html body .quick.tegels .catklap{margin:10px 0 0!important}
+html body .snellinks .subblok,html body .quick.tegels .catklap{margin-bottom:0!important;box-shadow:none!important;border:1px solid var(--line)!important;border-radius:12px!important}
+html body .snellinks .subblok>summary,html body .quick.tegels .catklap>summary{padding:9px 14px!important;min-height:0!important}
+html body .snellinks .subblok>summary .subnaam,html body .quick.tegels .catklap>summary .subnaam{font-size:15px!important;margin:0!important}
+html body .snellinks .subblok>summary::after,html body .quick.tegels .catklap>summary::after{width:26px!important;height:26px!important;font-size:14px!important;line-height:26px!important}

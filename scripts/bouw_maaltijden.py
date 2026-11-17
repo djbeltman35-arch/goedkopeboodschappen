@@ -278,9 +278,13 @@ if MAAL:
     # Blok voor de startpagina: de 6 goedkoopste, verdeeld over de soorten.
     keuze = []
     for key, _, _ in SOORTEN:
-        ms = sorted([m for m in MAAL if m["soort"] == key], key=lambda m: m["rang"][0][1]["tot"])
+        ms = sorted([m for m in MAAL if m["soort"] == key and not m["naam"].lower().startswith("dahl met rode linzen")], key=lambda m: m["rang"][0][1]["tot"])
         keuze += ms[:2]
-    keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])[:3]
+    keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])
+    # Erwtensoep met rookworst vooraan (sterkste foto, typisch Hollands); dan de goedkoopste andere.
+    _ews = next((m for m in MAAL if m["naam"].lower().startswith("erwtensoep met rookworst") and m["rang"]), None)
+    if _ews: keuze = [_ews] + [m for m in keuze if m is not _ews]
+    keuze = keuze[:3]
     MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><div class="maalkop"><h2 id="mh">🍽️ Goedkoop avondeten</h2><a href="/maaltijden/">Alle {len(MAAL)} →</a></div><ul class="mgrid">'
                  + "".join(kaart(m) for m in keuze) + '</ul></section>' + MKJS)
 else:
