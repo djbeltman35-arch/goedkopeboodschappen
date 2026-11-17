@@ -87,7 +87,7 @@ async function mailRonde(site, offers) {
         voet: `Je krijgt deze mail omdat je je op Goedkope Boodschappen hebt aangemeld voor meldingen bij aanbiedingen. <a href="${esc(uit)}" style="color:#5d6a61">Afmelden</a> kan altijd, met één klik.<br>Gratis en onafhankelijk: geen reclame, geen commissie, ik verdien er geen cent aan.`,
       });
       try {
-        await v.stuur(bericht({ van: user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email, onderwerp, tekst, html, afmelden: uit }));
+        await v.stuur(bericht({ van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email, onderwerp, tekst, html, afmelden: uit }));
         gestuurd++;
         a.verstuurd = a.verstuurd || {};
         for (const { o } of nieuw) a.verstuurd[sleutelVan(o)] = d;

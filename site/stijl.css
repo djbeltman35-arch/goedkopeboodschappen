@@ -670,3 +670,6 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .tiplink a+a{margin-left:8px}
 .steunknop{display:inline-block;font-size:18px;padding:12px 22px}
 .steunlijst li{margin:0 0 10px}
+.nbform input[type=email]{width:100%;max-width:420px;font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:10px;margin:6px 0 12px;display:block}
+.nbform fieldset{border:0;padding:0;margin:0 0 10px}.nbform fieldset label{margin-right:14px}
+.nbwinkels{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 10px}.nbform details{margin:0 0 12px}

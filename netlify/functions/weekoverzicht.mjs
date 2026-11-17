@@ -57,7 +57,7 @@ export default async (req, context) => {
       });
       if (!c) c = await verbind({ user, pass });
       try {
-        await c.stuur(bericht({ van: user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email, onderwerp: kop, tekst, html, afmelden: uit }));
+        await c.stuur(bericht({ van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email, onderwerp: kop, tekst, html, afmelden: uit }));
         a.weekVerstuurd = week; await store.setJSON(key, a); n++;
       } catch (e) { console.log('weekoverzicht mislukt', e.message); }
     }

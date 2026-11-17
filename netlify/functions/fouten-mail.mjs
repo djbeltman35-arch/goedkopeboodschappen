@@ -52,7 +52,7 @@ export default async () => {
   const c = await verbind({ user, pass });
   try {
     await c.stuur(bericht({
-      van: user, vanNaam: 'Goedkope Boodschappen', aan: NAAR, onderwerp: `"Klopt niet?": ${kop}`, tekst,
+      van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', aan: NAAR, onderwerp: `"Klopt niet?": ${kop}`, tekst,
       html: opmaak({
         titel: `"Klopt niet?": ${kop}`,
         inhoud: (waarschuwing ? `<p style="margin:0 0 12px;padding:10px;background:#fde9e5;border-radius:8px;font-size:14px">${esc(waarschuwing)}</p>` : '') +

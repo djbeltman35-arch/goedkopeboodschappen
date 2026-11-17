@@ -1,4 +1,6 @@
-// Mail versturen via SMTP met TLS (bijvoorbeeld Gmail met een app-wachtwoord), zonder extra pakketten.
+// Mail versturen via SMTP met TLS (Brevo of Gmail), zonder extra pakketten.
+// Instellingen (Netlify): GMAIL_USER en GMAIL_APP_PASSWORD = SMTP-login en -sleutel; voor Brevo ook SMTP_HOST=smtp-relay.brevo.com,
+// SMTP_PORT=465 en MAIL_FROM=nieuwsbrief@boodschappenvergelijk.nl (het adres dat ontvangers als afzender zien).
 // Gebruik: const v = await verbind({ host, port, user, pass }); await v.stuur(bericht({...})); await v.sluit();
 import tls from 'node:tls';
 import crypto from 'node:crypto';
@@ -41,7 +43,8 @@ export async function verbind({ host = process.env.SMTP_HOST || 'smtp.gmail.com'
   } catch (e) { sock.destroy(); throw e; }
   return {
     async stuur({ aan, data }) {
-      await opdracht(`MAIL FROM:<${user}>`, [250]);
+      // Afzender: MAIL_FROM (bijv. nieuwsbrief@boodschappenvergelijk.nl via Brevo), anders het inlogadres (Gmail).
+      await opdracht(`MAIL FROM:<${process.env.MAIL_FROM || user}>`, [250]);
       await opdracht(`RCPT TO:<${aan}>`, [250, 251]);
       await opdracht('DATA', [354]);
       // Regels die met een punt beginnen krijgen een extra punt (SMTP-regel).
