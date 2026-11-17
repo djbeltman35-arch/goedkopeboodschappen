@@ -1031,9 +1031,10 @@ faq = [("Welke supermarkt is het goedkoopst?", f"In {MAAND} is {nm(PAK[0]['si'])
 snel = ('<details class="subblok"><summary><h3 class="subnaam">Populaire producten</h3></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in pop) + '<li><a href="/vergelijk/">Alle producten</a></li></ul></div></details>'
         + '<details class="subblok"><summary><h3 class="subnaam">Aanbiedingen per supermarkt</h3></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/aanbiedingen/{s}/">{"AH Bonus" if s == "ah" else esc(NAMEN[s]) + " aanbiedingen"}</a></li>' for s in winkels_o) + '</ul></div></details>'
         + '<details class="subblok"><summary><h3 class="subnaam">Complete maaltijden</h3></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/maaltijden/{m["slug"]}/">{esc(m["naam"])}</a></li>' for m in sorted([m for m in MAAL if m["rang"]], key=lambda m: m["rang"][0][1]["tot"])[:12]) + f'<li><a href="/maaltijden/">Alle {len(MAAL)} maaltijden</a></li></ul></div></details>')
-seo = (f'<section class="wrap seo" aria-labelledby="sh"><h2 id="sh">Boodschappen vergelijken bij {AANTAL} supermarkten</h2>'
-       f'<p>Goedkope Boodschappen vergelijkt de prijzen van {", ".join(NAMEN[s] for s in ACTIEF[:-1] if s in NAMEN)} en {NAMEN.get(ACTIEF[-1], "")}, inclusief de aanbiedingen van deze week.</p>'
-       + (f'<p><b>Goedkoopste supermarkt van {MAAND}:</b> <a href="/goedkoopste-supermarkt/">{esc(nm(PAK[0]["si"]))}</a>, gevolgd door {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))}.</p>' if len(PAK) > 2 else "")
+seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h2 id="sh">Boodschappen vergelijken bij {AANTAL} supermarkten</h2>'
+       + '<ul class="seowinkels">' + "".join(f'<li>{esc(NAMEN[s])}</li>' for s in sorted([s for s in ACTIEF if s in NAMEN], key=lambda s: NAMEN[s].lower())) + '</ul>'
+       + (f'<a class="seowinnaar" href="/goedkoopste-supermarkt/"><span>🏆 Goedkoopst in {MAAND.split()[0]}</span><b>{esc(nm(PAK[0]["si"]))}</b><small>daarna {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))} →</small></a>' if len(PAK) > 2 else "")
+       + '</div>'
        + faq_html(faq) + "</section>")
 ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
