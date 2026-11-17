@@ -813,3 +813,13 @@ html body .hero .stapjes{gap:0!important;background:var(--surface);border:1px so
 html body .hero .stapjes li{flex:1 1 0;justify-content:center;padding:8px 4px;font-size:12.5px;white-space:nowrap}
 html body .hero .stapjes li+li{border-left:1px solid var(--line)}
 html body .hero .stapjes b{width:20px;height:20px;font-size:12px}
+/* Blok "Boodschappen vergelijken bij 11 supermarkten" strakker */
+html body .seo .seokaart{padding:12px 14px!important}
+html body .seo .seokaart h2{font-size:15.5px!important;margin:0 0 6px!important}
+html body .seo .seowinkels{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px 10px!important;margin:0 0 10px!important;padding:0}
+html body .seo .seowinkels li{display:block!important;background:none!important;padding:0!important;font-size:13px!important;font-weight:500!important;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body .seo .seowinkels li::before{content:"✓ ";color:var(--green);font-weight:700}
+html body .seo .seowinnaar{padding:8px 12px!important;gap:2px 6px!important;align-items:baseline}
+html body .seo .seowinnaar span{width:auto!important;font-size:13px!important}
+html body .seo .seowinnaar b{font-size:15px!important}
+html body .seo .seowinnaar small{font-size:12.5px!important}
