@@ -285,6 +285,10 @@ if MAAL:
     _ews = next((m for m in MAAL if m["naam"].lower().startswith("erwtensoep met rookworst") and m["rang"]), None)
     if _ews: keuze = [_ews] + [m for m in keuze if m is not _ews]
     keuze = keuze[:3]
+    # Drie veel gegeten maaltijden met een mooie foto erachter.
+    for _n in ("spaghetti bolognese", "boerenkoolstamppot met rookworst", "nasi goreng met ei"):
+        _m = next((m for m in MAAL if m["naam"].lower() == _n and m["rang"]), None)
+        if _m and _m not in keuze: keuze.append(_m)
     MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><div class="maalkop"><h2 id="mh">🍽️ Goedkoop avondeten</h2><a href="/maaltijden/">Alle {len(MAAL)} →</a></div><ul class="mgrid">'
                  + "".join(kaart(m) for m in keuze) + '</ul></section>' + MKJS)
 else:
