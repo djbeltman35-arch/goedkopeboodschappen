@@ -775,3 +775,7 @@ html body .seo .seowinnaar{display:flex;flex-wrap:wrap;align-items:baseline;gap:
 html body .seo .seowinnaar span{font-size:13px;color:var(--green-dark);font-weight:700;width:100%}
 html body .seo .seowinnaar b{font-size:18px}
 html body .seo .seowinnaar small{font-size:13px;color:var(--muted)}
+/* Drie stappen als smalle rij onder de zoekbalk */
+html body .hero .stapjes{list-style:none;display:flex;justify-content:space-between;gap:6px;margin:10px 0 0;padding:0}
+html body .hero .stapjes li{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.2;text-align:left}
+html body .hero .stapjes b{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffd640;color:var(--ink);font-size:12.5px}
