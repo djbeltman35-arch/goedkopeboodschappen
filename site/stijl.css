@@ -676,20 +676,18 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .nbform fieldset{border:0;padding:0;margin:0 0 10px}.nbform fieldset label{margin-right:14px}
 .nbwinkels{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 10px}.nbform details{margin:0 0 12px}
 
-/* Badge "Bekend van" boven de kop: klein tv'tje met een hartje, knipperend live-lampje */
-.hero .bekend{display:flex;align-items:center;gap:8px;width:max-content;max-width:100%;margin:0 auto 12px;padding:7px 14px 7px 9px;border-radius:999px;background:linear-gradient(135deg,#fff7dc,#ffe7a3);border:2px solid #f0b400;color:#3a2a00;box-shadow:0 3px 0 #d39b00,var(--schaduw-k);transform:rotate(-1.5deg)}
-.hero .bekend .tv{width:38px;height:35px;flex:none;color:#2b2b2b}
-.hero .bekend .bt{display:flex;flex-direction:column;line-height:1.1;text-align:left}
-.hero .bekend small{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#8a5a00}
-.hero .bekend .bn{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 5px;font-size:clamp(14px,3.9vw,17px);font-weight:800}
-.hero .bekend .bn a{color:inherit;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:rgba(224,71,47,.55)}
-.hero .bekend .bn a:hover{text-decoration-color:#e0472f}
-.hero .bekend .en{font-weight:600;opacity:.7}
-.hero .bekend .live{width:8px;height:8px;border-radius:50%;background:#e0472f;box-shadow:0 0 0 0 rgba(224,71,47,.6);animation:live 1.8s ease-out infinite}
-@keyframes live{0%{box-shadow:0 0 0 0 rgba(224,71,47,.6)}70%{box-shadow:0 0 0 7px rgba(224,71,47,0)}100%{box-shadow:0 0 0 0 rgba(224,71,47,0)}}
-@media (prefers-reduced-motion:reduce){.hero .bekend .live{animation:none}}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .bekend{background:linear-gradient(135deg,#3a2f0c,#4a3a08);border-color:#c99400;color:#fff3cc;box-shadow:0 3px 0 #7a5c00}:root:not([data-theme=light]) .hero .bekend small{color:#ffd56b}:root:not([data-theme=light]) .hero .bekend .tv{color:#f5e6b8}}
-:root[data-theme=dark] .hero .bekend{background:linear-gradient(135deg,#3a2f0c,#4a3a08);border-color:#c99400;color:#fff3cc;box-shadow:0 3px 0 #7a5c00}
-:root[data-theme=dark] .hero .bekend small{color:#ffd56b}
-:root[data-theme=dark] .hero .bekend .tv{color:#f5e6b8}
-.hero .bekend .play{display:inline-block;font-size:.7em;margin-right:4px;color:#e0472f;text-decoration:none;vertical-align:1px}
+/* Twee kleine "Bekend van"-badges boven de kop, als sierlijke stickers */
+.hero .bekend{display:flex;justify-content:center;gap:10px;margin:0 auto 12px;flex-wrap:wrap}
+.hero .bk{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 7px;border-radius:12px;background:#fffaf0;border:1.5px solid #e2c27a;color:#3a2a00;text-decoration:none;box-shadow:0 1px 0 #e2c27a,0 4px 10px rgba(120,90,20,.12);transition:transform .15s}
+.hero .bk:first-child{transform:rotate(-2deg)}
+.hero .bk:last-child{transform:rotate(1.5deg)}
+.hero .bk:hover,.hero .bk:focus-visible{transform:rotate(0) translateY(-1px)}
+.hero .bk .tv{width:24px;height:22px;flex:none;color:#2b2b2b}
+.hero .bk span{display:flex;flex-direction:column;line-height:1.1;text-align:left}
+.hero .bk small{font-size:10.5px;font-weight:600;letter-spacing:.02em;color:#9a7420}
+.hero .bk b{font-size:13.5px;font-weight:800;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.hero .bk{transition:none}}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .bk{background:#2e2610;border-color:#8a6d22;color:#fff3cc;box-shadow:0 1px 0 #8a6d22}:root:not([data-theme=light]) .hero .bk small{color:#e8c66a}:root:not([data-theme=light]) .hero .bk .tv{color:#f5e6b8}}
+:root[data-theme=dark] .hero .bk{background:#2e2610;border-color:#8a6d22;color:#fff3cc;box-shadow:0 1px 0 #8a6d22}
+:root[data-theme=dark] .hero .bk small{color:#e8c66a}
+:root[data-theme=dark] .hero .bk .tv{color:#f5e6b8}
