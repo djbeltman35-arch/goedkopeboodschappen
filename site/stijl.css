@@ -681,10 +681,10 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .hero .bekend .tv{width:38px;height:35px;flex:none;color:#2b2b2b}
 .hero .bekend .bt{display:flex;flex-direction:column;line-height:1.1;text-align:left}
 .hero .bekend small{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#8a5a00}
-.hero .bekend{text-decoration:none;transition:transform .15s}
-.hero .bekend:hover,.hero .bekend:focus-visible{transform:rotate(0deg) scale(1.03)}
-.hero .bekend b{font-size:17px;font-weight:800}
-.hero .bekend .pijl{font-weight:800;opacity:.6}
+.hero .bekend .bn{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;font-size:17px;font-weight:800}
+.hero .bekend .bn a{color:inherit;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:rgba(224,71,47,.55)}
+.hero .bekend .bn a:hover{text-decoration-color:#e0472f}
+.hero .bekend .en{font-weight:600;opacity:.7}
 .hero .bekend .live{width:8px;height:8px;border-radius:50%;background:#e0472f;box-shadow:0 0 0 0 rgba(224,71,47,.6);animation:live 1.8s ease-out infinite}
 @keyframes live{0%{box-shadow:0 0 0 0 rgba(224,71,47,.6)}70%{box-shadow:0 0 0 7px rgba(224,71,47,0)}100%{box-shadow:0 0 0 0 rgba(224,71,47,0)}}
 @media (prefers-reduced-motion:reduce){.hero .bekend .live{animation:none}}
