@@ -1,0 +1,31 @@
+name: Supermarkten per stad
+
+# Eens per maand uit OpenStreetMap ophalen welke supermarkten er in welke stad zitten (voor de stadspagina's).
+on:
+  schedule:
+    - cron: "17 3 3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: steden
+  cancel-in-progress: false
+
+jobs:
+  steden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ophalen
+        run: python3 scripts/steden_ophalen.py
+      - name: Opslaan
+        run: |
+          git config user.name "prijzen-bot"
+          git config user.email "prijzen-bot@users.noreply.github.com"
+          git add data/supermarkten-steden.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Supermarkten per stad bijgewerkt $(date -u +%F)"
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push && break; sleep 10; done
