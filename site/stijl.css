@@ -278,6 +278,8 @@ ul.offers>li.offer,.rows>li.row{content-visibility:auto;contain-intrinsic-size:a
 /* Duidelijke knop Feestdagen rechtsboven */
 .nav a.feest,.nav a.feest:hover,.nav a.feest[aria-current=page]{background:#c4381f;color:#fff;border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #962a16}
 .nav a.feest:hover{background:#a92f1a}
+.nav a.nbknop,.nav a.nbknop:hover,.nav a.nbknop[aria-current=page]{background:#1f6fb2;color:#fff;border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #15507f}
+.nav a.nbknop:hover{background:#185d96}
 .feesten .pill{justify-self:start;margin:2px 0 0}
 /* Kopbalk past altijd: op smalle schermen kleiner, en nooit breder dan het scherm */
 .bar{min-width:0}.nav{min-width:0}
