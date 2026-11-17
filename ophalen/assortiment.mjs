@@ -228,46 +228,75 @@ async function tekst(url) {
   }
 }
 const vandaag = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam' }).format(new Date());
-function detailresult(id, naam, site, perDag) {
+// Algemeen: een lijst productpagina's, per dag een deel bekijken (eerst nooit bekeken, dan de langst niet bekeken).
+// lees(html, id) geeft { n, p, s } of null. Prijzen blijven 21 dagen geldig als een pagina niet opnieuw aan de beurt was.
+async function roterend(id, naam, urls, lees, perDag) {
+  if (urls.length < 1000) throw new Error(`te weinig ${naam}-producten gevonden (${urls.length})`);
+  const pad = path.join(DATA, `assortiment-${id}.json`);
+  let vorig = {}; try { vorig = JSON.parse(fs.readFileSync(pad, 'utf8')).bekeken || {}; } catch {}
+  const vd = vandaag();
+  const grens = new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10);
+  const pid = u => u.match(/\/(\d+)\/?$/)[1];
+  const rij = urls.slice().sort((a, b) => String(vorig[pid(a)]?.dag || '').localeCompare(String(vorig[pid(b)]?.dag || '')));
+  let n = 0, fout = 0;
+  for (const u of rij.slice(0, +process.env.PER_DAG || perDag)) {
+    const k = pid(u);
+    try {
+      const html = await tekst(u);
+      if (html == null) { delete vorig[k]; continue; }
+      const r = lees(html, k);
+      if (r && r.p > 0 && r.n) { vorig[k] = { dag: vd, n: r.n.replace(/\s+/g, ' ').trim(), l: u, p: r2(r.p), s: String(r.s || '').trim() }; n++; }
+      else vorig[k] = { ...(vorig[k] || {}), dag: vd, weg: true };
+    } catch (e) { if (++fout > 50) throw new Error(`${naam}: te veel fouten (${e.message})`); }
+    await slaap(500);
+  }
+  const bestaat = new Set(urls.map(pid));
+  for (const k of Object.keys(vorig)) if (!bestaat.has(k)) delete vorig[k];
+  const d = Object.values(vorig).filter(x => !x.weg && x.p > 0 && x.n && x.dag >= grens).map(({ dag, weg, ...x }) => x);
+  console.log(naam, n, 'pagina\'s vandaag bekeken,', d.length, 'producten met een prijs van de afgelopen 21 dagen, in totaal', urls.length);
+  return { c: naam, u: '', d, bekeken: vorig };
+}
+
+/* ---------- Dirk en DekaMarkt (zelfde webwinkel): productpagina's uit hun sitemap ---------- */
+// Elke productpagina bevat de prijs (normalPrice) in de Nuxt-gegevens.
+const leesDetailresult = (html, k) => {
+  const p = zoek(nuxtData(html), x => x && String(x.productId) === k && x.normalPrice != null && x.productInformation);
+  return p ? { n: p.productInformation?.headerText || '', p: p.normalPrice, s: p.productInformation?.packaging || '' } : null;
+};
+function detailresult(id, naam, site, perDag, maakLink = u => u) {
   return async () => {
     const sm = await tekst(`${site}/products-sitemap.xml`);
-    const urls = [...String(sm || '').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()).filter(u => /\/(\d+)$/.test(u));
-    if (urls.length < 1000) throw new Error(`te weinig ${naam}-producten in de sitemap (${urls.length})`);
-    const pad = path.join(DATA, `assortiment-${id}.json`);
-    let vorig = {}; try { vorig = JSON.parse(fs.readFileSync(pad, 'utf8')).bekeken || {}; } catch {}
-    const vd = vandaag();
-    const grens = new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10);
-    const pid = u => u.match(/\/(\d+)$/)[1];
-    const rij = urls.slice().sort((a, b) => String(vorig[pid(a)]?.dag || '').localeCompare(String(vorig[pid(b)]?.dag || '')));
-    let n = 0, fout = 0;
-    for (const u of rij.slice(0, +process.env.PER_DAG || perDag)) {
-      const k = pid(u);
-      try {
-        const html = await tekst(u);
-        if (html == null) { delete vorig[k]; continue; }
-        const root = nuxtData(html);
-        const p = zoek(root, x => x && String(x.productId) === k && x.normalPrice != null && x.productInformation);
-        if (p && p.normalPrice > 0) {
-          const info = p.productInformation || {};
-          vorig[k] = { dag: vd, n: String(info.headerText || '').replace(/\s+/g, ' ').trim(), l: u, p: r2(p.normalPrice), s: String(info.packaging || '').trim() };
-          n++;
-        } else vorig[k] = { ...(vorig[k] || {}), dag: vd, weg: true };
-      } catch (e) { if (++fout > 50) throw new Error(`${naam}: te veel fouten (${e.message})`); }
-      await slaap(500);
-    }
-    const inSitemap = new Set(urls.map(pid));
-    for (const k of Object.keys(vorig)) if (!inSitemap.has(k)) delete vorig[k];
-    const d = Object.values(vorig).filter(x => !x.weg && x.p > 0 && x.n && x.dag >= grens).map(({ dag, ...x }) => x);
-    console.log(naam, n, 'pagina\'s vandaag bekeken,', d.length, 'producten met een prijs van de afgelopen 21 dagen, sitemap', urls.length);
-    return { c: naam, u: '', d, bekeken: vorig };
+    const urls = [...String(sm || '').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => maakLink(m[1].trim())).filter(u => /\/(\d+)$/.test(u));
+    return roterend(id, naam, urls, leesDetailresult, perDag);
   };
 }
 const dirk = detailresult('dirk', 'Dirk', 'https://www.dirk.nl', 1400);
-const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.nl', 1400);
+// In de sitemap van DekaMarkt staat "/boodschappen/producten/..."; de werkende link is zonder "/producten".
+const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.nl', 1400, u => u.replace('/boodschappen/producten/', '/boodschappen/'));
+
+/* ---------- Vomar: productpagina's, gevonden via hun categoriepagina's ---------- */
+async function vomar() {
+  const B = 'https://www.vomar.nl';
+  const links = t => [...new Set((String(t || '').match(/href="(\/producten\/[^"#?]+)"/g) || []).map(x => x.slice(6, -1)))];
+  const veilig = async u => { try { return await tekst(u); } catch (e) { console.warn('vomar', u, e.message); return ''; } };
+  const top = links(await tekst(`${B}/producten`)).filter(x => x.split('/').length === 3);
+  const subs = new Set();
+  for (const t of top) { for (const x of links(await veilig(B + t))) if (x.startsWith(t + '/') && x.split('/').length === 4) subs.add(x); await slaap(500); }
+  const prods = new Set();
+  for (const s of subs) { for (const x of links(await veilig(B + s))) if (/\/\d+$/.test(x)) prods.add(B + x); await slaap(500); }
+  const lees = (html, k) => {
+    // In de Nuxt-gegevens: productDetails met omschrijving, inhoud, eenheid en prijs.
+    const pd = html.match(new RegExp(`articleNumber:${k},description:"((?:[^"\\\\]|\\\\.)*)",contents:"([^"]*)",unit:"([^"]*)",price:([\\d.]+)`));
+    if (pd) return { n: JSON.parse(`"${pd[1]}"`), p: +pd[4], s: pd[2] && pd[3] ? `${pd[2]} ${pd[3]}` : '' };
+    const m = html.match(/<p class="price"[^>]*>\s*<span class="large"[^>]*>(\d+)\.?<\/span>\s*<span class="small"[^>]*>(\d+)<\/span>/);
+    const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || [])[1];
+    return m && h1 ? { n: h1.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;|&apos;/g, "'").trim(), p: +(m[1] + '.' + m[2]), s: '' } : null;
+  };
+  return roterend('vomar', 'Vomar', [...prods], lees, 1300);
+}
 
 // Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
-// DekaMarkt: de productlinks in hun sitemap geven een 404; DekaMarkt blijft daarom (nog) uit het open bestand komen.
-const WINKELS = { ah, hoogvliet, plus, dirk };
+const WINKELS = { ah, hoogvliet, plus, dirk, dekamarkt, vomar };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;
