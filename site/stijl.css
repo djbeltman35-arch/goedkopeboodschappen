@@ -727,3 +727,9 @@ html body .quick.tegels .cats .chip[aria-pressed=true]{border-color:var(--green)
 html body .tegelkop{margin:16px 0 8px;font-size:13px;font-weight:600}
 html body .hero .mystores{background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important}
 html body .hero .mystores summary{background:none!important}
+html body .quick.tegels .catklap{margin-top:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+html body .quick.tegels .catklap>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;font-weight:700;font-size:15px;color:var(--ink)}
+html body .quick.tegels .catklap>summary::-webkit-details-marker{display:none}
+html body .quick.tegels .catklap>summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--green);border-bottom:2.5px solid var(--green);transform:rotate(45deg);margin:-4px 4px 0 0;transition:transform .15s}
+html body .quick.tegels .catklap[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
+html body .quick.tegels .catklap .cats{padding:0 12px 14px}
