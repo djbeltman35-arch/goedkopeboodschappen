@@ -7,6 +7,16 @@ on:
   schedule:
     - cron: "41 1 * * *"
   workflow_dispatch:
+    inputs:
+      winkels:
+        description: "Alleen deze winkels (bijv. dirk,dekamarkt,vomar); leeg = alle"
+        default: ""
+      per_dag:
+        description: "Aantal productpagina's per winkel (inhaalslag); leeg = normaal"
+        default: ""
+      werkers:
+        description: "Pagina's tegelijk per winkel (1-6)"
+        default: ""
 
 permissions:
   contents: write
@@ -25,6 +35,10 @@ jobs:
         with:
           node-version: 22
       - name: Ophalen
+        env:
+          WINKELS: ${{ github.event.inputs.winkels }}
+          PER_DAG: ${{ github.event.inputs.per_dag }}
+          WERKERS: ${{ github.event.inputs.werkers }}
         run: node ophalen/assortiment.mjs
       - name: Opslaan
         if: always()

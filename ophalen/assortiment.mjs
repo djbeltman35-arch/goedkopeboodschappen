@@ -239,17 +239,22 @@ async function roterend(id, naam, urls, lees, perDag) {
   const pid = u => u.match(/\/(\d+)\/?$/)[1];
   const rij = urls.slice().sort((a, b) => String(vorig[pid(a)]?.dag || '').localeCompare(String(vorig[pid(b)]?.dag || '')));
   let n = 0, fout = 0;
-  for (const u of rij.slice(0, +process.env.PER_DAG || perDag)) {
-    const k = pid(u);
-    try {
-      const html = await tekst(u);
-      if (html == null) { delete vorig[k]; continue; }
-      const r = lees(html, k);
-      if (r && r.p > 0 && r.n) { vorig[k] = { dag: vd, n: r.n.replace(/\s+/g, ' ').trim(), l: u, p: r2(r.p), s: String(r.s || '').trim() }; n++; }
-      else vorig[k] = { ...(vorig[k] || {}), dag: vd, weg: true };
-    } catch (e) { if (++fout > 50) throw new Error(`${naam}: te veel fouten (${e.message})`); }
-    await slaap(500);
-  }
+  // Normaal één pagina tegelijk; bij een inhaalslag (WERKERS) een paar tegelijk.
+  const taken = rij.slice(0, +process.env.PER_DAG || perDag);
+  const werker = async () => {
+    while (taken.length) {
+      const u = taken.shift(), k = pid(u);
+      try {
+        const html = await tekst(u);
+        if (html == null) { delete vorig[k]; continue; }
+        const r = lees(html, k);
+        if (r && r.p > 0 && r.n) { vorig[k] = { dag: vd, n: r.n.replace(/\s+/g, ' ').trim(), l: u, p: r2(r.p), s: String(r.s || '').trim() }; n++; }
+        else vorig[k] = { ...(vorig[k] || {}), dag: vd, weg: true };
+      } catch (e) { if (++fout > 80) throw new Error(`${naam}: te veel fouten (${e.message})`); }
+      await slaap(500);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(6, +process.env.WERKERS || 1)) }, werker));
   const bestaat = new Set(urls.map(pid));
   for (const k of Object.keys(vorig)) if (!bestaat.has(k)) delete vorig[k];
   const d = Object.values(vorig).filter(x => !x.weg && x.p > 0 && x.n && x.dag >= grens).map(({ dag, weg, ...x }) => x);
