@@ -792,3 +792,19 @@ html body .maal .maalkop{margin:0!important}
 html body .hero .stapjes li{white-space:nowrap;font-size:12.5px}
 html body .maal .maalkop h2{font-size:20px!important;line-height:1.25}
 html body .maal .mgrid{margin-top:0!important;padding-top:2px!important}
+/* Rustige stijl op alle pagina's: compacte uitklapblokken zonder zware schaduw */
+html body .subblok{box-shadow:none!important;border:1px solid var(--line)!important;border-radius:12px!important}
+html body .subblok>summary{padding:10px 14px!important;min-height:0!important}
+html body .subblok>summary .subnaam{font-size:15px!important;margin:0!important}
+html body .subblok>summary::after{width:26px!important;height:26px!important;font-size:14px!important;line-height:26px!important}
+html body .subblokken{gap:5px!important}
+/* Voettekst: ook de supermarkten in twee kolommen */
+html body .foot nav[aria-label="Supermarkten"]{display:grid!important;grid-template-columns:1fr 1fr;gap:0!important;max-width:520px;margin:0 auto;width:100%}
+html body .foot nav[aria-label="Supermarkten"] a{display:block!important;text-align:center;padding:6px!important;margin:0!important;font-weight:600;font-size:14px}
+html body .foot nav[aria-label="Supermarkten"] a:nth-child(even){border-left:1px solid var(--line)}
+html body .foot .tiplink,html body .foot .small{text-align:center}
+/* De 3 stappen als aan elkaar geplakte hokjes */
+html body .hero .stapjes{gap:0!important;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
+html body .hero .stapjes li{flex:1 1 0;justify-content:center;padding:8px 4px;font-size:12.5px;white-space:nowrap}
+html body .hero .stapjes li+li{border-left:1px solid var(--line)}
+html body .hero .stapjes b{width:20px;height:20px;font-size:12px}
