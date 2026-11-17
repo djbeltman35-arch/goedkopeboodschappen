@@ -262,7 +262,7 @@ async function roterend(id, naam, urls, lees, perDag) {
   for (const k of Object.keys(vorig)) if (!bestaat.has(k)) delete vorig[k];
   const d = Object.values(vorig).filter(x => !x.weg && x.p > 0 && x.n && x.dag >= grens).map(({ dag, weg, ...x }) => x);
   console.log(naam, n, 'pagina\'s vandaag bekeken,', d.length, 'producten met een prijs van de afgelopen 21 dagen, in totaal', urls.length);
-  return { c: naam, u: '', d, bekeken: vorig };
+  return { c: naam, u: '', t: urls.length, d, bekeken: vorig };
 }
 
 /* ---------- Dirk en DekaMarkt (zelfde webwinkel): productpagina's uit hun sitemap ---------- */

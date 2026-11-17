@@ -33,7 +33,10 @@ for s in d:
             # Wordt verdeeld over de week opgehaald: eigen prijzen waar die er al zijn, de rest nog even uit het open bestand.
             pid = lambda l: (re.search(r"(\d+)/?$", str(l)) or [None, None])[1]
             eig = {pid(x["l"]) for x in a["d"]}
-            rest = [x for x in s.get("d", []) if pid(x.get("l")) not in eig]
+            namen = {x["n"].strip().lower() for x in a["d"]}
+            rest = [x for x in s.get("d", []) if pid(x.get("l")) not in eig and x["n"].strip().lower() not in namen]
+            # Is (bijna) het hele assortiment al eens langs geweest? Dan is wat alleen nog in het open bestand staat oud of uit het assortiment.
+            if a.get("t") and len(a["bekeken"]) >= 0.95 * a["t"]: rest = []
             print(f"{s['n']:10} eigen prijzen van {dag}: {len(a['d'])} producten, nog {len(rest)} uit het open bestand")
             s["d"] = [dict(x, l=x["l"]) for x in a["d"]] + [dict(x, l=s["u"] + x["l"]) for x in rest]
             s["u"] = ""
