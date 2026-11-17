@@ -1,0 +1,337 @@
+[
+{
+"naam": "Rijssen",
+"osm": "Rijssen",
+"regio": "Twente"
+},
+{
+"naam": "Holten",
+"osm": "Holten",
+"regio": "Twente"
+},
+{
+"naam": "Enschede",
+"osm": "Enschede",
+"regio": "Twente"
+},
+{
+"naam": "Hengelo",
+"osm": "Hengelo",
+"regio": "Twente"
+},
+{
+"naam": "Almelo",
+"osm": "Almelo",
+"regio": "Twente"
+},
+{
+"naam": "Oldenzaal",
+"osm": "Oldenzaal",
+"regio": "Twente"
+},
+{
+"naam": "Borne",
+"osm": "Borne",
+"regio": "Twente"
+},
+{
+"naam": "Nijverdal",
+"osm": "Nijverdal",
+"regio": "Twente"
+},
+{
+"naam": "Goor",
+"osm": "Goor",
+"regio": "Twente"
+},
+{
+"naam": "Haaksbergen",
+"osm": "Haaksbergen",
+"regio": "Twente"
+},
+{
+"naam": "Losser",
+"osm": "Losser",
+"regio": "Twente"
+},
+{
+"naam": "Vriezenveen",
+"osm": "Vriezenveen",
+"regio": "Twente"
+},
+{
+"naam": "Wierden",
+"osm": "Wierden",
+"regio": "Twente"
+},
+{
+"naam": "Deventer",
+"osm": "Deventer",
+"regio": "Overijssel"
+},
+{
+"naam": "Zwolle",
+"osm": "Zwolle",
+"regio": "Overijssel"
+},
+{
+"naam": "Kampen",
+"osm": "Kampen",
+"regio": "Overijssel"
+},
+{
+"naam": "Amsterdam",
+"osm": "Amsterdam",
+"regio": ""
+},
+{
+"naam": "Rotterdam",
+"osm": "Rotterdam",
+"regio": ""
+},
+{
+"naam": "Den Haag",
+"osm": "'s-Gravenhage",
+"regio": ""
+},
+{
+"naam": "Utrecht",
+"osm": "Utrecht",
+"regio": ""
+},
+{
+"naam": "Eindhoven",
+"osm": "Eindhoven",
+"regio": ""
+},
+{
+"naam": "Groningen",
+"osm": "Groningen",
+"regio": ""
+},
+{
+"naam": "Tilburg",
+"osm": "Tilburg",
+"regio": ""
+},
+{
+"naam": "Almere",
+"osm": "Almere",
+"regio": ""
+},
+{
+"naam": "Breda",
+"osm": "Breda",
+"regio": ""
+},
+{
+"naam": "Nijmegen",
+"osm": "Nijmegen",
+"regio": ""
+},
+{
+"naam": "Apeldoorn",
+"osm": "Apeldoorn",
+"regio": ""
+},
+{
+"naam": "Haarlem",
+"osm": "Haarlem",
+"regio": ""
+},
+{
+"naam": "Arnhem",
+"osm": "Arnhem",
+"regio": ""
+},
+{
+"naam": "Amersfoort",
+"osm": "Amersfoort",
+"regio": ""
+},
+{
+"naam": "Zaandam",
+"osm": "Zaandam",
+"regio": ""
+},
+{
+"naam": "Den Bosch",
+"osm": "'s-Hertogenbosch",
+"regio": ""
+},
+{
+"naam": "Hoofddorp",
+"osm": "Hoofddorp",
+"regio": ""
+},
+{
+"naam": "Zoetermeer",
+"osm": "Zoetermeer",
+"regio": ""
+},
+{
+"naam": "Leiden",
+"osm": "Leiden",
+"regio": ""
+},
+{
+"naam": "Maastricht",
+"osm": "Maastricht",
+"regio": ""
+},
+{
+"naam": "Dordrecht",
+"osm": "Dordrecht",
+"regio": ""
+},
+{
+"naam": "Ede",
+"osm": "Ede",
+"regio": ""
+},
+{
+"naam": "Alphen aan den Rijn",
+"osm": "Alphen aan den Rijn",
+"regio": ""
+},
+{
+"naam": "Leeuwarden",
+"osm": "Leeuwarden",
+"regio": ""
+},
+{
+"naam": "Alkmaar",
+"osm": "Alkmaar",
+"regio": ""
+},
+{
+"naam": "Emmen",
+"osm": "Emmen",
+"regio": ""
+},
+{
+"naam": "Delft",
+"osm": "Delft",
+"regio": ""
+},
+{
+"naam": "Venlo",
+"osm": "Venlo",
+"regio": ""
+},
+{
+"naam": "Helmond",
+"osm": "Helmond",
+"regio": ""
+},
+{
+"naam": "Hilversum",
+"osm": "Hilversum",
+"regio": ""
+},
+{
+"naam": "Heerlen",
+"osm": "Heerlen",
+"regio": ""
+},
+{
+"naam": "Oss",
+"osm": "Oss",
+"regio": ""
+},
+{
+"naam": "Amstelveen",
+"osm": "Amstelveen",
+"regio": ""
+},
+{
+"naam": "Sittard",
+"osm": "Sittard",
+"regio": ""
+},
+{
+"naam": "Roosendaal",
+"osm": "Roosendaal",
+"regio": ""
+},
+{
+"naam": "Purmerend",
+"osm": "Purmerend",
+"regio": ""
+},
+{
+"naam": "Schiedam",
+"osm": "Schiedam",
+"regio": ""
+},
+{
+"naam": "Lelystad",
+"osm": "Lelystad",
+"regio": ""
+},
+{
+"naam": "Gouda",
+"osm": "Gouda",
+"regio": ""
+},
+{
+"naam": "Assen",
+"osm": "Assen",
+"regio": ""
+},
+{
+"naam": "Hoorn",
+"osm": "Hoorn",
+"regio": ""
+},
+{
+"naam": "Vlaardingen",
+"osm": "Vlaardingen",
+"regio": ""
+},
+{
+"naam": "Capelle aan den IJssel",
+"osm": "Capelle aan den IJssel",
+"regio": ""
+},
+{
+"naam": "Veenendaal",
+"osm": "Veenendaal",
+"regio": ""
+},
+{
+"naam": "Nieuwegein",
+"osm": "Nieuwegein",
+"regio": ""
+},
+{
+"naam": "Zeist",
+"osm": "Zeist",
+"regio": ""
+},
+{
+"naam": "Bergen op Zoom",
+"osm": "Bergen op Zoom",
+"regio": ""
+},
+{
+"naam": "Harderwijk",
+"osm": "Harderwijk",
+"regio": ""
+},
+{
+"naam": "Doetinchem",
+"osm": "Doetinchem",
+"regio": ""
+},
+{
+"naam": "Hardenberg",
+"osm": "Hardenberg",
+"regio": ""
+},
+{
+"naam": "Meppel",
+"osm": "Meppel",
+"regio": ""
+}
+]

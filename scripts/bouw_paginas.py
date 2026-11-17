@@ -806,23 +806,7 @@ if SVW:
 
 # ---------- Goedkoopste supermarkt per stad: welke ketens zitten er (OpenStreetMap) en wat kost het vaste mandje daar ----------
 STEDEN_PAD = os.path.join(ROOT, "data", "supermarkten-steden.json")
-STEDEN = [  # (naam op de site, naam in OpenStreetMap, regio)
-    ("Rijssen", "Rijssen", "Twente"), ("Holten", "Holten", "Twente"), ("Enschede", "Enschede", "Twente"), ("Hengelo", "Hengelo", "Twente"),
-    ("Almelo", "Almelo", "Twente"), ("Oldenzaal", "Oldenzaal", "Twente"), ("Borne", "Borne", "Twente"), ("Nijverdal", "Nijverdal", "Twente"),
-    ("Goor", "Goor", "Twente"), ("Haaksbergen", "Haaksbergen", "Twente"), ("Losser", "Losser", "Twente"), ("Vriezenveen", "Vriezenveen", "Twente"),
-    ("Wierden", "Wierden", "Twente"), ("Deventer", "Deventer", "Overijssel"), ("Zwolle", "Zwolle", "Overijssel"), ("Kampen", "Kampen", "Overijssel"),
-    ("Amsterdam", "Amsterdam", ""), ("Rotterdam", "Rotterdam", ""), ("Den Haag", "'s-Gravenhage", ""), ("Utrecht", "Utrecht", ""),
-    ("Eindhoven", "Eindhoven", ""), ("Groningen", "Groningen", ""), ("Tilburg", "Tilburg", ""), ("Almere", "Almere", ""), ("Breda", "Breda", ""),
-    ("Nijmegen", "Nijmegen", ""), ("Apeldoorn", "Apeldoorn", ""), ("Haarlem", "Haarlem", ""), ("Arnhem", "Arnhem", ""), ("Amersfoort", "Amersfoort", ""),
-    ("Zaandam", "Zaandam", ""), ("Den Bosch", "'s-Hertogenbosch", ""), ("Hoofddorp", "Hoofddorp", ""), ("Zoetermeer", "Zoetermeer", ""),
-    ("Leiden", "Leiden", ""), ("Maastricht", "Maastricht", ""), ("Dordrecht", "Dordrecht", ""), ("Ede", "Ede", ""), ("Alphen aan den Rijn", "Alphen aan den Rijn", ""),
-    ("Leeuwarden", "Leeuwarden", ""), ("Alkmaar", "Alkmaar", ""), ("Emmen", "Emmen", ""), ("Delft", "Delft", ""), ("Venlo", "Venlo", ""),
-    ("Helmond", "Helmond", ""), ("Hilversum", "Hilversum", ""), ("Heerlen", "Heerlen", ""), ("Oss", "Oss", ""), ("Amstelveen", "Amstelveen", ""),
-    ("Sittard", "Sittard", ""), ("Roosendaal", "Roosendaal", ""), ("Purmerend", "Purmerend", ""), ("Schiedam", "Schiedam", ""), ("Lelystad", "Lelystad", ""),
-    ("Gouda", "Gouda", ""), ("Assen", "Assen", ""), ("Hoorn", "Hoorn", ""), ("Vlaardingen", "Vlaardingen", ""), ("Capelle aan den IJssel", "Capelle aan den IJssel", ""),
-    ("Veenendaal", "Veenendaal", ""), ("Nieuwegein", "Nieuwegein", ""), ("Zeist", "Zeist", ""), ("Bergen op Zoom", "Bergen op Zoom", ""),
-    ("Harderwijk", "Harderwijk", ""), ("Doetinchem", "Doetinchem", ""), ("Hardenberg", "Hardenberg", ""), ("Meppel", "Meppel", ""),
-]
+STEDEN = [(x["naam"], x["osm"], x["regio"]) for x in json.load(open(os.path.join(ROOT, "scripts", "steden.json")))]  # (naam op de site, naam in OpenStreetMap, regio)
 STADPAGINAS = []
 if PAK and os.path.exists(STEDEN_PAD):
     _sd = json.load(open(STEDEN_PAD)); _osm = _sd.get("steden", {})
