@@ -852,3 +852,4 @@ html body .btn:not(#_a):not(#_b):not(#_c),html body a.btn:not(#_a):not(#_b):not(
 html body .nav.rustig a.nbpil:not(#_a):not(#_b):not(#_c),html body .seo .seowinnaar:not(#_a):not(#_b):not(#_c),
 html body .add:not(#_a):not(#_b):not(#_c),html body .cta:not(#_a):not(#_b):not(#_c){border-radius:8px!important}
 html body .hero .mystores summary::after{border-radius:8px!important}
+html body .seo .seokaart{box-shadow:0 3px 6px rgba(20,40,28,.12),0 18px 34px -12px rgba(20,40,28,.5)!important;border-color:transparent!important}
