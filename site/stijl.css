@@ -752,9 +752,10 @@ html body .snellinks .subblok,html body .quick.tegels .catklap{margin-bottom:0!i
 html body .snellinks .subblok>summary,html body .quick.tegels .catklap>summary{padding:9px 14px!important;min-height:0!important}
 html body .snellinks .subblok>summary .subnaam,html body .quick.tegels .catklap>summary .subnaam{font-size:15px!important;margin:0!important}
 html body .snellinks .subblok>summary::after,html body .quick.tegels .catklap>summary::after{width:26px!important;height:26px!important;font-size:14px!important;line-height:26px!important}
-/* Voettekst: links netjes op een rij met verticale streepjes ertussen */
-html body .foot nav[aria-label="Over"]{display:block!important;text-align:center;line-height:2.1;font-size:14px}
-html body .foot nav[aria-label="Over"] a{display:inline!important;padding:0!important;margin:0!important;font-weight:600;font-size:14px;white-space:nowrap}
-html body .foot nav[aria-label="Over"] a+a::before{content:"|";display:inline-block;margin:0 9px;color:var(--line);font-weight:400}
+/* Voettekst: links netjes in twee kolommen met een verticaal streepje ertussen */
+html body .foot nav[aria-label="Over"]{display:grid!important;grid-template-columns:1fr 1fr;gap:0!important;max-width:520px;margin:4px auto 0;width:100%}
+html body .foot nav[aria-label="Over"] a{display:block!important;text-align:center;padding:7px 6px!important;margin:0!important;font-weight:600;font-size:14px;line-height:1.3}
+html body .foot nav[aria-label="Over"] a:nth-child(even){border-left:1px solid var(--line)}
 html body .foot .free{text-align:center;font-weight:400!important;font-size:14px;color:var(--muted)}
 html body .foot .free a{font-weight:600}
+html body .foot p:last-child,html body .foot .copy{text-align:center}
