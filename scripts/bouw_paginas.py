@@ -697,6 +697,7 @@ if PAK:
             f'<h2>Wat zit er in het vaste boodschappenmandje?</h2><p class="note">Dit mandje is voor iedereen hetzelfde en staat los van je eigen lijst.</p><ul class="links">{mand}</ul><h2>Zo is het opgebouwd</h2>{detail}'
             + '<h2>Twee supermarkten vergelijken</h2><ul class="links">' + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(a))} of {esc(nm(b))}?</a></li>' for a, b in paren) + "</ul>"
             + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>')
+    if os.path.exists(os.path.join(ROOT, "data", "supermarkten-steden.json")): body += '<p><b>Per stad:</b> <a href="/goedkoopste-supermarkt-in/">bekijk de goedkoopste supermarkt in jouw stad</a>, van Rijssen en Enschede tot Amsterdam.</p>'
     schrijf("/goedkoopste-supermarkt/", page("/goedkoopste-supermarkt/", title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/", og_title=f"De goedkoopste supermarkt van {MAAND}"))
     made.append(("/goedkoopste-supermarkt/", "0.9"))
     # Onderlinge vergelijkingen: "AH of Jumbo, wie is goedkoper?"
@@ -802,6 +803,73 @@ if SVW:
     schrijf(path, page(path, title, desc, head, body, ld, actief="/goedkoopste-supermarkt/"))
     made.append((path, "0.8"))
     print("Supermarkt van de week:", nm_)
+
+# ---------- Goedkoopste supermarkt per stad: welke ketens zitten er (OpenStreetMap) en wat kost het vaste mandje daar ----------
+STEDEN_PAD = os.path.join(ROOT, "data", "supermarkten-steden.json")
+STEDEN = [  # (naam op de site, naam in OpenStreetMap, regio)
+    ("Rijssen", "Rijssen", "Twente"), ("Holten", "Holten", "Twente"), ("Enschede", "Enschede", "Twente"), ("Hengelo", "Hengelo", "Twente"),
+    ("Almelo", "Almelo", "Twente"), ("Oldenzaal", "Oldenzaal", "Twente"), ("Borne", "Borne", "Twente"), ("Nijverdal", "Nijverdal", "Twente"),
+    ("Goor", "Goor", "Twente"), ("Haaksbergen", "Haaksbergen", "Twente"), ("Losser", "Losser", "Twente"), ("Vriezenveen", "Vriezenveen", "Twente"),
+    ("Wierden", "Wierden", "Twente"), ("Deventer", "Deventer", "Overijssel"), ("Zwolle", "Zwolle", "Overijssel"), ("Kampen", "Kampen", "Overijssel"),
+    ("Amsterdam", "Amsterdam", ""), ("Rotterdam", "Rotterdam", ""), ("Den Haag", "'s-Gravenhage", ""), ("Utrecht", "Utrecht", ""),
+    ("Eindhoven", "Eindhoven", ""), ("Groningen", "Groningen", ""), ("Tilburg", "Tilburg", ""), ("Almere", "Almere", ""), ("Breda", "Breda", ""),
+    ("Nijmegen", "Nijmegen", ""), ("Apeldoorn", "Apeldoorn", ""), ("Haarlem", "Haarlem", ""), ("Arnhem", "Arnhem", ""), ("Amersfoort", "Amersfoort", ""),
+    ("Zaandam", "Zaandam", ""), ("Den Bosch", "'s-Hertogenbosch", ""), ("Hoofddorp", "Hoofddorp", ""), ("Zoetermeer", "Zoetermeer", ""),
+    ("Leiden", "Leiden", ""), ("Maastricht", "Maastricht", ""), ("Dordrecht", "Dordrecht", ""), ("Ede", "Ede", ""), ("Alphen aan den Rijn", "Alphen aan den Rijn", ""),
+    ("Leeuwarden", "Leeuwarden", ""), ("Alkmaar", "Alkmaar", ""), ("Emmen", "Emmen", ""), ("Delft", "Delft", ""), ("Venlo", "Venlo", ""),
+    ("Helmond", "Helmond", ""), ("Hilversum", "Hilversum", ""), ("Heerlen", "Heerlen", ""), ("Oss", "Oss", ""), ("Amstelveen", "Amstelveen", ""),
+    ("Sittard", "Sittard", ""), ("Roosendaal", "Roosendaal", ""), ("Purmerend", "Purmerend", ""), ("Schiedam", "Schiedam", ""), ("Lelystad", "Lelystad", ""),
+    ("Gouda", "Gouda", ""), ("Assen", "Assen", ""), ("Hoorn", "Hoorn", ""), ("Vlaardingen", "Vlaardingen", ""), ("Capelle aan den IJssel", "Capelle aan den IJssel", ""),
+    ("Veenendaal", "Veenendaal", ""), ("Nieuwegein", "Nieuwegein", ""), ("Zeist", "Zeist", ""), ("Bergen op Zoom", "Bergen op Zoom", ""),
+    ("Harderwijk", "Harderwijk", ""), ("Doetinchem", "Doetinchem", ""), ("Hardenberg", "Hardenberg", ""), ("Meppel", "Meppel", ""),
+]
+STADPAGINAS = []
+if PAK and os.path.exists(STEDEN_PAD):
+    _sd = json.load(open(STEDEN_PAD)); _osm = _sd.get("steden", {})
+    # Eigen aanvullingen/correcties (bijv. een winkel die in OpenStreetMap nog ontbreekt): {"Rijssen": {"lidl": 1}}; 0 = weghalen.
+    try:
+        for _st, _k in json.load(open(os.path.join(ROOT, "data", "steden-aanvullingen.json"))).items():
+            _osm.setdefault(_st, {}).update(_k); _osm[_st] = {k: v for k, v in _osm[_st].items() if v}
+    except FileNotFoundError: pass
+    _si_van = {stores[r["si"]]["id"]: r["si"] for r in PAK}
+    _maand = MAAND
+    for naam, osmnaam, regio in STEDEN:
+        tel = _osm.get(osmnaam) or {}
+        rijen = sorted((r for r in PAK if stores[r["si"]]["id"] in tel), key=lambda r: r["tot"])
+        if len(rijen) < 2: continue
+        STADPAGINAS.append((naam, slug(naam), regio, rijen, tel))
+    for naam, sl, regio, rijen, tel in STADPAGINAS:
+        path = f"/goedkoopste-supermarkt-in/{sl}/"
+        w, l = rijen[0], rijen[-1]; vers = l["tot"] - w["tot"]; n_fil = sum(tel.values())
+        title = f"Goedkoopste supermarkt in {naam} ({_maand}): {nm(w['si'])}"
+        desc = (f"Welke supermarkt in {naam} is het goedkoopst? We vergeleken {len(PAKTERMEN)} vaste boodschappen bij de {len(rijen)} ketens in {naam}. "
+                f"{nm(w['si'])} is het goedkoopst met {eur(w['tot'])}.")
+        trs = "".join(f'<tr{" class=win" if i == 0 else ""}><td><b>{i + 1}. <a href="/supermarkt/{stores[r["si"]]["id"]}/">{esc(nm(r["si"]))}</a></b>'
+                      f'<span class=sub>{tel[stores[r["si"]]["id"]]} {"vestiging" if tel[stores[r["si"]]["id"]] == 1 else "vestigingen"} in {esc(naam)}</span></td>'
+                      f'<td class="p">{tag(r["tot"])}</td><td class="p">{"" if i == 0 else "+ " + eur(r["tot"] - w["tot"])}</td></tr>' for i, r in enumerate(rijen))
+        ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), ("Per stad", "/goedkoopste-supermarkt-in/"), (naam, None))
+        head = ch + f'<h1>Goedkoopste supermarkt in {esc(naam)}</h1><p class="lead">In {esc(naam)} zitten {n_fil} supermarkten van {len(rijen)} ketens die wij vergelijken. Voor een vast mandje van {len(PAKTERMEN)} boodschappen ben je bij <b>{esc(nm(w["si"]))}</b> het goedkoopst uit: {eur(w["tot"])}.</p>'
+        body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt in {esc(naam)}</th><th class="p">Mandje</th><th class="p">Verschil</th></tr></thead><tbody>{trs}</tbody></table></div>'
+                f'<h2>Wat scheelt het?</h2><p>Doe je dezelfde boodschappen bij {esc(nm(w["si"]))} in plaats van bij {esc(nm(l["si"]))}, dan betaal je {eur(vers)} minder. '
+                f'Doe je dat elke week, dan scheelt dat ongeveer <b>{eur(vers * 52)} per jaar</b>.</p>'
+                f'<p>Het goedkoopst is niet altijd voor elk product dezelfde winkel. <a href="/">Zet je eigen boodschappenlijst erin</a> en kies alleen de supermarkten in {esc(naam)}: dan zie je precies waar jouw boodschappen het minst kosten.</p>'
+                f'<h2>Aanbiedingen deze week in {esc(naam)}</h2><ul class="links">' + "".join(f'<li><a href="/aanbiedingen/{stores[r["si"]]["id"]}/">{"AH Bonus" if stores[r["si"]]["id"] == "ah" else esc(nm(r["si"])) + " aanbiedingen"}</a></li>' for r in rijen) + '</ul>'
+                + (f'<h2>Meer in {esc(regio)}</h2><ul class="links">' + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{s2}/">Goedkoopste supermarkt in {esc(n2)}</a></li>' for n2, s2, r2_, _, _ in STADPAGINAS if r2_ == regio and n2 != naam) + '</ul>' if regio and sum(1 for x in STADPAGINAS if x[2] == regio) > 1 else "")
+                + f'<p class="note">Prijzen van {DATUM}, gelijk aan de prijzen in de webwinkel van elke keten; in een enkele winkel kan de prijs afwijken. Welke supermarkten er in {esc(naam)} zitten, komt uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Mist er een winkel? <a href="/tips/">Laat het weten</a>. <a href="/goedkoopste-supermarkt/">Ranglijst van heel Nederland</a> · <a href="/goedkoopste-supermarkt-in/">Alle steden</a></p>')
+        faq = [(f"Wat is de goedkoopste supermarkt in {naam}?", f"In {_maand} is {nm(w['si'])} de goedkoopste supermarkt in {naam}: {len(PAKTERMEN)} vaste boodschappen kosten daar {eur(w['tot'])}." + (f" Daarna volgt {nm(rijen[1]['si'])} ({eur(rijen[1]['tot'])})." if len(rijen) > 1 else "")),
+               (f"Welke supermarkten zitten er in {naam}?", f"Van de ketens die wij vergelijken zitten in {naam}: " + ", ".join(f"{nm(r['si'])} ({tel[stores[r['si']]['id']]})" for r in rijen) + ".")]
+        body += faq_html(faq)
+        schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/"))
+        made.append((path, "0.6"))
+    if STADPAGINAS:
+        def _blok(titel, lijst): return f"<h2>{titel}</h2><ul class=\"links\">" + "".join(f'<li><a href="/goedkoopste-supermarkt-in/{s2}/">{esc(n2)}</a> <span class="muted">· {esc(nm(r_[0]["si"]))}</span></li>' for n2, s2, _, r_, _ in lijst) + "</ul>"
+        tw = [x for x in STADPAGINAS if x[2] in ("Twente", "Overijssel")]; ov = sorted([x for x in STADPAGINAS if x not in tw], key=lambda x: x[0])
+        ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), ("Per stad", None))
+        head = ch + f'<h1>Goedkoopste supermarkt per stad</h1><p class="lead">Niet elke supermarkt zit in elke stad. Kies je stad en zie welke supermarkt daar het goedkoopst is, op een vast mandje van {len(PAKTERMEN)} boodschappen.</p>'
+        body = _blok("Twente en Overijssel", tw) + _blok("Grote steden", ov) + f'<p class="note">Winkels per stad uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Prijzen van {DATUM}.</p>'
+        schrijf("/goedkoopste-supermarkt-in/", page("/goedkoopste-supermarkt-in/", f"Goedkoopste supermarkt per stad ({_maand}) | Goedkope Boodschappen", f"Welke supermarkt is het goedkoopst in jouw stad? Ranglijsten voor {len(STADPAGINAS)} steden, van Rijssen en Enschede tot Amsterdam en Rotterdam.", head, body, [cld], actief="/goedkoopste-supermarkt/"))
+        made.append(("/goedkoopste-supermarkt-in/", "0.7"))
+    print("stadspagina's:", len(STADPAGINAS))
 
 # ---------- over en privacy ----------
 over = f'''<div class="panel"><h2 style="margin-top:0">Ik verdien er niets aan</h2><p>Goedkope Boodschappen is een hobbyproject van Erik. Er staat geen reclame op, supermarkten kunnen geen plek kopen en er zitten geen affiliatelinks in: als je doorklikt naar een supermarkt, krijg ik daar niets voor. De volgorde is altijd gewoon: goedkoopste eerst. <a href="/zo-vergelijken-wij/">Lees precies hoe we vergelijken</a>.</p></div>
