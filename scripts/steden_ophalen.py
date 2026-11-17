@@ -27,15 +27,15 @@ def keten(tags):
             if re.search(pat, v): return k
     return None
 
-def haal(q=Q):
+def haal(q=Q, servers=None, timeout=240):
     data = urllib.parse.urlencode({"data": q}).encode()
     fout = None
-    for s in SERVERS * 2:
+    for s in (servers or SERVERS * 2):
         try:
             req = urllib.request.Request(s, data=data, headers={"User-Agent": "boodschappenvergelijk.nl (stadspagina's; goedkopeboodschappen@proton.me)"})
-            return json.load(urllib.request.urlopen(req, timeout=240))
+            return json.load(urllib.request.urlopen(req, timeout=timeout))
         except Exception as e:
-            fout = e; print("overpass:", s, e); time.sleep(20)
+            fout = e; print("overpass:", s, e); time.sleep(20 if servers is None else 3)
     raise SystemExit(f"Overpass niet bereikbaar: {fout}")
 
 els = haal()["elements"]
@@ -50,17 +50,23 @@ for e in els:
     if la and lo: pos.setdefault(stad, []).append((la, lo))
 print(f"{len(els)} supermarkten in OSM, {sum(sum(v.values()) for v in steden.values())} van onze ketens met plaats, {zonder} zonder plaats, {len(steden)} plaatsen")
 if len(steden) < 500: raise SystemExit("te weinig plaatsen, niet opgeslagen")
+def bewaar():
+    midden = {st: [round(sum(p[0] for p in ps) / len(ps), 4), round(sum(p[1] for p in ps) / len(ps), 4)] for st, ps in pos.items()}
+    json.dump({"updated": datetime.date.today().isoformat(), "bron": "© OpenStreetMap-bijdragers (ODbL)", "steden": steden, "midden": midden}, open(UIT, "w"), ensure_ascii=False, sort_keys=True)
+bewaar()  # al vast opslaan; de telling per plaatsgrens hieronder is een aanvulling
+start = time.time()
 
 # Voor de steden met een eigen pagina ook tellen binnen de grens van de plaats of gemeente: zo tellen ook winkels mee
 # zonder adres in OpenStreetMap. Per keten nemen we het hoogste van beide tellingen.
 for st in json.load(open(os.path.join(ROOT, "scripts", "steden.json"))):
+    if time.time() - start > 15 * 60: print("tijd op, rest overgeslagen"); break
     o = st["osm"]
     # Eerst de woonplaats (admin_level 10); bestaat die niet in OSM, dan de gemeente (8).
     res = None
     for lvl in ("10", "8"):
         q = (f'[out:json][timeout:90];area["name"="{o}"]["boundary"="administrative"]["admin_level"="{lvl}"]->.a;'
              f'(.a;)->.a;nwr["shop"="supermarket"](area.a);out tags;')
-        try: res = haal(q)["elements"]
+        try: res = haal(q, servers=SERVERS[:2], timeout=60)["elements"]
         except SystemExit as e: print("overgeslagen:", o, lvl, e); res = None
         if res: break
         time.sleep(2)
@@ -73,5 +79,4 @@ for st in json.load(open(os.path.join(ROOT, "scripts", "steden.json"))):
     steden[o] = {k: max(oud.get(k, 0), tel.get(k, 0)) for k in set(oud) | set(tel)}
     if steden[o] != oud: print(f"{o}: {oud} -> {steden[o]}")
     time.sleep(3)
-midden = {st: [round(sum(p[0] for p in ps) / len(ps), 4), round(sum(p[1] for p in ps) / len(ps), 4)] for st, ps in pos.items()}
-json.dump({"updated": datetime.date.today().isoformat(), "bron": "© OpenStreetMap-bijdragers (ODbL)", "steden": steden, "midden": midden}, open(UIT, "w"), ensure_ascii=False, sort_keys=True)
+bewaar()
