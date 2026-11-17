@@ -108,6 +108,12 @@ export default async (req, context) => {
     if (a && Date.now() - Date.parse(a.mailVerstuurd || 0) < 10 * 60e3) return json({ status: 'wacht', token: a.token });
     if (a) await store.delete('t-' + a.token);
   }
+  // Tegen misbruik (iemand die de site laat mailen naar vreemde adressen): hoogstens 5 bevestigingsmails per dag per bezoeker.
+  const ip = context?.ip || req.headers.get('x-nf-client-connection-ip') || 'onbekend';
+  const tk = new Date().toISOString().slice(0, 10) + '-' + crypto.createHash('sha256').update(ip + 'gb-email').digest('hex').slice(0, 24);
+  const teller = getStore('email-teller'), nIp = +(await teller.get(tk).catch(() => 0) || 0);
+  if (nIp >= 5) return json({ fout: 'Je hebt vandaag al een paar keer een aanmelding gestuurd. Kijk in je mail (ook bij spam) of probeer het morgen weer.' }, 429);
+  await teller.set(tk, String(nIp + 1));
   const token = crypto.randomBytes(24).toString('hex');
   const a = { email, token, termen, winkels, nieuws, bevestigd: null, sinds: new Date().toISOString(), verstuurd: {}, mailVerstuurd: new Date().toISOString() };
   try { await stuurBevestiging(site, a); }

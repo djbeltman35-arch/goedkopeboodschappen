@@ -79,6 +79,12 @@
     Cache-Control = "no-cache"
 
 # Het oude netlify-adres stuurt door naar de eigen domeinnaam (alle pagina's, met behoud van het pad).
+# Browsers en apps vragen deze iconen standaard op in de hoofdmap.
+[[redirects]]
+  from = "/apple-touch-icon*"
+  to = "/icons/apple-touch-icon.png"
+  status = 200
+
 [[redirects]]
   from = "https://goedkopeboodschappen.netlify.app/*"
   to = "https://boodschappenvergelijk.nl/:splat"

@@ -11,6 +11,7 @@ Prijzen komen uit de webshops van de supermarkten (via de open dataset van Check
 - [Categorieën](https://boodschappenvergelijk.nl/categorie/): hoofdgroepen en subcategorieën, ook per verpakking (blikjes, kratten, flessen) en vers/diepvries/pot.
 - [Aanbiedingen van deze week](https://boodschappenvergelijk.nl/aanbiedingen/): alle acties per supermarkt.
 - [Goedkoopste supermarkt](https://boodschappenvergelijk.nl/goedkoopste-supermarkt/): vast boodschappenpakket doorgerekend bij elke supermarkt.
+- [Goedkoopste supermarkt per stad](https://boodschappenvergelijk.nl/goedkoopste-supermarkt-in/): per plaats (ruim 350 plaatsen, zoals /goedkoopste-supermarkt-in/enschede/) welke supermarkten er zitten en welke het goedkoopst is.
 - [Supermarkt van de week](https://boodschappenvergelijk.nl/supermarkt-van-de-week/): elke week een andere supermarkt uitgelicht, op vaste volgorde: mandjesprijs, beste aanbiedingen en acties die toch niet voordelig zijn.
 - [Kerstboodschappen](https://boodschappenvergelijk.nl/kerst/): kerstmandje (vast kerstdiner voor 4 personen) meerdere keren per week doorgerekend bij alle supermarkten, plus gourmet, wild, bubbels en kerstaanbiedingen.
 - [Complete maaltijden](https://boodschappenvergelijk.nl/maaltijden/): recepten met de kassaprijs voor 4 personen per supermarkt, calorieën en glutenvrij/caloriearm; met link naar het originele recept.

@@ -687,7 +687,7 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .hero .bk:hover,.hero .bk:focus-visible{transform:rotate(0) translateY(-1px)}
 .hero .bk .tv{width:24px;height:22px;flex:none;color:#2b2b2b}
 .hero .bk span{display:flex;flex-direction:column;line-height:1.1;text-align:left}
-.hero .bk small{font-size:10.5px;font-weight:600;letter-spacing:.02em;color:#9a7420}
+.hero .bk small{font-size:10.5px;font-weight:600;letter-spacing:.02em;color:#7a5a12}
 .hero .bk b{font-size:13.5px;font-weight:800;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.hero .bk{transition:none}}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .bk{background:#2e2610;border-color:#8a6d22;color:#fff3cc;box-shadow:0 1px 0 #8a6d22}:root:not([data-theme=light]) .hero .bk small{color:#e8c66a}:root:not([data-theme=light]) .hero .bk .tv{color:#f5e6b8}}
