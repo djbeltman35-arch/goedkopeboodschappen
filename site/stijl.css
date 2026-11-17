@@ -803,3 +803,8 @@ html body .foot nav[aria-label="Supermarkten"]{display:grid!important;grid-templ
 html body .foot nav[aria-label="Supermarkten"] a{display:block!important;text-align:center;padding:6px!important;margin:0!important;font-weight:600;font-size:14px}
 html body .foot nav[aria-label="Supermarkten"] a:nth-child(even){border-left:1px solid var(--line)}
 html body .foot .tiplink,html body .foot .small{text-align:center}
+/* Mijn supermarkten: alleen de korte tekst, verticaal in het midden */
+html body .hero .mystores #mysum{display:none!important}
+html body .hero .mystores summary{align-items:center!important}
+html body .hero .mystores summary>span:not(.ic){display:flex;align-items:center}
+html body .hero .mystores #mysub{display:block;margin:0!important;font-size:15px;font-weight:600;color:var(--ink);line-height:1.3}
