@@ -39,6 +39,8 @@ for s in d:
             s["u"] = ""
             s["dt"] = dag if len(rest) < len(a["d"]) * 0.25 else (bron.get(s["n"]) or {}).get("sinds")
         else:
+            if s["n"] == "ah":  # bundels ("12-pack", maat "2 stuks") zijn meerdere verpakkingen van een los product
+                a["d"] = [x for x in a["d"] if not (re.search(r"\d+\s*-?\s*(?:pack|pck)\b", x["n"], re.I) and re.match(r"^\d+ stuks?$", x.get("s") or "", re.I))]
             print(f"{s['n']:10} eigen prijzen van {dag}: {len(a['d'])} producten (open bestand: {len(s.get('d', []))})")
             s["d"], s["u"], s["dt"] = a["d"], a.get("u", s["u"]), dag
     elif s["n"] == "aldi":

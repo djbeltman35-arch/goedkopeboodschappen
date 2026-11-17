@@ -49,6 +49,8 @@ async function ah() {
         const prijs = p.priceBeforeBonus ?? p.currentPrice;
         if (!(prijs > 0) || uit.has(p.webshopId)) continue;
         if (p.orderAvailabilityStatus && p.orderAvailabilityStatus !== 'IN_ASSORTMENT') continue;
+        // Bundels als "Leffe 12-pack" met maat "2 stuks" zijn meerdere verpakkingen van een product dat al los in de lijst staat: overslaan.
+        if (/\d+\s*-?\s*(?:pack|pck)\b/i.test(p.title) && /^\d+ stuks?$/i.test(p.salesUnitSize || '')) continue;
         uit.set(p.webshopId, { n: String(p.title || '').replace(/\s+/g, ' ').trim(), l: `wi${p.webshopId}/${slug(p.title)}`, p: r2(prijs), s: p.salesUnitSize || '' });
       }
       if (!d.page || page + 1 >= d.page.totalPages) break;
@@ -56,6 +58,23 @@ async function ah() {
     }
     await slaap(700);
   }
+  // De lijst met productsoorten is niet volledig (zo ontbreken koffiebonen); daarom daarna ook elke zoekterm van de site zelf.
+  const neem = p => {
+    const prijs = p.priceBeforeBonus ?? p.currentPrice;
+    if (!(prijs > 0) || uit.has(p.webshopId)) return;
+    if (p.orderAvailabilityStatus && p.orderAvailabilityStatus !== 'IN_ASSORTMENT') return;
+    if (/\d+\s*-?\s*(?:pack|pck)\b/i.test(p.title) && /^\d+ stuks?$/i.test(p.salesUnitSize || '')) return;
+    uit.set(p.webshopId, { n: String(p.title || '').replace(/\s+/g, ' ').trim(), l: `wi${p.webshopId}/${slug(p.title)}`, p: r2(prijs), s: p.salesUnitSize || '' });
+  };
+  let termen = [];
+  try { termen = [...new Set(JSON.parse(fs.readFileSync(path.join(DATA, '..', 'scripts', 'cats.json'), 'utf8')).flatMap(c => c[2] || []))]; } catch (e) { console.warn('geen zoektermen', e.message); }
+  const voor = uit.size;
+  for (const t of termen) {
+    try { const d = await haal(`https://api.ah.nl/mobile-services/product/search/v2?query=${encodeURIComponent(t)}&size=150&page=0`, A); for (const p of d.products || []) neem(p); }
+    catch (e) { console.warn('ah zoekterm', t, e.message); }
+    await slaap(400);
+  }
+  console.log('ah:', voor, 'via productsoorten,', uit.size - voor, 'extra via', termen.length, 'zoektermen');
   return { c: 'AH', u: 'https://www.ah.nl/producten/product/', d: [...uit.values()] };
 }
 
@@ -135,6 +154,42 @@ async function lidl() {
   return { c: 'Lidl', u: 'https://www.lidl.nl', d: [...uit.values()] };
 }
 
+/* ---------- PLUS: de productlijsten van hun webwinkel, per hoofdgroep (12 producten per pagina) ---------- */
+// Versie en api-sleutel staan in het script van de productlijst; die lezen we elke keer opnieuw (net als bij de aanbiedingen).
+async function plus() {
+  const B = 'https://www.plus.nl';
+  const txt = async (u, o = {}) => { const r = await fetch(u, { ...o, headers: { 'User-Agent': UA, 'Accept-Language': 'nl-NL', ...(o.headers || {}) }, signal: AbortSignal.timeout(45_000) }); if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + u); return r.text(); };
+  const tok = (await haal(`${B}/moduleservices/moduleversioninfo`)).versionToken;
+  const info = (await haal(`${B}/moduleservices/moduleinfo`)).manifest?.urlVersions || {};
+  const pad = Object.keys(info).find(u => u.endsWith('ECP_Composition_CW.ProductLists.PLP_Content.mvc.js'));
+  if (!pad) throw new Error('PLUS-productlijstscript niet gevonden');
+  const api = ((await txt(B + pad + info[pad])).match(/DataActionGetProductListAndCategoryInfo", "[^"]+", "([^"]+)"/) || [])[1];
+  if (!api) throw new Error('PLUS-api-sleutel niet gevonden');
+  const H = { 'Content-Type': 'application/json; charset=UTF-8', 'X-CSRFToken': 'T6C+9iB49TLra4jEsMeSckDMNhQ=', 'OutSystems-locale': 'nl-NL', Referer: `${B}/producten` };
+  const sm = await txt(`${B}/ECP_Sitemap_Engine/rest/Sitemap/category`);
+  const groepen = [...new Set([...sm.matchAll(/<loc>https:\/\/www\.plus\.nl\/producten\/([a-z0-9-]+)<\/loc>/g)].map(m => m[1]))];
+  if (groepen.length < 8) throw new Error(`te weinig PLUS-groepen (${groepen.length})`);
+  const uit = new Map();
+  for (const g of groepen) {
+    for (let pn = 1, tp = 1; pn <= tp && pn <= 400; pn++) {
+      let d;
+      try {
+        d = (await haal(`${B}/screenservices/ECP_Composition_CW/ProductLists/PLP_Content/DataActionGetProductListAndCategoryInfo`, { method: 'POST', headers: H, body: JSON.stringify({ versionInfo: { moduleVersion: tok, apiVersion: api }, viewName: 'MainFlow.ProductListPage', screenData: { variables: { CategorySlug: g, PageNumber: pn } } }) })).data;
+      } catch (e) { console.warn('plus', g, pn, e.message); break; }
+      tp = d?.TotalPages || 0;
+      for (const x of d?.ProductList?.List || []) {
+        const p = x.PLP_Str || {};
+        const prijs = parseFloat(p.OriginalPrice) > 0 ? parseFloat(p.OriginalPrice) : parseFloat(p.NewPrice);
+        if (!(prijs > 0) || !p.Slug || uit.has(p.SKU || p.Slug)) continue;
+        uit.set(p.SKU || p.Slug, { n: String(p.Name || '').replace(/\s+/g, ' ').trim(), l: p.Slug, p: r2(prijs), s: String(p.Product_Subtitle || '').trim() });
+      }
+      await slaap(500);
+    }
+    console.log('plus', g, uit.size);
+  }
+  return { c: 'PLUS', u: `${B}/product/`, d: [...uit.values()] };
+}
+
 /* ---------- Dirk en DekaMarkt: productpagina's uit hun sitemap, verdeeld over de week ---------- */
 // Elke productpagina bevat de prijs (normalPrice) in de Nuxt-gegevens. Het zijn er duizenden; daarom per dag een deel,
 // eerst nooit bekeken, dan de langst niet bekeken. Prijzen blijven 21 dagen geldig als de pagina niet opnieuw aan de beurt was.
@@ -212,7 +267,7 @@ const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.
 
 // Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
 // DekaMarkt: de productlinks in hun sitemap geven een 404; DekaMarkt blijft daarom (nog) uit het open bestand komen.
-const WINKELS = { ah, hoogvliet, dirk };
+const WINKELS = { ah, hoogvliet, plus, dirk };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;

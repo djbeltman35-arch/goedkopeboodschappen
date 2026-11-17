@@ -566,6 +566,13 @@ function pakVan(p){const u=p.lit?null:effUnit(p),e=p.lit?"l":p[6],q=p.lit?p.lit:
 const PAK_VOLG=["Klein (tot 40 cl)","Fles of pak (tot 1 liter)","Groot (1 tot 2,5 liter)","Multipack (2,5 tot 8 liter)","Krat of tray (meer dan 8 liter)","Klein (tot 250 gram)","Middel (250 tot 600 gram)","Groot (600 gram tot 1,2 kilo)","Extra groot (meer dan 1,2 kilo)","Per stuk","2 tot 6 stuks","7 tot 12 stuks","Meer dan 12 stuks"];
 function pakIndeling(m){const n=new Map();for(const p of m){const k=pakVan(p);if(k)n.set(k,(n.get(k)||0)+1)}return PAK_VOLG.filter(k=>n.has(k)).map(k=>[k,n.get(k)])}
 document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-pak]");if(!x)return;S.pak=x.value;search()});
+// Soort binnen een merk (Lavazza Qualità Rossa naast Rossa, Oro naast Oro): de eerste twee kenmerkende woorden van de naam,
+// zonder de zoekwoorden, winkelmerken, verpakking en hoeveelheid. Zo vergelijk je dezelfde soort tussen de winkels.
+const SOORT_WEG=new Set("ah plus jumbo lidl aldi dirk dekamarkt hoogvliet vomar spar poiesz g woon huismerk alu koffie koffiebonen bonen bonen, gemalen filter filterkoffie snelfilter snelfiltermaling snelfilterkoffie espressobonen espresso capsules capsule caps cups koffiecups pads koffiepads en e di de het van met voor voordeelpak voordeelverpakking maxi pack pak zak blik stazak doos x st stuk stuks g gr gram kg kilo ml l liter cl per pck 2pck nespresso compatible".split(" "));
+function soortVan(p,q){const w=new Set(norm(q).split(" "));const t=norm(p[1]).replace(/qualit[ay]|quality/g,"qualita").split(" ").filter(x=>x.length>1&&!w.has(x)&&!SOORT_WEG.has(x)&&!/\d/.test(x));return t.slice(0,2).join(" ")}
+function soortIndeling(m,q){const n=new Map();for(const p of m){const k=soortVan(p,q);if(!k)continue;const e=n.get(k)||{n:0,w:new Set()};e.n++;e.w.add(p[0]);n.set(k,e)}
+  const r=[...n].filter(([k,e])=>e.w.size>=2).sort((a,b)=>b[1].w.size-a[1].w.size||b[1].n-a[1].n).slice(0,24);return r.length>=2?r.map(([k,e])=>[k,e.n,e.w.size]):[]}
+document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-soort]");if(!x)return;S.soort=x.value;search()});
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick(); if(fromUser||q!=="halfvolle melk") S.demo=false;
   if(!q){$("results").innerHTML="";return}
@@ -576,6 +583,9 @@ function search(fromUser){
   if(!m.length){const alt=verbeter(q); if(alt){const m2=matches(alt,false).length?matches(alt,false):matches(alt); if(m2.length){m=m2;bedoeld=alt;if(fromUser)gc("verbeterd/"+norm(q)+"/"+norm(alt),"Zoekt (verbeterd): "+q+" → "+alt)}}}
   if(!m.length){if(fromUser&&S.restGeladen)gc("geen/"+norm(q),"Niets gevonden: "+q);$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.${!S.restGeladen?" (De laatste producten worden nog geladen; probeer het zo nog eens.)":""}</div>`;return}
   if(S.pakQ!==norm(q)){S.pak="";S.pakQ=norm(q)}
+  if(S.soortQ!==norm(q)){S.soort="";S.soortQ=norm(q)}
+  const sk=soortIndeling(m,q);if(S.soort&&sk.some(x=>x[0]===S.soort))m=m.filter(p=>soortVan(p,q)===S.soort);else S.soort="";
+  const soortHtml=sk.length?`<label class="pakkeus"><span>🏷️ Soort</span><select data-soort><option value="">Alle soorten</option>${sk.map(([k,n,w])=>`<option value="${esc(k)}"${S.soort===k?" selected":""}>${esc(k[0].toUpperCase()+k.slice(1))} (${w} winkels)</option>`).join("")}</select></label>`:"";
   const pk=pakIndeling(m);if(S.pak&&pk.some(x=>x[0]===S.pak))m=m.filter(p=>pakVan(p)===S.pak);else S.pak="";
   const pakHtml=pk.length>1?`<label class="pakkeus"><span>📦 Inhoud</span><select data-pak><option value="">Alle verpakkingen</option>${pk.map(([k,n])=>`<option value="${esc(k)}"${S.pak===k?" selected":""}>${esc(k)} (${n})</option>`).join("")}</select></label>`:"";
   const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
@@ -589,7 +599,7 @@ function search(fromUser){
   <p class="meta">Per supermarkt het voordeligste product, gesorteerd op prijs per kilo, liter of stuk${diff>=10?`. Bij ${esc(sname(lo[0]))} betaal je ${diff}% minder per ${lo[6]==="l"?"liter":lo[6]==="kg"?"kilo":"stuk"} dan bij ${esc(sname(hi[0]))}`:""}.</p>
   ${S.demo||!S.mijn?"":mijnBlok(best,kop)}${keus}${S.demo?"":(()=>{const al=alarmHtml(kop,lo),pg=PAGINAS.has(norm(q))?`/vergelijk/${PAGINAS.get(norm(q))}/`:"";
     return `<p class="snelopties"><a href="#" data-vastewinkel>⭐ ${S.mijn?"Vaste winkel wijzigen":"Vaste winkel kiezen"}</a>${al?`<a href="#" data-toonalarm>🔔 Prijsalarm</a>`:""}${pg?`<a href="${pg}">📈 Prijsverloop</a>`:""}</p>${al?`<div id="prijsalarm" hidden>${al}</div>`:""}`})()}
-  ${pakHtml}
+  ${soortHtml}${pakHtml}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
   ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
 }
