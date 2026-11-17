@@ -844,3 +844,6 @@ html body .quick.tegels .start>.chip.chip+.chip.chip{border-left:1px solid var(-
 html body *:not(#_a):not(#_b):not(.mcard):not(.mcard *){border-radius:0!important}
 html body .hero .stapjes b:not(#_a):not(#_b):not(#_c){border-radius:50%!important}
 html body .hero .mystores summary::after,html body .hero .mystores summary::before{border-radius:0!important}
+/* Geen zichtbare schuifbalk onder de maaltijdkaarten (swipen werkt gewoon) */
+html body .maal .mgrid{scrollbar-width:none;-ms-overflow-style:none}
+html body .maal .mgrid::-webkit-scrollbar{display:none;height:0}
