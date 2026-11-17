@@ -154,6 +154,29 @@ async function lidl() {
   return { c: 'Lidl', u: 'https://www.lidl.nl', d: [...uit.values()] };
 }
 
+/* ---------- Jumbo: dezelfde open GraphQL-zoekdienst als voor de aanbiedingen, nu zonder filter (het hele assortiment) ---------- */
+async function jumbo() {
+  const H = { 'content-type': 'application/json', 'apollographql-client-name': 'JUMBO_WEB-search', 'apollographql-client-version': 'master-v29.4.0-web' };
+  const Q = 'query($input:ProductSearchInput!){searchProducts(input:$input){count products{id title subtitle packSizeDisplay price{price}}}}';
+  const uit = new Map(); let count = 0;
+  for (let off = 0; off < Math.max(1, count) && off < 40000; off += 200) {
+    const j = await haal('https://www.jumbo.com/api/graphql', { method: 'POST', headers: H, body: JSON.stringify({ query: Q, variables: { input: { searchType: 'keyword', searchTerms: '*', offSet: off, limit: 200 } } }) });
+    const d = j?.data?.searchProducts;
+    if (!d) throw new Error(j?.errors?.[0]?.message || 'onverwacht antwoord van Jumbo');
+    count = d.count || 0;
+    for (const p of d.products || []) {
+      const prijs = p.price?.price != null ? p.price.price / 100 : null;  // gewone prijs (promoPrice laten we hier weg)
+      if (!(prijs > 0) || !p.title || uit.has(p.id)) continue;
+      uit.set(p.id, { n: String(p.title).replace(/\s+/g, ' ').trim(), l: `${slug(p.title)}-${p.id}`, p: r2(prijs), s: p.subtitle || p.packSizeDisplay || '' });
+    }
+    if (!(d.products || []).length) break;
+    await slaap(700);
+  }
+  // Geeft de zoekdienst maar een deel van het assortiment terug, dan liever het open bestand houden dan producten kwijtraken.
+  if (uit.size < 0.85 * count) throw new Error(`maar ${uit.size} van de ${count} Jumbo-producten opgehaald`);
+  return { c: 'Jumbo', u: 'https://www.jumbo.com/producten/', d: [...uit.values()] };
+}
+
 /* ---------- PLUS: de productlijsten van hun webwinkel, per hoofdgroep (12 producten per pagina) ---------- */
 // Versie en api-sleutel staan in het script van de productlijst; die lezen we elke keer opnieuw (net als bij de aanbiedingen).
 async function plus() {
@@ -305,7 +328,7 @@ async function vomar() {
 }
 
 // Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
-const WINKELS = { ah, hoogvliet, plus, dirk, dekamarkt, vomar };
+const WINKELS = { ah, jumbo, hoogvliet, plus, dirk, dekamarkt, vomar };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;

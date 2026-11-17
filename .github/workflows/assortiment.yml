@@ -1,7 +1,7 @@
 name: Gewone prijzen ophalen
 
 # Elke nacht de gewone prijzen (het hele assortiment) ophalen van winkels waarvan het open prijzenbestand van Checkjebon
-# niet meer wordt bijgewerkt: AH, Hoogvliet, Lidl, Dirk en DekaMarkt (zie ophalen/assortiment.mjs).
+# niet meer wordt bijgewerkt: AH, Jumbo, Hoogvliet, PLUS, Dirk, DekaMarkt en Vomar (zie ophalen/assortiment.mjs).
 # Draait vóór "Prijzen ophalen"; die neemt de nieuwe gegevens mee. Zelf start deze workflow geen Netlify-build.
 on:
   schedule:
