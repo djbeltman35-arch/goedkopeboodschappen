@@ -759,3 +759,7 @@ html body .foot nav[aria-label="Over"] a:nth-child(even){border-left:1px solid v
 html body .foot .free{text-align:center;font-weight:400!important;font-size:14px;color:var(--muted)}
 html body .foot .free a{font-weight:600}
 html body .foot p:last-child,html body .foot .copy{text-align:center}
+/* De vier uitklapblokken met gelijke, kleine tussenruimte */
+html body .quick.tegels{padding-bottom:0!important}
+html body .snellinks{margin-top:2px!important;gap:4px!important}
+html body #results:empty{display:none}
