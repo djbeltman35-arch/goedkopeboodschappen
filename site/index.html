@@ -616,7 +616,7 @@ function quick(){
   $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties`:"deze week"}</small></button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>`+
     `<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a></div>`+
-    `<details class="subblok catklap"${S.catOpen?" open":""}><summary><h3 class="subnaam">Categorieën</h3></summary><div class="subin"><div class="cats">`+extra+catVolgorde().map(i=>i<0?`<a class="chip" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div></div></details>`;
+    `<details class="subblok catklap"${S.catOpen?" open":""}><summary><h2 class="subnaam">Categorieën</h2></summary><div class="subin"><div class="cats">`+extra+catVolgorde().map(i=>i<0?`<a class="chip" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div></div></details>`;
   const d=$("quick").querySelector(".catklap");if(d)d.addEventListener("toggle",()=>{S.catOpen=d.open});
 }
 // Seizoenstegels: Sinterklaas tot 5 december, kerst vanaf half november, oud en nieuw in de laatste weken van het jaar.
