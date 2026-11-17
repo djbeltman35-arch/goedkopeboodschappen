@@ -1,0 +1,73 @@
+{
+ "vomar1": {
+  "st": 200,
+  "n": 126,
+  "L": [
+   "/producten/bier-wijn-sterke-drank",
+   "/producten/bier-wijn-sterke-drank/bier/-t-ij-t-ij-gouden-ij/304577",
+   "/producten/bier-wijn-sterke-drank/bier/-t-ij-ipa-330ml/304559",
+   "/producten/bier-wijn-sterke-drank/bier/-t-ij-zatte-fles/303969",
+   "/producten/bier-wijn-sterke-drank/bier/8-6-blik/152073",
+   "/producten/bier-wijn-sterke-drank/bier/affligem-0-blond-6x300ml-fles/142410",
+   "/producten/bier-wijn-sterke-drank/bier/affligem-blond-6x300ml-fles/142408",
+   "/producten/bier-wijn-sterke-drank/bier/affligem-dubbel-6x300ml-fles/143374",
+   "/producten/bier-wijn-sterke-drank/bier/affligem-tripel-6x300ml-fles/152020",
+   "/producten/bier-wijn-sterke-drank/bier/alfa-edel-pils-24x300ml-krat/258342",
+   "/producten/bier-wijn-sterke-drank/bier/alfa-edel-pils-6x330ml-blik/150323",
+   "/producten/bier-wijn-sterke-drank/bier/alfa-edel-pils-blik/150325",
+   "/producten/bier-wijn-sterke-drank/bier/alfa-superstrong-blik/150324",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-0-radler-6x300ml-fles/110367",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-0-radler-6x330ml-blik/149804",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-blond-blik/150040",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-pils-24x300ml-krat/253553",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-pils-6x330ml-blik/149794",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-pils-blik/149800",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-radler-6x300ml-fles/106776",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-radler-6x330ml-blik/149806",
+   "/producten/bier-wijn-sterke-drank/bier/amstel-rose-6x300ml-fles/300324",
+   "/producten/bier-wijn-sterke-drank/bier/apple-bandit-0-apple-cider-6x300ml-fles/144371",
+   "/producten/bier-wijn-sterke-drank/bier/apple-bandit-apple-cider-6x300ml-fles/121232",
+   "/producten/bier-wijn-sterke-drank/bier/apple-bandit-raspberry-6x300ml-fles/144369",
+   "/producten/bier-wijn-sterke-drank/bier/bavaria-strong-blond-blik/301814",
+   "/producten/bier-wijn-sterke-drank/bier/benediktiner-0-weissbier-fles/138176",
+   "/producten/bier-wijn-sterke-drank/bier/benediktiner-dunkel-fles/120146",
+   "/producten/bier-wijn-sterke-drank/bier/benediktiner-weissbier-blik/303726",
+   "/producten/bier-wijn-sterke-drank/bier/benediktiner-weissbier-fles/106840",
+   "/producten/bier-wijn-sterke-drank/bier/birra-moretti-lager-6x330ml-blik/150039",
+   "/producten/bier-wijn-sterke-drank/bier/brand-0-ipa-6x300ml-fles/134691",
+   "/producten/bier-wijn-sterke-drank/bier/brand-dubbelbock-6x300ml-fles/253804",
+   "/producten/bier-wijn-sterke-drank/bier/brand-ipa-6x300ml-fles/120157",
+   "/producten/bier-wijn-sterke-drank/bier/brand-pils-6x300ml-fles/141738",
+   "/producten/bier-wijn-sterke-drank/bier/brugse-zot-blond-fles/106808",
+   "/producten/bier-wijn-sterke-drank/bier/chouffe-cherry-4x33cl/307629",
+   "/producten/bier-wijn-sterke-drank/bier/claro-mex-6x330ml-fles/303784",
+   "/producten/bier-wijn-sterke-drank/bier/corona-0-6x330ml-fles/146555",
+   "/producten/bier-wijn-sterke-drank/bier/corona-blik/303727"
+  ],
+  "prijzen": 0
+ },
+ "netto https://www.nettorama.nl/robots.txt": {
+  "st": 200,
+  "loc": null,
+  "len": 89,
+  "b": "User-agent: *\nAllow: /\nDisallow: /webcore\nSitemap: https://www.nettorama.nl/sitemap.xml\n\n"
+ },
+ "netto https://www.nettorama.nl/sitemap.xml": {
+  "st": 500,
+  "loc": null,
+  "len": 0,
+  "b": ""
+ },
+ "netto https://www.nettorama.nl/": {
+  "st": 200,
+  "loc": null,
+  "len": 64914,
+  "b": "<!DOCTYPE html> <html lang=\"nl\"> <head> <title>Merkendiscounter | Wij blijven goedkoop | Nettorama verbruikersmarkten</title> <meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\"> <link rel=\"canonical\" href=\"https://www.nettorama.nl/\" /> <meta name=\"description\" lang=\"nl\" content=\"Meer halen, is minder betalen bij Nettorama. De beste vers garantie én garantie voor een lage prijs? Je vindt het bij Nettorama. Bekijk welke winkels bij jou in de buurt zitten en ontdek dat boodschappen doen nog nooit zo voordelig was!\"> <meta name=\"keywords\" lang=\"nl\" content=\"\"> <meta name=\"author\" lang=\"nl\" content=\"Nettorama verbruikersmarkten\"> <meta name"
+ },
+ "netto https://www.nettorama.nl/aanbiedingen": {
+  "st": 404,
+  "loc": null,
+  "len": 43674,
+  "b": "<!DOCTYPE html> <html lang=\"nl\"> <head> <title>Pagina niet gevonden | Nettorama verbruikersmarkten</title> <meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\"> <link rel=\"canonical\" href=\"https://www.nettorama.nl/aanbiedingen\" /> <meta name=\"description\" lang=\"nl\" content=\"\"> <meta name=\"keywords\" lang=\"nl\" content=\"\"> <meta name=\"author\" lang=\"nl\" content=\"Nettorama verbruikersmarkten\"> <meta name=\"robots\" lang=\"nl\" content=\"all\"> <meta name=\"format-detection\" content=\"telephone=no\"> <meta property=\"og:title\" content=\"Pagina niet gevonden\" /> <meta property=\"og:url\" content=\"/pagina-niet-gevonden\" /> <meta property=\"og:type\" content=\"a"
+ }
+}
