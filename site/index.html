@@ -928,8 +928,9 @@ function dock(){
   const r=n?totals()[0]:null;
   d.innerHTML=n?`<span><b>${n} ${n===1?"artikel":"artikelen"}</b>${r?` · goedkoopst bij ${esc(sname(r.si))}: <b>${eur(r.sum)}</b>`:""}</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`:
     `<span>Tik op <b>+</b> bij een product</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`;
+  // Lege lijst: geen balk (die dekt dan alleen inhoud af); verschijnt zodra er iets op de lijst staat.
   d.classList.toggle("leeg",!n);
-  d.hidden=false; document.body.classList.add("hasdock");
+  d.hidden=!n; document.body.classList.toggle("hasdock",!!n);
 }
 
 
