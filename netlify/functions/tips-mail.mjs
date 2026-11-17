@@ -3,7 +3,7 @@ import { getStore } from '@netlify/blobs';
 import { verbind, bericht, opmaak, esc } from '../mail.mjs';
 
 const NAAR = 'goedkopeboodschappen@proton.me';
-const SOORT = { tip: 'Tip', idee: 'Idee voor de site', fout: 'Fout gezien', product: 'Product of winkel mist', vraag: 'Vraag', anders: 'Iets anders' };
+const SOORT = { tip: 'Tip', idee: 'Idee voor de site', fout: 'Fout gezien', product: 'Product of winkel mist', vraag: 'Vraag', pers: 'Pers en media', samenwerking: 'Samenwerking', privacy: 'Privacy', anders: 'Overig' };
 
 export default async () => {
   const nieuw = getStore('tips'), archief = getStore('tips-archief'), teller = getStore('tips-teller');

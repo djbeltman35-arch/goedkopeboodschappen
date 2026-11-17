@@ -4,10 +4,12 @@
 import { getStore } from '@netlify/blobs';
 import crypto from 'node:crypto';
 import { verbodenWoorden } from '../../site/woordfilter.mjs';
+import { verbind, bericht, opmaak, esc } from '../mail.mjs';
 
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const kort = (v, n) => String(v ?? '').replace(/[\u0000-\u0008\u000b-\u001f]/g, ' ').trim().slice(0, n);
-const SOORTEN = { tip: 'Tip', idee: 'Idee voor de site', fout: 'Fout gezien', product: 'Product of winkel mist', vraag: 'Vraag', anders: 'Iets anders' };
+const SOORTEN = { tip: 'Tip', idee: 'Idee voor de site', fout: 'Fout gezien', product: 'Product of winkel mist', vraag: 'Vraag', pers: 'Pers en media', samenwerking: 'Samenwerking', privacy: 'Privacy', anders: 'Overig' };
+const NAAR = 'goedkopeboodschappen@proton.me';
 const hash = s => crypto.createHash('sha256').update(s).digest('hex').slice(0, 24);
 
 export default async (req, context) => {
@@ -25,7 +27,27 @@ export default async (req, context) => {
   const n = +(await teller.get(tk).catch(() => 0)) || 0;
   if (n >= 5) return json({ fout: 'Je hebt vandaag al 5 berichten gestuurd. Dank je wel! Probeer het morgen weer.' }, 429);
   await teller.set(tk, String(n + 1));
-  await getStore('tips').setJSON(`${tip.op}-${tip.wie}`, tip);
+  const key = `${tip.op}-${tip.wie}`;
+  // Meteen mailen; lukt dat niet, dan komt het bericht alsnog in de ochtendmail (tips-mail.mjs).
+  try {
+    const user = Netlify.env.get('GMAIL_USER'), pass = Netlify.env.get('GMAIL_APP_PASSWORD');
+    if (!user || !pass) throw new Error('geen mailgegevens');
+    const s = SOORTEN[tip.soort], wie = (tip.naam || tip.email || 'een bezoeker').replace(/\s+/g, ' ');
+    const c = await verbind({ user, pass });
+    try {
+      await c.stuur(bericht({
+        van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', aan: NAAR, antwoordAan: tip.email || undefined,
+        onderwerp: `Contact: ${s} van ${wie}`,
+        tekst: `${s} van ${wie}${tip.email ? ' <' + tip.email + '>' : ''}\n\n${tip.bericht}${tip.pagina ? '\n\nVanaf: ' + tip.pagina : ''}`,
+        html: opmaak({ titel: `${s}`, inhoud: `<p style="margin:0 0 10px"><b>Van:</b> ${esc(tip.naam || 'geen naam')}${tip.email ? ` &lt;<a href="mailto:${esc(tip.email)}">${esc(tip.email)}</a>&gt;` : ''}</p><p style="white-space:pre-wrap;margin:0">${esc(tip.bericht)}</p>${tip.pagina ? `<p style="color:#666;font-size:13px">Vanaf ${esc(tip.pagina)}</p>` : ''}`,
+          voet: tip.email ? 'Op Beantwoorden klikken gaat direct naar de afzender.' : 'De afzender heeft geen e-mailadres ingevuld.' }),
+      }));
+    } finally { await c.sluit(); }
+    await getStore('tips-archief').setJSON(key, tip);
+  } catch (e) {
+    console.error('contactmail mislukt', e?.message);
+    await getStore('tips').setJSON(key, tip);
+  }
   return json({ ok: true });
 };
 
