@@ -211,7 +211,8 @@ const dirk = detailresult('dirk', 'Dirk', 'https://www.dirk.nl', 1400);
 const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.nl', 1400);
 
 // Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
-const WINKELS = { ah, hoogvliet, dirk, dekamarkt };
+// DekaMarkt: de productlinks in hun sitemap geven een 404; DekaMarkt blijft daarom (nog) uit het open bestand komen.
+const WINKELS = { ah, hoogvliet, dirk };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;
