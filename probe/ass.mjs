@@ -278,11 +278,12 @@ const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.
 async function vomar() {
   const B = 'https://www.vomar.nl';
   const links = t => [...new Set((String(t || '').match(/href="(\/producten\/[^"#?]+)"/g) || []).map(x => x.slice(6, -1)))];
+  const veilig = async u => { try { return await tekst(u); } catch (e) { console.warn('vomar', u, e.message); return ''; } };
   const top = links(await tekst(`${B}/producten`)).filter(x => x.split('/').length === 3);
   const subs = new Set();
-  for (const t of top) { for (const x of links(await tekst(B + t))) if (x.startsWith(t + '/') && x.split('/').length === 4) subs.add(x); await slaap(500); }
+  for (const t of top) { for (const x of links(await veilig(B + t))) if (x.startsWith(t + '/') && x.split('/').length === 4) subs.add(x); await slaap(500); }
   const prods = new Set();
-  for (const s of subs) { for (const x of links(await tekst(B + s))) if (/\/\d+$/.test(x)) prods.add(B + x); await slaap(500); }
+  for (const s of subs) { for (const x of links(await veilig(B + s))) if (/\/\d+$/.test(x)) prods.add(B + x); await slaap(500); }
   const lees = html => {
     const m = html.match(/<p class="price"[^>]*>\s*<span class="large"[^>]*>(\d+)\.?<\/span>\s*<span class="small"[^>]*>(\d+)<\/span>/);
     const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || [])[1];
