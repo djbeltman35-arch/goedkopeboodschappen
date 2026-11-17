@@ -1028,7 +1028,7 @@ faq = [("Welke supermarkt is het goedkoopst?", f"In {MAAND} is {nm(PAK[0]['si'])
        ("Is Goedkope Boodschappen gratis?", "Ja. Er is geen account nodig en er staat geen reclame op. Supermarkten betalen niet voor een plek."),
        ("Hoe actueel zijn de prijzen?", "De prijzen en aanbiedingen worden elke dag automatisch opgehaald van de webshops van de supermarkten. De prijs aan de kassa is leidend."),
        ("Blijft mijn boodschappenlijst bewaard?", "Ja, je lijst wordt bewaard in je eigen browser. Kom je terug, dan zie je meteen welke producten goedkoper of duurder zijn geworden en wat er in de aanbieding is.")]
-snel = ('<details class="subblok"><summary><h2 class="subnaam">Populaire producten</h2></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in pop) + '<li><a href="/vergelijk/">Alle producten</a></li></ul></div></details>')
+snel = ('<details class="subblok pop"><summary><h2 class="subnaam">Populair</h2></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in pop) + '<li><a href="/vergelijk/">Alle producten</a></li></ul></div></details>')
 seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h2 id="sh">Boodschappen vergelijken bij {AANTAL} supermarkten</h2>'
        + '<ul class="seowinkels">' + "".join(f'<li>{esc(NAMEN[s])}</li>' for s in sorted([s for s in ACTIEF if s in NAMEN], key=lambda s: NAMEN[s].lower())) + '</ul>'
        + (f'<a class="seowinnaar" href="/goedkoopste-supermarkt/"><span>🏆 Goedkoopst in {MAAND.split()[0]}</span><b>{esc(nm(PAK[0]["si"]))}</b><small>daarna {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))} →</small></a>' if len(PAK) > 2 else "")
@@ -1087,7 +1087,7 @@ for _p in prods:
 AMERK = sorted(f for f, ws in _win.items() if not f[0].isdigit() and len(f) > 1 and len(ws) >= 3 and _eerst[f] / _overal[f] >= .7)
 app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
 app = (app.replace("{{JAAR}}", str(datetime.date.today().year)).replace("{{EIWIT}}", json.dumps(EIWIT, ensure_ascii=False)).replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
-          .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--SNELLINKS-->", snel).replace("<!--MAALTIJDEN-->", MAAL_HOME)
+          .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--SNELLINKS-->", "").replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 # Snelheid: de grote vaste tabellen in een apart bestand dat de browser bewaart (scheelt bij elk bezoek ~60 kB),
 # en de prijsbestanden al laten binnenhalen terwijl de pagina nog laadt.
@@ -1128,7 +1128,7 @@ def _tegels():
     n = sum(1 for o in _ao if (not o.get("v") or o["v"] <= VANDAAG) and (not o.get("t") or o["t"] >= VANDAAG))
     fl = _volgend_feest(); f = fl[0] if fl else None
     _ft = lambda f: f'<a class="chip seizoen" href="{f[0]}"><span class="ic">{f[1]}</span>{f[2]}<small>boodschappen</small></a>'
-    feest = _ft(f) if f else ""
+    feest = _ft(f).replace("<small>boodschappen</small>", "") if f else ""
     # zelfde regel als tweedeFeest(): het feest daarna binnen 60 dagen krijgt de plek van Lunchtrommel
     _k = next((x for x in fl[1:] if x[0] == "/kerst/"), None) if fl and fl[0][0] != "/kerst/" else None
     _2 = _k or (fl[1] if len(fl) > 1 else None)
@@ -1142,13 +1142,11 @@ def _tegels():
         if i >= 0: idx.append(i)
     idx += [i for i in range(len(gr)) if i not in idx]
     e = lambda s: str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-    return ('<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="false"><span class="ic">🔥</span>Aanbiedingen<small>' + (f"{n} acties" if n else "deze week") + '</small></button>'
-            '<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met lijst</small></a>'
-            '<a class="chip mt" href="/maaltijden/"><span class="ic">🍽️</span>Maaltijden<small>per winkel</small></a><a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet<small>en leefstijl</small></a>' + feest +
-            (tweede or '<a class="chip lunch" href="/lunchtrommel/"><span class="ic">🍎</span>Lunchtrommel<small>en ontbijt</small></a>') + '</div>'
-            '<p class="tegelkop">Of kies een categorie</p><div class="cats">' +
-            "".join('<a class="chip dieet" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>' if i < 0 else
-                    f'<button type="button" class="chip" data-view="{i}" aria-pressed="false"><span class="ic">{gr[i][1]}</span>{e(gr[i][0])}</button>' for i in idx) + "</div>")
+    return ('<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="false"><span class="ic">🔥</span>Aanbiedingen<small>' + (f"{n} acties deze week" if n else "deze week") + '</small></button>'
+            '<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a></div>'
+            '<div class="klaprij"><details class="subblok catklap"><summary><h2 class="subnaam">Categorieën</h2></summary><div class="subin"><div class="cats">' + feest + tweede.replace("<small>boodschappen</small>", "") +
+            "".join('<a class="chip" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>' if i < 0 else
+                    f'<button type="button" class="chip" data-view="{i}" aria-pressed="false"><span class="ic">{gr[i][1]}</span>{e(gr[i][0])}</button>' for i in idx) + "</div></div></details>" + snel + "</div>")
 _leeg = '<div class="chips quick tegels" id="quick" role="group" aria-label="Categorieën"></div>'
 if _leeg in app: app = app.replace(_leeg, _leeg[:-6] + _tegels() + "</div>", 1)
 else: print("LET OP: tegels niet vooraf in de HTML gezet")
