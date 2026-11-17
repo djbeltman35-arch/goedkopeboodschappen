@@ -1,70 +1,70 @@
 {
- "dekamarkt": {
+ "dekamarkt": "Error: ENOENT: no such file or directory, open 'data/assortiment-dekamarkt.json'",
+ "vomar": {
   "n": 30,
   "bek": 30,
   "weg": 0,
   "vb": [
    {
-    "n": "Heineken Pilsener Krat",
-    "l": "https://www.dekamarkt.nl/boodschappen/dranken-sap-koffie-thee/bier/heineken-pilsener-krat-24-x-300-ml/6",
-    "p": 18.98,
-    "s": "24 x 300 ml"
+    "n": "Bonbebe Diksap Aardbei",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/bonbebe-diksap-aardbei/108005",
+    "p": 3.95,
+    "s": ""
    },
    {
-    "n": "Bio+ Biologische rode bieten gekookt",
-    "l": "https://www.dekamarkt.nl/boodschappen/aardappelen-groente-fruit/groente/bio-biologische-rode-bieten-gekookt-500-g/9",
+    "n": "12m12 Olvarit Tomaat Kip Rijst",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m12-olvarit-tomaat-kip-rijst/121515",
+    "p": 1.65,
+    "s": ""
+   },
+   {
+    "n": "12m07 Olvarit Spinazie Kip Aardappel",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m07-olvarit-spinazie-kip-aardappel/121520",
+    "p": 1.65,
+    "s": ""
+   },
+   {
+    "n": "12m53 Olvarit Appel Perzik Mango",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m53-olvarit-appel-perzik-mango/121523",
     "p": 1.39,
-    "s": "500 g"
+    "s": ""
    },
    {
-    "n": "Maggi Doseerjus naturel",
-    "l": "https://www.dekamarkt.nl/boodschappen/voorraadkast/oliën-sauzen-mixen/maggi-doseerjus-naturel-180-g/10",
-    "p": 3.15,
-    "s": "180 g"
-   },
-   {
-    "n": "Tokkelroom Naturel",
-    "l": "https://www.dekamarkt.nl/boodschappen/dranken-sap-koffie-thee/aperitieven-mixen/tokkelroom-naturel-500-ml/11",
-    "p": 6.09,
-    "s": "500 ml"
-   },
-   {
-    "n": "Ambition Gembersiroop",
-    "l": "https://www.dekamarkt.nl/boodschappen/voorraadkast/bakproducten-suiker/ambition-gembersiroop-300-ml/15",
-    "p": 2.59,
-    "s": "300 ml"
-   },
-   {
-    "n": "Ambition Chinese bakgember",
-    "l": "https://www.dekamarkt.nl/boodschappen/voorraadkast/bakproducten-suiker/ambition-chinese-bakgember-240-g/20",
-    "p": 1.7,
-    "s": "240 g"
-   },
-   {
-    "n": "Flemmings Broodje frikandel",
-    "l": "https://www.dekamarkt.nl/boodschappen/maaltijden-salades-tapas/verse-maaltijden/flemmings-broodje-frikandel-2-stuks/28",
-    "p": 1.79,
-    "s": "2 stuks"
-   },
-   {
-    "n": "Whiskas Saus rundvlees",
-    "l": "https://www.dekamarkt.nl/boodschappen/huishoud-huisdieren/huisdieren/whiskas-saus-rundvlees-400-g/33",
-    "p": 2.55,
-    "s": "400 g"
-   },
-   {
-    "n": "Orinoko Hazelnootpasta",
-    "l": "https://www.dekamarkt.nl/boodschappen/brood-beleg-koek/broodbeleg/orinoko-hazelnootpasta-350-g/38",
-    "p": 1.95,
-    "s": "350 g"
-   },
-   {
-    "n": "Silvo Shake it gebakken aardappelen",
-    "l": "https://www.dekamarkt.nl/boodschappen/voorraadkast/kruiden-specerijen/silvo-shake-it-gebakken-aardappelen-36-g/42",
+    "n": "8m09 Olvarit Tomaat Ham Macaroni",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/8m09-olvarit-tomaat-ham-macaroni/121526",
     "p": 1.49,
-    "s": "36 g"
+    "s": ""
+   },
+   {
+    "n": "8m01 Olvarit Wortel Kip Aardappel",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/8m01-olvarit-wortel-kip-aardappel/121530",
+    "p": 1.45,
+    "s": ""
+   },
+   {
+    "n": "4m01 Olvarit Banaan",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m01-olvarit-banaan/121533",
+    "p": 1.05,
+    "s": ""
+   },
+   {
+    "n": "4m75 Olvarit Wortel",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m75-olvarit-wortel/121538",
+    "p": 1.15,
+    "s": ""
+   },
+   {
+    "n": "4m76 Olvarit Pompoen",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m76-olvarit-pompoen/121539",
+    "p": 1.05,
+    "s": ""
+   },
+   {
+    "n": "6m54 Olvarit Aardbei Peer",
+    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/6m54-olvarit-aardbei-peer/121540",
+    "p": 1.39,
+    "s": ""
    }
   ]
- },
- "vomar": "Error: ENOENT: no such file or directory, open 'data/assortiment-vomar.json'"
+ }
 }
