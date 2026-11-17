@@ -16,7 +16,7 @@ def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
     links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}>{t}</a>' for h, t, c in NAV if h != hier)
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav" aria-label="Menu">{links}</nav></div></header>'
-FOOTER = f'''<footer class="foot"><div class="wrap"><p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a></p><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan.</p>
+FOOTER = f'''<footer class="foot"><div class="wrap"><p class="tiplink"><a href="/tips/">💡 Tip of idee? Ik hoor het graag</a> <a href="/steun/">❤️ Steun de site</a></p><p class="free">Zoek een product en zie direct welke van de {AANTAL} supermarkten het goedkoopst is. Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken, geen commissie: ik verdien er geen cent aan. <a href="/steun/">Wat kost de site?</a></p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
 <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
@@ -818,7 +818,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <li><b>Geen betaalde plekken.</b> Supermarkten en merken kunnen niets kopen: geen advertenties, geen gesponsorde producten, geen "uitgelicht".</li>
 <li><b>Geen commissie.</b> Klik je door naar een webshop, dan krijg ik daar niets voor. Er zitten geen affiliatelinks in.</li>
 <li><b>Voor elke winkel dezelfde regels.</b> Albert Heijn, Lidl of Vomar: alles gaat door dezelfde berekening.</li>
-<li><b>Ik verdien er niets aan.</b> Dit is een gratis hobbyproject van Erik, zonder reclame of abonnement.</li></ul></div>
+<li><b>Ik verdien er niets aan.</b> Dit is een gratis hobbyproject van Erik, zonder reclame of abonnement. De kosten betaal ik zelf; <a href="/steun/">wil je helpen</a>, dan kan dat.</li></ul></div>
 <h2>Waar komen de prijzen vandaan?</h2><p>Elke dag halen we automatisch de prijzen en aanbiedingen op van de webshops van {AANTAL} supermarkten: {", ".join(NAMEN[s] for s in ACTIEF if s in NAMEN)}. Een deel van de gewone prijzen komt uit de open dataset van <a href="https://www.checkjebon.nl/" rel="noopener">Checkjebon</a>. Nu zitten er <b>{_nprod:,}</b> producten in de vergelijking; de laatste update was op {DATUM}.</p>
 <p>Online prijzen kunnen afwijken van de winkel. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe kiezen we het vergelijkbare product?</h2><ul>
@@ -861,6 +861,31 @@ voorw = f'''<div class="panel"><h2 style="margin-top:0">Auteursrecht</h2>
 schrijf("/gebruiksvoorwaarden/", page("/gebruiksvoorwaarden/", "Auteursrecht en gebruiksvoorwaarden | Goedkope Boodschappen", "Alle inhoud van Goedkope Boodschappen is beschermd door het auteursrecht en het databankenrecht. Citeren mag met bronvermelding en een link.",
     crumbs(("Gebruiksvoorwaarden", None))[0] + "<h1>Auteursrecht en gebruiksvoorwaarden</h1><p class=\"lead\">Overnemen of publiceren mag alleen met schriftelijke toestemming. Citeren mag met bronvermelding en een link.</p>", voorw))
 made += [("/gebruiksvoorwaarden/", "0.2")]
+
+# ---------- steun de site ----------
+# STEUN_URL: de betaallink van Erik (Tikkie, Ko-fi, Buy Me a Coffee of iets dergelijks). Leeg = nog geen knop, wel het verhaal.
+STEUN_URL = os.environ.get("STEUN_URL", "https://www.ing.nl/payreq/m/XUQ3SZ1ScljIWaEAZMHOFuIXh9T3lFcv")  # betaalverzoek van Erik (ING, iDEAL)
+_knop = (f'<p><a class="btn steunknop" href="{STEUN_URL}" rel="noopener" target="_blank">❤️ Doe een bijdrage</a></p><p class="small">Je betaalt veilig met iDEAL via een betaalverzoek van ING, met elke Nederlandse bank. Het bedrag kies je zelf; elk bedrag helpt, ook € 2.</p>'
+         if STEUN_URL else '<p class="small">De knop om een bijdrage te doen komt hier binnenkort. Tot die tijd helpt delen het meest.</p>')
+steun = f"""<div class="panel"><h2 style="margin-top:0">Gratis, en dat blijft zo</h2>
+<p>Goedkope Boodschappen maak ik, Erik, in mijn eigen tijd. Iedereen kan de site gebruiken zonder account, zonder reclame en zonder dat er een supermarkt meebetaalt. Dat blijft zo, of je nu iets geeft of niet.</p>
+{_knop}</div>
+<h2>Wat kost de site?</h2>
+<ul class="steunlijst">
+<li><b>Hosting.</b> De site draait op een betaald abonnement bij Netlify. Bij drukte betaal ik extra voor het dataverkeer, zoals na de uitzending van Hart van Nederland, toen er op één dag meer dan 24.000 bezoekers kwamen.</li>
+<li><b>Elke dag nieuwe prijzen.</b> Elke nacht en elke ochtend worden de prijzen van tienduizenden producten bij {AANTAL} supermarkten opgehaald en de vergelijkingen opnieuw gemaakt.</li>
+<li><b>De domeinnaam</b> boodschappenvergelijk.nl.</li>
+<li><b>Tijd.</b> Nieuwe supermarkten toevoegen, foute koppelingen herstellen, maaltijden en weekmenu's bijwerken en jullie tips verwerken. Dat doe ik 's avonds en in het weekend.</li>
+</ul>
+<h2>Waarom geen reclame?</h2>
+<p>Omdat je dan niet meer zeker weet of de goedkoopste echt de goedkoopste is. Een vergelijker waar winkels voor betalen, is geen eerlijke vergelijker. Daarom neem ik ook geen geld aan van supermarkten.</p>
+<h2>Wat gebeurt er met je bijdrage?</h2>
+<p>Bijdragen gaan naar de kosten van de site. Je krijgt er niets extra's voor en het verandert niets aan de vergelijking: wie geeft, ziet dezelfde prijzen als ieder ander.</p>
+<h2>Geen geld over? Ook goed</h2>
+<p>Dan help je net zo goed door de site te delen met familie, vrienden of in je buurtapp, of door <a href="/tips/">een tip te sturen</a> als je een fout ziet of iets mist.</p>"""
+schrijf("/steun/", page("/steun/", "Steun Goedkope Boodschappen | Gratis en onafhankelijk", "Goedkope Boodschappen is gratis, zonder reclame en zonder geld van supermarkten. Lees wat de site kost en hoe je kunt helpen met een kleine bijdrage of door te delen.",
+    crumbs(("Steun de site", None))[0] + "<h1>Steun Goedkope Boodschappen</h1><p class=\"lead\">De site is gratis en blijft gratis. Maar hij kost wel geld om te draaien.</p>", steun))
+made += [("/steun/", "0.3")]
 
 # ---------- complete maaltijden ----------
 exec(open(os.path.join(ROOT, "scripts", "bouw_maaltijden.py")).read())
