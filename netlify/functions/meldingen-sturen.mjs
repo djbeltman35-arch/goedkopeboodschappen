@@ -44,6 +44,23 @@ async function pushRonde(site, offers) {
   console.log(`meldingen: ${gestuurd} verstuurd, ${weg} verlopen abonnementen opgeruimd, ${blobs.length} abonnees`);
 }
 
+// Prijsdaling op je lijst: per artikel de laagste prijs per kilo/liter/stuk (in je eigen winkels) vergeleken met de vorige keer.
+// Minstens 5% lager = melden. De eerste keer wordt alleen de prijs onthouden.
+function dalingen(soorten, a) {
+  const uit = [], mag = w => !a.winkels?.length || a.winkels.includes(w);
+  a.laagste = a.laagste || {};
+  for (const t of [...new Set((a.termen || []).map(x => String(x).toLowerCase().trim()))]) {
+    const s = soorten[t]; if (!s) continue;
+    const per = w => s.u?.[w] ?? null;
+    const ws = Object.keys(s.w).filter(w => mag(w) && per(w) != null).sort((x, y) => per(x) - per(y));
+    if (!ws.length) continue;
+    const w = ws[0], nu = per(w), oud = a.laagste[t];
+    if (oud && nu <= oud * 0.95) uit.push({ term: t, w, nu, oud, prijs: s.w[w], u: s.e || 'kg' });
+    if (oud !== nu) { a.laagste[t] = nu; a._laagsteGewijzigd = true; }
+  }
+  return uit;
+}
+
 // E-mail: één mail per bevestigde abonnee met de nieuwe aanbiedingen voor de lijst. Gmail staat 500 mails per dag toe.
 async function mailRonde(site, offers) {
   const user = Netlify.env.get('GMAIL_USER'), pass = Netlify.env.get('GMAIL_APP_PASSWORD');
@@ -63,26 +80,31 @@ async function mailRonde(site, offers) {
     }
     const nieuw = passend(offers, a.termen || [], a.winkels).filter(({ o }) => !a.verstuurd?.[sleutelVan(o)]);
     const alarm = alarmTreffers(soorten, a.alarm, a.winkels, a.alarmGemeld || {});
-    if (nieuw.length || alarm.length) taken.push({ key, a, nieuw, alarm });
+    const daling = dalingen(soorten, a);
+    if (nieuw.length || alarm.length || daling.length) taken.push({ key, a, nieuw, alarm, daling });
+    else if (a._laagsteGewijzigd) { delete a._laagsteGewijzigd; await store.setJSON(key, a); }
   }
   if (!taken.length) { console.log(`e-mail: niets te sturen, ${blobs.length} adressen`); return; }
   let v = null, gestuurd = 0;
   try {
     v = await verbind({ user, pass });
-    for (const { key, a, nieuw, alarm } of taken.slice(0, 450)) {
+    for (const { key, a, nieuw, alarm, daling = [] } of taken.slice(0, +(Netlify.env.get('MAX_MELDINGEN') || 150))) {
+      delete a._laagsteGewijzigd;
       const n = nieuw.length, uit = `${site}/api/email?uit=${a.token}`;
       const EH = { kg: 'kilo', l: 'liter', st: 'stuk' };
+      const dalingTekst = daling.map(d => `📉 ${d.term}: nu ${eur(d.nu)} per ${EH[d.u] || 'kilo'} bij ${NAMEN[d.w] || d.w} (was ${eur(d.oud)})`).join('\n');
+      const dalingHtml = daling.length ? `<p style="margin:0 0 6px;font-weight:bold;font-size:16px">📉 Goedkoper geworden op je lijst</p><ul style="margin:0 0 16px;padding-left:18px;font-size:15px;line-height:1.6">` + daling.map(d => `<li><b>${esc(d.term)}</b>: nu ${eur(d.nu)} per ${EH[d.u] || 'kilo'} bij ${esc(NAMEN[d.w] || d.w)} <span style="color:#5d6a61">(was ${eur(d.oud)})</span></li>`).join('') + '</ul>' : '';
       const alarmTekst = alarm.map(h => `🔔 ${h.term}: nu ${eur(h.prijs)} per ${EH[h.u] || 'kilo'} bij ${NAMEN[h.w] || h.w}${h.naam ? ' (' + h.naam + ')' : ''}, je grens was ${eur(h.max)}`).join('\n');
       const alarmHtml = alarm.length ? `<p style="margin:0 0 6px;font-weight:bold;font-size:16px">🔔 Prijsalarm</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px">` + alarm.map(h => `<tr><td style="padding:8px 0;border-top:1px solid #e1e7dc;font-size:15px"><b>${esc(h.term)}</b> bij ${esc(NAMEN[h.w] || h.w)}${h.naam ? `<br><span style="color:#5d6a61;font-size:13px">${esc(h.naam)}</span>` : ''}<br><span style="color:#5d6a61;font-size:13px">Je grens: ${eur(h.max)} per ${EH[h.u] || 'kilo'}</span></td><td align="right" style="padding:8px 0;border-top:1px solid #e1e7dc;white-space:nowrap"><b style="font-size:18px">${eur(h.prijs)}</b><br><span style="font-size:12px;color:#5d6a61">per ${EH[h.u] || 'kilo'}</span></td></tr>`).join('') + '</table>' : '';
-      const onderwerp = !n ? (alarm.length === 1 ? `🔔 ${alarm[0].term} is nu ${eur(alarm[0].prijs)} per ${EH[alarm[0].u] || 'kilo'}` : `🔔 ${alarm.length} prijsalarmen: je prijs is bereikt`) : n === 1 ? `🔥 ${nieuw[0].term} is in de aanbieding` : `🔥 ${n} artikelen van je lijst in de aanbieding`;
+      const onderwerp = !n && !alarm.length ? (daling.length === 1 ? `📉 ${daling[0].term} is goedkoper geworden` : `📉 ${daling.length} artikelen op je lijst zijn goedkoper geworden`) : !n ? (alarm.length === 1 ? `🔔 ${alarm[0].term} is nu ${eur(alarm[0].prijs)} per ${EH[alarm[0].u] || 'kilo'}` : `🔔 ${alarm.length} prijsalarmen: je prijs is bereikt`) : n === 1 ? `🔥 ${nieuw[0].term} is in de aanbieding` : `🔥 ${n} artikelen van je lijst in de aanbieding`;
       const regels = nieuw.slice(0, 20);
-      const tekst = (alarmTekst ? alarmTekst + '\n\n' : '') + regels.map(({ term, o }) => `${term}: ${NAMEN[o.s] || o.s}, ${o.n} ${o.sz || ''} voor ${eur(o.p)}${o.lbl ? ' (' + o.lbl + ')' : ''}${o.t ? ', t/m ' + o.t.slice(8, 10) + '-' + o.t.slice(5, 7) : ''}\n${o.u}`).join('\n\n') +
+      const tekst = (dalingTekst ? dalingTekst + '\n\n' : '') + (alarmTekst ? alarmTekst + '\n\n' : '') + regels.map(({ term, o }) => `${term}: ${NAMEN[o.s] || o.s}, ${o.n} ${o.sz || ''} voor ${eur(o.p)}${o.lbl ? ' (' + o.lbl + ')' : ''}${o.t ? ', t/m ' + o.t.slice(8, 10) + '-' + o.t.slice(5, 7) : ''}\n${o.u}`).join('\n\n') +
         `\n\nBekijk je lijst: ${site}/#lijst\n\nAfmelden: ${uit}\nGoedkope Boodschappen is gratis, zonder reclame. Ik verdien er niets aan.`;
       const rijen = regels.map(({ term, o }) => `<tr><td style="padding:10px 0;border-top:1px solid #e1e7dc;font-size:15px;line-height:1.4"><span style="font-size:13px;font-weight:bold;color:#0a6239;background:#e2f2e8;padding:2px 7px;border-radius:5px">${esc(NAMEN[o.s] || o.s)}</span>${o.lbl ? ` <span style="font-size:13px;font-weight:bold;color:#e0472f">${esc(o.lbl)}</span>` : ''}<br><a href="${esc(o.u)}" style="color:#1e2a22;font-weight:bold">${esc(o.n)}</a> <span style="color:#5d6a61">${esc(o.sz || '')}</span><br><span style="font-size:13px;color:#5d6a61">voor “${esc(term)}” op je lijst${o.t ? ` · t/m ${esc(o.t.slice(8, 10) + '-' + o.t.slice(5, 7))}` : ''}</span></td>
 <td align="right" style="padding:10px 0 10px 10px;border-top:1px solid #e1e7dc;white-space:nowrap;vertical-align:middle"><span style="display:inline-block;background:#e0472f;color:#ffffff;font-weight:bold;font-size:18px;padding:5px 9px;border-radius:5px">${eur(o.p)}</span>${o.was ? `<br><span style="font-size:13px;color:#5d6a61;text-decoration:line-through">${eur(o.was)}</span>` : ''}</td></tr>`).join('');
       const html = opmaak({
-        titel: onderwerp.replace(/^(🔥|🔔) /u, ''),
-        inhoud: alarmHtml + (n ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rijen}</table>` : '') + `${n > 20 ? `<p style="color:#5d6a61">+ ${n - 20} meer op de site.</p>` : ''}`,
+        titel: onderwerp.replace(/^(🔥|🔔|📉) /u, ''),
+        inhoud: dalingHtml + alarmHtml + (n ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rijen}</table>` : '') + `${n > 20 ? `<p style="color:#5d6a61">+ ${n - 20} meer op de site.</p>` : ''}`,
         knop: 'Bekijk waar je lijst het goedkoopst is', knopUrl: `${site}/?bron=mail#lijst`,
         voet: `Je krijgt deze mail omdat je je op Goedkope Boodschappen hebt aangemeld voor meldingen bij aanbiedingen. <a href="${esc(uit)}" style="color:#5d6a61">Afmelden</a> kan altijd, met één klik.<br>Gratis en onafhankelijk: geen reclame, geen commissie, ik verdien er geen cent aan.`,
       });

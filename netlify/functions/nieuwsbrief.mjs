@@ -1,7 +1,7 @@
 // Nieuwsbrief: elke ochtend (wie "dagelijks" koos) of elke maandag (wie "wekelijks" koos) de beste aanbiedingen.
 // Aanmelden gaat via /api/email (met bevestigingsmail); afmelden met één klik onderaan elke mail.
 // Aanbiedingen uit /data/aanbiedingen.json van de site. Alleen de supermarkten die iemand gekozen heeft (geen keuze = alle).
-// Maximaal MAX_PER_DAG mails per dag (gratis Brevo-plan: 300 per dag, samen met de andere mails); de rest gaat de volgende keer.
+// Maximaal MAX_PER_DAG mails per dag (gratis Brevo-plan: 300 per dag; meldingen over je lijst gaan voor, zie MAX_MELDINGEN); de rest gaat de volgende keer.
 import { getStore } from '@netlify/blobs';
 import { verbind, bericht, opmaak, esc } from '../mail.mjs';
 
@@ -33,7 +33,7 @@ export default async (req, context) => {
   const site = Netlify.env.get('URL') || context?.site?.url || 'https://boodschappenvergelijk.nl';
   const user = Netlify.env.get('GMAIL_USER'), pass = Netlify.env.get('GMAIL_APP_PASSWORD');
   if (!user || !pass) return new Response('mail niet ingesteld');
-  const max = +(Netlify.env.get('MAX_PER_DAG') || 250);
+  const max = +(Netlify.env.get('MAX_PER_DAG') || 120);
   const offers = (await (await fetch(`${site}/data/aanbiedingen.json`)).json()).offers || [];
   const dag = vandaag(), maandag = weekdag() === 'Mon';
   const store = getStore('email'), { blobs } = await store.list();

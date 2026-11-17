@@ -975,7 +975,7 @@ for t_, rows in PICKED.items():
     u = {stores[si]["id"]: round(vgl_unit(p_), 3) for si, p_ in rows if vergelijkbaar(t_, p_) and vgl_unit(p_) is not None}
     if w:
         si0, p0_ = rows[0]
-        _tp[t_.lower()] = {"t": t_, "w": w, "u": u, "n": p0_[1], "s": stores[si0]["id"]}
+        _tp[t_.lower()] = {"t": t_, "w": w, "u": u, "e": p0_[6] or "kg", "n": p0_[1], "s": stores[si0]["id"]}
 json.dump({"dag": VANDAAG, "soorten": _tp}, open(os.path.join(OUT, "data", "termprijzen.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # A-merken voor de app: eerste woord van de productnaam, bij minstens 3 supermarkten, en meestal vooraan (niet een gewoon woord).
 _eerst, _overal, _win = {}, {}, {}
