@@ -675,3 +675,10 @@ html body nav.terug.vast,html body #results nav.terug.app{background:linear-grad
 .nbform input[type=email]{width:100%;max-width:420px;font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:10px;margin:6px 0 12px;display:block}
 .nbform fieldset{border:0;padding:0;margin:0 0 10px}.nbform fieldset label{margin-right:14px}
 .nbwinkels{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 10px}.nbform details{margin:0 0 12px}
+
+/* Badge "Bekend van" boven de kop */
+.hero .bekend{display:table;margin:0 auto 10px;padding:6px 14px;border-radius:999px;background:#fff4d6;border:2px solid #f0b400;color:#5a4200;font-size:15px;font-weight:600;box-shadow:var(--schaduw-k)}
+.hero .bekend b{font-weight:800;color:#3a2a00}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero .bekend{background:#3a2f0c;border-color:#c99400;color:#ffe9a8}:root:not([data-theme=light]) .hero .bekend b{color:#fff3cc}}
+:root[data-theme=dark] .hero .bekend{background:#3a2f0c;border-color:#c99400;color:#ffe9a8}
+:root[data-theme=dark] .hero .bekend b{color:#fff3cc}
