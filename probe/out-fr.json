@@ -1,0 +1,540 @@
+{
+ "fr Carrefour FR": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /set-store",
+   "Disallow: /get-store",
+   "Disallow: /webview",
+   "Disallow: /g",
+   "Disallow: /b"
+  ],
+  "maps": [
+   "https://www.carrefour.fr/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.carrefour.fr/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "fr Leclerc Drive": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /Statistiques/",
+   "Disallow: /.well-known/",
+   "Disallow: /_res/release/",
+   "Disallow: /mobile/conseils-drive/"
+  ],
+  "maps": [
+   "https://www.leclercdrive.fr/sitemap.aspx",
+   "https://www.leclercdrive.fr/sitemap-contenu-editoral.aspx"
+  ],
+  "subs": {
+   "https://www.leclercdrive.fr/sitemap.aspx": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.leclercdrive.fr/sitemap-contenu-editoral.aspx": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "fr Auchan": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow:",
+   "Disallow: /",
+   "Disallow: /*sort=*",
+   "Disallow: /*ref=*",
+   "Disallow: /*jsessionid=*",
+   "Disallow: /*keywords=*",
+   "Disallow: /*qt_id=*",
+   "Disallow: /*storeReference=*",
+   "Disallow: /recherche*",
+   "Disallow: /checkout/",
+   "Disallow: /client/",
+   "Disallow: /secured/",
+   "Disallow: /_ui/*/desktop/",
+   "Disallow: /fragment/",
+   "Disallow: /assets/",
+   "Disallow: /fragments/reviews/usefulness-evaluation/",
+   "Disallow: /drive/nos-drives/",
+   "Disallow: /magasins/votremagasin.storelocator.searchstore.searchmapstore.mapchoice/",
+   "Disallow: /achat1/",
+   "Disallow: /achat2/",
+   "Disallow: /achat3/",
+   "Disallow: /achat4/",
+   "Disallow: /achat5/",
+   "Disallow: /achat6/",
+   "Disallow: /achat7/"
+  ],
+  "maps": [
+   "https://www.auchan.fr/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.auchan.fr/sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-stores.xml": {
+    "st": 200,
+    "n": 770
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-contents.xml": {
+    "st": 200,
+    "n": 20
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products.xml": {
+    "st": 200,
+    "n": 7
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-categories.xml": {
+    "st": 200,
+    "n": 6613
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products1.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products2.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products3.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products4.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products5.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products6.xml": {
+    "st": 200,
+    "n": 50000
+   },
+   "https://www.auchan.fr/sitemaps/sitemap-products7.xml": {
+    "st": 200,
+    "n": 35278
+   }
+  },
+  "nUrls": 342681,
+  "nProd": 1406,
+  "vb": [
+   "https://www.auchan.fr/acer-lampe-de-projecteur-p-vip-210w/pr-76067d6b-65bc-4c38-b81b-8786faffe685",
+   "https://www.auchan.fr/aldes-extracteur-d-air-design-100-p-avec-detecteur-de-presence/pr-939a8892-626b-4a67-98be-ab07d88d2723",
+   "https://www.auchan.fr/aop-chinon-mary-blanc-2024-le-p-tit-chenin-hve/pr-C1877021",
+   "https://www.auchan.fr/apericube-cubes-de-fromage-aperitif-p-tit-plaisirs/pr-C1767083"
+  ],
+  "pages": [
+   {
+    "u": "https://www.auchan.fr/brother-cartouche-lc422bk-brother-noir-550-p-pour-business-smart-mfc-j5340dw-mfc-j5345dw-mfc-j5740dw-mfc-j6540dw-et-mfc-j6940dw/pr-9769e623-3680-4eac-a14a-214fdeb4353f",
+    "st": 200,
+    "len": 270041,
+    "titel": "Brother Cartouche LC422BK - BROTHER - Noir 550 p - Pour Business Smart MFC-J5340DW, MFC-J5345DW, MFC-J5740DW, MFC-J6540DW et MFC-J6940DW pas cher - Auchan.fr",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "2,00€",
+     "4,99€"
+    ]
+   },
+   {
+    "u": "https://www.auchan.fr/brother-cartouche-lc422m-brother-magenta-550-p-pour-business-smart-mfc-j5340dw-mfc-j5345dw-mfc-j5740dw-mfc-j6540dw-et/pr-4af08367-cfcf-4e11-8dcd-892c1f1add4b",
+    "st": 200,
+    "len": 282426,
+    "titel": "Brother Cartouche LC422M - BROTHER - Magenta - 550 p - Pour Business Smart MFC-J5340DW, MFC-J5345DW, MFC-J5740DW, MFC-J6540DW et pas cher - Auchan.fr",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "2,00€",
+     "4,99€"
+    ]
+   },
+   {
+    "u": "https://www.auchan.fr/brother-ruban-etiqueteuse-lamine-brother-p-touch-tze-211-noir-sur-blanc-6mm/pr-f9a8e148-54f8-4628-8453-f61bdea7d2f8",
+    "st": 200,
+    "len": 206828,
+    "titel": "Brother Ruban &#xE9;tiqueteuse lamin&#xE9; BROTHER P-TOUCH TZE-211 - Noir sur blanc - 6mm pas cher - Auchan.fr",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "2,00€",
+     "4,99€"
+    ]
+   },
+   {
+    "u": "https://www.auchan.fr/acer-lampe-de-projecteur-p-vip-210w/pr-76067d6b-65bc-4c38-b81b-8786faffe685",
+    "st": 200,
+    "len": 180944,
+    "titel": "ACER lampe de projecteur p-vip 210w pas cher - Auchan.fr",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "4,99€"
+    ]
+   }
+  ]
+ },
+ "fr Intermarché": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /accueil/drive-catalogue/*",
+   "Disallow: /magasins/*",
+   "Disallow: /rechercheproduits/*",
+   "Disallow: /?pdvref*",
+   "Disallow: /localisation/*",
+   "Disallow: *trier*",
+   "Disallow: *voir-tout*",
+   "Disallow: /catalogues/*",
+   "Disallow: /s/*",
+   "Disallow: *?itemId=*",
+   "Disallow: /recherche/*",
+   "Disallow: /api/*",
+   "Disallow: /catalog/*",
+   "Disallow: /_next/*",
+   "Disallow: /src/components/*",
+   "Disallow: *..png*"
+  ],
+  "maps": [
+   "https://www.intermarche.com/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.intermarche.com/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "fr Super U": {
+  "robots_st": 403,
+  "disallow": [],
+  "maps": [
+   "https://www.coursesu.com/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.coursesu.com/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "fr Lidl FR": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /cc.js*",
+   "Disallow: /cdn/assets/cwv/",
+   "Disallow: /user-api/*",
+   "Disallow: /cqe/*",
+   "Disallow: *search?q=*",
+   "Disallow: *?offset=*",
+   "Disallow: *idsOnly=*",
+   "Disallow: *productsOnly=*",
+   "Disallow: *id=*",
+   "Disallow: *pageId=*",
+   "Disallow: *advisor=*",
+   "Disallow: *sort=*"
+  ],
+  "maps": [
+   "https://www.lidl.fr/static/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.lidl.fr/static/sitemap.xml": {
+    "st": 200,
+    "n": 3
+   },
+   "https://www.lidl.fr/p/export/FR/fr/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 10865
+   },
+   "https://www.lidl.fr/explore/assets/s/pages_fr-FR_fr.xml.gz": {
+    "st": 200,
+    "n": 1463
+   },
+   "https://www.lidl.fr/s/fr-FR/supermarches/sitemap.xml": {
+    "st": 200,
+    "n": 1764
+   }
+  },
+  "nUrls": 14092,
+  "nProd": 10865,
+  "vb": [
+   "https://www.lidl.fr/p/gude-palan-electrique-gude-jusqu-a-600-kg-de-force-de-levage-cable-de-12-m-puissance-de-1050-w/p100018075",
+   "https://www.lidl.fr/p/khw-jardiniere-calypso-avec-systeme-d-arrosage-79-x-35-x-33-cm/p100043776",
+   "https://www.lidl.fr/p/vileda-housse-de-table-a-repasser-premium-2-en-1/p100049209",
+   "https://www.lidl.fr/p/haussling-oreiller-en-plumes-et-duvet-royal/p100061712"
+  ],
+  "pages": [
+   {
+    "u": "https://www.lidl.fr/p/badabulle-badabulle-coussin-d-allaitement-ergonomique-40-x-150-cm/p100257614",
+    "st": 200,
+    "len": 483657,
+    "titel": "BADABULLE Badabulle Coussin d&#x27;allaitement, ergonomique, 40 x 150 cm. | Lidl",
+    "ldprice": "\"price\":34.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100257614002\",\"gtin13\":[\"3661276154056\"],\"description\":\"\\u003Cp>\\u003Cstrong>Coussin d'allaitement Badabulle, ergonomique, 40 x 150 cm — Coussin de positionnement et d'allaitement pour un soutien confortable du dos, du ventre et des jambes\\u00",
+    "prijzen": [
+     "34.99 €",
+     "34.99 €",
+     "49.50 €",
+     "34.99€"
+    ]
+   },
+   {
+    "u": "https://www.lidl.fr/p/esmara-lot-de-2-soutiens-gorges-d-allaitement-femme/p100340332",
+    "st": 200,
+    "len": 580022,
+    "titel": "ESMARA® Lot de 2 soutiens-gorges d&#x27;allaitement femme | Lidl",
+    "ldprice": "\"price\":11.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100340332\",\"gtin13\":[\"4055334292627\",\"4055334292634\",\"4055334292658\",\"4055334292665\",\"4055334292672\",\"4055334292689\",\"4055334292696\",\"4055334292702\",\"4055334292719\",\"4055334292726\",\"4055334292733\"],\"description\":\"\\u003Cp>\\u003Cspan style=\\\"col",
+    "prijzen": [
+     "11.99 €",
+     "11.99 €",
+     "11.99€"
+    ]
+   },
+   {
+    "u": "https://www.lidl.fr/p/esmara-debardeurs-d-allaitement-pour-femme-haute-teneur-en-coton-lot-de-2/p100359107",
+    "st": 200,
+    "len": 521024,
+    "titel": "ESMARA® Débardeurs d&#x27;allaitement pour femme, haute teneur en coton, lot de 2 | Lidl",
+    "ldprice": "\"price\":16.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100359107\",\"gtin13\":[\"4055334608268\",\"4055334608312\"],\"description\":\"\\u003Cp>\\u003Cstrong>Le lot de 2 débardeurs d'allaitement pour femme ESMARA®, haute teneur en coton\\u003C/strong> combine un confort agréable avec une fonction d'allaitement ",
+    "prijzen": [
+     "16.99 €",
+     "16.99 €",
+     "16.99€"
+    ]
+   },
+   {
+    "u": "https://www.lidl.fr/p/gude-palan-electrique-gude-jusqu-a-600-kg-de-force-de-levage-cable-de-12-m-puissance-de-1050-w/p100018075",
+    "st": 200,
+    "len": 467676,
+    "titel": "GÜDE Palan électrique Güde, jusqu&#x27;à 600 kg de force de levage, câble de 12 m, puissance de 1050 W. | Lidl",
+    "ldprice": "\"price\":219.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100018075\",\"gtin13\":[\"4015671017086\"],\"description\":\"\\u003Cp>\\u003Cstrong>Palan électrique Güde, jusqu'à 600 kg de force de levage, 12 m de longueur de câble, 1050 watts\\u003C/strong> convient pour soulever et déplacer des charges dans l'ateli",
+    "prijzen": [
+     "219.99 €",
+     "219.99 €",
+     "219.99€"
+    ]
+   }
+  ]
+ },
+ "fr Aldi FR": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /reg-cat.html",
+   "Disallow: /reg-bal.html",
+   "Disallow: /reg-can.html ",
+   "Disallow: /ua-bot.html",
+   "Disallow: /can/",
+   "Disallow: /can.html",
+   "Disallow: /can$",
+   "Disallow: /bal/",
+   "Disallow: /bal.html",
+   "Disallow: /bal$",
+   "Disallow: /mds/",
+   "Disallow: /*?*filters",
+   "Disallow: /*?*jobId="
+  ],
+  "maps": [
+   "https://www.aldi.fr/.aldi-nord-sitemap.xml"
+  ],
+  "subs": {
+   "https://www.aldi.fr/.aldi-nord-sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.aldi.fr/sitemaps/.aldi-nord-sitemap-pages.xml": {
+    "st": 200,
+    "n": 419
+   },
+   "https://www.aldi.fr/sitemaps/.aldi-nord-sitemap-products.xml": {
+    "st": 200,
+    "n": 5372
+   },
+   "https://www.aldi.fr/sitemaps/.aldi-nord-sitemap-stores.xml": {
+    "st": 200,
+    "n": 1367
+   },
+   "https://www.aldi.fr/sitemaps/.aldi-nord-sitemap-faq.xml": {
+    "st": 200,
+    "n": 6
+   }
+  },
+  "nUrls": 7164,
+  "nProd": 1367,
+  "vb": [
+   "https://www.aldi.fr/magasins-et-horaires-d-ouverture/saint-priest/19-boulevard-des-roses/3435033.html",
+   "https://www.aldi.fr/magasins-et-horaires-d-ouverture/sarreguemines/42-rue-des-freres-remy/3435034.html",
+   "https://www.aldi.fr/magasins-et-horaires-d-ouverture/lys-lez-lannoy/51-rue-de-toufflers/3435035.html",
+   "https://www.aldi.fr/magasins-et-horaires-d-ouverture/concarneau/14%2F16-rue-lucien-vidie/3435036.html"
+  ],
+  "pages": [
+   {
+    "u": "https://www.aldi.fr/magasins-et-horaires-d-ouverture/saint-priest/19-boulevard-des-roses/3435033.html",
+    "st": 200,
+    "len": 275079,
+    "titel": "ALDI 19 Boulevard des Roses dans Saint-Priest",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "fr Monoprix": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow:",
+   "Disallow: /sso-login",
+   "Disallow: /search?q=*",
+   "Disallow: /login?destination=*",
+   "Disallow: ?sublocationId=",
+   "Disallow: ?source=navigation&sublocationId=",
+   "Disallow: /api/",
+   "Disallow: /events/"
+  ],
+  "maps": [
+   "https://courses.monoprix.fr/sitemaps/sitemap_index.xml"
+  ],
+  "subs": {
+   "https://courses.monoprix.fr/sitemaps/sitemap_index.xml": {
+    "st": 200,
+    "n": 2
+   },
+   "https://courses.monoprix.fr/sitemaps/sitemap-categories-part1.xml": {
+    "st": 200,
+    "n": 2784
+   },
+   "https://courses.monoprix.fr/sitemaps/sitemap-products-part1.xml": {
+    "st": 200,
+    "n": 27319
+   }
+  },
+  "nUrls": 30103,
+  "nProd": 27561,
+  "vb": [
+   "https://courses.monoprix.fr/categories/parapharmacie/nos-marques-de-parapharmacie/bioderma/corps-et-bain/0517579c-9868-4d43-932e-cea071452a5e",
+   "https://courses.monoprix.fr/categories/noël/menu-des-fêtes/nos-sélections/monoprix-gourmet/02275730-f71e-4bbb-a12b-052558c7a03c",
+   "https://courses.monoprix.fr/categories/hygiène-beauté/papiers-toilette-mouchoirs-et-cotons/papiers-toilette/par-4/23261870-03c5-4c85-94a2-7e2016560e96",
+   "https://courses.monoprix.fr/categories/mes-marques-monoprix/monoprix-bio/epicerie-sucrée/biscuit-et-gâteau/82987b65-7ea9-4a10-a3ff-d04e125b3aad"
+  ],
+  "pages": [
+   {
+    "u": "https://courses.monoprix.fr/categories/boissons-et-lait/eau/eau-aromatisée-gazeuse/04272d07-96b0-440f-8405-c80e7fdb2e1b",
+    "st": 200,
+    "len": 989798,
+    "titel": "Eau aromatisée gazeuse - Nos rayons - Monoprix Monoprix.fr : Livraison courses à domicile en 24h",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "0,00 €",
+     "0,00 €",
+     "0,00 €",
+     "60,00 €",
+     "1,09 €"
+    ]
+   },
+   {
+    "u": "https://courses.monoprix.fr/categories/produits-laitiers-œufs-et-fromages/fromages-à-déguster-à-la-coupe/fromages-à-la-coupe/34935c97-dd88-4537-9e63-4bfc7fa1957d",
+    "st": 200,
+    "len": 1297806,
+    "titel": "Fromages à la coupe - Nos rayons - Monoprix Monoprix.fr : Livraison courses à domicile en 24h",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "0,00 €",
+     "0,00 €",
+     "0,00 €",
+     "60,00 €",
+     "34,60 €"
+    ]
+   },
+   {
+    "u": "https://courses.monoprix.fr/categories/pain-et-viennoiserie/pain-au-lait-et-brioche/brioche-individuelle/09763ce1-882f-4fe9-a7ba-4c6097f2c924",
+    "st": 200,
+    "len": 846080,
+    "titel": "Brioche individuelle - Nos rayons - Monoprix Monoprix.fr : Livraison courses à domicile en 24h",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "0,00 €",
+     "0,00 €",
+     "0,00 €",
+     "60,00 €",
+     "10,90 €"
+    ]
+   },
+   {
+    "u": "https://courses.monoprix.fr/categories/parapharmacie/nos-marques-de-parapharmacie/bioderma/corps-et-bain/0517579c-9868-4d43-932e-cea071452a5e",
+    "st": 200,
+    "len": 795786,
+    "titel": "Corps et Bain - Nos rayons - Monoprix Monoprix.fr : Livraison courses à domicile en 24h",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "0,00 €",
+     "0,00 €",
+     "0,00 €",
+     "60,00 €",
+     "13,50 €"
+    ]
+   }
+  ]
+ },
+ "fr Franprix": {
+  "robots_st": 403,
+  "disallow": [],
+  "maps": [
+   "https://www.franprix.fr/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.franprix.fr/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "fr Casino": {
+  "robots_st": 403,
+  "disallow": [],
+  "maps": [
+   "https://www.casino.fr/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.casino.fr/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ }
+}
