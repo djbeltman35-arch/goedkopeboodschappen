@@ -250,7 +250,10 @@ async function roterend(id, naam, urls, lees, perDag) {
         const r = lees(html, k);
         if (r && r.p > 0 && r.n) { vorig[k] = { dag: vd, n: r.n.replace(/\s+/g, ' ').trim(), l: u, p: r2(r.p), s: String(r.s || '').trim() }; n++; }
         else vorig[k] = { ...(vorig[k] || {}), dag: vd, weg: true };
-      } catch (e) { if (++fout > 80) throw new Error(`${naam}: te veel fouten (${e.message})`); }
+      } catch (e) {
+        // Te veel fouten (bijv. 403 omdat de winkel ons even weert): stoppen, maar wat al gelukt is wel bewaren.
+        if (++fout > 30) { console.warn(`${naam}: gestopt na ${fout} fouten (${e.message}); ${n} pagina's gelukt`); taken.length = 0; }
+      }
       await slaap(500);
     }
   };
@@ -275,6 +278,7 @@ function detailresult(id, naam, site, perDag, maakLink = u => u) {
     return roterend(id, naam, urls, leesDetailresult, perDag);
   };
 }
+// Dirk weert te veel verzoeken tegelijk (403): altijd één tegelijk, met wat meer tijd ertussen.
 const dirk = detailresult('dirk', 'Dirk', 'https://www.dirk.nl', 1400);
 // In de sitemap van DekaMarkt staat "/boodschappen/producten/..."; de werkende link is zonder "/producten".
 const dekamarkt = detailresult('dekamarkt', 'DekaMarkt', 'https://www.dekamarkt.nl', 1400, u => u.replace('/boodschappen/producten/', '/boodschappen/'));
