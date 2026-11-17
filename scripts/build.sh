@@ -8,6 +8,7 @@ rm -rf "$OUT"; mkdir -p "$OUT/data"
 
 # 1. Gewone prijzen: de nieuwste open dataset van Checkjebon. Lukt downloaden niet, dan de vorige versie uit site/.
 if curl -fsSL --max-time 120 -o /tmp/supermarkets.json https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json \
+   && python3 scripts/eigen_prijzen.py /tmp/supermarkets.json \
    && python3 scripts/prep.py /tmp/supermarkets.json "$OUT/producten.json"; then
   echo "Checkjebon-prijzen van vandaag gebruikt"
 else

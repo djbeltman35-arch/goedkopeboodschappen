@@ -22,7 +22,7 @@ stores=[];prods=[];stats={}
 for si,s in enumerate(d):
     items=s.get('d',[])
     if not items: continue
-    stores.append({'id':s['n'],'name':s['c'],'base':s['u']})
+    stores.append({'id':s['n'],'name':s['c'],'base':s['u'],'dt':s.get('dt')})
     ok=0;conflict=0
     for p in items:
         if not p.get('p'): continue

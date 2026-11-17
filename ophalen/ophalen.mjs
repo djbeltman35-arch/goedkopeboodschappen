@@ -112,14 +112,22 @@ async function aldi() {
     await slaap(400);
   }
   // Productpagina's uit de sitemap die nog niet gezien zijn ook bekijken (Aldi laat online vooral actieartikelen zien).
+  // Er zijn er meer dan in één ochtend passen; daarom per dag maximaal 1500, eerst nooit bekeken, dan de langst niet bekeken.
+  // data/aldi-bekeken.json onthoudt per product wanneer de pagina voor het laatst is bekeken.
   const gezien = new Set([...alle.values()].map(p => String(p.objectID || '').replace(/\D/g, '')));
+  const bekeken = lees('aldi-bekeken.json', {});
+  const vd0 = vandaag();
+  const rij = [...linkVan.keys()].filter(id => !gezien.has(id)).sort((a, b) => String(bekeken[a] || '').localeCompare(String(bekeken[b] || '')));
   let extra = 0;
-  for (const [id, u] of linkVan) {
-    if (gezien.has(id) || extra >= 1500) continue;
+  for (const id of rij) {
+    if (extra >= 1500) break;
     extra++;
-    try { const nd = nextData(await haal(u, {}, 'text')); if (nd) aldiProducten(nd.api ?? nd.d, alle); } catch (e) { if (extra < 5) console.warn('aldi product mislukt', u, e.message); }
+    try { const nd = nextData(await haal(linkVan.get(id), {}, 'text')); if (nd) aldiProducten(nd.api ?? nd.d, alle); bekeken[id] = vd0; } catch (e) { if (extra < 5) console.warn('aldi product mislukt', linkVan.get(id), e.message); }
     await slaap(150);
   }
+  for (const id of gezien) bekeken[id] = vd0;
+  for (const id of Object.keys(bekeken)) if (!linkVan.has(id)) delete bekeken[id];
+  schrijf('aldi-bekeken.json', bekeken);
   console.log(`aldi: ${paginas.length} categoriepagina's, ${extra} productpagina's, ${alle.size} producten gevonden`);
   const vd = vandaag();
   const producten = [], aanbod = [];
@@ -554,7 +562,16 @@ const offers = opschonen(Object.values(aanbod).flat().filter(o => o.n && o.p > 0
   return { ...o, c };
 });
 schrijf('aanbiedingen.json', { updated: nu, offers });
-if (aldiAssortiment?.length) schrijf('aldi.json', { updated: nu, products: aldiAssortiment });
+if (aldiAssortiment?.length) {
+  // Producten die vandaag niet aan de beurt waren, houden hun prijs van de vorige keer (zolang hun pagina minder dan 14 dagen geleden is bekeken).
+  const idVan = l => (String(l).match(/-(\d+)\.html$/) || [])[1];
+  const nieuw = new Set(aldiAssortiment.map(p => idVan(p[1])).filter(Boolean));
+  const bekeken = lees('aldi-bekeken.json', {});
+  const grens = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
+  const oud = (lees('aldi.json', { products: [] }).products || []).filter(p => { const id = idVan(p[1]); return id && !nieuw.has(id) && (bekeken[id] || '') >= grens; });
+  schrijf('aldi.json', { updated: nu, products: [...aldiAssortiment, ...oud] });
+  console.log('aldi: ', aldiAssortiment.length, 'vandaag,', oud.length, 'van eerdere dagen');
+}
 schrijf('status.json', status);
 console.log(`klaar: ${offers.length} aanbiedingen, Aldi-assortiment ${aldiAssortiment?.length ?? 'niet bijgewerkt'}`);
 const tel = {}; for (const o of offers) tel[o.c] = (tel[o.c] || 0) + 1; console.log('categorieën', JSON.stringify(tel));

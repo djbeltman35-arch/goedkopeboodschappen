@@ -1,0 +1,37 @@
+name: Gewone prijzen ophalen
+
+# Elke nacht de gewone prijzen (het hele assortiment) ophalen van winkels waarvan het open prijzenbestand van Checkjebon
+# niet meer wordt bijgewerkt: AH, Hoogvliet, Lidl, Dirk en DekaMarkt (zie ophalen/assortiment.mjs).
+# Draait vóór "Prijzen ophalen"; die neemt de nieuwe gegevens mee. Zelf start deze workflow geen Netlify-build.
+on:
+  schedule:
+    - cron: "41 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ophalen
+  cancel-in-progress: false
+
+jobs:
+  assortiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Ophalen
+        run: node ophalen/assortiment.mjs
+      - name: Opslaan
+        if: always()
+        run: |
+          git config user.name "prijzen-bot"
+          git config user.email "prijzen-bot@users.noreply.github.com"
+          git add data/assortiment-*.json
+          git diff --cached --quiet || git commit -m "Gewone prijzen bijgewerkt $(date -u +%F) [skip netlify]"
+          git pull --rebase -X theirs origin main
+          git push
