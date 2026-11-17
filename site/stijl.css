@@ -779,3 +779,16 @@ html body .seo .seowinnaar small{font-size:13px;color:var(--muted)}
 html body .hero .stapjes{list-style:none;display:flex;justify-content:space-between;gap:6px;margin:10px 0 0;padding:0}
 html body .hero .stapjes li{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.2;text-align:left}
 html body .hero .stapjes b{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffd640;color:var(--ink);font-size:12.5px}
+/* Startpagina compacter, zodat "Goedkoop avondeten" met foto eerder in beeld komt */
+html body .hero{padding-top:12px!important}
+html body .hero .rustpromise{margin-bottom:12px;font-size:13.5px}
+html body .hero .stapjes{margin-top:8px}
+html body .hero .mystores{margin-top:8px}
+html body .hero .mystores summary{padding-top:7px!important;padding-bottom:7px!important}
+html body .quick.tegels .start .chip,html body .quick.tegels .start .chip.hot,html body .quick.tegels .start .chip.wm,html body .quick.tegels .start .chip.mt{min-height:58px!important;padding-top:6px!important;padding-bottom:6px!important}
+html body .wrap.maal{padding-top:12px!important;margin-top:0!important}
+html body .maal .maalkop h2{margin:0 0 8px!important}
+html body .maal .maalkop{margin:0!important}
+html body .hero .stapjes li{white-space:nowrap;font-size:12.5px}
+html body .maal .maalkop h2{font-size:20px!important;line-height:1.25}
+html body .maal .mgrid{margin-top:0!important;padding-top:2px!important}
