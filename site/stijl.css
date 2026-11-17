@@ -763,3 +763,6 @@ html body .foot p:last-child,html body .foot .copy{text-align:center}
 html body .quick.tegels{padding-bottom:0!important}
 html body .snellinks{margin-top:2px!important;gap:4px!important}
 html body #results:empty{display:none}
+/* Nieuwsbrief in de kop: een opvallende groene knop */
+html body .nav.rustig a.nbpil,html body .nav.rustig a.nbpil:hover{background:var(--green)!important;color:#fff!important;border-radius:999px!important;padding:7px 13px!important;font-weight:700;box-shadow:0 2px 0 var(--green-dark)!important}
+html body .nav.rustig a.nbpil:hover{background:var(--green-dark)!important}
