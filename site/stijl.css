@@ -847,3 +847,8 @@ html body .hero .mystores summary::after,html body .hero .mystores summary::befo
 /* Geen zichtbare schuifbalk onder de maaltijdkaarten (swipen werkt gewoon) */
 html body .maal .mgrid{scrollbar-width:none;-ms-overflow-style:none}
 html body .maal .mgrid::-webkit-scrollbar{display:none;height:0}
+/* Groene knoppen en vlakken licht afgerond (de rest blijft recht) */
+html body .btn:not(#_a):not(#_b):not(#_c),html body a.btn:not(#_a):not(#_b):not(#_c),html body button.btn:not(#_a):not(#_b):not(#_c),
+html body .nav.rustig a.nbpil:not(#_a):not(#_b):not(#_c),html body .seo .seowinnaar:not(#_a):not(#_b):not(#_c),
+html body .add:not(#_a):not(#_b):not(#_c),html body .cta:not(#_a):not(#_b):not(#_c){border-radius:8px!important}
+html body .hero .mystores summary::after{border-radius:8px!important}
