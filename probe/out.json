@@ -1,51 +1,2210 @@
 {
- "robots": "User-agent: *\nDisallow: /cc.js*\nDisallow: /cdn/assets/cwv/\nDisallow: /user-api/*\nDisallow: /cqe/*\nDisallow: *search?q=*\nDisallow: *?offset=*\nDisallow: *idsOnly=*\nDisallow: *productsOnly=*\nDisallow: *id=*\nDisallow: *pageId=*\nDisallow: *advisor=*\nDisallow: *sort=*\n\nSitemap: https://www.lidl.nl/static/sitemap.xml\n",
- "maps": [
-  "https://www.lidl.nl/static/sitemap.xml"
- ],
- "map https://www.lidl.nl/static/sitemap.xml": {
-  "st": 200,
-  "n": 3,
-  "eerste": [
-   "https://www.lidl.nl/p/export/NL/nl/product_sitemap.xml.gz",
-   "https://www.lidl.nl/explore/assets/s/pages_nl-NL_nl.xml.gz",
-   "https://www.lidl.nl/s/nl-NL/winkel/sitemap.xml"
-  ]
+ "de Rewe": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /partner3/",
+   "Disallow: /restservices/",
+   "Disallow: /null",
+   "Disallow: /*?searchString=",
+   "Disallow: /*&searchString=",
+   "Disallow: /marken/eigenmarken/bio/rewe-bio-produkte/",
+   "Disallow: /marken/eigenmarken/feine-welt/produkt-uebersicht/",
+   "Disallow: /service/docmorris",
+   "Disallow: /shop/mc/",
+   "Disallow: /shop/checkout/",
+   "Disallow: /*;jsessionid",
+   "Disallow: /*?search=",
+   "Disallow: /*&search=",
+   "Disallow: /*?merchantType=",
+   "Disallow: /*&merchantType=",
+   "Disallow: /*?merchant=",
+   "Disallow: /*&merchant=",
+   "Disallow: /*?objectsPerPage=",
+   "Disallow: /*&objectsPerPage=",
+   "Disallow: /*?sorting=",
+   "Disallow: /*&sorting=",
+   "Disallow: /shop/doiretry"
+  ],
+  "maps": [
+   "https://www.rewe.de/sitemaps/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.rewe.de/sitemaps/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
  },
- "sub https://www.lidl.nl/p/export/NL/nl/product_sitemap.xml.gz": {
-  "st": 200,
-  "n": 0,
-  "vb": []
+ "de Edeka24": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /admin/",
+   "Disallow: /export/",
+   "Disallow: /callcenter/",
+   "Disallow: /migration/",
+   "Disallow: /modules/",
+   "Disallow: /Core/",
+   "Disallow: /tmp/",
+   "Disallow: /views/",
+   "Disallow: /Setup/",
+   "Disallow: /log/",
+   "Disallow: /newsletter/",
+   "Disallow: /en/newsletter/",
+   "Disallow: /index.php?cl=newsletter",
+   "Disallow: /AGB/",
+   "Disallow: /en/Terms-and-Conditions/",
+   "Disallow: /warenkorb/",
+   "Disallow: /en/cart/",
+   "Disallow: /index.php?cl=basket",
+   "Disallow: /mein-konto/",
+   "Disallow: /en/my-account/",
+   "Disallow: /index.php?cl=account",
+   "Disallow: /mein-merkzettel/",
+   "Disallow: /en/my-wishlist/",
+   "Disallow: /index.php?cl=account_noticelist",
+   "Disallow: /mein-wunschzettel/"
+  ],
+  "maps": [
+   "https://www.edeka24.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.edeka24.de/sitemap.xml": {
+    "st": 404,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
  },
- "sub https://www.lidl.nl/explore/assets/s/pages_nl-NL_nl.xml.gz": {
-  "st": 200,
-  "n": 0,
-  "vb": []
+ "de Netto MD": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /INTERSHOP/",
+   "Disallow: /media/private/",
+   "Disallow: /online-bewerbung/",
+   "Disallow: /media/handzettel/",
+   "Disallow: /qr/",
+   "Disallow: /frontend/catalogs/*/pdf/",
+   "Disallow: /systeminclude.mmp.dialog.gtc.pagelet2-Include",
+   "Disallow: /systeminclude.mmp.dialog.privacyPolicy.pagelet2-Include",
+   "Disallow: /systeminclude.mmp.dialog.imprint.pagelet2-Include",
+   "Disallow: /systeminclude.mmp.dialog.contact.pagelet2-Include"
+  ],
+  "maps": [
+   "https://www.netto-online.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.netto-online.de/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
  },
- "sub https://www.lidl.nl/s/nl-NL/winkel/sitemap.xml": {
-  "st": 200,
-  "n": 523,
+ "de Aldi Süd": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /tools",
+   "Disallow: /*?q="
+  ],
+  "maps": [
+   "https://www.aldi-sued.de/sitemap.xml",
+   "https://www.aldi-sued.de/sitemap_categories.xml",
+   "https://www.aldi-sued.de/sitemap_products.xml",
+   "https://www.aldi-sued.de/sitemap_stores.xml"
+  ],
+  "subs": {
+   "https://www.aldi-sued.de/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi-sued.de/sitemap_categories.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi-sued.de/sitemap_products.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi-sued.de/sitemap_stores.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "nl Lidl NL": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /cc.js*",
+   "Disallow: /cdn/assets/cwv/",
+   "Disallow: /user-api/*",
+   "Disallow: /cqe/*",
+   "Disallow: *search?q=*",
+   "Disallow: *?offset=*",
+   "Disallow: *idsOnly=*",
+   "Disallow: *productsOnly=*",
+   "Disallow: *id=*",
+   "Disallow: *pageId=*",
+   "Disallow: *advisor=*",
+   "Disallow: *sort=*"
+  ],
+  "maps": [
+   "https://www.lidl.nl/static/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.lidl.nl/static/sitemap.xml": {
+    "st": 200,
+    "n": 3
+   },
+   "https://www.lidl.nl/p/export/NL/nl/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 13698
+   },
+   "https://www.lidl.nl/explore/assets/s/pages_nl-NL_nl.xml.gz": {
+    "st": 200,
+    "n": 1739
+   },
+   "https://www.lidl.nl/s/nl-NL/winkel/sitemap.xml": {
+    "st": 200,
+    "n": 523
+   }
+  },
+  "nUrls": 15960,
+  "nProd": 13698,
   "vb": [
-   "https://www.lidl.nl/s/",
-   "https://www.lidl.nl/s/nl-NL/nieuwe-winkels/",
-   "https://www.lidl.nl/s/nl-NL/winkel/",
-   "https://www.lidl.nl/s/nl-NL/winkel/alkmaar/",
-   "https://www.lidl.nl/s/nl-NL/winkel/almelo/"
+   "https://www.lidl.nl/p/saskia-mineraalwater-licht-bruisend/p1",
+   "https://www.lidl.nl/p/maribel-aardbeienjam/p10000003",
+   "https://www.lidl.nl/p/snack-day-ribbelchips-naturel/p10000006",
+   "https://www.lidl.nl/p/lidl-cadeaukaart/p10000027"
+  ],
+  "pages": [
+   {
+    "u": "https://www.lidl.nl/p/hagelslag-melk/p10000037",
+    "st": 200,
+    "len": 402529,
+    "titel": "Hagelslag melk | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.nl/p/kaasblokjes/p10000058",
+    "st": 200,
+    "len": 376931,
+    "titel": "Kaasblokjes | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.nl/p/rookkaasplakken/p10000115",
+    "st": 200,
+    "len": 404302,
+    "titel": "Rookkaasplakken | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.nl/p/saskia-mineraalwater-licht-bruisend/p1",
+    "st": 200,
+    "len": 403828,
+    "titel": "Saskia Mineraalwater licht bruisend | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
   ]
  },
- "nProd": 0,
- "pad": [],
- "kies": [],
- "zoek melk": {
-  "st": 200,
-  "b": "{\"type\":\"search\",\"version\":\"v2.0.0\",\"engine\":\"ldt-searcher\",\"variant\":{\"id\":\"ff01_flat-articles_default\",\"testName\":\"engine\",\"trackingSolution\":\"GA\",\"active\":true,\"xPayload\":{\"groupVariantsAsFlatArticles\":false,\"engine\":\"etl-ldt\"}},\"xPayload\":{\"keywordResults\":{\"num_items_found\":36}},\"id\":\"817b628d-a86c-42f7-94e9-d6de4051ce13\",\"q\":\"melk\",\"locale\":\"nl_NL\",\"assortment\":\"NL\",\"resultType\":\"search\",\"rendering\":{\"breadcrumb\":false},\"masterQuery\":\"melk\",\"numFound\":81,\"offset\":0,\"fetchsize\":48,\"maxfetchsize\":1000,\"sort\":{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"melk\"}},\"sorts\":[{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"melk\"}},{\"code\":\"price\",\"label\":\"Prijs laag-hoog\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=price\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price\",\"q\":\"melk\"}},{\"code\":\"price-desc\",\"label\":\"Prijs hoog-laag\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=price-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price-desc\",\"q\":\"melk\"}},{\"code\":\"firstOnlineDate-desc\",\"label\":\"Nieuwste artikelen\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=firstOnlineDate-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"firstOnlineDate-desc\",\"q\":\"melk\"}},{\"code\":\"ratingScore-desc\",\"label\":\"Beoordeling\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=ratingScore-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"ratingScore-desc\",\"q\":\"melk\"}},{\"code\":\"sh_carts-desc\",\"label\":\"Bestseller\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=sh_carts-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"sh_carts-desc\",\"q\":\"melk\"}},{\"code\":\"percentageDiscount-desc\",\"label\":\"Deals & hoogste kortingen eerst\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=melk&sort=percentageDiscount-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"percentageDiscount-desc\",\"q\":\"melk\"}}],\"facets\":[{\"type\":\"TEXT\",\"code\":\"Soort koffiezetapparaat\",\"label\":\"Soort koffiezetapparaat\",\"selector\":\"OR\",\"rendering\":{\"style\":\"TEXT\",\"searchable\":false,\"selectedPosition\":\"ABOVE\",\"renderLabel\":true,\"collapsible\":true},\"topvalues\":[{\"type\":\"TEXT\",\"label\":\"Melkopschuimers"
+ "de Aldi Nord": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /reg-cat.html",
+   "Disallow: /reg-bal.html",
+   "Disallow: /reg-can.html ",
+   "Disallow: /ua-bot.html",
+   "Disallow: /can/",
+   "Disallow: /can.html",
+   "Disallow: /can$",
+   "Disallow: /bal/",
+   "Disallow: /bal.html",
+   "Disallow: /bal$",
+   "Disallow: /mds/",
+   "Disallow: /*?*filters",
+   "Disallow: /*?*jobId="
+  ],
+  "maps": [
+   "https://www.aldi-nord.de/.aldi-nord-sitemap.xml"
+  ],
+  "subs": {
+   "https://www.aldi-nord.de/.aldi-nord-sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.aldi-nord.de/sitemaps/.aldi-nord-sitemap-pages.xml": {
+    "st": 200,
+    "n": 680
+   },
+   "https://www.aldi-nord.de/sitemaps/.aldi-nord-sitemap-products.xml": {
+    "st": 200,
+    "n": 2350
+   },
+   "https://www.aldi-nord.de/sitemaps/.aldi-nord-sitemap-stores.xml": {
+    "st": 200,
+    "n": 2238
+   },
+   "https://www.aldi-nord.de/sitemaps/.aldi-nord-sitemap-faq.xml": {
+    "st": 200,
+    "n": 7
+   }
+  },
+  "nUrls": 5275,
+  "nProd": 4588,
+  "vb": [
+   "https://www.aldi-nord.de/produkt/muesli-9990.html",
+   "https://www.aldi-nord.de/produkt/pekannuss-tasche-9948.html",
+   "https://www.aldi-nord.de/produkt/irish-whiskey-993.html",
+   "https://www.aldi-nord.de/produkt/rose-cotes-de-provence-aop-9917.html"
+  ],
+  "pages": [
+   {
+    "u": "https://www.aldi-nord.de/produkt/schmelzkaeseecken-9900441.html",
+    "st": 200,
+    "len": 69237,
+    "titel": "MILSANI Schmelzkäseecken",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi-nord.de/produkt/eierlikoer-advocaat-970.html",
+    "st": 200,
+    "len": 68943,
+    "titel": "BASTEI Eierlikör Advocaat 0,7 l | ALDI Nord",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi-nord.de/produkt/frische-milch-9545.html",
+    "st": 200,
+    "len": 68646,
+    "titel": "BÄRENMARKE Frische Milch",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi-nord.de/produkt/muesli-9990.html",
+    "st": 200,
+    "len": 69610,
+    "titel": "GOLDEN BRIDGE Müsli Vollkorn 1 kg | ALDI Nord",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
  },
- "zoek kaas": {
-  "st": 200,
-  "b": "{\"type\":\"search\",\"version\":\"v2.0.0\",\"engine\":\"ldt-searcher\",\"variant\":{\"id\":\"ff01_flat-articles_default\",\"testName\":\"engine\",\"trackingSolution\":\"GA\",\"active\":true,\"xPayload\":{\"groupVariantsAsFlatArticles\":false,\"engine\":\"etl-ldt\"}},\"xPayload\":{\"keywordResults\":{\"num_items_found\":48}},\"id\":\"ceff730e-95ce-4643-b711-4e48e98e0286\",\"q\":\"kaas\",\"locale\":\"nl_NL\",\"assortment\":\"NL\",\"resultType\":\"search\",\"rendering\":{\"breadcrumb\":false},\"masterQuery\":\"kaas\",\"numFound\":85,\"offset\":0,\"fetchsize\":48,\"maxfetchsize\":1000,\"sort\":{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"kaas\"}},\"sorts\":[{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"kaas\"}},{\"code\":\"price\",\"label\":\"Prijs laag-hoog\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=price\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price\",\"q\":\"kaas\"}},{\"code\":\"price-desc\",\"label\":\"Prijs hoog-laag\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=price-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price-desc\",\"q\":\"kaas\"}},{\"code\":\"firstOnlineDate-desc\",\"label\":\"Nieuwste artikelen\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=firstOnlineDate-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"firstOnlineDate-desc\",\"q\":\"kaas\"}},{\"code\":\"ratingScore-desc\",\"label\":\"Beoordeling\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=ratingScore-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"ratingScore-desc\",\"q\":\"kaas\"}},{\"code\":\"sh_carts-desc\",\"label\":\"Bestseller\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=sh_carts-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"sh_carts-desc\",\"q\":\"kaas\"}},{\"code\":\"percentageDiscount-desc\",\"label\":\"Deals & hoogste kortingen eerst\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=kaas&sort=percentageDiscount-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"percentageDiscount-desc\",\"q\":\"kaas\"}}],\"facets\":[{\"type\":\"RANGE\",\"code\":\"price\",\"label\":\"Prijs\",\"selector\":\"REFINE\",\"rendering\":{\"style\":\"SLIDER\",\"searchable\":false,\"selectedPosition\":\"BELOW\",\"renderLabel\":true,\"collapsible\":true},\"unit\":\"€\",\"baseURL\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=k"
+ "de Kaufland": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /etc.clientlibs/",
+   "Disallow: /*.shoppinglist_share*",
+   "Disallow: /*.klstorefinder*",
+   "Disallow: /*.storefinder_*",
+   "Disallow: /*.klonboarding*",
+   "Disallow: /*.mainnavigation*",
+   "Disallow: /*.marketplacemainnavigation*",
+   "Disallow: /*.priornoticestoreopening*",
+   "Disallow: /*.welcomemessage*",
+   "Disallow: /*.recipecollectioncluster*",
+   "Disallow: /*.calendar-overlay*",
+   "Disallow: /*.teasers.*",
+   "Disallow: /angebote/naechste-woche/detail",
+   "Disallow: /angebote/aktuell/uebersicht/detail",
+   "Disallow: /sortiment/billig/billig-neu",
+   "Disallow: /rezepte/menues/detail/rezept",
+   "Disallow: /rezepte/rezeptwelten/detail/rezept",
+   "Disallow: /rezepte/taste-traveler",
+   "Disallow: /sortiment/marken/bioland-sortiment",
+   "Disallow: /sortiment/marken/demeter-sortiment",
+   "Disallow: /sortiment/das-sortiment"
+  ],
+  "maps": [
+   "https://filiale.kaufland.de/.sitemap.xml"
+  ],
+  "subs": {
+   "https://filiale.kaufland.de/.sitemap.xml": {
+    "st": 200,
+    "n": 6313
+   }
+  },
+  "nUrls": 6313,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
  },
- "zoek koffie": {
-  "st": 200,
-  "b": "{\"type\":\"search\",\"version\":\"v2.0.0\",\"engine\":\"ldt-searcher\",\"variant\":{\"id\":\"ff01_flat-articles_default\",\"testName\":\"engine\",\"trackingSolution\":\"GA\",\"active\":true,\"xPayload\":{\"groupVariantsAsFlatArticles\":false,\"engine\":\"etl-ldt\"}},\"xPayload\":{\"keywordResults\":{\"num_items_found\":48}},\"id\":\"6945003b-3fa9-45fb-9a97-2e88f73b4de8\",\"q\":\"koffie\",\"locale\":\"nl_NL\",\"assortment\":\"NL\",\"resultType\":\"search\",\"rendering\":{\"breadcrumb\":false},\"masterQuery\":\"koffie\",\"numFound\":102,\"offset\":0,\"fetchsize\":48,\"maxfetchsize\":1000,\"sort\":{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"koffie\"}},\"sorts\":[{\"code\":\"relevancy\",\"label\":\"Relevantie\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=relevancy\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"relevancy\",\"q\":\"koffie\"}},{\"code\":\"price\",\"label\":\"Prijs laag-hoog\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=price\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price\",\"q\":\"koffie\"}},{\"code\":\"price-desc\",\"label\":\"Prijs hoog-laag\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=price-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"price-desc\",\"q\":\"koffie\"}},{\"code\":\"firstOnlineDate-desc\",\"label\":\"Nieuwste artikelen\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=firstOnlineDate-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"firstOnlineDate-desc\",\"q\":\"koffie\"}},{\"code\":\"ratingScore-desc\",\"label\":\"Beoordeling\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=ratingScore-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"ratingScore-desc\",\"q\":\"koffie\"}},{\"code\":\"sh_carts-desc\",\"label\":\"Bestseller\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=sh_carts-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"sh_carts-desc\",\"q\":\"koffie\"}},{\"code\":\"percentageDiscount-desc\",\"label\":\"Deals & hoogste kortingen eerst\",\"url\":\"/q/api/search?assortment=NL&locale=nl_NL&version=v2.0.0&q=koffie&sort=percentageDiscount-desc\",\"link\":{\"type\":\"search\",\"filter\":{},\"sort\":\"percentageDiscount-desc\",\"q\":\"koffie\"}}],\"facets\":[{\"type\":\"TEXT\",\"code\":\"Soort koffiezetapparaat\",\"label\":\"Soort koffiezetapparaat\",\"selector\":\"OR\",\"rendering\":{\"style\":\"TEXT\",\"searchable\":false,\"selectedPosition\":\"ABOVE\",\"renderLabel\":true,\"collapsible\":true},\"topvalues\":[{\""
+ "uk Tesco": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /shop/*-*/promotions/*?*=*",
+   "Disallow: /shop/*-*/clothing/promotions/*?*=*",
+   "Disallow: *currentModal*",
+   "Disallow: *active-tab*",
+   "Disallow: *include-children*",
+   "Disallow: *new&new*",
+   "Disallow: /account/login/*-*?",
+   "Disallow: /shop/*-*/login?*",
+   "Disallow: */*-*/manage-cookie-preferences*?",
+   "Disallow: /account/register/*-*?",
+   "Disallow: /account/register/*-*?newReg",
+   "Disallow: /shop/*-*/*&offset=* ",
+   "Disallow: */login/*-*?from=*",
+   "Disallow: */*-*/login?from=*",
+   "Disallow: /help/*?dvi=*",
+   "Disallow: /shop/*-*/products*?icid",
+   "Disallow: /shop/*-*/slots*?icid",
+   "Disallow: /shop/*-*/clothing/products*?icid",
+   "Disallow: *?queueittoken*",
+   "Disallow: */userinteraction*",
+   "Disallow: */nrbeacon/*",
+   "Disallow: /account/password/*-*/reset-password",
+   "Disallow: /account/password/*-*/forgotten-password",
+   "Disallow: /account/"
+  ],
+  "maps": [
+   "https://www.tesco.com/sitemaps/en-GB/index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/marketplace/products-index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/groceries/products-index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/groceries/promotions-index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/clothing/promotions-index.xml",
+   "https://www.tesco.com/sitemaps/en-GB/marketplace/promotions-index.xml"
+  ],
+  "subs": {
+   "https://www.tesco.com/sitemaps/en-GB/index.xml": {
+    "st": 200,
+    "n": 12
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-index.xml": {
+    "st": 200,
+    "n": 5
+   },
+   "https://www.tesco.com/sitemaps/en-GB/marketplace/products-index.xml": {
+    "st": 200,
+    "n": 22
+   },
+   "https://www.tesco.com/sitemaps/en-GB/groceries/products-index.xml": {
+    "st": 200,
+    "n": 9
+   },
+   "https://www.tesco.com/sitemaps/en-GB/groceries/promotions-index.xml": {
+    "st": 200,
+    "n": 2
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/promotions-index.xml": {
+    "st": 200,
+    "n": 1
+   },
+   "https://www.tesco.com/sitemaps/en-GB/static-pages.xml": {
+    "st": 200,
+    "n": 38
+   },
+   "https://www.tesco.com/store-locator/sitemap.xml": {
+    "st": 200,
+    "n": 6492
+   },
+   "https://www.tesco.com/sitemaps/en-GB/taxonomy.xml": {
+    "st": 200,
+    "n": 8453
+   },
+   "https://www.tesco.com/sitemaps/en-GB/phones/products.xml": {
+    "st": 200,
+    "n": 225
+   },
+   "https://www.tesco.com/sitemaps/en-GB/recipes/recipes.xml": {
+    "st": 200,
+    "n": 8438
+   },
+   "https://www.tesco.com/careers/en-GB/sitemap.xml": {
+    "st": 200,
+    "n": 67
+   },
+   "https://www.tesco.com/careers/cs-CZ/sitemap.xml": {
+    "st": 200,
+    "n": 49
+   },
+   "https://www.tesco.com/careers/sk-SK/sitemap.xml": {
+    "st": 200,
+    "n": 51
+   },
+   "https://www.tesco.com/careers/hu-HU/sitemap.xml": {
+    "st": 200,
+    "n": 50
+   },
+   "https://www.tesco.com/careers/en-IE/sitemap.xml": {
+    "st": 200,
+    "n": 52
+   },
+   "https://www.tesco.com/careers/en-PL/sitemap.xml": {
+    "st": 200,
+    "n": 51
+   },
+   "https://www.tesco.com/careers/en-IN/sitemap.xml": {
+    "st": 200,
+    "n": 50
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-1.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-2.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-3.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-4.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.tesco.com/sitemaps/en-GB/clothing/products-5.xml": {
+    "st": 200,
+    "n": 535
+   },
+   "https://www.tesco.com/sitemaps/en-GB/marketplace/products-1.xml": {
+    "st": 200,
+    "n": 40000
+   },
+   "https://www.tesco.com/sitemaps/en-GB/marketplace/products-2.xml": {
+    "st": 200,
+    "n": 40000
+   }
+  },
+  "nUrls": 724551,
+  "nProd": 709216,
+  "vb": [
+   "https://www.tesco.com/shop/en-GB/landing/groceries",
+   "https://www.tesco.com/shop/en-GB/zone/accessibility",
+   "https://www.tesco.com/shop/en-GB/zone/tesco-delivery-click-and-collect",
+   "https://www.tesco.com/shop/en-GB/zone/international-calling"
+  ],
+  "pages": [
+   {
+    "u": "https://www.tesco.com/shop/en-GB/browse/groceries-and-essentials/fresh-food/finest-fresh-food/finest-dairy-and-eggs",
+    "st": 403,
+    "len": 71494,
+    "titel": "Error",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.tesco.com/shop/en-GB/browse/groceries-and-essentials/fresh-food/chilled-vegetarian-and-vegan/cheese",
+    "st": 403,
+    "len": 71494,
+    "titel": "Error",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.tesco.com/shop/en-GB/browse/groceries-and-essentials/fresh-food/milk-butter-and-eggs",
+    "st": 403,
+    "len": 71494,
+    "titel": "Error",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.tesco.com/shop/en-GB/landing/groceries",
+    "st": 403,
+    "len": 71494,
+    "titel": "Error",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "uk Sainsbury's": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /webapp/wcs/stores/servlet/OrderItemAdd",
+   "Disallow: /webapp/wcs/stores/servlet/OrderItemDisplay",
+   "Disallow: /webapp/wcs/stores/servlet/OrderCalculate",
+   "Disallow: /webapp/wcs/stores/servlet/QuickOrderCmd",
+   "Disallow: /webapp/wcs/stores/servlet/AjaxOrderItemUpdate",
+   "Disallow: /webapp/wcs/stores/servlet/InterestItemDisplay",
+   "Disallow: /webapp/wcs/stores/servlet/ProductDisplayLargeImageView",
+   "Disallow: /webapp/wcs/stores/servlet/QuickRegistrationFormView",
+   "Disallow: /webapp/wcs/stores/servlet/UserRegistrationAdd",
+   "Disallow: /webapp/wcs/stores/servlet/PostCodeCheckBeforeAddToTrolleyView",
+   "Disallow: /webapp/wcs/stores/servlet/Logon",
+   "Disallow: /webapp/wcs/stores/servlet/RecipesTextSearchDisplayView",
+   "Disallow: /webapp/wcs/stores/servlet/PostcodeCheckView",
+   "Disallow: /webapp/wcs/stores/servlet/ShoppingListDisplay",
+   "Disallow: /webapp/wcs/stores/servlet/gb/groceries/get-ideas/advertising",
+   "Disallow: /webapp/wcs/stores/servlet/gb/groceries/get-ideas/development",
+   "Disallow: /webapp/wcs/stores/servlet/gb/groceries/get-ideas/dormant",
+   "Disallow: /shop/gb/groceries/get-ideas/dormant/",
+   "Disallow: /shop/gb/groceries/get-ideas/advertising/",
+   "Disallow: /shop/gb/groceries/get-ideas/development",
+   "Disallow: /shop/LogonView*",
+   "Disallow: /webapp/wcs/stores/servlet/SearchDisplayView",
+   "Disallow: /shop/SearchDisplayView",
+   "Disallow: /gol-ui/CheckPostcode",
+   "Disallow: /shop/preLogOff"
+  ],
+  "maps": [
+   "http://www.sainsburys.co.uk/sitemap.xml"
+  ],
+  "subs": {
+   "http://www.sainsburys.co.uk/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "uk Asda": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /"
+  ],
+  "maps": [
+   "https://groceries.asda.com/sitemap.xml"
+  ],
+  "subs": {
+   "https://groceries.asda.com/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "de Penny": {
+  "robots_st": 200,
+  "disallow": [],
+  "maps": [
+   "https://www.penny.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.penny.de/sitemap.xml": {
+    "st": 0,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "uk Morrisons": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /sso-login",
+   "Disallow: /previewer/*",
+   "Disallow: /api/",
+   "Disallow: /events/"
+  ],
+  "maps": [
+   "https://groceries.morrisons.com/sitemaps/sitemap_index.xml"
+  ],
+  "subs": {
+   "https://groceries.morrisons.com/sitemaps/sitemap_index.xml": {
+    "st": 200,
+    "n": 5
+   },
+   "https://groceries.morrisons.com/sitemaps/sitemap-categories-part1.xml": {
+    "st": 200,
+    "n": 5568
+   },
+   "https://groceries.morrisons.com/sitemaps/sitemap-collections-part1.xml": {
+    "st": 200,
+    "n": 115
+   },
+   "https://groceries.morrisons.com/sitemaps/sitemap-products-part1.xml": {
+    "st": 200,
+    "n": 31223
+   },
+   "https://groceries.morrisons.com/sitemaps/sitemap-promotions-part1.xml": {
+    "st": 200,
+    "n": 3117
+   },
+   "https://groceries.morrisons.com/sitemaps/sitemap-recipes-part1.xml": {
+    "st": 200,
+    "n": 1402
+   }
+  },
+  "nUrls": 41425,
+  "nProd": 40385,
+  "vb": [
+   "https://groceries.morrisons.com/categories/home-garden/diy/light-bulbs/led-light-bulbs/mini-globe-led-light-bulbs/163822",
+   "https://groceries.morrisons.com/promotions/home-garden/diy/light-bulbs/led-light-bulbs/mini-globe-led-light-bulbs/163822",
+   "https://groceries.morrisons.com/categories/fresh-foods/chilled-juice-smoothies/chilled-juices/apple-juices/177444",
+   "https://groceries.morrisons.com/promotions/fresh-foods/chilled-juice-smoothies/chilled-juices/apple-juices/177444"
+  ],
+  "pages": [
+   {
+    "u": "https://groceries.morrisons.com/categories/fresh-foods/yogurts/corners-yoghurt/185557",
+    "st": 200,
+    "len": 1660956,
+    "titel": "Corners Yoghurt - All Products - Morrisons online supermarket",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "£0.00",
+     "£0.00",
+     "£0.00",
+     "£25.00",
+     "£7.66"
+    ]
+   },
+   {
+    "u": "https://groceries.morrisons.com/promotions/fresh-foods/yogurts/corners-yoghurt/185557",
+    "st": 200,
+    "len": 1478417,
+    "titel": "Corners Yoghurt - Offers - Morrisons online supermarket",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "£0.00",
+     "£0.00",
+     "£0.00",
+     "£25.00",
+     "£4.03"
+    ]
+   },
+   {
+    "u": "https://groceries.morrisons.com/categories/baby-toddler/baby-toddler-milk/aptamil/anti-reflux-baby-milk/191883",
+    "st": 200,
+    "len": 582326,
+    "titel": "Anti-Reflux Baby Milk - All Products - Morrisons online supermarket",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "£0.00",
+     "£0.00",
+     "£0.00",
+     "£25.00",
+     "£23.75"
+    ]
+   },
+   {
+    "u": "https://groceries.morrisons.com/categories/home-garden/diy/light-bulbs/led-light-bulbs/mini-globe-led-light-bulbs/163822",
+    "st": 200,
+    "len": 589659,
+    "titel": "Mini Globe LED Light Bulbs - All Products - Morrisons online supermarket",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "£0.00",
+     "£0.00",
+     "£0.00",
+     "£25.00",
+     "£5.00"
+    ]
+   }
+  ]
+ },
+ "uk Aldi UK": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /results$",
+   "Disallow: /results?",
+   "Disallow: /*?page=",
+   "Disallow: /*&page=",
+   "Disallow: /*?utm_",
+   "Disallow: /*&utm_",
+   "Disallow: /*?cid=",
+   "Disallow: /*&cid=",
+   "Disallow: /*?bid=",
+   "Disallow: /*&bid=",
+   "Disallow: /tools/clp/*",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /"
+  ],
+  "maps": [
+   "https://www.aldi.co.uk/sitemap.xml",
+   "https://www.aldi.co.uk/sitemap_categories.xml",
+   "https://www.aldi.co.uk/sitemap_products.xml",
+   "https://www.aldi.co.uk/sitemap_stores.xml"
+  ],
+  "subs": {
+   "https://www.aldi.co.uk/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi.co.uk/sitemap_categories.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi.co.uk/sitemap_products.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.aldi.co.uk/sitemap_stores.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "de Lidl DE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /cc.js*",
+   "Disallow: /cdn/assets/cwv/",
+   "Disallow: /user-api/*",
+   "Disallow: /cqe/*",
+   "Disallow: *search?q=*",
+   "Disallow: *?offset=*",
+   "Disallow: *idsOnly=*",
+   "Disallow: *productsOnly=*",
+   "Disallow: *id=*",
+   "Disallow: *pageId=*",
+   "Disallow: *advisor=*",
+   "Disallow: *sort=*"
+  ],
+  "maps": [
+   "https://www.lidl.de/static/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.lidl.de/static/sitemap.xml": {
+    "st": 200,
+    "n": 5
+   },
+   "https://www.lidl.de/p/export/DE/de/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 14035
+   },
+   "https://www.lidl.de/explore/assets/s/pages_de-DE_de.xml.gz": {
+    "st": 200,
+    "n": 2208
+   },
+   "https://www.lidl.de/s/de-DE/filialen/sitemap.xml": {
+    "st": 200,
+    "n": 3668
+   },
+   "https://www.lidl.de/cdn/assets/sitemaps/brands.xml": {
+    "st": 200,
+    "n": 776
+   },
+   "https://www.lidl.de/cdn/assets/sitemaps/nqps.xml": {
+    "st": 200,
+    "n": 69
+   }
+  },
+  "nUrls": 20756,
+  "nProd": 14035,
+  "vb": [
+   "https://www.lidl.de/p/edition-wuerttemberg-schwarzriesling-qba-lieblich-literflasche-rotwein-2024/p100000271",
+   "https://www.lidl.de/p/allini-asti-vino-spumante-millesimato-docg-mild-schaumwein-2025/p100001180",
+   "https://www.lidl.de/p/ehrentrudis-tuniberger-spaetburgunder-weissherbst-qba-lieblich-rosewein-2024/p100001259",
+   "https://www.lidl.de/p/comte-de-brismand-brut-reserve-champagner/p100001673"
+  ],
+  "pages": [
+   {
+    "u": "https://www.lidl.de/p/gellerts-butterbirne-buschbaum/p100160161",
+    "st": 200,
+    "len": 392434,
+    "titel": "Gellerts Butterbirne, Buschbaum | Lidl",
+    "ldprice": "\"price\":17.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100160161\",\"gtin13\":[\"4250697207039\"],\"name\":\"Gellerts Butterbirne, Buschbaum\",\"image\":[\"https://www.lidl.de/assets/113fbaf5f1ae772ad91d3bc22882d8a2.jpeg\"],\"url\":\"https://www.lidl.de/p/gellerts-butterbirne-buschbaum/p100160161\",\"brand\":{\"@type",
+    "prijzen": [
+     "17.99€",
+     "17.99€"
+    ]
+   },
+   {
+    "u": "https://www.lidl.de/p/gold-advocaat-eierlikoer-20-vol/p100186922",
+    "st": 200,
+    "len": 459054,
+    "titel": "GOLD-ADVOCAAT Eierlikör 20% Vol | Lidl",
+    "ldprice": "\"price\":5.59,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100186922\",\"description\":\"\\u003Cp>\\u003Cstrong>Eierlikör 20% Vol\\u003C/strong> von GOLD-ADVOCAAT – Cremiger Likör auf Eierbasis, vielseitig einsetzbar als Dessertbegleiter, im Kaffee oder als Cocktailzutat.\\u003C/p>\\u003Cul>\\u003Cli>Cremig-wei",
+    "prijzen": [
+     "5.59€",
+     "5.59€",
+     "16.77 €"
+    ]
+   },
+   {
+    "u": "https://www.lidl.de/p/speierling-raritaet/p100196720",
+    "st": 200,
+    "len": 420368,
+    "titel": "Speierling - Rarität | Lidl",
+    "ldprice": "\"price\":22.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100196720\",\"gtin13\":[\"4260006573915\"],\"description\":\"\",\"name\":\"Speierling - Rarität\",\"image\":[\"https://www.lidl.de/assets/gcp989547448d59479295caa403c40d1734.jpg\"],\"url\":\"https://www.lidl.de/p/speierling-raritaet/p100196720\",\"brand\":{\"@type\":\"",
+    "prijzen": [
+     "22.99€",
+     "22.99€"
+    ]
+   },
+   {
+    "u": "https://www.lidl.de/p/edition-wuerttemberg-schwarzriesling-qba-lieblich-literflasche-rotwein-2024/p100000271",
+    "st": 200,
+    "len": 444487,
+    "titel": "Edition Württemberg Schwarzriesling QbA lieblich, Literflasche, Rotwein 2024 | Lidl",
+    "ldprice": "\"price\":3.99,",
+    "ld": "{\"@context\":\"http://schema.org\",\"@type\":\"Product\",\"sku\":\"100000271\",\"description\":\"\",\"name\":\"Edition Württemberg Schwarzriesling QbA lieblich, Literflasche, Rotwein 2024\",\"image\":[\"https://www.lidl.de/assets/gcp3ab54bff18fd4bcab3906461a7751efd.jpg\",\"https://www.lidl.de/assets/gcp56265e0ad8e24d37952f",
+    "prijzen": [
+     "3.99€",
+     "3.99€"
+    ]
+   }
+  ]
+ },
+ "uk Lidl UK": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /q/search?id=*",
+   "Disallow: /cc.js*",
+   "Disallow: /1*",
+   "Disallow: /2*",
+   "Disallow: /3*",
+   "Disallow: /4*",
+   "Disallow: /5*",
+   "Disallow: /6*",
+   "Disallow: /7*",
+   "Disallow: /8*",
+   "Disallow: /9*",
+   "Disallow: /cdn/assets/cwv/"
+  ],
+  "maps": [
+   "https://www.lidl.co.uk/static/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.lidl.co.uk/static/sitemap.xml": {
+    "st": 200,
+    "n": 3
+   },
+   "https://www.lidl.co.uk/p/export/GB/en/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 1521
+   },
+   "https://www.lidl.co.uk/explore/assets/s/pages_en-GB_gb.xml.gz": {
+    "st": 200,
+    "n": 809
+   },
+   "https://www.lidl.co.uk/s/en-GB/store-finder/sitemap.xml": {
+    "st": 200,
+    "n": 1150
+   }
+  },
+  "nUrls": 3480,
+  "nProd": 1521,
+  "vb": [
+   "https://www.lidl.co.uk/p/valley-spire-mature-grated-cheddar/p10000000",
+   "https://www.lidl.co.uk/p/aberdoyle-dairies-scottish-mature-sliced-cheddar/p10000001",
+   "https://www.lidl.co.uk/p/aberdoyle-dairies-scottish-mature-coloured-cheddar/p10000002",
+   "https://www.lidl.co.uk/p/aberdoyle-dairies-scottish-mature-grated-cheddar/p10000003"
+  ],
+  "pages": [
+   {
+    "u": "https://www.lidl.co.uk/p/milbona-uht-skimmed-milk/p10000029",
+    "st": 200,
+    "len": 394779,
+    "titel": "Milbona UHT Skimmed Milk | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.co.uk/p/chef-select-macaroni-cheese/p10000171",
+    "st": 200,
+    "len": 394929,
+    "titel": "Chef Select Macaroni Cheese | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.co.uk/p/chef-select-chicken-en-croute-with-cheese-bacon/p10000184",
+    "st": 200,
+    "len": 395285,
+    "titel": "Chef Select Chicken En Croute With Cheese &amp; Bacon | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.co.uk/p/valley-spire-mature-grated-cheddar/p10000000",
+    "st": 200,
+    "len": 395964,
+    "titel": "Valley Spire Mature Grated Cheddar | Lidl",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "de Globus": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /produkte/compare",
+   "Disallow: /produkte/checkout",
+   "Disallow: /produkte/register",
+   "Disallow: /produkte/account",
+   "Disallow: /produkte/address",
+   "Disallow: /produkte/note",
+   "Disallow: /produkte/widgets",
+   "Disallow: /produkte/listing",
+   "Disallow: /produkte/ticket",
+   "Disallow: /produkte/wishlist"
+  ],
+  "maps": [
+   "https://www.globus.de/produkte/sitemap_index.xml",
+   "https://www.globus.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.globus.de/produkte/sitemap_index.xml": {
+    "st": 404,
+    "n": 0
+   },
+   "https://www.globus.de/sitemap.xml": {
+    "st": 200,
+    "n": 2595
+   }
+  },
+  "nUrls": 2595,
+  "nProd": 1,
+  "vb": [
+   "https://www.globus.de/mio-magazin/gesundheit/10000-schritte.php"
+  ],
+  "pages": [
+   {
+    "u": "https://www.globus.de/mio-magazin/gesundheit/10000-schritte.php",
+    "st": 200,
+    "len": 301308,
+    "titel": "10.000 Schritte ☀ mio mein GLOBUS Magazin",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "de dm": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /gift-card-activation",
+   "Disallow: /gift-card-builder",
+   "Disallow: /gift-card-value",
+   "Disallow: /b2b-gift-card-shop",
+   "Disallow: /callback",
+   "Disallow: /logout",
+   "Disallow: /shopping-list",
+   "Disallow: /cart"
+  ],
+  "maps": [
+   "https://www.dm.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.dm.de/sitemap.xml": {
+    "st": 200,
+    "n": 3
+   },
+   "https://www.dm.de/store-sitemap.xml": {
+    "st": 200,
+    "n": 2188
+   },
+   "https://www.dm.de/content-sitemap.xml.gz": {
+    "st": 200,
+    "n": 6502
+   },
+   "https://www.dm.de/product-sitemap.xml": {
+    "st": 200,
+    "n": 21978
+   }
+  },
+  "nUrls": 30668,
+  "nProd": 21979,
+  "vb": [
+   "https://www.dm.de/produktweg/219520gksm-pfad-977270",
+   "https://www.dm.de/p/d/3121435/ladival-ladival-allergische-haut-sonnenschutz-gel-gesicht-lsf30",
+   "https://www.dm.de/p/d/3137600/jessa-diskret-pants-inkontinenz-flex-slip-gr-m-vorteilspack-4x10-st",
+   "https://www.dm.de/p/d/3168551/sanhelios-nagelpilz-entferner-nagelkur-gel-stift"
+  ],
+  "pages": [
+   {
+    "u": "https://www.dm.de/p/d/3113077/sportness-proteinriegel-33-prozent-yoghurt-cereal-geschmack",
+    "st": 200,
+    "len": 11392,
+    "titel": "dm-drogerie markt - dauerhaft günstig online kaufen",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.dm.de/p/d/1493427/more-nutrition-suessungsmittel-chunky-flavour-butter-biscuit",
+    "st": 200,
+    "len": 11392,
+    "titel": "dm-drogerie markt - dauerhaft günstig online kaufen",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.dm.de/p/d/3163844/kneipp-handcreme-winterzauber-mit-sheabutter-und-nordische-beere",
+    "st": 200,
+    "len": 11392,
+    "titel": "dm-drogerie markt - dauerhaft günstig online kaufen",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.dm.de/produktweg/219520gksm-pfad-977270",
+    "st": 200,
+    "len": 11392,
+    "titel": "dm-drogerie markt - dauerhaft günstig online kaufen",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "uk Waitrose": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /shop/ViewTrolley",
+   "Disallow: /shop/RegistrationInitiate",
+   "Disallow: /shop/CheckOutInitiateCmd",
+   "Disallow: /shop/CheckOutOrderPreviewCmd",
+   "Disallow: /shop/CheckOutPaymentCmd",
+   "Disallow: /shop/OrderProcess",
+   "Disallow: /ecom/order-confirmation/*",
+   "Disallow: /shop/InitiateLogin",
+   "Disallow: /shop/RegistrationInitiate",
+   "Disallow: /shop/InitiateMyAccount",
+   "Disallow: /shop/LoginDetailsInitiateCmd",
+   "Disallow: /shop/PrivateInfoInitiateCmd",
+   "Disallow: /shop/AddressInitiateCmd",
+   "Disallow: /shop/GetPaymentBillingDetailsCmd",
+   "Disallow: /shop/OrderStatusDisplayCmd",
+   "Disallow: /shop/InterestItemDisplayCmd",
+   "Disallow: /shop/InitiateShoppingListCmd",
+   "Disallow: /shop/SaveSubstitutionPreferenceCmd",
+   "Disallow: /shop/Logoff",
+   "Disallow: /home/forum.html",
+   "Disallow: /content/waitrose/en/home/forum/",
+   "Disallow: /shop/MyAccount",
+   "Disallow: /shop/MyAddresses",
+   "Disallow: /shop/MyLists",
+   "Disallow: /shop/GetCustomerOrders"
+  ],
+  "maps": [
+   "https://www.waitrose.com/sitemapIndex.xml"
+  ],
+  "subs": {
+   "https://www.waitrose.com/sitemapIndex.xml": {
+    "st": 0,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "de Rossmann": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /de/cart",
+   "Disallow: /de/checkout",
+   "Disallow: /de/my-account",
+   "Disallow: /de/datenschutzerklaerung",
+   "Disallow: /de/agb",
+   "Disallow: /de/verbraucherschlichtung",
+   "Disallow: /de/search/*",
+   "Disallow: /*?*",
+   "Disallow: /",
+   "Disallow: /"
+  ],
+  "maps": [
+   "https://www.rossmann.de/de/sitemap_index.xml",
+   "https://www.rossmann.de/de/filialen/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.rossmann.de/de/sitemap_index.xml": {
+    "st": 200,
+    "n": 11
+   },
+   "https://www.rossmann.de/de/filialen/sitemap.xml": {
+    "st": 200,
+    "n": 3868
+   },
+   "https://www.rossmann.de/de/sitemap/Product-0.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-1.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-2.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-3.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-4.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-5.xml": {
+    "st": 200,
+    "n": 5000
+   },
+   "https://www.rossmann.de/de/sitemap/Product-6.xml": {
+    "st": 200,
+    "n": 2135
+   },
+   "https://www.rossmann.de/de/sitemap/Category-0.xml": {
+    "st": 200,
+    "n": 516
+   },
+   "https://www.rossmann.de/de/sitemap/Content-0.xml": {
+    "st": 200,
+    "n": 1517
+   },
+   "https://www.rossmann.de/de/sitemap/CategoryLanding-0.xml": {
+    "st": 200,
+    "n": 1946
+   },
+   "https://www.rossmann.de/de/sitemap/Aem.xml": {
+    "st": 200,
+    "n": 245
+   }
+  },
+  "nUrls": 40227,
+  "nProd": 32135,
+  "vb": [
+   "https://www.rossmann.de/de/pflege-und-duft-kneipp-badekristalle-wald-bad/p/4008233129761",
+   "https://www.rossmann.de/de/pflege-und-duft-isana-baumwoll-watte/p/4305615386751",
+   "https://www.rossmann.de/de/haushalt-domol-textilerfrischer-spray-fresh/p/4305615375007",
+   "https://www.rossmann.de/de/haushalt-flink-und-sauber-mikrofaser-universaltuch/p/4305615392448"
+  ],
+  "pages": [
+   {
+    "u": "https://www.rossmann.de/de/baby-und-spielzeug-nuk-milchpulver-portionierer/p/4008600181316",
+    "st": 200,
+    "len": 3036,
+    "titel": "Client Challenge",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.rossmann.de/de/tier-winston-milky-cups-mit-beta-glucan/p/4305615539379",
+    "st": 200,
+    "len": 3036,
+    "titel": "Client Challenge",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.rossmann.de/de/baby-und-spielzeug-elanee-milchsaeure-kur/p/4260018197307",
+    "st": 200,
+    "len": 3036,
+    "titel": "Client Challenge",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.rossmann.de/de/pflege-und-duft-kneipp-badekristalle-wald-bad/p/4008233129761",
+    "st": 200,
+    "len": 3036,
+    "titel": "Client Challenge",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "uk Ocado": {
+  "robots_st": 202,
+  "disallow": [],
+  "maps": [
+   "https://www.ocado.com/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.ocado.com/sitemap.xml": {
+    "st": 202,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "de Norma": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /ws/",
+   "Disallow: /de/unternehmen/verantwortung/lieferkettensorgfaltspflichtengesetz",
+   "Disallow: /index",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /"
+  ],
+  "maps": [
+   "https://www.norma-online.de/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.norma-online.de/sitemap.xml": {
+    "st": 404,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "uk Iceland": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /*/login$",
+   "Disallow: /*/login?",
+   "Disallow: /*/login/",
+   "Disallow: */app/*",
+   "Disallow: */shipping/*",
+   "Disallow: */billing/*",
+   "Disallow: */revieworder/*",
+   "Disallow: */orderconfirmation/*",
+   "Disallow: */account/*",
+   "Disallow: */ordersearch/*",
+   "Disallow: */demandware.store/Sites-icelandfoodsuk-Site/*",
+   "Disallow: */*articleId",
+   "Disallow: /account*",
+   "Disallow: /login*",
+   "Disallow: /basket*",
+   "Disallow: /checkout*",
+   "Disallow: /search*",
+   "Disallow: /my-favourites*",
+   "Disallow: *?pmin=*",
+   "Disallow: *?pmax=*",
+   "Disallow: *?srule=*",
+   "Disallow: *?src=*",
+   "Disallow: *?sz=*",
+   "Disallow: *?prefv1=*",
+   "Disallow: *?prefn1=*"
+  ],
+  "maps": [
+   "https://www.iceland.co.uk/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.iceland.co.uk/sitemap.xml": {
+    "st": 200,
+    "n": 3
+   }
+  },
+  "nUrls": 3,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "uk Co-op": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /search?*",
+   "Disallow: /products/search?*",
+   "Disallow: /recipes/search?*",
+   "Disallow: /funeralcare/funeral-directors/*/email-us/",
+   "Disallow: /funeralcare/funeral-wishes$",
+   "Disallow: /funeralcare/funeral-wishes/"
+  ],
+  "maps": [
+   "https://www.coop.co.uk/sitemap.xml",
+   "https://www.coop.co.uk/recipes/sitemap.xml",
+   "https://www.coop.co.uk/products/sitemap.xml",
+   "https://www.coop.co.uk/funeralcare/sitemap.xml",
+   "https://www.coop.co.uk/funeralcare/funeral-directors/sitemap.xml",
+   "https://www.coop.co.uk/store-finder/sitemap.xml",
+   "https://www.coop.co.uk/insurance/sitemap.xml",
+   "https://www.coop.co.uk/blog/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.coop.co.uk/sitemap.xml": {
+    "st": 200,
+    "n": 512
+   },
+   "https://www.coop.co.uk/recipes/sitemap.xml": {
+    "st": 200,
+    "n": 2265
+   },
+   "https://www.coop.co.uk/products/sitemap.xml": {
+    "st": 200,
+    "n": 3761
+   },
+   "https://www.coop.co.uk/funeralcare/sitemap.xml": {
+    "st": 200,
+    "n": 430
+   },
+   "https://www.coop.co.uk/funeralcare/funeral-directors/sitemap.xml": {
+    "st": 200,
+    "n": 0
+   },
+   "https://www.coop.co.uk/store-finder/sitemap.xml": {
+    "st": 200,
+    "n": 2609
+   }
+  },
+  "nUrls": 9577,
+  "nProd": 3761,
+  "vb": [
+   "https://www.coop.co.uk/products/search",
+   "https://www.coop.co.uk/products/andrew-peace-chardonnay-769426",
+   "https://www.coop.co.uk/products/andrew-peace-shiraz-769432",
+   "https://www.coop.co.uk/products/arniston-bay-shiraz-merlot-fairtrade-732145"
+  ],
+  "pages": [
+   {
+    "u": "https://www.coop.co.uk/products/pataks-butter-chicken-450g",
+    "st": 200,
+    "len": 5996,
+    "titel": "Pardon Our Interruption",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.coop.co.uk/products/walkers-baked-cheese-and-onion-6x25g",
+    "st": 200,
+    "len": 5996,
+    "titel": "Pardon Our Interruption",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.coop.co.uk/products/gu-lemon-cheesecakes-2x90g",
+    "st": 200,
+    "len": 5996,
+    "titel": "Pardon Our Interruption",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.coop.co.uk/products/search",
+    "st": 200,
+    "len": 5996,
+    "titel": "Pardon Our Interruption",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "be Delhaize": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /login",
+   "Disallow: /errorPage",
+   "Disallow: /my-account",
+   "Disallow: /timeslot",
+   "Disallow: /payment-method",
+   "Disallow: */search/*",
+   "Disallow: */search?*",
+   "Disallow: */customerhub/quick-shop/*",
+   "Disallow: */registration/*",
+   "Disallow: */create-account*",
+   "Disallow: /en/"
+  ],
+  "maps": [
+   "https://www.delhaize.be/sitemap/delhaizesitemapindex.xml",
+   "https://www.delhaize.be/sitemapnl/delhaizesitemapindex.xml",
+   "https://www.delhaize.be/site/nl/content/sitemap.xml",
+   "https://www.delhaize.be/site/fr/content/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.delhaize.be/sitemap/delhaizesitemapindex.xml": {
+    "st": 200,
+    "n": 1
+   },
+   "https://www.delhaize.be/sitemapnl/delhaizesitemapindex.xml": {
+    "st": 200,
+    "n": 1
+   },
+   "https://www.delhaize.be/site/nl/content/sitemap.xml": {
+    "st": 200,
+    "n": 1
+   },
+   "https://www.delhaize.be/site/fr/content/sitemap.xml": {
+    "st": 200,
+    "n": 1
+   },
+   "https://www.delhaize.be/sitemap/delhaizesitemap-0.xml.gz": {
+    "st": 200,
+    "n": 24963
+   },
+   "https://www.delhaize.be/sitemapnl/delhaizesitemap-0.xml.gz": {
+    "st": 200,
+    "n": 24963
+   },
+   "https://www.delhaize.be/site/binaries/content/assets/sitemap/nl/sitemap.xml.gz": {
+    "st": 200,
+    "n": 936
+   },
+   "https://www.delhaize.be/site/binaries/content/assets/sitemap/fr/sitemap.xml.gz": {
+    "st": 200,
+    "n": 936
+   }
+  },
+  "nUrls": 51798,
+  "nProd": 35143,
+  "vb": [
+   "https://www.delhaize.be/fr/shop/Viande-poisson-et-produits-vegetariens/Poissonnerie/Fruits-de-mer-et-crustaces/Autres-fruits-de-mer-et-crustaces/c/v2MEAFISSHEOTH",
+   "https://www.delhaize.be/fr/shop/Entretien-et-menage/Accessoires-de-nettoyage/Balais-brosses-et-raclettes/Systemes-humides/c/v2CLEACCBRUWET",
+   "https://www.delhaize.be/fr/shop/Fruits-et-legumes-frais/Fruits-frais/Kiwis/c/v2FRUFRUKIW",
+   "https://www.delhaize.be/fr/shop/Apero-et-entrees/Aperitifs/Aperitifs-chauds/c/v2APEAPEHOT"
+  ],
+  "pages": [
+   {
+    "u": "https://www.delhaize.be/fr/shop/Bebe/Lait-et-boissons-pour-bebes/Lait-pour-nourrissons/c/v2BABMILBAB",
+    "st": 200,
+    "len": 1042314,
+    "titel": "Lait pour nourrissons",
+    "ldprice": "\"price\": \"0.00",
+    "ld": "{\n  \"@context\": \"https://urldefense.com/v3/__https://schema.org__;!!GF_29dbcQIUBPA!heaWqoovre3lZs_tOFTjYNyTxPce-H9k-8uLGYibS5-RkwLpIMimPVNx7Knrbx13$ [schema[.]org]\",\n  \"@type\": \"SoftwareApplication\",\n  \"name\": \"MyDelhaize\",\n  \"operatingSystem\": \"Android 6.0\",\n  \"applicationCategory\": \"ShoppingApplic",
+    "prijzen": [
+     "€0,00",
+     "€60.00",
+     "€60.00",
+     "€0,00",
+     "€5,95"
+    ]
+   },
+   {
+    "u": "https://www.delhaize.be/fr/shop/Cremerie-fromage-et-alternatives-vegetales/Lait/Demi-ecreme/c/v2DAIMILSEM",
+    "st": 200,
+    "len": 1042325,
+    "titel": "Demi-écrémé",
+    "ldprice": "\"price\": \"0.00",
+    "ld": "{\n  \"@context\": \"https://urldefense.com/v3/__https://schema.org__;!!GF_29dbcQIUBPA!heaWqoovre3lZs_tOFTjYNyTxPce-H9k-8uLGYibS5-RkwLpIMimPVNx7Knrbx13$ [schema[.]org]\",\n  \"@type\": \"SoftwareApplication\",\n  \"name\": \"MyDelhaize\",\n  \"operatingSystem\": \"Android 6.0\",\n  \"applicationCategory\": \"ShoppingApplic",
+    "prijzen": [
+     "€0,00",
+     "€60.00",
+     "€60.00",
+     "€0,00",
+     "€5,95"
+    ]
+   },
+   {
+    "u": "https://www.delhaize.be/fr/shop/Animaux/Chats/Lait-et-snacks/c/v2PETCATSNA",
+    "st": 200,
+    "len": 1041925,
+    "titel": "Lait et snacks",
+    "ldprice": "\"price\": \"0.00",
+    "ld": "{\n  \"@context\": \"https://urldefense.com/v3/__https://schema.org__;!!GF_29dbcQIUBPA!heaWqoovre3lZs_tOFTjYNyTxPce-H9k-8uLGYibS5-RkwLpIMimPVNx7Knrbx13$ [schema[.]org]\",\n  \"@type\": \"SoftwareApplication\",\n  \"name\": \"MyDelhaize\",\n  \"operatingSystem\": \"Android 6.0\",\n  \"applicationCategory\": \"ShoppingApplic",
+    "prijzen": [
+     "€0,00",
+     "€60.00",
+     "€60.00",
+     "€0,00",
+     "€5,95"
+    ]
+   },
+   {
+    "u": "https://www.delhaize.be/fr/shop/Viande-poisson-et-produits-vegetariens/Poissonnerie/Fruits-de-mer-et-crustaces/Autres-fruits-de-mer-et-crustaces/c/v2MEAFISSHEOTH",
+    "st": 200,
+    "len": 1043402,
+    "titel": "Autres fruits de mer et crustacés",
+    "ldprice": "\"price\": \"0.00",
+    "ld": "{\n  \"@context\": \"https://urldefense.com/v3/__https://schema.org__;!!GF_29dbcQIUBPA!heaWqoovre3lZs_tOFTjYNyTxPce-H9k-8uLGYibS5-RkwLpIMimPVNx7Knrbx13$ [schema[.]org]\",\n  \"@type\": \"SoftwareApplication\",\n  \"name\": \"MyDelhaize\",\n  \"operatingSystem\": \"Android 6.0\",\n  \"applicationCategory\": \"ShoppingApplic",
+    "prijzen": [
+     "€0,00",
+     "€60.00",
+     "€60.00",
+     "€0,00",
+     "€5,95"
+    ]
+   }
+  ]
+ },
+ "be Colruyt": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /threat",
+   "Disallow: /nl/error",
+   "Disallow: /fr/error",
+   "Disallow: /fr-lu/error",
+   "Disallow: /nl/producten/product-detail",
+   "Disallow: /fr/producten/product-detail",
+   "Disallow: /fr-lu/producten/product-detail",
+   "Disallow: /fr/produits/product-detail",
+   "Disallow: /fr-lu/produits/product-detail",
+   "Disallow: /fr/lekker-koken",
+   "Disallow: /fr-lu/lekker-koken",
+   "Disallow: /content/clp",
+   "Disallow: /nl/over-colruyt/klantenvoordelen/voor-professionals/factuurkaart/aanvraag-factuurkaart",
+   "Disallow: /fr/over-colruyt/klantenvoordelen/voor-professionals/factuurkaart/aanvraag-factuurkaart",
+   "Disallow: /fr-lu/over-colruyt/klantenvoordelen/voor-professionals/factuurkaart/aanvraag-factuurkaart",
+   "Disallow: /fr/a-propos-de-colruyt/avantages-client/pour-les-professionnels/carte-facture/demande-de-carte-facture",
+   "Disallow: /fr-lu/a-propos-de-colruyt/avantages-client/pour-les-professionnels/carte-facture/demande-de-carte-facture"
+  ],
+  "maps": [
+   "https://www.colruyt.be/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.colruyt.be/sitemap.xml": {
+    "st": 405,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "be Carrefour BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /cart",
+   "Disallow: /checkout",
+   "Disallow: /account",
+   "Disallow: /*pmin*",
+   "Disallow: /*pmax*",
+   "Disallow: /*prefn*",
+   "Disallow: /*prefv*",
+   "Disallow: /*srule*",
+   "Disallow: /*pmid*",
+   "Disallow: /*search?*",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/ShippingSelector-ShowStoreSelection",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/default/ShippingSelector-ShowStoreSelection",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/ShippingSelector-SelectStore",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/default/ShippingSelector-SelectStore",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/CheckoutShippingServices-SearchAddress",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/default/CheckoutShippingServices-SearchAddress",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/CheckoutShippingServices-SelectAddress",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/default/CheckoutShippingServices-SelectAddress",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/ShippingSelector-Stores",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/default/ShippingSelector-Stores  ",
+   "Disallow: /on/demandware.store/Sites-carrefour-be-Site/fr_BE/ShippingSelector-ShowStoreSelection"
+  ],
+  "maps": [
+   "https://www.carrefour.be/sitemap_index.xml"
+  ],
+  "subs": {
+   "https://www.carrefour.be/sitemap_index.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "be Aldi BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /reg-cat.html",
+   "Disallow: /reg-bal.html",
+   "Disallow: /reg-can.html ",
+   "Disallow: /ua-bot.html",
+   "Disallow: /can/",
+   "Disallow: /can.html",
+   "Disallow: /can$",
+   "Disallow: /bal/",
+   "Disallow: /bal.html",
+   "Disallow: /bal$",
+   "Disallow: /mds/",
+   "Disallow: /*?*filters",
+   "Disallow: /*?*jobId="
+  ],
+  "maps": [
+   "https://www.aldi.be/.aldi-nord-sitemap.xml",
+   "https://www.aldi.be/fr/.aldi-nord-sitemap.xml"
+  ],
+  "subs": {
+   "https://www.aldi.be/.aldi-nord-sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.aldi.be/fr/.aldi-nord-sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.aldi.be/sitemaps/.aldi-nord-sitemap-pages.xml": {
+    "st": 200,
+    "n": 281
+   },
+   "https://www.aldi.be/sitemaps/.aldi-nord-sitemap-products.xml": {
+    "st": 200,
+    "n": 2969
+   },
+   "https://www.aldi.be/sitemaps/.aldi-nord-sitemap-stores.xml": {
+    "st": 200,
+    "n": 460
+   },
+   "https://www.aldi.be/sitemaps/.aldi-nord-sitemap-faq.xml": {
+    "st": 200,
+    "n": 9
+   },
+   "https://www.aldi.be/fr/sitemaps/.aldi-nord-sitemap-pages.xml": {
+    "st": 200,
+    "n": 282
+   },
+   "https://www.aldi.be/fr/sitemaps/.aldi-nord-sitemap-products.xml": {
+    "st": 200,
+    "n": 2970
+   },
+   "https://www.aldi.be/fr/sitemaps/.aldi-nord-sitemap-stores.xml": {
+    "st": 200,
+    "n": 460
+   },
+   "https://www.aldi.be/fr/sitemaps/.aldi-nord-sitemap-faq.xml": {
+    "st": 200,
+    "n": 9
+   }
+  },
+  "nUrls": 7440,
+  "nProd": 6992,
+  "vb": [
+   "https://www.aldi.be/producten/aardappelen-groenten-fruit.html",
+   "https://www.aldi.be/producten/aardappelen-groenten-fruit/aardappelen.html",
+   "https://www.aldi.be/producten/aardappelen-groenten-fruit/verse-groenten.html",
+   "https://www.aldi.be/producten/aardappelen-groenten-fruit/vers-fruit.html"
+  ],
+  "pages": [
+   {
+    "u": "https://www.aldi.be/producten/brood-bakkerij-en-zelf-bakken.html",
+    "st": 200,
+    "len": 140783,
+    "titel": "Brood, bakkerij en zelf bakken | ALDI België",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi.be/producten/brood-bakkerij-en-zelf-bakken/brood.html",
+    "st": 200,
+    "len": 165324,
+    "titel": "Brood",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi.be/producten/brood-bakkerij-en-zelf-bakken/broodjes-sandwiches-en-afbakbroodjes.html",
+    "st": 200,
+    "len": 172257,
+    "titel": "Broodjes, sandwiches en afbakbrood | ALDI België",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.aldi.be/producten/aardappelen-groenten-fruit.html",
+    "st": 200,
+    "len": 110007,
+    "titel": "Aardappelen, groenten en fruit | ALDI België",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "be Lidl BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /cc.js*",
+   "Disallow: /cdn/assets/cwv/",
+   "Disallow: /user-api/*",
+   "Disallow: /cqe/*",
+   "Disallow: *search?q=*",
+   "Disallow: *?offset=*",
+   "Disallow: *idsOnly=*",
+   "Disallow: *productsOnly=*",
+   "Disallow: *id=*",
+   "Disallow: *pageId=*",
+   "Disallow: *advisor=*",
+   "Disallow: *sort=*"
+  ],
+  "maps": [
+   "https://www.lidl.be/static/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.lidl.be/static/sitemap.xml": {
+    "st": 200,
+    "n": 6
+   },
+   "https://www.lidl.be/p/export/BE/nl/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 9983
+   },
+   "https://www.lidl.be/p/export/BE/fr/product_sitemap.xml.gz": {
+    "st": 200,
+    "n": 9976
+   },
+   "https://www.lidl.be/explore/assets/s/pages_nl-BE_be.xml.gz": {
+    "st": 200,
+    "n": 1977
+   },
+   "https://www.lidl.be/explore/assets/s/pages_fr-BE_be.xml.gz": {
+    "st": 200,
+    "n": 1977
+   },
+   "https://www.lidl.be/s/fr-BE/magasins/sitemap.xml": {
+    "st": 200,
+    "n": 342
+   },
+   "https://www.lidl.be/s/nl-BE/winkels/sitemap.xml": {
+    "st": 200,
+    "n": 342
+   }
+  },
+  "nUrls": 24597,
+  "nProd": 19959,
+  "vb": [
+   "https://www.lidl.be/p/nl-BE/gude-elektrische-lier-600-kg/p100018075",
+   "https://www.lidl.be/p/nl-BE/sitting-point-zitzak-beanbag-harlekin-xl-brava/p100026080",
+   "https://www.lidl.be/p/nl-BE/sitting-point-zitzak-jamie/p100026082",
+   "https://www.lidl.be/p/nl-BE/4rain-wandtank-slim-300-l-volume/p100036293"
+  ],
+  "pages": [
+   {
+    "u": "https://www.lidl.be/p/nl-BE/deca-filterkoffie/p10011100",
+    "st": 0,
+    "len": 23,
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.be/p/nl-BE/botersandwich/p10023050",
+    "st": 0,
+    "len": 23,
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.be/p/nl-BE/wit-stokbrood/p10023254",
+    "st": 0,
+    "len": 23,
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   },
+   {
+    "u": "https://www.lidl.be/p/nl-BE/gude-elektrische-lier-600-kg/p100018075",
+    "st": 0,
+    "len": 23,
+    "ldprice": null,
+    "ld": "",
+    "prijzen": []
+   }
+  ]
+ },
+ "be AH BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /fdp",
+   "Disallow: /koahg",
+   "Disallow: /data/",
+   "Disallow: /fallback/",
+   "Disallow: /rev05/",
+   "Disallow: /ui/",
+   "Disallow: /website/",
+   "Disallow: /module/cookbook-summary",
+   "Disallow: /shl",
+   "Disallow: /bewaarde-recepten/",
+   "Disallow: /mijn/",
+   "Disallow: /productvoorstel/",
+   "Disallow: /bezorgen",
+   "Disallow: /bestellen/bestelling-controleren",
+   "Disallow: /bestellen/overzicht",
+   "Disallow: /ophalen/moment",
+   "Disallow: /producten/eerder-gekocht",
+   "Disallow: /allerhande/recepten/raterecept",
+   "Disallow: /allerhande/recepten/verstuur",
+   "Disallow: /kookschrift/recepten/verstuur",
+   "Disallow: /kookschrift2",
+   "Disallow: /allerhande2/",
+   "Disallow: /allerhande/nl/data/",
+   "Disallow: /allerhande*/__/*",
+   "Disallow: /recepten/"
+  ],
+  "maps": [
+   "https://www.ah.be/sitemaps/entities/allerhande/videos.xml",
+   "https://www.ah.be/sitemaps/entities/allerhande/recipes.xml",
+   "https://www.ah.be/sitemaps/entities/stores/stores.xml",
+   "https://www.ah.be/sitemaps/entities/products/categories.xml",
+   "https://www.ah.be/sitemaps/entities/products/detail.xml",
+   "https://www.ah.be/sitemaps/entities/products/brands.xml",
+   "https://www.ah.be/sitemaps/content/sitemap-allerhande.xml",
+   "https://www.ah.be/sitemaps/content/sitemap-acties.xml"
+  ],
+  "subs": {
+   "https://www.ah.be/sitemaps/entities/allerhande/videos.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.ah.be/sitemaps/entities/allerhande/recipes.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.ah.be/sitemaps/entities/stores/stores.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.ah.be/sitemaps/entities/products/categories.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.ah.be/sitemaps/entities/products/detail.xml": {
+    "st": 403,
+    "n": 0
+   },
+   "https://www.ah.be/sitemaps/entities/products/brands.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "be Jumbo BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /producten/*?searchType=keyword&searchTerms=",
+   "Disallow: /recepten/*?searchTerms=",
+   "Disallow: /mandje/",
+   "Disallow: /mijn/",
+   "Disallow: /bestellingen/",
+   "Disallow: /recepten/favorieten/categorieen/"
+  ],
+  "maps": [
+   "https://www.jumbo.com/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.jumbo.com/sitemap.xml": {
+    "st": 404,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "be Spar BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /core/",
+   "Disallow: /profiles/",
+   "Disallow: /README.txt",
+   "Disallow: /web.config",
+   "Disallow: /admin/",
+   "Disallow: /comment/reply/",
+   "Disallow: /filter/tips",
+   "Disallow: /node/add/",
+   "Disallow: /search/",
+   "Disallow: /user/register",
+   "Disallow: /user/password",
+   "Disallow: /user/login",
+   "Disallow: /user/logout",
+   "Disallow: /media/oembed",
+   "Disallow: /*/media/oembed",
+   "Disallow: /index.php/admin/",
+   "Disallow: /index.php/comment/reply/",
+   "Disallow: /index.php/filter/tips",
+   "Disallow: /index.php/node/add/",
+   "Disallow: /index.php/search/",
+   "Disallow: /index.php/user/password",
+   "Disallow: /index.php/user/register",
+   "Disallow: /index.php/user/login",
+   "Disallow: /index.php/user/logout",
+   "Disallow: /index.php/media/oembed"
+  ],
+  "maps": [
+   "https://www.spar.be/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.spar.be/sitemap.xml": {
+    "st": 403,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
+ },
+ "be Intermarché BE": {
+  "robots_st": 200,
+  "disallow": [
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /",
+   "Disallow: /"
+  ],
+  "maps": [
+   "https://www.intermarche.be/sitemap_index.xml"
+  ],
+  "subs": {
+   "https://www.intermarche.be/sitemap_index.xml": {
+    "st": 200,
+    "n": 16
+   },
+   "https://www.intermarche.be/page-sitemap.xml": {
+    "st": 200,
+    "n": 119
+   },
+   "https://www.intermarche.be/product-sitemap.xml": {
+    "st": 200,
+    "n": 405
+   },
+   "https://www.intermarche.be/recipe-sitemap.xml": {
+    "st": 200,
+    "n": 1002
+   },
+   "https://www.intermarche.be/recipe-sitemap2.xml": {
+    "st": 200,
+    "n": 538
+   },
+   "https://www.intermarche.be/folder-sitemap.xml": {
+    "st": 200,
+    "n": 9
+   },
+   "https://www.intermarche.be/faq-sitemap.xml": {
+    "st": 200,
+    "n": 100
+   },
+   "https://www.intermarche.be/store-sitemap.xml": {
+    "st": 200,
+    "n": 294
+   },
+   "https://www.intermarche.be/product-category-sitemap.xml": {
+    "st": 200,
+    "n": 38
+   },
+   "https://www.intermarche.be/product-promo-sitemap.xml": {
+    "st": 200,
+    "n": 4
+   },
+   "https://www.intermarche.be/product-brand-sitemap.xml": {
+    "st": 200,
+    "n": 308
+   },
+   "https://www.intermarche.be/recipe-dish-sitemap.xml": {
+    "st": 200,
+    "n": 16
+   },
+   "https://www.intermarche.be/recipe-occasion-sitemap.xml": {
+    "st": 200,
+    "n": 14
+   },
+   "https://www.intermarche.be/recipe-preparation-sitemap.xml": {
+    "st": 200,
+    "n": 19
+   },
+   "https://www.intermarche.be/recipe-category-sitemap.xml": {
+    "st": 200,
+    "n": 19
+   },
+   "https://www.intermarche.be/recipe-diet-sitemap.xml": {
+    "st": 200,
+    "n": 10
+   },
+   "https://www.intermarche.be/job-contract-sitemap.xml": {
+    "st": 200,
+    "n": 1
+   }
+  },
+  "nUrls": 2896,
+  "nProd": 215,
+  "vb": [
+   "https://www.intermarche.be/nl/producten/",
+   "https://www.intermarche.be/nl/producten/varkens-rundsgehakt/",
+   "https://www.intermarche.be/nl/producten/blinde-vinken/",
+   "https://www.intermarche.be/nl/producten/varkensmerguez/"
+  ],
+  "pages": [
+   {
+    "u": "https://www.intermarche.be/nl/producten/raclettekaas/",
+    "st": 200,
+    "len": 166938,
+    "titel": "Producten Archief | Intermarché",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "€ 1,45",
+     "€ 3,49",
+     "1,50€",
+     "€ 4,89",
+     "€ 19,99"
+    ]
+   },
+   {
+    "u": "https://www.intermarche.be/nl/producten/extra-zacht-brood-chabrior/",
+    "st": 200,
+    "len": 166938,
+    "titel": "Producten Archief | Intermarché",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "€ 1,45",
+     "€ 3,49",
+     "1,50€",
+     "€ 4,89",
+     "€ 19,99"
+    ]
+   },
+   {
+    "u": "https://www.intermarche.be/nl/producten/verse-kaas-78-paturages/",
+    "st": 200,
+    "len": 166938,
+    "titel": "Producten Archief | Intermarché",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "€ 1,45",
+     "€ 3,49",
+     "1,50€",
+     "€ 4,89",
+     "€ 19,99"
+    ]
+   },
+   {
+    "u": "https://www.intermarche.be/nl/producten/",
+    "st": 200,
+    "len": 166938,
+    "titel": "Producten Archief | Intermarché",
+    "ldprice": null,
+    "ld": "",
+    "prijzen": [
+     "€ 1,45",
+     "€ 3,49",
+     "1,50€",
+     "€ 4,89",
+     "€ 19,99"
+    ]
+   }
+  ]
+ },
+ "be Cora": {
+  "robots_st": 0,
+  "disallow": [],
+  "maps": [
+   "https://www.cora.be/sitemap.xml"
+  ],
+  "subs": {
+   "https://www.cora.be/sitemap.xml": {
+    "st": 0,
+    "n": 0
+   }
+  },
+  "nUrls": 0,
+  "nProd": 0,
+  "vb": [],
+  "pages": []
  }
 }
