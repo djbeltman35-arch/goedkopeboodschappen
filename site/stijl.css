@@ -835,3 +835,8 @@ html body .quick.tegels .catklap .cats .chip,html body .quick.tegels .catklap .c
 html body .quick.tegels .catklap .cats .chip[aria-pressed=true]{color:var(--ink)!important;background:none!important}
 html body ul.links a{color:var(--green-dark)!important}
 html body ul.links li:last-child:nth-child(odd){grid-column:1/-1}
+/* De 3 tegels (Aanbiedingen, Weekmenu, Maaltijden) als aan elkaar geplakte hokjes */
+html body .quick.tegels .start{gap:0!important;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+html body .quick.tegels .start .chip,html body .quick.tegels .start .chip.hot,html body .quick.tegels .start .chip.wm,html body .quick.tegels .start .chip.mt{border:0!important;border-radius:0!important;background:none!important}
+html body .quick.tegels .start>*+*{border-left:1px solid var(--line)!important}
+html body .quick.tegels .start>.chip.chip+.chip.chip{border-left:1px solid var(--line)!important}
