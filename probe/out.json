@@ -1,70 +1,97 @@
 {
- "dekamarkt": "Error: ENOENT: no such file or directory, open 'data/assortiment-dekamarkt.json'",
- "vomar": {
-  "n": 30,
-  "bek": 30,
-  "weg": 0,
-  "vb": [
-   {
-    "n": "Bonbebe Diksap Aardbei",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/bonbebe-diksap-aardbei/108005",
-    "p": 3.95,
-    "s": ""
-   },
-   {
-    "n": "12m12 Olvarit Tomaat Kip Rijst",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m12-olvarit-tomaat-kip-rijst/121515",
-    "p": 1.65,
-    "s": ""
-   },
-   {
-    "n": "12m07 Olvarit Spinazie Kip Aardappel",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m07-olvarit-spinazie-kip-aardappel/121520",
-    "p": 1.65,
-    "s": ""
-   },
-   {
-    "n": "12m53 Olvarit Appel Perzik Mango",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/12m53-olvarit-appel-perzik-mango/121523",
-    "p": 1.39,
-    "s": ""
-   },
-   {
-    "n": "8m09 Olvarit Tomaat Ham Macaroni",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/8m09-olvarit-tomaat-ham-macaroni/121526",
-    "p": 1.49,
-    "s": ""
-   },
-   {
-    "n": "8m01 Olvarit Wortel Kip Aardappel",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/8m01-olvarit-wortel-kip-aardappel/121530",
-    "p": 1.45,
-    "s": ""
-   },
-   {
-    "n": "4m01 Olvarit Banaan",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m01-olvarit-banaan/121533",
-    "p": 1.05,
-    "s": ""
-   },
-   {
-    "n": "4m75 Olvarit Wortel",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m75-olvarit-wortel/121538",
-    "p": 1.15,
-    "s": ""
-   },
-   {
-    "n": "4m76 Olvarit Pompoen",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/4m76-olvarit-pompoen/121539",
-    "p": 1.05,
-    "s": ""
-   },
-   {
-    "n": "6m54 Olvarit Aardbei Peer",
-    "l": "https://www.vomar.nl/producten/baby-kind/baby-en-kindervoeding/6m54-olvarit-aardbei-peer/121540",
-    "p": 1.39,
-    "s": ""
-   }
-  ]
+ "vomar_keys": [
+  "enabled",
+  "levels",
+  "name",
+  "required",
+  "title",
+  "description",
+  "layout",
+  "data",
+  "productDetails",
+  "articleNumber",
+  "contents",
+  "unit",
+  "price",
+  "inWebshop",
+  "departmentWebShopNumber",
+  "mainGroupWebShopNumber",
+  "subGroupWebShopNumber",
+  "pieceWeight",
+  "primaryEan",
+  "brand",
+  "additionalEans",
+  "labels",
+  "images",
+  "fileName",
+  "imageType",
+  "fetch",
+  "error",
+  "state",
+  "AssortmentStore",
+  "departments",
+  "departmentNumber",
+  "departmentDescription",
+  "mainGroups",
+  "mainGroupNumber",
+  "mainGroupDescription",
+  "subGroups",
+  "subGroupNumber",
+  "subGroupDescription",
+  "SiteStore",
+  "cdn",
+  "cmsAuthToken",
+  "cmsUserGuid",
+  "conceptHash",
+  "currentPage",
+  "domain",
+  "host",
+  "identity",
+  "pretendDate",
+  "locale",
+  "locales",
+  "site",
+  "siteData",
+  "baseUrl",
+  "languageId",
+  "language",
+  "lastChange",
+  "robots",
+  "copyright",
+  "categories",
+  "link",
+  "alias",
+  "noIndex",
+  "isDefault",
+  "categoryStyleId",
+  "categoryTypeId",
+  "isShown",
+  "custom",
+  "publication",
+  "start",
+  "end",
+  "isLink",
+  "https"
+ ],
+ "vomar_unit": [
+  ":de,data:[{productDetails:{id:\"6fdc86ea-b6e6-4642-8b60-fe26d39ad6e1\",articleNumber:149794,description:\"Amstel Pils 6x330ml Blik\",contents:\"1980\",unit:\"ml\",price:5.19,inWebshop:d,departmentWebShopNumber:o,mainGroupWebShopNumber:d$,subGroupWebS",
+  "hopNumber:j,pieceWeight:Y,primaryEan:\"8712000059026\",brand:I,additionalEans:[],labels:[],images:[{fileName:\"product-images\\u002F1cd20120-a322-4",
+  "publication:{start:f},noIndex:c,isShown:d,categoryStyleId:a,categoryTypeId:a,categories:[],custom:[]},{id:868,name:\"Biefstukspies\",link:\"\\u002Frecept\\u002Fbarbecuerecepten\\u002Fbiefstukspies\",alias:b,publication:{start:f},noIndex:c,isShown:d,cat",
+  "ion:{start:f},noIndex:c,categoryStyleId:a,categoryTypeId:a,categories:[],custom:[]},{id:2050,name:\"Aziatische Ierse biefstukspiesjes\",link:\"\\u002Frecept\\u002Fbarbecuerecepten\\u002Faziatische-ierse-biefstukspiesjes\",alias:b,publication:{start:f},",
+  "s\",alias:b,noIndex:c,isShown:d,categoryStyleId:a,categoryTypeId:a,categories:[],custom:[]},{id:373,name:\"Aziatische biefstukspiesen\",link:\"\\u002Frecept\\u002Fvomarrecepten\\u002Faziatische-biefstukspiesen\",alias:b,noIndex:c,isShown:d,categoryStyle"
+ ],
+ "netto_folder": {
+  "len": 45564,
+  "ifr": [
+   "<iframe style=\"display: block; box-sizing: border-box;\" src=\"https://view.publitas.com/bv-nettorama-verbruikersmarkten/nettorama-folder-47-2026/?publitas_embed=maximized&ibizz\""
+  ],
+  "links": [
+   "href=\"https://www.nettorama.nl/actiefolder\"",
+   "href=\"/actiefolder\"",
+   "src=\"https://view.publitas.com/bv-nettorama-verbruikersmarkten/nettorama-folder-47-2026/?publitas_embed=maximized&ibizz\"",
+   "href=\"https://www.allefolders.nl/nettorama/folder-aanbiedingen?utm_source=nettorama&utm_medium=footer&utm_campaign=folderpagina\"",
+   "src=\"/media/images/htmlcode/4/8/4832_alle-folders-website-nr.webp\""
+  ],
+  "tekst": " Actiefolder | Mis geen aanbieding | Nettorama verbruikersmarkten var Site = { \"id\" : 1 }; function getTokenName() { return 'wingzz_token'; } function getTokenValue() { return 'W4CWXHg4hY8qgCR16M6XJfF4l7E1NnBSpCxDii2T'; } // Exports data for Facebook Pixel var studioibizz_information_facebook = { content_ids: [21], content_type: \"Document\" }; window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments) } gtag(\"consent\", \"default\", { ad_personalization: \"denied\", ad_storage: \"denied\", ad_user_data: \"denied\", analytics_storage: \"denied\", personalization_storage: \"denied\", functionality_storage: \"granted\", security_storage: \"granted\" }); var ccform_prefix = \"cookieConsent_ccform_\"; if (window.localStorage.getItem(ccform_prefix + \"social\")) { gtag(\"consent\", \"update\", { ad_personalization: window.localStorage.getItem(ccform_prefix + \"social\") === \"true\" ? \"granted\" : \"denied\", ad_storage: window.localStorage.getItem(ccform_prefix + \"ads\") === \"true\" ? \"granted\" : \"denied\", ad_user_data: window.localStorage.getItem(ccform_prefix + \"ad_user_data\") === \"true\" ? \"granted\" : \"denied\", analytics_storage: window.localStorage.getItem(ccform_prefix + \"analytics\") === \"true\" ? \"granted\" : \"denied\", personalization_storage: window.localStorage.getItem(ccform_prefix + \"personalization_storage\") === \"true\" ? \"granted\" : \"denied\" }); } (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j"
  }
 }
