@@ -602,8 +602,10 @@ function search(fromUser){
     return `<p class="snelopties"><a href="#" data-vastewinkel>⭐ ${S.mijn?"Vaste winkel wijzigen":"Vaste winkel kiezen"}</a>${al?`<a href="#" data-toonalarm>🔔 Prijsalarm</a>`:""}${pg?`<a href="${pg}">📈 Prijsverloop</a>`:""}</p>${al?`<div id="prijsalarm" hidden>${al}</div>`:""}`})()}
   ${soortHtml}${pakHtml}
   <ul class="rows">${best.map((p,i)=>rowHtml(p,i,q)).join("")}</ul>
-  ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}`;
+  ${rest.length?`<details class="more"><summary>Andere producten bekijken (${rest.length})</summary><ul class="rows">${rest.map(p=>rowHtml(p,-1,q)).join("")}</ul></details>`:""}${S.demo?"":nbBlok()}`;
 }
+/* Kleine nieuwsbriefaanmelding onder de zoekresultaten; weg zodra je aangemeld bent of hem wegklikt. */
+function nbBlok(){if(store.get("nb-klaar")||S.mail?.nieuws)return "";return `<form class="nbblok" data-nbform><button type="button" class="nbweg" data-nbweg aria-label="Sluiten">×</button><p><b>📬 Elke ochtend de beste aanbiedingen in je mail</b><br><span>Gratis, afmelden met één klik.</span></p><div class="nbrij"><label class="sr" for="nbin">E-mailadres</label><input type="email" id="nbin" placeholder="jouw@email.nl" autocomplete="email" required><button type="submit" class="btn">Aanmelden</button></div><p class="nbuit" role="status"></p></form>`}
 
 // Zoek je iets dat we verder hebben opgesplitst (cola zero, bier, broccoli)? Toon dan meteen de precieze keuzes.
 function kiesPrecies(q){
@@ -928,7 +930,8 @@ function dock(){
   const n=S.list.length,d=$("dock");
   const r=n?totals()[0]:null;
   d.innerHTML=n?`<span><b>${n} ${n===1?"artikel":"artikelen"}</b>${r?` · goedkoopst bij ${esc(sname(r.si))}: <b>${eur(r.sum)}</b>`:""}</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`:
-    `<span><b>Mijn lijst</b> is nog leeg · tik op <b>+</b> bij een product</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`;
+    `<span>Tik op <b>+</b> bij een product</span><a class="btn" href="#lijst" data-golist>Mijn lijst</a>`;
+  d.classList.toggle("leeg",!n);
   d.hidden=false; document.body.classList.add("hasdock");
 }
 
@@ -969,7 +972,7 @@ function mailHtml(lijn){
 }
 const mailToken=()=>store.get("email-token");
 async function mailStatus(){
-  try{const t=mailToken();const r=await (await fetch("/api/email"+(t?"?token="+t:""))).json();S.mail={aan:r.aan,status:r.status,adres:r.adres,week:!!r.week};if(t&&r.status==="onbekend")store.set("email-token",null)}catch(e){S.mail=null}
+  try{const t=mailToken();const r=await (await fetch("/api/email"+(t?"?token="+t:""))).json();S.mail={aan:r.aan,status:r.status,adres:r.adres,week:!!r.week,nieuws:r.nieuws};if(t&&r.status==="onbekend")store.set("email-token",null)}catch(e){S.mail=null}
   renderNotify();
 }
 async function mailAan(email){
@@ -1255,6 +1258,12 @@ document.addEventListener("submit",async e=>{const f=e.target.closest("form[data
   const q=f.dataset.alarm,k=norm(q),lst=(store.get("alarmen")||[]).filter(x=>x.k!==k);lst.push({k,t:q,max,u:f.dataset.u});store.set("alarmen",lst.slice(-25));
   const ok=await alarmSync();if(!ok){msg.textContent=" Opslaan lukte niet, probeer het later nog eens.";return}
   gc("alarm/aan/"+k,"Prijsalarm aan");search()});
+document.addEventListener("submit",async e=>{const f=e.target.closest("form[data-nbform]");if(!f)return;e.preventDefault();const u=f.querySelector(".nbuit"),m=f.querySelector("input").value.trim(),b=f.querySelector("button[type=submit]");
+  if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(m)){u.textContent="Vul een geldig e-mailadres in.";return}b.disabled=true;u.textContent="Even geduld…";
+  try{const j=await (await fetch("/api/email",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:m,nieuws:"dag",winkels:[],termen:[]})})).json();
+    if(j.status==="wacht"||j.status==="bevestigd"){store.set("nb-klaar",1);gc("nieuwsbrief/zoek","Nieuwsbrief via zoekresultaten");f.querySelector(".nbrij").remove();u.textContent=j.status==="wacht"?"Bijna klaar! Tik op de knop in de mail die we je net stuurden.":"Gelukt: je krijgt de nieuwsbrief vanaf nu."}
+    else{b.disabled=false;u.textContent=j.fout||"Dat lukte niet. Probeer het later nog eens."}}catch(x){b.disabled=false;u.textContent="Dat lukte niet. Controleer je internetverbinding."}});
+document.addEventListener("click",e=>{const w=e.target.closest("[data-nbweg]");if(!w)return;store.set("nb-klaar",1);gc("nieuwsbrief/weg","Nieuwsbriefblok weggeklikt");w.closest("form").remove()});
 document.addEventListener("submit",e=>{if(e.target.id==="mailf"){e.preventDefault();const b=e.target.querySelector("button");b.disabled=true;b.textContent="Even geduld…";mailAan($("mailin").value.trim())}});
 $("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
