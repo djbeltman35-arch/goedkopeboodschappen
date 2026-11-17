@@ -16,4 +16,4 @@ jobs:
       - run: node probe/probe.mjs || true
       - run: |
           git config user.name test-bot; git config user.email test-bot@users.noreply.github.com
-          git add probe/*.json; git commit -m "test uitvoer [skip netlify]" || true; git push
+          git add probe/*.json; git commit -m "test uitvoer [skip netlify]" || true; git pull --rebase -q || true; git push
