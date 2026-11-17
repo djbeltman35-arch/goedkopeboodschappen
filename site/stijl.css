@@ -743,3 +743,5 @@ html body .quick.tegels .cats .chip .ic{display:none!important}
 html body .maal .maalkop{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 html body .maal .maalkop h2{margin-bottom:10px}
 html body .maal .maalkop a{flex:none;font-weight:700;font-size:15px;color:var(--green-dark);text-decoration:none;white-space:nowrap}
+@media (max-width:920px){html body main:has(>.wrap.app)>*{width:100%;max-width:100%;box-sizing:border-box;margin-left:0;margin-right:0}html body main:has(>.wrap.app)>.wrap.app>.res,html body main:has(>.wrap.app)>.wrap.app>.list{box-sizing:border-box;min-width:0}html body main:has(>.wrap.app)>.wrap.app>.list{width:auto;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}}
+@media (max-width:920px){html body main:has(>.wrap.app)>*,html body main:has(>.wrap.app)>.wrap.app>*{min-width:0}}
