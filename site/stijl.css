@@ -803,8 +803,3 @@ html body .foot nav[aria-label="Supermarkten"]{display:grid!important;grid-templ
 html body .foot nav[aria-label="Supermarkten"] a{display:block!important;text-align:center;padding:6px!important;margin:0!important;font-weight:600;font-size:14px}
 html body .foot nav[aria-label="Supermarkten"] a:nth-child(even){border-left:1px solid var(--line)}
 html body .foot .tiplink,html body .foot .small{text-align:center}
-/* De 3 stappen als aan elkaar geplakte hokjes */
-html body .hero .stapjes{gap:0!important;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:8px}
-html body .hero .stapjes li{flex:1 1 0;justify-content:center;padding:8px 4px;font-size:12.5px;white-space:nowrap}
-html body .hero .stapjes li+li{border-left:1px solid var(--line)}
-html body .hero .stapjes b{width:20px;height:20px;font-size:12px}
