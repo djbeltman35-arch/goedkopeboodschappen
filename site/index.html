@@ -1354,8 +1354,10 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]).then(([d,aldi,of
   merkenBepalen();
   // De rest van de prijslijst pas laden als iemand iets doet (tikken, typen, scrollen) of na 20 seconden.
   if(d.totaal){let gedaan=false;const go=()=>{if(gedaan)return;gedaan=true;laadRest()};
-    for(const ev of ["pointerdown","keydown","touchstart","scroll","wheel"]) addEventListener(ev,go,{once:true,passive:true});
-    $("q").addEventListener("focus",go,{once:true});setTimeout(go,20000)}
+    // Scrollen alleen telt niet meer: dat doet bijna iedereen en dan laadt iedere bezoeker de hele prijslijst (veel dataverkeer).
+    for(const ev of ["click","keydown"]) addEventListener(ev,go,{once:true,passive:true});
+    $("q").addEventListener("focus",go,{once:true});$("q").addEventListener("input",go,{once:true});
+    if((store.get("lijst-v3")||[]).length||store.get("lijst-erbij")?.length||location.search||location.hash) go();}
   // Door 3 of meer bezoekers als "klopt niet" gemeld: tijdelijk weglaten (zie netlify/functions/betwist.mjs).
   fetch("/api/betwist").then(r=>r.ok?r.json():null).then(j=>{if(j?.links?.length){S.betwist=new Set(j.links);pickCache.clear();renderAll()}}).catch(()=>{});
   S.stores.forEach(s=>s.count=0); S.prods.forEach(p=>S.stores[p[0]].count++);
