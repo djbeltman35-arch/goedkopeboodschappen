@@ -218,6 +218,7 @@
     <h1>Boodschappen vergelijken</h1>
     <p class="rustpromise">Elke dag nieuwe prijzen van 11 supermarkten</p>
     <details class="waaromniet"><summary>Waarom geen Nettorama, Picnic of Crisp?</summary><p>Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we op dit moment alleen de aanbiedingen: de gewone prijzen kunnen we nu niet dagelijks ophalen.</p></details>
+    <a class="nieuwtje" id="nieuwtje" href="/supermarkt/ekoplaza/" hidden><span class="nt-label">Nieuw</span><span class="nt-tekst">🌱 <b>Ekoplaza</b> vergelijken we nu ook: de biologische supermarkt</span><button type="button" class="nt-weg" aria-label="Sluiten">×</button></a>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Zoek een product" autocomplete="off" enterkeyhint="search">
@@ -1332,6 +1333,9 @@ async function laadJson(f){for(const b of DATA){try{const r=await fetch(b+f,{cac
 fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste=j;if(S.prods.length){if(S.view)renderView();else search()}}}).catch(()=>{});
 // Opstarten: welke winkels er zijn (winkels.json), daarna alleen de prijzen van de winkels die aan staan.
 const winkelsP=fetch("/winkels.json").then(r=>r.ok?r.json():null).catch(()=>null);
+// Melding "Nieuw: Ekoplaza" zodra Ekoplaza in de prijzen zit; tot en met 9 december, weg te klikken.
+winkelsP.then(w=>{const el=document.getElementById("nieuwtje");if(!el||store.get("nieuw-eko")||new Date()>new Date("2026-12-10")||!w?.stores?.some(s=>s.id==="ekoplaza"))return;el.hidden=false;
+  el.querySelector(".nt-weg").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();store.set("nieuw-eko",1);el.hidden=true})});
 // Aanbiedingen in delen (zie winkels.json "aanb"); lukt dat niet, dan het hele bestand.
 async function aanbLaden(){const w=await winkelsP;
   if(w?.aanb){try{const a=await Promise.all(Array.from({length:w.aanb},(_,k)=>fetch(`/data/aanbiedingen-${k}.json`).then(r=>r.ok?r.json():Promise.reject())));return {updated:w.aanbUpd,offers:a.flatMap(x=>x.offers)}}catch(e){}}

@@ -883,3 +883,10 @@ html body .waaromniet{text-align:center;margin:-2px auto 8px;max-width:34rem;fon
 html body .waaromniet>summary{cursor:pointer;list-style:none;display:inline;text-decoration:underline;text-underline-offset:2px}
 html body .waaromniet>summary::-webkit-details-marker{display:none}
 html body .waaromniet>p{margin:6px 0 0;text-align:left;background:#fff;border:1px solid var(--line,#dde5df);padding:10px 12px;line-height:1.45}
+
+/* Nieuwtje (bijv. nieuwe supermarkt): rustige balk onder de belofte */
+html body .nieuwtje{display:flex;align-items:center;gap:10px;max-width:34rem;margin:4px auto 12px;padding:10px 8px 10px 12px;background:#fff;border:1px solid var(--line,#dde5df);border-left:4px solid #17a061;color:var(--ink,#1d2a22);text-decoration:none;box-shadow:0 3px 6px rgba(20,40,28,.08);font-size:.95rem;line-height:1.35}
+html body .nieuwtje[hidden]{display:none}
+html body .nieuwtje .nt-label{flex:none;background:#17a061;color:#fff;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:10px!important}
+html body .nieuwtje .nt-tekst{flex:1}
+html body .nieuwtje .nt-weg{flex:none;background:none;border:0;font-size:1.3rem;line-height:1;color:var(--mut,#5b6b62);padding:4px 6px;cursor:pointer}
