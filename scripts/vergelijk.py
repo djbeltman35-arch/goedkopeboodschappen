@@ -95,7 +95,7 @@ def eff_unit(p):
 # ---------- zoeken (gelijk aan de app) ----------
 ENDS = ["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"]
 STARTS = ["kat", "hond"]
-EXCL = set("kroket kroketten broodje breekbrood kaasschaaf choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split())
+EXCL = set("kroket kroketten broodje breekbrood kaasschaaf vogelpindakaas vogelvoer vetbollen biscuit biscuits speltbiscuit seitan choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split())
 UNITW = set("g gr gram kg kilo l liter ml cl st stuk stuks per x ca pak pack fles blik zak naturel".split())
 for p in prods:
     p.append(norm(p[1] + " " + (p[4] or "")))  # p[7] = woorden
@@ -109,7 +109,7 @@ _VREEMD = {}
 def _vreemd_woord(x, t):
     k = (x, t)
     if k not in _VREEMD:
-        _VREEMD[k] = x not in t and not any(len(w) >= 5 and x.endswith(w) for w in t) and (x in EXCL or any(x.endswith(e) and x != e.rstrip("s") for e in ENDS) or any(x.startswith(e) for e in STARTS))
+        _VREEMD[k] = x not in t and (x in EXCL or not any(len(w) >= 5 and x.endswith(w) for w in t) and (any(x.endswith(e) and x != e.rstrip("s") for e in ENDS) or any(x.startswith(e) for e in STARTS)))
     return _VREEMD[k]
 VERFIJN = {k: v for k, v in json.load(open(os.path.join(ROOT, "scripts", "verfijn.json"))).items() if not k.startswith("_")}
 def _verfijn(m, t):

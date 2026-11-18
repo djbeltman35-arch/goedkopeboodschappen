@@ -569,7 +569,9 @@ if (aldiAssortiment?.length) {
   const bekeken = lees('aldi-bekeken.json', {});
   const grens = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
   const oud = (lees('aldi.json', { products: [] }).products || []).filter(p => { const id = idVan(p[1]); return id && !nieuw.has(id) && (bekeken[id] || '') >= grens; });
-  schrijf('aldi.json', { updated: nu, products: [...aldiAssortiment, ...oud] });
+  // "Per kg" / "Per kilo" / "Per liter" zonder eenheid: de prijs ís de prijs per kilo of liter.
+  const perEenheid = r => { if (r[5]) return r; const m = String(r[3] || '').trim().toLowerCase().match(/^per\s*(kg|kilo|liter|l)\.?$/); return m ? [r[0], r[1], r[2], r[3], r[2], /^l/.test(m[1]) ? 'l' : 'kg'] : r; };
+  schrijf('aldi.json', { updated: nu, products: [...aldiAssortiment, ...oud].map(perEenheid) });
   console.log('aldi: ', aldiAssortiment.length, 'vandaag,', oud.length, 'van eerdere dagen');
 }
 schrijf('status.json', status);
