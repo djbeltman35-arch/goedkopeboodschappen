@@ -1285,7 +1285,7 @@ if len(_eiw) >= 10:
             + '<h2>Proteïneproducten vergelijken</h2><p>Proteïnekwark, -pudding, -drinks, -repen en whey per supermarkt: <a href="/categorie/proteine-en-sportvoeding/">bekijk de categorie Proteïne en sportvoeding</a>. In de app kun je bij elke categorie op <b>💪 Alleen eiwitrijk</b> tikken.</p>'
             + '<h2>Eiwitrijk koken</h2><p><a href="/maaltijden/weekmenu-eiwitrijk/">📅 Eiwitrijk weekmenu</a>: 5 avondmaaltijden met minstens 30 gram eiwit per persoon, samen ingekocht. Of bekijk alle <a href="/maaltijden/eiwitrijk/">eiwitrijke maaltijden met prijs per supermarkt</a>.</p>'
             + faq_html(faq) + '<a class="cta" href="/">Zet eiwitrijke producten op je lijst</a>')
-    schrijf("/eiwitrijk/", page("/eiwitrijk/", f"Goedkoopste eiwitten: prijs per 10 gram eiwit ({MAAND})", f"Wat kost 10 gram eiwit? Kipfilet, kwark, eieren, tonijn, linzen, whey en proteïnerepen vergeleken bij 11 supermarkten. Nu het goedkoopst: {top[1]} voor {eur(top[0])} per 10 g.", head, body, [cld, faq_ld(faq)], og_title="Goedkoopste eiwitten: wat kost 10 gram eiwit?"))
+    schrijf("/eiwitrijk/", page("/eiwitrijk/", f"Goedkoopste eiwitten: prijs per 10 gram eiwit ({MAAND})", f"Wat kost 10 gram eiwit? Kipfilet, kwark, eieren, tonijn, linzen, whey en proteïnerepen vergeleken bij {AANTAL} supermarkten. Nu het goedkoopst: {top[1]} voor {eur(top[0])} per 10 g.", head, body, [cld, faq_ld(faq)], og_title="Goedkoopste eiwitten: wat kost 10 gram eiwit?"))
     made.append(("/eiwitrijk/", "0.8"))
     print("/eiwitrijk/:", len(_eiw), "producten, goedkoopst", top[1], eur(top[0]))
 
@@ -1426,7 +1426,7 @@ body = ('<div class="panel"><p style="margin:0">Eerlijk is eerlijk: supermarkten
         + '<h2>Koosjer koken</h2><ul class="links"><li><a href="/maaltijden/koosjer/">Koosjere maaltijden met prijs per supermarkt</a></li><li><a href="/maaltijden/weekmenu-koosjer/">📅 Koosjer weekmenu met boodschappenlijst</a></li><li><a href="/chanoeka/">🕎 Chanoeka</a> · <a href="/pesach/">Pesach</a></li></ul>'
         + (f'<h2>Matzes per supermarkt</h2><div class="tblwrap"><table class="ptable"><tbody>' + "".join(f'<tr><td><span class="shop">{esc(nm(p[0]))}</span> <a href="{esc(plink(p))}" rel="nofollow noopener" target="_blank" data-out="{stores[p[0]]["id"]}"><b>{esc(p[1])}</b></a><span class="sub">{esc(p[4] or "")}</span>{addbtn(p, "matzes")}</td><td class="p">{tag(eff(p))}<span class="sub">{esc(_ut(p))}</span></td></tr>' for p in _mz[:20]) + '</tbody></table></div><p class="note">Voor Pesach heb je matzes nodig die koosjer voor Pesach zijn; kijk op de verpakking.</p>' if _mz else "")
         + faq_html(faq))
-schrijf("/koosjer/", page("/koosjer/", "Koosjer boodschappen: maaltijden, matzes en prijs per supermarkt", "Koosjer koken met supermarktboodschappen: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen bij 11 supermarkten.", head, body, [cld, faq_ld(faq)]))
+schrijf("/koosjer/", page("/koosjer/", "Koosjer boodschappen: maaltijden, matzes en prijs per supermarkt", f"Koosjer koken met supermarktboodschappen: maaltijden zonder varkensvlees en zonder vlees met zuivel, matzes voor Pesach en de prijzen bij {AANTAL} supermarkten.", head, body, [cld, faq_ld(faq)]))
 made.append(("/koosjer/", "0.6"))
 
 # ---------- Aanbiedingen per product: "krat bier aanbieding", "gehakt aanbieding" ----------
@@ -1758,7 +1758,7 @@ try:
                    ("Wat werd het meest goedkoper?", f"{cap(daal[0][0])}: {pct_nl(daal[0][1] * 100, 0)}." if daal else "Geen product werd duidelijk goedkoper.")]
             ch, cld = crumbs(("Prijsindex", "/prijsindex/"), (f"Prijsrapport {mnd_naam}", None))
             schrijf("/prijsrapport/", page("/prijsrapport/", f"Prijsrapport {mnd_naam}: wat werd duurder en goedkoper?",
-                    f"Boodschappen in {mnd_naam}: {n_op} producten duurder, {n_af} goedkoper (middelste verandering {pct_nl(gem)}). De grootste stijgers en dalers bij 11 supermarkten.",
+                    f"Boodschappen in {mnd_naam}: {n_op} producten duurder, {n_af} goedkoper (middelste verandering {pct_nl(gem)}). De grootste stijgers en dalers bij {AANTAL} supermarkten.",
                     ch + f"<h1>Prijsrapport {esc(mnd_naam)}: wat werd duurder?</h1><p class=\"lead\">{lead}</p>", body + faq_html(faq), [cld, faq_ld(faq)], og_title=f"Prijsrapport {mnd_naam}"))
             made.append(("/prijsrapport/", "0.7"))
             print("/prijsrapport/:", len(bew), "producten,", n_op, "duurder,", n_af, "goedkoper")
@@ -2050,7 +2050,7 @@ _hv_body = ('<div class="hvkaart"><h2>Wat heeft je klant eraan?</h2><ul>'
     + faq_html(_hv_faq)
     + '<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-kopieer]");if(!b)return;const t=document.getElementById(b.dataset.kopieer).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="✓ Gekopieerd"}).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById(b.dataset.kopieer));const s=getSelection();s.removeAllRanges();s.addRange(r)})});</script>')
 schrijf("/voor-hulpverleners/", page("/voor-hulpverleners/", "Gratis boodschappentool voor budgetcoaches en schuldhulpverlening",
-    "Gratis hulpmiddel voor budgetcoaches, schuldhulpverleners en maatschappelijk werk: boodschappen vergelijken bij 11 supermarkten, weekmenu's met boodschappenlijst en echte bedragen per week. Geen reclame, geen account.",
+    f"Gratis hulpmiddel voor budgetcoaches, schuldhulpverleners en maatschappelijk werk: boodschappen vergelijken bij {AANTAL} supermarkten, weekmenu's met boodschappenlijst en echte bedragen per week. Geen reclame, geen account.",
     ch + "<h1>Voor budgetcoaches en schuldhulpverlening</h1><p class=\"lead\">Een gratis hulpmiddel voor mensen met een krap budget. Geen reclame, geen account, geen cookies.</p>",
     _hv_body, [cld, faq_ld(_hv_faq)]))
 made.append(("/voor-hulpverleners/", "0.8"))
@@ -2073,7 +2073,7 @@ _al_body = ('<div class="letop"><b>Let op:</b> we kijken naar de productnaam, ni
     + '<h2>Voor diëtisten en allergie-organisaties</h2><p>Verwijs gerust naar deze pagina. De site is gratis, zonder reclame en zonder account. Vragen of tips: <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'
     + faq_html(_al_faq))
 schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij, zuivelvrij en eivrij",
-    "Voedselallergie of intolerantie? Vergelijk glutenvrije, lactosevrije, zuivelvrije (koemelkallergie) en eivrije producten bij 11 supermarkten en zie waar ze het goedkoopst zijn.",
+    f"Voedselallergie of intolerantie? Vergelijk glutenvrije, lactosevrije, zuivelvrije (koemelkallergie) en eivrije producten bij {AANTAL} supermarkten en zie waar ze het goedkoopst zijn.",
     ch + "<h1>Boodschappen bij een allergie</h1><p class=\"lead\">Glutenvrij, lactosevrij, zonder koemelk of zonder ei. Zie per product waar het het goedkoopst is.</p>",
     _al_body, [cld, faq_ld(_al_faq)]))
 made.append(("/allergie/", "0.8"))

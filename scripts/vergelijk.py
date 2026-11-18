@@ -68,6 +68,8 @@ if os.path.exists(off_pad):
     OFFERS = [o for o in od.get("offers", []) if o.get("p") and o.get("s") in NAMEN and (not o.get("t") or o["t"] >= VANDAAG)]
     OFF_UPDATED = od.get("updated")
 NU_GELDIG = [o for o in OFFERS if not o.get("v") or o["v"] <= VANDAAG]
+# Winkels waarvan we alleen de aanbiedingen hebben (Lidl, zolang de gewone prijzen niet actueel zijn) tellen ook mee.
+AANTAL = len(set(ACTIEF) | {o["s"] for o in NU_GELDIG if o.get("s") in NAMEN})
 for o in OFFERS:
     o["pct"] = (o["was"] - o["p"]) / o["was"] if o.get("was") and o["was"] > o["p"] else 0
     o["hay"] = set(norm(o["n"] + " " + (o.get("sz") or "")))
