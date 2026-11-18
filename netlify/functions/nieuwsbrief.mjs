@@ -55,7 +55,7 @@ export default async (req, context) => {
       const html = opmaak({
         titel: kop,
         inhoud: `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px">` +
-          lijst.map(o => `<tr><td style="padding:9px 0;border-bottom:1px solid #e1e7dc"><a href="${esc(o.u)}" style="color:#1e2a22;text-decoration:none"><b>${esc(o.n)}</b></a>${o.sz ? ` <span style="color:#5d6a61">${esc(o.sz)}</span>` : ''}<br><span style="color:#5d6a61;font-size:13px">${esc(NAMEN[o.s] || o.s)}${o.lbl ? ' · ' + esc(o.lbl) : ''}${o.t ? ' · t/m ' + esc(o.t.slice(8, 10) + '-' + o.t.slice(5, 7)) : ''}</span></td>` +
+          lijst.map(o => `<tr><td style="padding:9px 0;border-bottom:1px solid #e1e7dc"><a href="${esc(`${site}/?q=${encodeURIComponent(o.n)}&bron=nieuwsbrief`)}" style="color:#1e2a22;text-decoration:none"><b>${esc(o.n)}</b></a>${o.sz ? ` <span style="color:#5d6a61">${esc(o.sz)}</span>` : ''}<br><span style="color:#5d6a61;font-size:13px">${esc(NAMEN[o.s] || o.s)}${o.lbl ? ' · ' + esc(o.lbl) : ''}${o.t ? ' · t/m ' + esc(o.t.slice(8, 10) + '-' + o.t.slice(5, 7)) : ''}</span></td>` +
             `<td align="right" style="padding:9px 0 9px 10px;border-bottom:1px solid #e1e7dc;white-space:nowrap"><b>${eur(o.p)}</b><br><span style="color:#5d6a61;font-size:13px;text-decoration:line-through">${eur(o.was)}</span> <span style="color:#c4381f;font-size:13px;font-weight:bold">-${Math.round((1 - o.p / o.was) * 100)}%</span></td></tr>`).join('') +
           `</table>`,
         knop: 'Alle aanbiedingen vergelijken', knopUrl: `${site}/aanbiedingen/?bron=nieuwsbrief`,

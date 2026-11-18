@@ -31,7 +31,7 @@ export async function stuurBevestiging(site, a) {
       tekst: `Hallo!\n\nBevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame.\nhttps://boodschappenvergelijk.nl`,
       html: opmaak({
         titel: 'Bevestig je e-mailmeldingen',
-        inhoud: `<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Tik op de knop, dan krijg je voortaan ${esc(wat)}.</p><p style="margin:0;font-size:15px;line-height:1.5;color:#5d6a61">Heb je dit niet aangevraagd? Negeer deze mail dan. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.</p>`,
+        inhoud: `<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Tik op de knop, dan krijg je voortaan ${esc(wat)}.</p><p style="margin:0;font-size:15px;line-height:1.5;color:#5d6a61">Heb je dit niet aangevraagd? Negeer deze mail dan. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.</p><p style="margin:10px 0 0;font-size:15px;line-height:1.5;color:#5d6a61"><b>Tip:</b> zet de afzender in je contacten. Dan komt de nieuwsbrief niet in je spam.</p>`,
         knop: 'Ja, aanmelden', knopUrl: link,
         voet: 'Goedkope Boodschappen is gratis en onafhankelijk: geen reclame en geen commissie.',
       }),

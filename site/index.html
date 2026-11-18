@@ -962,7 +962,7 @@ function mailHtml(lijn){
   const M=S.mail; if(!M?.aan&&M?.status!=="bevestigd"&&M?.status!=="wacht") return "";
   const cls=lijn?"mail":"";
   if(M.status==="bevestigd") return `<div class="${cls}"><p class="on">📧 E-mail bij aanbiedingen en prijsdalingen staat aan${M.adres?` (${esc(M.adres)})`:""}</p><label class="weekmail"><input type="checkbox" data-weekmail${M.week?" checked":""}> Stuur mij ook elke zaterdag een <b>weekoverzicht</b>: waar mijn lijst die week het goedkoopst is</label><button type="button" class="btn-line" data-mail="uit">E-mail uitzetten</button></div>`;
-  if(M.status==="wacht") return `<div class="${cls}"><p>📧 <b>Bijna klaar!</b> We hebben je een mail gestuurd. Tik op de knop in die mail om te bevestigen. Niets ontvangen? Kijk ook even bij spam.</p><button type="button" class="btn-line" data-mail="uit">Annuleren</button></div>`;
+  if(M.status==="wacht") return `<div class="${cls}"><p>📧 <b>Bijna klaar!</b> We hebben je een mail gestuurd. Tik op de knop in die mail om te bevestigen. Niets ontvangen? Kijk ook even bij spam en markeer de mail als <b>geen spam</b>.</p><button type="button" class="btn-line" data-mail="uit">Annuleren</button></div>`;
   return `<div class="${cls}"><p>📧 <b>${lijn?"Of liever per e-mail?":"Mail als iets van je lijst in de aanbieding komt of goedkoper wordt?"}</b> Gratis, hoogstens één mail per dag, afmelden met één klik.</p>${M.msg?`<p class="muted">${esc(M.msg)}</p>`:""}<form class="mrow" id="mailf"><label class="sr" for="mailin">Je e-mailadres</label><input type="email" id="mailin" placeholder="jouw@email.nl" autocomplete="email" required><button type="submit" class="btn">Aanmelden</button></form></div>`;
 }
 const mailToken=()=>store.get("email-token");
@@ -1414,7 +1414,7 @@ Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]).then(([d,aldi,of
       if(sleutel&&oud&&!zelfde){await sub.unsubscribe();const reg=await navigator.serviceWorker.ready;sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToBytes(sleutel)})}}catch(e){}
     pushSync(sub)});
   mailStatus();
-  const em=sp.get("email"); if(em){const t={bevestigd:"<b>Gelukt!</b> Je krijgt voortaan een mail als iets van je lijst in de aanbieding komt of goedkoper wordt.",uit:"Je bent afgemeld. Je krijgt geen mails meer van ons.",onbekend:"Deze link is verlopen of al gebruikt. Meld je gerust opnieuw aan."}[em];
+  const em=sp.get("email"); if(em){const t={bevestigd:"<b>Gelukt!</b> Je krijgt voortaan een mail als iets van je lijst in de aanbieding komt of goedkoper wordt. Tip: zet de afzender in je contacten, dan komt de mail niet in je spam.",uit:"Je bent afgemeld. Je krijgt geen mails meer van ons.",onbekend:"Deze link is verlopen of al gebruikt. Meld je gerust opnieuw aan."}[em];
     if(t){$("welcome").innerHTML=`<div class="welcome">📧 ${t}</div>`;jump("lijst")} if(em==="uit")store.set("email-token",null);
     const et=sp.get("t"); if(em==="bevestigd"&&/^[a-f0-9]{48}$/.test(et||"")){store.set("email-token",et);mailStatus()}
     sp.delete("email");sp.delete("t");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+location.hash)}
