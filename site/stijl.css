@@ -877,3 +877,9 @@ html body #quick .klaprij>details{margin:0!important;min-width:0}
 html body #quick .klaprij>details[open]{grid-column:1/-1;order:-1}
 html body #quick .klaprij .subnaam{font-size:1rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body .snellinks:empty{display:none}
+
+/* Waarom niet Nettorama/Picnic: klein, direct onder de belofte */
+html body .waaromniet{text-align:center;margin:-2px auto 8px;max-width:34rem;font-size:.85rem;color:var(--muted,#5b6b62)}
+html body .waaromniet>summary{cursor:pointer;list-style:none;display:inline;text-decoration:underline;text-underline-offset:2px}
+html body .waaromniet>summary::-webkit-details-marker{display:none}
+html body .waaromniet>p{margin:6px 0 0;text-align:left;background:#fff;border:1px solid var(--line,#dde5df);padding:10px 12px;line-height:1.45}

@@ -12,7 +12,9 @@ def parse(*texts):
         if not t: continue
         # De maat zegt zelf "per kilo" of "per stuk": de prijs geldt dan per kilo of per stuk.
         if t.strip().lower() in VAST: q,u=VAST[t.strip().lower()]; return q,u
-        m=rx.search(t.lower().replace('per ',''))
+        # "6-pack 330ML" of "4-pack 500 ml": 6 x 330 ml, niet 6 stuks.
+        tl=re.sub(r'(\d+)\s*-?\s*(?:pack|pak)\s+(?=\d+(?:[.,]\d+)?\s*(?:ml|cl|l|liter|g|gr|gram)\b)',r'\1x',t.lower())
+        m=rx.search(tl.replace('per ',''))
         if m:
             mult=int(m.group(1) or 1); q=float(m.group(2).replace(',','.')); u,f=UNITS[m.group(3).lower()]
             v=mult*q*f
@@ -22,6 +24,11 @@ stores=[];prods=[];stats={}
 for si,s in enumerate(d):
     items=s.get('d',[])
     if not items: continue
+    # Gewone prijzen die al meer dan 30 dagen niet zijn bijgewerkt (Lidl via Checkjebon staat sinds augustus stil) laten we weg:
+    # liever geen prijs dan een verouderde. De actuele aanbiedingen van die winkel blijven gewoon op de site.
+    import datetime as _dt
+    if s.get('dt') and (_dt.date.today()-_dt.date.fromisoformat(str(s['dt'])[:10])).days>30:
+        print(s['n'],'overgeslagen: prijzen van',s['dt']); continue
     stores.append({'id':s['n'],'name':s['c'],'base':s['u'],'dt':s.get('dt')})
     ok=0;conflict=0
     for p in items:

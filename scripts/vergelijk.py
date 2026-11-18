@@ -93,7 +93,7 @@ def eff_unit(p):
 # ---------- zoeken (gelijk aan de app) ----------
 ENDS = ["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"]
 STARTS = ["kat", "hond"]
-EXCL = set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split())
+EXCL = set("kroket kroketten broodje breekbrood kaasschaaf choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split())
 UNITW = set("g gr gram kg kilo l liter ml cl st stuk stuks per x ca pak pack fles blik zak naturel".split())
 for p in prods:
     p.append(norm(p[1] + " " + (p[4] or "")))  # p[7] = woorden
@@ -215,6 +215,12 @@ def per_store(m, t=None):
     for si, arr in by.items():
         mn = min(words(p) for p in arr)
         res[si] = sorted([p for p in arr if words(p) <= mn + 1], key=key)[0]
+    # Prijs per stuk (of onbekende inhoud) is niet te vergelijken met prijs per kilo/liter: tellen de meeste winkels per kilo/liter, dan gaat die niet voor.
+    v = [p for p in res.values() if id(p) not in slecht]
+    gw = lambda p: vgl_unit(p) is not None and vgl_eh(p) in ("kg", "l")
+    n_g = sum(1 for p in v if gw(p))
+    if n_g >= 3 and n_g > len(v) - n_g:
+        slecht.update(id(p) for p in v if not gw(p))
     return dict(sorted(res.items(), key=lambda kv: key(kv[1])))
 def redden(cand, gmin, bad):
     """Afgekeurd door de mediaan over alle eenheden samen, maar het product heeft dezelfde eenheid als de meeste winkels,

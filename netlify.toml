@@ -80,6 +80,12 @@
 
 # Het oude netlify-adres stuurt door naar de eigen domeinnaam (alle pagina's, met behoud van het pad).
 # Browsers en apps vragen deze iconen standaard op in de hoofdmap.
+# Zolang de gewone Lidl-prijzen niet actueel zijn, is er geen Lidl-pagina met prijzen: stuur door naar de Lidl-aanbiedingen.
+[[redirects]]
+  from = "/supermarkt/lidl/"
+  to = "/aanbiedingen/lidl/"
+  status = 302
+
 [[redirects]]
   from = "/apple-touch-icon*"
   to = "/icons/apple-touch-icon.png"

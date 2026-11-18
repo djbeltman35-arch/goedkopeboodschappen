@@ -217,6 +217,7 @@
     <p class="bekendregel">Bekend van <a href="https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker" target="_blank" rel="noopener">Hart van Nederland</a> en <a href="https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite" target="_blank" rel="noopener">RTV Oost</a></p>
     <h1>Boodschappen vergelijken</h1>
     <p class="rustpromise">Elke dag nieuwe prijzen van 11 supermarkten</p>
+    <details class="waaromniet"><summary>Waarom geen Nettorama, Picnic of Crisp?</summary><p>Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we op dit moment alleen de aanbiedingen: de gewone prijzen kunnen we nu niet dagelijks ophalen.</p></details>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Zoek een product" autocomplete="off" enterkeyhint="search">
@@ -293,7 +294,7 @@ const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkop
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
 const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
 const STARTS=["kat","hond"];
-const EXCL=new Set("choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
+const EXCL=new Set("kroket kroketten broodje breekbrood kaasschaaf choco chocolade gekookte spinazie roasted americanos krieltjes salade saus smaak snack snacks reep koek koekjes chips drink mix aardbei vanille banaan zuigtabletten tabletten pastilles snoepjes gummies siroop limonade thee vla yoghurt ijs sorbet shampoo douchegel zeep geurkaars kaars luchtverfrisser wasmiddel rijstwafels wafels koeken speculaaskoeken bladerdeeg kaastengels kaasstengels tengels tapenade croissant broodjes pizzabroodjes bakmix thuisbakmix mueslireep repen rooibos kat katten kattenmousse kattenvoer hond hondenvoer pate servet design cola toetje toetjes vochtig vochtige dessert pudding cake taart soep spread dip crackers biscuit ontbijtkoek drinkyoghurt ijsthee bonbons bonen vega vegan vegetarisch rulstukjes hema muesli zonnebloem granola sheba felix whiskas gourmet sauce ajax lactosevrij lactosevrije lactose biologisch biologische bio houdbaar houdbare spaghetti macaroni penne pasta noedels mayonaise gevulde bakbananen bakbanaan glutenvrij proteine protein light zero suikervrij display".split(" "));
 const UNITW=new Set(["g","gr","gram","kg","kilo","l","liter","ml","cl","st","stuk","stuks","per","x","ca","pak","pack","fles","blik","zak","naturel"]);
 
 const S={mijn:null,dieet:{gv:false,arm:false,lv:false,eiw:false},betwist:new Set(),merk:"alle",maal:[],edit:false,pick:new Set(),stores:[],prods:[],list:[],view:null,lastQ:"",offers:[],okey:new Map(),off:new Set(),sel:null,ofs:"alle",ofc:"alle",ofq:"",ofsort:"korting",ofn:60,ofsoon:false,snap:null};
@@ -466,6 +467,9 @@ function perStore(m){
   redden([...by.values()].flat(),gmin);
   const res=new Map();
   for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
+  // Prijs per stuk is niet te vergelijken met prijs per kilo of liter: tellen de meeste winkels per kilo/liter, dan gaat een stukprijs (of onbekende inhoud) niet voor.
+  {const v=[...res.values()].filter(p=>!p.bad),gw=p=>vglUnit(p)!=null&&(p.lit||p[6]==="kg"||p[6]==="l"),nG=v.filter(gw).length;
+   if(nG>=3&&nG>v.length-nG)for(const p of v)if(!gw(p))p.bad=true}
   res.st=[...res.values()].map(p=>[p,p.bad]);
   return res;
 }
