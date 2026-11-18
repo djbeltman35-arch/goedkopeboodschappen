@@ -17,7 +17,7 @@ function lijst(body) {
   return { termen, winkels };
 }
 
-export async function stuurBevestiging(site, a) {
+export async function stuurBevestiging(site, a, herinnering = false) {
   const user = Netlify.env.get('GMAIL_USER'), pass = Netlify.env.get('GMAIL_APP_PASSWORD');
   const link = `${site}/api/email?bevestig=${a.token}`, uit = `${site}/api/email?uit=${a.token}`;
   const lijstdeel = a.termen.length ? `een mail als iets van je boodschappenlijst in de aanbieding is (${a.termen.length} ${a.termen.length === 1 ? 'artikel' : 'artikelen'})` : '';
@@ -27,11 +27,11 @@ export async function stuurBevestiging(site, a) {
   try {
     await v.stuur(bericht({
       van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email,
-      onderwerp: a.nieuws && !a.termen.length ? 'Bevestig je aanmelding voor de nieuwsbrief' : 'Bevestig je e-mailmeldingen', afmelden: uit,
-      tekst: `Hallo!\n\nBevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame.\nhttps://boodschappenvergelijk.nl`,
+      onderwerp: (herinnering ? 'Herinnering: ' : '') + (a.nieuws && !a.termen.length ? 'Bevestig je aanmelding voor de nieuwsbrief' : 'Bevestig je e-mailmeldingen'), afmelden: uit,
+      tekst: `Hallo!\n\n${herinnering ? 'Je hebt je gisteren aangemeld, maar nog niet bevestigd. ' : ''}Bevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame.\nhttps://boodschappenvergelijk.nl`,
       html: opmaak({
         titel: 'Bevestig je e-mailmeldingen',
-        inhoud: `<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Tik op de knop, dan krijg je voortaan ${esc(wat)}.</p><p style="margin:0;font-size:15px;line-height:1.5;color:#5d6a61">Heb je dit niet aangevraagd? Negeer deze mail dan. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.</p><p style="margin:10px 0 0;font-size:15px;line-height:1.5;color:#5d6a61"><b>Tip:</b> zet de afzender in je contacten. Dan komt de nieuwsbrief niet in je spam.</p>`,
+        inhoud: `${herinnering ? '<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Je hebt je gisteren aangemeld, maar nog niet bevestigd. Dit is de enige herinnering die je krijgt.</p>' : ''}<p style="margin:0 0 10px;font-size:16px;line-height:1.5">Tik op de knop, dan krijg je voortaan ${esc(wat)}.</p><p style="margin:0;font-size:15px;line-height:1.5;color:#5d6a61">Heb je dit niet aangevraagd? Negeer deze mail dan. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.</p><p style="margin:10px 0 0;font-size:15px;line-height:1.5;color:#5d6a61"><b>Tip:</b> zet de afzender in je contacten. Dan komt de nieuwsbrief niet in je spam.</p>`,
         knop: 'Ja, aanmelden', knopUrl: link,
         voet: 'Goedkope Boodschappen is gratis en onafhankelijk: geen reclame en geen commissie.',
       }),

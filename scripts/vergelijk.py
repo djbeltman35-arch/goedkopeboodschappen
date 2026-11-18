@@ -25,7 +25,7 @@ def kortdag(t):
 DATUM = f"{NU.day} {MAANDEN[NU.month - 1]} {NU.year}"
 
 NAMEN = {"ah": "Albert Heijn", "jumbo": "Jumbo", "lidl": "Lidl", "aldi": "Aldi", "plus": "PLUS", "dirk": "Dirk",
-         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "vomar": "Vomar", "spar": "SPAR", "poiesz": "Poiesz"}
+         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "vomar": "Vomar", "spar": "SPAR", "poiesz": "Poiesz", "ekoplaza": "Ekoplaza"}
 KORT = {"ah": "AH"}
 esc = lambda s: html.escape(str(s if s is not None else ""), quote=True)
 eur = lambda v: ("€ %.2f" % v).replace(".", ",")
@@ -314,7 +314,7 @@ def subcat_van(naam, groep):
 
 # Merk naar categorie, geleerd uit de producten: van een merk (eerste woord, bij minstens 3 winkels) de soort waar het meestal onder valt.
 # Zo komt een aanbieding als "Ritter Sport Wit hazelnoot" bij Chocolade, ook als de naam geen soortwoord bevat.
-HUISMERK_W = {"ah", "jumbo", "jumbo's", "plus", "pcd", "1", "g'woon", "gwoon", "dekavers", "dekamarkt", "hoogvliet", "spar", "poiesz", "vomar", "lidl", "aldi",
+HUISMERK_W = {"ekoplaza", "ah", "jumbo", "jumbo's", "plus", "pcd", "1", "g'woon", "gwoon", "dekavers", "dekamarkt", "hoogvliet", "spar", "poiesz", "vomar", "lidl", "aldi",
               "melkan", "zuivelmeester", "bio+", "smaakt", "daily", "derlon", "bonbébé", "bonbebe", "uit", "boerentrots", "euroshopper"}
 def eerste_woord(naam):
     m = re.findall(r"[a-z0-9à-ÿ'&+-]+", str(naam).lower()); return m[0] if m else ""

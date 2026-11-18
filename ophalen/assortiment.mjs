@@ -259,7 +259,7 @@ async function roterend(id, naam, urls, lees, perDag) {
   let vorig = {}; try { vorig = JSON.parse(fs.readFileSync(pad, 'utf8')).bekeken || {}; } catch {}
   const vd = vandaag();
   const grens = new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10);
-  const pid = u => u.match(/\/(\d+)\/?$/)[1];
+  const pid = u => u.match(/(\d+)\/?$/)[1];
   const rij = urls.slice().sort((a, b) => String(vorig[pid(a)]?.dag || '').localeCompare(String(vorig[pid(b)]?.dag || '')));
   let n = 0, fout = 0;
   // Normaal één pagina tegelijk; bij een inhaalslag (WERKERS) een paar tegelijk.
@@ -327,8 +327,27 @@ async function vomar() {
   return roterend('vomar', 'Vomar', [...prods], lees, 1300);
 }
 
+/* ---------- Ekoplaza (biologisch): productpagina's uit de sitemap; elke pagina heeft de prijs in de schema.org-gegevens ---------- */
+async function ekoplaza() {
+  const sm = await tekst('https://www.ekoplaza.nl/sitemap-products.xml');
+  const urls = [...new Set([...String(sm || '').matchAll(/<loc>\s*(?:<!\[CDATA\[)?\s*([^<\]\s]+)/g)].map(m => m[1].trim()).filter(u => /\/producten\/product\/[a-z0-9-]+-\d+$/.test(u)))];
+  const lees = html => {
+    for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+      let d; try { d = JSON.parse(m[1]); } catch { continue; }
+      for (const g of d['@graph'] || [d]) {
+        if (g['@type'] !== 'Product') continue;
+        const o = Array.isArray(g.offers) ? g.offers[0] : g.offers;
+        if (!o || !(+o.price > 0) || /Discontinued/.test(o.availability || '')) return null;
+        return { n: g.name, p: +o.price, s: g.size || '' };
+      }
+    }
+    return null;
+  };
+  return roterend('ekoplaza', 'Ekoplaza', urls, lees, 1500);
+}
+
 // Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
-const WINKELS = { ah, jumbo, hoogvliet, plus, dirk, dekamarkt, vomar };
+const WINKELS = { ah, jumbo, hoogvliet, plus, dirk, dekamarkt, vomar, ekoplaza };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;

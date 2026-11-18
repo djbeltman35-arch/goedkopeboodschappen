@@ -289,7 +289,7 @@ const KCAL={{KCAL}};
 const PAGINAS=new Map(CATS.flatMap(c=>c[2]).map(t=>[t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9,.]+/g," ").trim(),t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")]));
 // Gedeelde links altijd met de eigen domeinnaam, ook als de app nog vanaf het oude netlify-adres draait.
 const SITE=/(^|\.)netlify\.app$/.test(location.hostname)?"https://boodschappenvergelijk.nl":location.origin;
-const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
+const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",ekoplaza:"Ekoplaza",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
 const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
 const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
@@ -395,7 +395,7 @@ function variant(v,pool){
 }
 /* Merken: huismerk ("h"), A-merk ("a") of geen merk (""). Een A-merk is een merknaam die bij minstens 3 supermarkten vooraan
    in de productnaam staat (Unox, Campina). Huismerken staan hieronder; Lidl en Aldi verkopen bijna alleen eigen merken. */
-const HUISMERK=["ah","jumbo","jumbo's","plus","pcd","1 de beste","g'woon","gwoon","dekavers","dekamarkt","hoogvliet","spar","poiesz","vomar","lidl","aldi","melkan","zuivelmeester","bio+","smaakt","daily chef","derlon","bonbébé","bonbebe","uit de keuken van plus","boerentrots","euroshopper"];
+const HUISMERK=["ekoplaza","ah","jumbo","jumbo's","plus","pcd","1 de beste","g'woon","gwoon","dekavers","dekamarkt","hoogvliet","spar","poiesz","vomar","lidl","aldi","melkan","zuivelmeester","bio+","smaakt","daily chef","derlon","bonbébé","bonbebe","uit de keuken van plus","boerentrots","euroshopper"];
 const eersteWoord=n=>(String(n).toLowerCase().match(/[a-z0-9à-ÿ'&+-]+/g)||[]);
 // De A-merken (merknaam vooraan bij minstens 3 supermarkten) rekent de site al uit bij het bouwen.
 const AMERK={{AMERK}};
@@ -1051,7 +1051,7 @@ function bonRegels(tekst){
   for(let r of tekst.split(/\n+/)){
     r=r.replace(/[€$]/g," ").replace(/\b\d+[.,]\d{2}\b/g," ").replace(/\b\d+\s*(x|st|stuks?)\b/gi," ").replace(/[^A-Za-zÀ-ÿ'&\- ]/g," ").replace(/\s+/g," ").trim();
     if(r.length<3||BON_WEG.test(r))continue;
-    let w=r.toLowerCase().split(" ").filter(x=>x.length>1&&!["ah","albert","heijn","jumbo","plus","lidl","aldi","dirk","hoogvliet","dekamarkt","vomar","spar","poiesz","supermarkt","supermarkten","g'woon","gwoon","beste","de","het","van"].includes(x)).map(x=>BON_AFK[x]||x);
+    let w=r.toLowerCase().split(" ").filter(x=>x.length>1&&!["ah","albert","heijn","jumbo","plus","lidl","aldi","dirk","hoogvliet","dekamarkt","vomar","spar","poiesz","ekoplaza","supermarkt","supermarkten","g'woon","gwoon","beste","de","het","van"].includes(x)).map(x=>BON_AFK[x]||x);
     const t=w.join(" ").trim(); if(t.length>=3&&!uit.includes(t)) uit.push(t);
   }
   return uit.slice(0,60);
