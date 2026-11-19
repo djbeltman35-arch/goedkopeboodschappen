@@ -1261,7 +1261,16 @@ document.addEventListener("submit",async e=>{const f=e.target.closest("form[data
     else{b.disabled=false;u.textContent=j.fout||"Dat lukte niet. Probeer het later nog eens."}}catch(x){b.disabled=false;u.textContent="Dat lukte niet. Controleer je internetverbinding."}});
 document.addEventListener("click",e=>{const w=e.target.closest("[data-nbweg]");if(!w)return;store.set("nb-klaar",1);gc("nieuwsbrief/weg","Nieuwsbriefblok weggeklikt");w.closest("form").remove()});
 document.addEventListener("submit",e=>{if(e.target.id==="mailf"){e.preventDefault();const b=e.target.querySelector("button");b.disabled=true;b.textContent="Even geduld…";mailAan($("mailin").value.trim())}});
-$("f").addEventListener("submit",e=>{e.preventDefault();search(true);$("q").blur();history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
+// Zoeken zonder te haperen: eerst de knop laten reageren, dan de nog niet voorbereide producten in kleine stukjes afmaken, dan zoeken.
+const rust=()=>new Promise(r=>setTimeout(r,0));
+async function klaarInStukjes(){const P=S.prods;let t0=performance.now();
+  while(S.todoL<P.length||S.todo<P.length){if(S.todoL<P.length){const p=P[S.todoL++];p.lk=link(p);Map.prototype.set.call(S.byLink,p.lk,p)}else prep(P[S.todo++]);
+    if(performance.now()-t0>12){await rust();t0=performance.now()}}}
+let zoekNr=0;
+$("f").addEventListener("submit",async e=>{e.preventDefault();$("q").blur();const nr=++zoekNr;
+  const b=$("f").querySelector("button[type=submit],.btn");if(b)b.setAttribute("aria-busy","true");
+  await rust();await klaarInStukjes();if(nr!==zoekNr)return;
+  search(true);if(b)b.removeAttribute("aria-busy");history.replaceState(null,"",$("q").value.trim()?"?q="+encodeURIComponent($("q").value.trim()):"/");jump("results")});
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
 // Snelle start: 15 gewone weekboodschappen in één keer op de lijst, zodat je meteen ziet waar je lijst het goedkoopst is.
 const STARTLIJST=["halfvolle melk","volkoren brood","eieren","jong belegen kaas","roomboter","pindakaas","bananen","appels","aardappelen","uien","winterpeen","komkommer","tomaten","spaghetti","halfvolle yoghurt"];
