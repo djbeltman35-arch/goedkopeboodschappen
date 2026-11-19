@@ -131,27 +131,48 @@ async function hoogvliet() {
   return { c: 'Hoogvliet', u: 'https://hoogvliet.nl/product/', d: [...uit.values()] };
 }
 
-/* ---------- Lidl: dezelfde zoekdienst als voor de aanbiedingen, nu het hele assortiment ---------- */
+/* ---------- Lidl: de open zoekdienst bevat ook de boodschappen, maar alleen als je op een woord zoekt.
+   Daarom zoeken we op een lange lijst boodschappenwoorden en houden we alleen Food en groente/fruit (F+V) over.
+   Dat zijn de gewone winkelprijzen (geen actieprijzen: bij een actie staat de gewone prijs als oldPrice). ---------- */
+const LIDL_WOORDEN = `melk halfvolle volle karnemelk chocolademelk yoghurt kwark vla pudding room slagroom boter margarine roomboter eieren
+kaas jong belegen oud geraspte mozzarella feta brie camembert smeerkaas roomkaas hüttenkäse plakken
+brood volkoren wit bruin tijger meergranen spelt casino bolletjes broodjes croissant stokbrood pistolet krentenbol beschuit crackers knäckebrood toast ontbijtkoek
+appel peer banaan sinaasappel mandarijn citroen limoen druiven aardbeien blauwe bessen frambozen kiwi mango ananas meloen avocado granaatappel pruimen nectarines
+tomaat komkommer paprika ui rode ui knoflook aardappel krieltjes zoete wortel winterpeen sla ijsbergsla rucola spinazie andijvie broccoli bloemkool courgette aubergine champignons prei boontjes sperziebonen spruitjes rode kool witlof bleekselderij radijs mais doperwten
+kip kipfilet kippendijen drumsticks gehakt rundergehakt half-om-half hamburger biefstuk speklappen varkenshaas schnitzel slavink rookworst worst braadworst knakworst frikandel kroket bitterballen ham kipfilet beleg salami cervelaat leverworst filet americain spek ontbijtspek
+vis zalm kabeljauw pangasius tilapia garnalen mosselen tonijn makreel haring sardines vissticks lekkerbekje
+pasta spaghetti macaroni penne tagliatelle lasagne rijst basmati zilvervlies noedels couscous bulgur quinoa wraps tortilla
+saus pastasaus tomatenblokjes passata pesto ketchup mayonaise mosterd curry satésaus sambal sojasaus bouillon jus olie olijfolie zonnebloemolie azijn kruiden peper zout suiker meel bakmix
+soep cup-a-soup erwtensoep tomatensoep
+koffie koffiebonen koffiepads capsules oploskoffie thee sap appelsap sinaasappelsap frisdrank cola sinas cassis ice tea limonade siroop water bruisend mineraalwater energiedrank bier pils alcoholvrij wijn rode witte rosé prosecco
+chips nootjes pinda's cashew borrelnootjes popcorn zoutjes koek koekjes stroopwafels speculaas biscuit chocolade reep bonbons snoep drop winegums kauwgom
+hagelslag vlokken pindakaas jam honing chocopasta appelstroop muesli granola cornflakes havermout cruesli ontbijtgranen
+diepvries pizza friet patat ijs groente diepvriesgroente spinazie à la crème
+babyvoeding luiers billendoekjes
+toiletpapier keukenrol tissues wasmiddel wasverzachter vaatwastabletten afwasmiddel allesreiniger schoonmaak vuilniszakken aluminiumfolie
+shampoo douchegel deodorant tandpasta tandenborstel zeep handzeep scheermesjes maandverband tampons
+kattenvoer kattenbrokken hondenvoer hondenbrokken kattenbakvulling
+vega vegetarisch vegan tofu hummus falafel plantaardig haverdrank sojadrink amandeldrink
+bio biologisch glutenvrij lactosevrij`.split(/\s+/).filter(Boolean);
 async function lidl() {
   const uit = new Map();
-  for (let off = 0, totaal = 1; off < totaal && off < 30000; off += 500) {
-    const d = await haal(`https://www.lidl.nl/q/api/search?offset=${off}&fetchsize=500&locale=nl_NL&assortment=NL&version=2.1.0&q=`);
-    totaal = d.numFound || 0;
-    const items = d.items || [];
-    for (const it of items) {
+  for (const w of [...new Set(LIDL_WOORDEN)]) {
+    let d;
+    try { d = await haal(`https://www.lidl.nl/q/api/search?offset=0&fetchsize=200&locale=nl_NL&assortment=NL&version=2.1.0&q=${encodeURIComponent(w)}`); }
+    catch (e) { console.warn('lidl', w, e.message); await slaap(5000); continue; }
+    for (const it of d.items || []) {
       const x = it.gridbox?.data; if (!x?.price || !x.fullTitle) continue;
-      // Gewone prijs: bij een actie staat die als oldPrice; anders de prijs zelf.
+      if (!['Food', 'F+V'].includes(x.category)) continue;
       const oud = x.price.discount?.fromRecommendedPrice ? null : x.price.oldPrice;  // een adviesprijs is geen eigen Lidl-prijs
       const prijs = oud > x.price.price ? oud : x.price.price;
       if (!(prijs > 0)) continue;
-      const k = String(it.code || x.productId || x.fullTitle);
+      const k = String(x.productId || it.code || x.fullTitle);
       if (uit.has(k)) continue;
-      uit.set(k, { n: String(x.fullTitle).replace(/[®™]/g, '').replace(/^[-–\s]+/, '').replace(/\s+/g, ' ').trim(), l: x.canonicalUrl || '/', p: r2(prijs), s: x.price.packaging?.text || '' });
+      uit.set(k, { n: String(x.fullTitle).replace(/[®™]/g, '').replace(/^[-–\s]+/, '').replace(/\s+/g, ' ').trim(), l: x.canonicalPath || '/', p: r2(prijs), s: x.price.packaging?.text || '' });
     }
-    if (!items.length) break;
-    await slaap(1500);
+    await slaap(1200);
   }
-  return { c: 'Lidl', u: 'https://www.lidl.nl', d: [...uit.values()] };
+  return { c: 'Lidl', u: 'https://www.lidl.nl', d: [...uit.values()], klein: true };
 }
 
 /* ---------- Jumbo: dezelfde open GraphQL-zoekdienst als voor de aanbiedingen, nu zonder filter (het hele assortiment) ---------- */
@@ -346,8 +367,8 @@ async function ekoplaza() {
   return roterend('ekoplaza', 'Ekoplaza', urls, lees, 1500);
 }
 
-// Lidl verkoopt zijn boodschappen niet online; de zoekdienst bevat vooral non-food. Lidl blijft daarom uit het open bestand komen.
-const WINKELS = { ah, jumbo, hoogvliet, plus, dirk, dekamarkt, vomar, ekoplaza };
+// Lidl verkoopt zijn boodschappen niet online; via de zoekdienst (op woorden) halen we wel de gewone prijzen van de boodschappen op.
+const WINKELS = { ah, jumbo, hoogvliet, plus, dirk, dekamarkt, vomar, ekoplaza, lidl };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 const nu = new Date().toISOString();
 let gelukt = 0;
@@ -358,7 +379,7 @@ await Promise.all(Object.entries(WINKELS).filter(([id]) => !alleen.length || all
     const r = await fn();
     // Veiligheidsgrens: een kapotte ophaalbeurt met veel te weinig producten niet opslaan.
     const vorig = (() => { try { return JSON.parse(fs.readFileSync(path.join(DATA, `assortiment-${id}.json`), 'utf8')).d.length; } catch { return 0; } })();
-    if (!r.bekeken && (r.d.length < 1000 || (vorig && r.d.length < vorig * 0.7))) throw new Error(`maar ${r.d.length} producten (vorige keer ${vorig})`);
+    if (!r.bekeken && (r.d.length < (r.klein ? 300 : 1000) || (vorig && r.d.length < vorig * 0.7))) throw new Error(`maar ${r.d.length} producten (vorige keer ${vorig})`);
     fs.writeFileSync(path.join(DATA, `assortiment-${id}.json`), JSON.stringify({ updated: nu, n: id, ...r }));
     console.log(id, r.d.length, 'producten in', Math.round((Date.now() - t0) / 1000), 's');
     gelukt++;

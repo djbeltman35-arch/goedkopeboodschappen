@@ -22,7 +22,7 @@ for f in glob.glob(os.path.join(DATA, "assortiment-*.json")):
     try:
         a = json.load(open(f))
         dag = datetime.date.fromisoformat(a["updated"][:10])
-        if (vandaag - dag).days <= 3 and (len(a.get("d", [])) > 1000 or "bekeken" in a): eigen[a["n"]] = (a, dag.isoformat())
+        if (vandaag - dag).days <= 3 and (len(a.get("d", [])) > 1000 or "bekeken" in a or (a.get("klein") and len(a.get("d", [])) > 300)): eigen[a["n"]] = (a, dag.isoformat())
     except Exception as e: print("eigen prijzen: overgeslagen", f, e)
 gezien = set()
 for s in d:
