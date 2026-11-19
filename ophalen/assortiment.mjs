@@ -154,24 +154,52 @@ shampoo douchegel deodorant tandpasta tandenborstel zeep handzeep scheermesjes m
 kattenvoer kattenbrokken hondenvoer hondenbrokken kattenbakvulling
 vega vegetarisch vegan tofu hummus falafel plantaardig haverdrank sojadrink amandeldrink
 bio biologisch glutenvrij lactosevrij`.split(/\s+/).filter(Boolean);
-async function lidl() {
-  const uit = new Map();
-  for (const w of [...new Set(LIDL_WOORDEN)]) {
-    let d;
-    try { d = await haal(`https://www.lidl.nl/q/api/search?offset=0&fetchsize=200&locale=nl_NL&assortment=NL&version=2.1.0&q=${encodeURIComponent(w)}`); }
-    catch (e) { console.warn('lidl', w, e.message); await slaap(5000); continue; }
-    for (const it of d.items || []) {
-      const x = it.gridbox?.data; if (!x?.price || !x.fullTitle) continue;
-      if (!['Food', 'F+V'].includes(x.category)) continue;
-      const oud = x.price.discount?.fromRecommendedPrice ? null : x.price.oldPrice;  // een adviesprijs is geen eigen Lidl-prijs
-      const prijs = oud > x.price.price ? oud : x.price.price;
-      if (!(prijs > 0)) continue;
-      const k = String(x.productId || it.code || x.fullTitle);
-      if (uit.has(k)) continue;
-      uit.set(k, { n: String(x.fullTitle).replace(/[®™]/g, '').replace(/^[-–\s]+/, '').replace(/\s+/g, ' ').trim(), l: x.canonicalPath || '/', p: r2(prijs), s: x.price.packaging?.text || '' });
-    }
-    await slaap(1200);
+const LIDL_MERKEN = `Milbona Pilos Chef Select Freshona Solevita Bellarom Fin Carré Crownfield Belbake Kania Vitasia Combino Snack Day Deluxe Cien Formil W5
+Dentalux Lupilu Floralys Nautica Pikok Dulano Tastino Mcennedy Italiamo Sondey Perlenbacher Freeway Saskia Alesto Rivercote Ocean Sea Baresa Gelatelli
+Nussa Vemondo Envia Favorina Trattoria Alfredo Eridanous Cucina Nobile Golden Seafood Harvest Basket Oaklands Coshida Orlando Grafschafter Bergader Linessa
+Cantina Tequito Lyttos Toujours Biotrend Fairglobe Ventura Purland Perlinger Grafenwalder Batts Belweder Zwagerman`.split(/\s+/);
+// Zoekwoorden: de vaste lijst, de huismerken van Lidl en de meest voorkomende woorden uit de productnamen van de andere supermarkten.
+function lidlWoorden() {
+  const tel = new Map();
+  for (const w of ['ah', 'jumbo', 'plus', 'dirk', 'hoogvliet', 'dekamarkt', 'vomar']) {
+    try {
+      for (const x of JSON.parse(fs.readFileSync(path.join(DATA, `assortiment-${w}.json`), 'utf8')).d)
+        for (const t of String(x.n).toLowerCase().match(/[a-zà-ÿ]{4,}/g) || []) tel.set(t, (tel.get(t) || 0) + 1);
+    } catch {}
   }
+  const vaak = [...tel].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).slice(0, 400).map(([t]) => t);
+  return [...new Set([...LIDL_WOORDEN, ...LIDL_MERKEN.map(m => m.toLowerCase()), ...vaak])].filter(w => w.length >= 3);
+}
+async function lidl() {
+  const uit = new Map(), woorden = lidlWoorden();
+  const neem = it => {
+    const x = it.gridbox?.data; if (!x?.price || !x.fullTitle) return;
+    if (!['Food', 'F+V'].includes(x.category)) return;
+    const oud = x.price.discount?.fromRecommendedPrice ? null : x.price.oldPrice;  // een adviesprijs is geen eigen Lidl-prijs
+    const prijs = oud > x.price.price ? oud : x.price.price;
+    if (!(prijs > 0)) return;
+    const k = String(x.productId || it.code || x.fullTitle);
+    if (!uit.has(k)) uit.set(k, { n: String(x.fullTitle).replace(/[®™]/g, '').replace(/^[-–\s]+/, '').replace(/\s+/g, ' ').trim(), l: x.canonicalPath || '/', p: r2(prijs), s: x.price.packaging?.text || '' });
+  };
+  // Eerst de hele categorie "Eten & drinken" (zonder zoekwoord), daarna de zoekwoorden voor wat daar niet in staat.
+  for (let off = 0, tot = 1; off < tot && off < 5000; off += 500) {
+    try { const d = await haal(`https://www.lidl.nl/q/api/search?offset=${off}&fetchsize=500&locale=nl_NL&assortment=NL&version=2.1.0&category.id=10068374&q=`); tot = d.numFound || 0; (d.items || []).forEach(neem); }
+    catch (e) { console.warn('lidl categorie', e.message); break; }
+    await slaap(1000);
+  }
+  let i = 0;
+  const werker = async () => {
+    while (i < woorden.length) {
+      const w = woorden[i++];
+      let d;
+      try { d = await haal(`https://www.lidl.nl/q/api/search?offset=0&fetchsize=200&locale=nl_NL&assortment=NL&version=2.1.0&q=${encodeURIComponent(w)}`, {}, 2); }
+      catch (e) { await slaap(5000); continue; }
+      (d.items || []).forEach(neem);
+      await slaap(400);
+    }
+  };
+  await Promise.all([werker(), werker(), werker()]);
+  console.log('lidl:', woorden.length, 'zoekwoorden');
   return { c: 'Lidl', u: 'https://www.lidl.nl', d: [...uit.values()], klein: true };
 }
 
