@@ -1212,7 +1212,7 @@ document.addEventListener("click",e=>{
   const ws=e.target.closest("[data-wissel]"); if(ws){const i=+ws.dataset.wissel,p=S.prods[+ws.dataset.p],x=S.list[i];if(p&&x){S.list[i]={...x,si:p[0],s:sid(p[0]),name:p[1]+(sizeTxt(p)?" "+sizeTxt(p):""),link:link(p),price:eff(p)};gc("bespaartip/wissel","Bespaartip gewisseld");after()}return}
   const a=e.target.closest("[data-add]"); if(a){addProduct(S.prods[+a.dataset.add],a.dataset.term);return}
   const of=e.target.closest("[data-offer]"); if(of){addOffer(S.offers[+of.dataset.offer]);return}
-  const v=e.target.closest("[data-view]"); if(v){S.view=v.dataset.view; if(S.view==="deals")S.ofsoon=false; if(S.view){S.ofn=60;renderView();gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
+  const v=e.target.closest("[data-view]"); if(v){S.view=v.dataset.view; if(S.view==="deals")S.ofsoon=false; if(S.view){S.ofn=60;v.setAttribute("aria-busy","true");setTimeout(()=>{renderView();v.removeAttribute("aria-busy")},0);gc("weergave/"+(S.view==="deals"?"aanbiedingen":GROEPEN[+S.view][0]),"Weergave");jump("results")}else{quick();search()} return}
   const fs=e.target.closest("[data-ofs]"); if(fs){S.ofs=fs.dataset.ofs;S.ofn=60;renderOffers();gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel");return}
   const fc=e.target.closest("[data-ofc]"); if(fc){S.ofc=fc.dataset.ofc;S.ofn=60;renderOffers();gc("aanbiedingen/categorie/"+S.ofc,"Aanbiedingen per categorie");return}
   const so=e.target.closest("[data-soon]"); if(so){S.ofsoon=so.dataset.soon==="1";S.ofn=60;renderOffers();return}
@@ -1274,7 +1274,7 @@ $("f").addEventListener("submit",async e=>{e.preventDefault();$("q").blur();cons
 // Hele lijst in één keer: per regel (of met komma's) een product, eventueel met aantal ervoor ("2 melk", "3x brood").
 // Snelle start: 15 gewone weekboodschappen in één keer op de lijst, zodat je meteen ziet waar je lijst het goedkoopst is.
 const STARTLIJST=["halfvolle melk","volkoren brood","eieren","jong belegen kaas","roomboter","pindakaas","bananen","appels","aardappelen","uien","winterpeen","komkommer","tomaten","spaghetti","halfvolle yoghurt"];
-function startLijst(){let n=0;for(const t of STARTLIJST){if(S.list.some(x=>norm(x.term)===norm(t)))continue;
+async function startLijst(){const knop=document.querySelector("[data-startlijst]");if(knop){knop.disabled=true;knop.textContent="Even geduld…"}await rust();await klaarInStukjes();let n=0;for(const t of STARTLIJST){await rust();if(S.list.some(x=>norm(x.term)===norm(t)))continue;
     const b=[...pick(t).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0];if(!b)continue;
     S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b)});n++}
   gc("lijst-start/"+n,"Startlijst gebruikt");after();jump("lijst")}
