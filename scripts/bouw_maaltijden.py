@@ -290,7 +290,7 @@ if MAAL:
         _m = next((m for m in MAAL if m["naam"].lower() == _n and m["rang"]), None)
         if _m and _m not in keuze: keuze.append(_m)
     MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><div class="maalkop"><h2 id="mh">🍽️ Goedkoop avondeten</h2><a href="/maaltijden/">Alle {len(MAAL)} →</a></div><ul class="mgrid">'
-                 + "".join(kaart(m) for m in keuze) + '</ul></section>' + MKJS)
+                 + "".join(kaart(m) for m in keuze).replace('loading="lazy" decoding="async"', 'loading="eager" fetchpriority="high" decoding="async"', 1) + '</ul></section>' + MKJS)
 else:
     MAAL_HOME = ""
 
