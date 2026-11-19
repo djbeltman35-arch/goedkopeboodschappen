@@ -5,6 +5,7 @@
 // Rustig tempo: eens per dag, met pauzes tussen de verzoeken. Lukt een winkel niet, dan blijft het vorige bestand staan.
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const DATA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
@@ -187,6 +188,27 @@ async function lidl() {
     catch (e) { console.warn('lidl categorie', e.message); break; }
     await slaap(1000);
   }
+  // Dan alle producten uit de productsitemap van Lidl (±14.000), per 50 opgevraagd bij de gridbox-dienst:
+  // die geeft de prijs voor elk product waarvan Lidl online een prijs toont.
+  try {
+    const r = await fetch('https://www.lidl.nl/p/export/NL/nl/product_sitemap.xml.gz', { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(60_000) });
+    let buf = Buffer.from(await r.arrayBuffer());
+    try { buf = zlib.gunzipSync(buf); } catch {}
+    const ids = [...new Set([...buf.toString('utf8').matchAll(/\/p(\d+)<\/loc>/g)].map(m => m[1]))];
+    let j = 0;
+    const gw = async () => {
+      while (j < ids.length) {
+        const b = ids.slice(j, j += 50);
+        try {
+          const lijst = await haal('https://www.lidl.nl/p/api/gridboxes/NL/nl?erpNumbers=' + b.join(','), {}, 2);
+          for (const x of lijst || []) neem({ gridbox: { data: x } });
+        } catch (e) { await slaap(3000); }
+        await slaap(300);
+      }
+    };
+    await Promise.all([gw(), gw(), gw(), gw()]);
+    console.log('lidl sitemap:', ids.length, 'producten bekeken');
+  } catch (e) { console.warn('lidl sitemap mislukt', e.message); }
   let i = 0;
   const werker = async () => {
     while (i < woorden.length) {
