@@ -1067,7 +1067,7 @@ for si_, s_ in enumerate(_pd["stores"]):
             json.dump(st, open(os.path.join(OUT, "p", f"{s_['id']}-{deel}-{k}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
         _delen[s_["id"]].append(len(stukken))
     _tel[s_["id"]] = len(_per.get((si_, True), [])) + len(_per.get((si_, False), []))
-json.dump({"stores": _pd["stores"], "n": _tel, "delen": _delen, "aanb": AANB_DELEN, "aanbUpd": _od.get("updated")}, open(os.path.join(OUT, "winkels.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+json.dump({"stores": _pd["stores"], "n": _tel, "delen": _delen, "aanb": AANB_DELEN, "aanbUpd": _od.get("updated"), "aanbN": sum(1 for o in _od.get("offers", []) if (o.get("p") or 0) > 0 and (not o.get("t") or o.get("t") >= datetime.date.today().isoformat()))}, open(os.path.join(OUT, "winkels.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 # Prijzen per soort en winkel voor het weekoverzicht per mail (netlify/functions/weekoverzicht.mjs):
 # {soort: {"w": {winkel: prijs}, "n": naam van het goedkoopste product, "s": winkel daarvan}}
 _tp = {}
