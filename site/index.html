@@ -1149,7 +1149,7 @@ addEventListener("appinstalled",()=>{store.set("install-weg",1);$("installeer").
 function toonInstall(){
   const el=$("installeer"); if(!el) return;
   const al=matchMedia("(display-mode: standalone)").matches||navigator.standalone, weg=store.get("install-weg"), bezoek=+store.get("bezoeken")||0;
-  if(al||weg||bezoek<2){el.hidden=true;return}
+  if(al||weg){el.hidden=true;return}
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
   if(installVraag) el.innerHTML=`<span>📲 <b>Zet Goedkope Boodschappen op je beginscherm</b>: opent sneller en werkt als een app.</span><button type="button" class="btn" data-installeer>Installeren</button><button type="button" class="weg" data-installweg aria-label="Niet nu">×</button>`;
   else if(ios) el.innerHTML=`<span>📲 <b>Zet deze site op je beginscherm</b>: tik op <b>Deel</b> (het vierkantje met een pijltje omhoog) en kies <b>Zet op beginscherm</b>.</span><button type="button" class="weg" data-installweg aria-label="Niet nu">×</button>`;

@@ -25,6 +25,8 @@ sed -i "s/__BOUW__/$(date +%Y%m%d%H%M%S)/" "$OUT/sw.js"
 
 # 3. Alle pagina's
 python3 scripts/bouw_paginas.py "$OUT"
+# Installeerbalk en vaste home/terug-knoppen op alle pagina's
+python3 scripts/installeerknop.py "$OUT"
 echo "klaar: $(find "$OUT" -type f | wc -l) bestanden in $OUT"
 
 # Snelheid: stijlblad verkleinen (commentaar en overbodige spaties weg)
