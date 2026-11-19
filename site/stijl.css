@@ -889,4 +889,8 @@ html body .nieuwtje{display:flex;align-items:center;gap:10px;max-width:34rem;mar
 html body .nieuwtje[hidden]{display:none}
 html body .nieuwtje .nt-label{flex:none;background:#17a061;color:#fff;font-weight:800;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding:3px 7px;border-radius:10px!important}
 html body .nieuwtje .nt-tekst{flex:1}
+html body .nieuwtje.bespaar{background:linear-gradient(90deg,#fff8dc,#fff);border-left-color:#f2c12e}
+html body .nieuwtje.bespaar{padding:7px 6px 7px 10px;font-size:.9rem;margin:2px auto 10px}
+html body .nieuwtje.bespaar .nt-label{display:inline-block;vertical-align:1px;margin-right:4px;padding:2px 6px;font-size:.66rem;background:#f2c12e;color:#1d2a22}
+html body .nieuwtje .nt-pijl{color:#17a061;font-weight:800}
 html body .nieuwtje .nt-weg{flex:none;background:none;border:0;font-size:1.3rem;line-height:1;color:var(--mut,#5b6b62);padding:4px 6px;cursor:pointer}
