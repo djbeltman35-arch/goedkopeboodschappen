@@ -83,7 +83,7 @@ export function opmaak({ titel, inhoud, knop, knopUrl, voet }) {
 <body style="margin:0;background:#f4f7f1;font-family:Arial,Helvetica,sans-serif;color:#1e2a22">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f7f1"><tr><td align="center" style="padding:20px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;border:1px solid #e1e7dc">
-<tr><td style="background:#0e7c4a;color:#ffffff;padding:16px 20px;border-radius:14px 14px 0 0;font-size:18px;font-weight:bold">🛒 Goedkope Boodschappen</td></tr>
+<tr><td style="background:#0e7c4a;color:#ffffff;padding:16px 20px;border-radius:14px 14px 0 0;font-size:18px;font-weight:bold">🛒 <a href="https://boodschappenvergelijk.nl/" style="color:#ffffff;text-decoration:none">Boodschappenvergelijk.nl</a></td></tr>
 <tr><td style="padding:20px"><h1 style="margin:0 0 12px;font-size:22px;line-height:1.25">${esc(titel)}</h1>${inhoud}
 ${knop ? `<p style="margin:20px 0 4px"><a href="${esc(knopUrl)}" style="display:inline-block;background:#0e7c4a;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:10px">${esc(knop)}</a></p>` : ''}
 </td></tr>
