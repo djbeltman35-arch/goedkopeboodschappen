@@ -217,7 +217,7 @@
     <p class="bekendregel">Bekend van <a href="https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker" target="_blank" rel="noopener">Hart van Nederland</a> en <a href="https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite" target="_blank" rel="noopener">RTV Oost</a></p>
     <h1>Boodschappen vergelijken</h1>
     <p class="rustpromise">Elke dag nieuwe prijzen van 12 supermarkten</p>
-    <a class="nieuwtje" id="nieuwtje" href="/supermarkt/ekoplaza/" hidden><span class="nt-label">Nieuw</span><span class="nt-tekst">🌱 <b>Ekoplaza</b> vergelijken we nu ook: de biologische supermarkt</span><button type="button" class="nt-weg" aria-label="Sluiten">×</button></a>
+    <a class="nieuwtje" id="nieuwtje" href="/supermarkt/ekoplaza/" hidden><span class="nt-label">Nieuw</span><span class="nt-tekst">🌱 <b>Ekoplaza</b> vergelijken we nu ook: de biologische supermarkt</span><button type="button" class="nt-weg" aria-label="Sluiten">×</button></a><script>try{if(!localStorage.getItem("nieuw-eko")&&new Date()<new Date("2026-12-10"))document.getElementById("nieuwtje").hidden=false}catch(e){}</script>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Zoek een product" autocomplete="off" enterkeyhint="search">
@@ -1334,7 +1334,7 @@ fetch("/data/laagste.json").then(r=>r.ok?r.json():null).then(j=>{if(j){S.laagste
 // Opstarten: welke winkels er zijn (winkels.json), daarna alleen de prijzen van de winkels die aan staan.
 const winkelsP=fetch("/winkels.json").then(r=>r.ok?r.json():null).catch(()=>null);
 // Melding "Nieuw: Ekoplaza" zodra Ekoplaza in de prijzen zit; tot en met 9 december, weg te klikken.
-winkelsP.then(w=>{const el=document.getElementById("nieuwtje");if(!el||store.get("nieuw-eko")||new Date()>new Date("2026-12-10")||!w?.stores?.some(s=>s.id==="ekoplaza"))return;el.hidden=false;
+winkelsP.then(w=>{const el=document.getElementById("nieuwtje");if(!el)return;if(store.get("nieuw-eko")||new Date()>new Date("2026-12-10")){el.hidden=true;return}el.hidden=false;
   el.querySelector(".nt-weg").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();store.set("nieuw-eko",1);el.hidden=true})});
 // Aanbiedingen in delen (zie winkels.json "aanb"); lukt dat niet, dan het hele bestand.
 async function aanbLaden(){const w=await winkelsP;
