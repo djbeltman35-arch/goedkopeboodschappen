@@ -905,3 +905,8 @@ html body .nav.rustig.drie a.bespaar{color:#0e7c4a!important;font-weight:800!imp
 html body .nav.rustig.drie a.nbpil{padding-top:4px!important;padding-bottom:4px!important;min-height:29px!important}
 
 html body .hero .search .btn:not(#_a):not(#_b):not(#_c){min-height:0!important;height:40px!important;align-self:center;padding-top:0!important;padding-bottom:0!important}
+/* Snelheid: installeermelding zweeft onderin, zodat de pagina niet verspringt als hij verschijnt */
+html body .installeer{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:21;width:min(620px,calc(100% - 24px));margin:0;background:#fff;border:2px solid var(--green);box-shadow:0 8px 24px rgba(20,40,28,.25)}
+html body.hasdock .installeer{bottom:calc(max(12px,env(safe-area-inset-bottom,0px)) + 74px)}
+/* Snelheid: lange lijsten met aanbiedingen pas tekenen als ze in beeld komen */
+html body li.offer{content-visibility:auto;contain-intrinsic-size:auto 190px}

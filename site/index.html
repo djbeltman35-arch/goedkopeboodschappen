@@ -1161,9 +1161,9 @@ function storesUi(){
   const k=ids.filter(id=>!S.off.has(id)).length;
   $("mysum").textContent=`Mijn supermarkten: ${k===ids.length?"alle "+k:k+" van "+ids.length}`;
   const aan=ids.filter(id=>!S.off.has(id)).map(id=>STORENAMES[id]||id);
-  $("mysub").textContent=k===ids.length?"Kies je eigen winkels":k?aan.join(", "):"Kies minstens één supermarkt";
+  $("mysub").textContent=k===ids.length?"Kies je winkels":k?aan.join(", "):"Kies minstens één supermarkt";
   buurtLijst();
-  if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"zonder huismerken":"alleen huismerken");
+  if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"geen huismerk":"alleen huismerk");
   merkenUi();
   if($("mijnsel")) $("mijnsel").innerHTML=mijnOpties();
   if(S.mijn) $("mysub").textContent="⭐ Vaste winkel: "+mijnNaam()+" · "+$("mysub").textContent;
