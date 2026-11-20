@@ -944,3 +944,9 @@ html body .hero .search input:not(#_a){border:0!important;box-shadow:none!import
 html body .hero .search input::placeholder{color:#3d5a48;font-weight:600;opacity:1}
 html body .hero .search:focus-within{border-color:#ffd43b;box-shadow:0 4px 0 #08502f,0 0 0 4px rgba(255,212,59,.45)}
 html body .hero .search .btn:not(#_a):not(#_b):not(#_c){height:46px!important;border-radius:12px}
+/* carrousel via transform (geen herberekening van de pagina per beeldje) */
+.hero .bocar{display:block!important}
+.hero .bocar .botrack{display:flex;gap:10px;width:max-content;will-change:transform}
+.hero .bocar.loopt .botrack{animation:boloop 60s linear infinite}
+.hero .bocar.stil .botrack,.hero .bocar:hover .botrack{animation-play-state:paused}
+@keyframes boloop{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 5px))}}
