@@ -899,6 +899,8 @@ html body .nav.rustig.drie{flex:1;justify-content:space-between;align-items:cent
 html body .nav.rustig.drie a.lnk{text-decoration:underline!important;text-underline-offset:3px;text-decoration-thickness:2px;padding:6px 2px!important}
 html body .nav.rustig.drie a.lnk:hover{background:none!important;color:var(--green)!important}
 html body .nav.rustig.drie a.bespaar{color:#0e7c4a!important;font-weight:800!important}
+html body .nav.rustig.drie a.bespaar{position:relative;isolation:isolate;padding-inline:6px!important;text-decoration:none!important}
+html body .nav.rustig.drie a.bespaar::before{content:"";position:absolute;inset:0;border-radius:999px;background:#ffd43b;z-index:-1}
 @media(max-width:400px){html body .nav.rustig.drie a{font-size:13px!important}html body .nav.rustig.drie a.nbpil{padding:6px 10px!important}}
 @media(max-width:640px){html body .bar:has(.nav.rustig.drie) .brand{display:none!important}html body .nav.rustig.drie{margin-left:0!important}html body .nav.rustig.drie a{font-size:clamp(12.5px,3.7vw,15px)!important;white-space:nowrap}html body .nav.rustig.drie a.nbpil{padding:7px 11px!important}}
 
