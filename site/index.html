@@ -1456,14 +1456,14 @@ if("serviceWorker" in navigator&&location.protocol==="https:"){
   let swWeg=0;document.addEventListener("visibilitychange",()=>{if(document.hidden){swWeg=Date.now();return}
     if(Date.now()-swWeg>60000)navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{})});
 }
-</script>
-<script>/* Bespaar ook op: rustig van rechts naar links, stopt bij aanraken */
+/* Bespaar ook op: rustig van rechts naar links, stopt bij aanraken */
 (function(){var c=document.querySelector(".bocar");if(!c||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
 var stil=0,pos=0,last=0;function pauze(){stil=Date.now()+4000}
 ["pointerdown","touchstart","wheel","focusin"].forEach(function(e){c.addEventListener(e,pauze,{passive:true})});
 c.addEventListener("mouseenter",function(){stil=Infinity});c.addEventListener("mouseleave",function(){stil=0});
 function stap(t){var dt=last?Math.min(t-last,50):16;last=t;var half=c.scrollWidth/2;
 if(Date.now()>stil&&!document.hidden&&half>c.clientWidth){if(Math.abs(c.scrollLeft-pos)>2)pos=c.scrollLeft;pos+=dt*0.03;if(pos>=half)pos-=half;c.scrollLeft=pos}else pos=c.scrollLeft;
-requestAnimationFrame(stap)}requestAnimationFrame(stap)})();</script>
+requestAnimationFrame(stap)}requestAnimationFrame(stap)})();
+</script>
 </body>
 </html>
