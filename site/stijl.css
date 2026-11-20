@@ -931,3 +931,10 @@ html body .hero .rustpromise{margin-bottom:10px}
 .hero .bocar a{width:auto;min-width:0;max-width:200px;flex-direction:row;align-items:center;gap:8px;padding:8px 12px}
 .hero .bocar .bt{display:flex;flex-direction:column;min-width:0}
 .hero .bocar b,.hero .bocar small{white-space:nowrap}
+.hero .bocar{scroll-snap-type:none!important;scrollbar-width:none}.hero .bocar::-webkit-scrollbar{display:none}
+.hero .bocar{padding-bottom:6px}
+.hero .bocar a{padding:6px 12px;gap:6px;border-radius:999px;box-shadow:0 2px 0 #cfe6d8}
+.hero .bocar small{display:none}
+.hero .bocar .bi{font-size:18px}
+.hero .bocar b{font-size:14px}
+.hero .bokop{margin-bottom:6px}
