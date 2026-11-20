@@ -214,10 +214,10 @@
 
 <main>
   <section class="wrap hero">
-    <p class="bekendregel">Bekend van <a href="https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker" target="_blank" rel="noopener">Hart van Nederland</a> en <a href="https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite" target="_blank" rel="noopener">RTV Oost</a></p>
     <h1>Boodschappen vergelijken</h1>
-    <p class="rustpromise">Elke dag nieuwe prijzen van 12 supermarkten</p>
-    
+    <p class="rustpromise">Elke dag nieuwe prijzen</p>
+    <div class="bespaarook"><a class="bokop" href="https://bespaarvriend.nl/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener">Bespaar ook op: <span aria-hidden="true">→</span></a>
+    <div class="bocar" aria-label="Bespaar ook op"><a href="https://bespaarvriend.nl/zorgverzekering-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">🩺</span><span class="bt"><b>Zorgverzekering</b><small>Overstappen vóór 31 dec</small></span></a><a href="https://bespaarvriend.nl/energie-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">⚡</span><span class="bt"><b>Energie</b><small>Wat verandert in 2027</small></span></a><a href="https://bespaarvriend.nl/eigen-risico-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">💶</span><span class="bt"><b>Eigen risico</b><small>€ 400 in 2027</small></span></a><a href="https://bespaarvriend.nl/zorgtoeslag-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">🧾</span><span class="bt"><b>Zorgtoeslag</b><small>Heb jij recht?</small></span></a><a href="https://bespaarvriend.nl/internet-en-mobiel/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">📱</span><span class="bt"><b>Internet en mobiel</b><small>Stop met te veel betalen</small></span></a><a href="https://bespaarvriend.nl/salderen-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">☀️</span><span class="bt"><b>Einde salderen</b><small>Zonnepanelen?</small></span></a><a href="https://bespaarvriend.nl/auto-en-tanken/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">⛽</span><span class="bt"><b>Auto en tanken</b><small>Brandstof en banden</small></span></a><a href="https://bespaarvriend.nl/vakantie-en-vliegen/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">✈️</span><span class="bt"><b>Vakantie en vliegen</b><small>Goedkoper weg</small></span></a><a href="https://bespaarvriend.nl/huurtoeslag-2027/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">🔑</span><span class="bt"><b>Huurtoeslag</b><small>Huur te hoog?</small></span></a><a href="https://bespaarvriend.nl/belastingaangifte-tips/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">📑</span><span class="bt"><b>Belasting terug</b><small>Aftrekposten</small></span></a><a href="https://bespaarvriend.nl/administratie/?utm_source=boodschappenvergelijk&amp;utm_medium=carrousel" target="_blank" rel="noopener"><span class="bi" aria-hidden="true">🗂️</span><span class="bt"><b>Vaste lasten</b><small>In 5 stappen overzicht</small></span></a></div></div>
     <form class="search" id="f" role="search" action="/">
       <label class="sr" for="q">Zoek een product</label>
       <input type="search" id="q" name="q" placeholder="Zoek een product" autocomplete="off" enterkeyhint="search">
@@ -225,7 +225,7 @@
     </form>
     <ol class="stapjes" aria-label="Zo werkt het"><li><b>1</b>Zoek product</li><li><b>2</b>Op je lijst</li><li><b>3</b>Kies winkel</li></ol>
     <div class="installeer" id="installeer" hidden></div>
-    <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies je winkels</span></span></summary>
+    <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies uit 12 winkels</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
       <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p><div id="buurtlijst"></div></div>
@@ -1163,9 +1163,9 @@ function storesUi(){
   const k=ids.filter(id=>!S.off.has(id)).length;
   $("mysum").textContent=`Mijn supermarkten: ${k===ids.length?"alle "+k:k+" van "+ids.length}`;
   const aan=ids.filter(id=>!S.off.has(id)).map(id=>STORENAMES[id]||id);
-  $("mysub").textContent=k===ids.length?"Kies je winkels":k?aan.join(", "):"Kies minstens één supermarkt";
+  $("mysub").textContent=k===ids.length?"Kies uit "+ids.length+" winkels":k?aan.join(", "):"Kies minstens één supermarkt";
   buurtLijst();
-  if(S.merk!=="alle") $("mysub").textContent+=" · "+(S.merk==="zonder"?"geen huismerk":"alleen huismerk");
+  if(S.merk!=="alle"&&k!==ids.length) $("mysub").textContent+=" · "+(S.merk==="zonder"?"geen huismerk":"alleen huismerk");
   merkenUi();
   if($("mijnsel")) $("mijnsel").innerHTML=mijnOpties();
   if(S.mijn) $("mysub").textContent="⭐ Vaste winkel: "+mijnNaam()+" · "+$("mysub").textContent;
