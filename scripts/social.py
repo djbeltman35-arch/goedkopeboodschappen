@@ -189,6 +189,9 @@ if top:
              f"Bekijk alle {len(nu)} aanbiedingen van {len(set(o['s'] for o in nu))} supermarkten en zie waar jouw boodschappenlijst het goedkoopst is. Gratis en zonder reclame.\n"
              f"👉 {SITE}/aanbiedingen/\n\n#aanbiedingen #boodschappen #besparen #supermarkt #korting")
     posts.append({"soort": "aanbiedingen", "tijd": "12:00", "tekst": tekst, "afbeelding": RAW + png, "link": f"{SITE}/aanbiedingen/"})
+    # Elke dag ook als staande video: YouTube Shorts kan alleen video, en Reels bereiken ook niet-volgers.
+    mp4 = maak_reel(os.path.join(OUT, png), f"aanbiedingen-{VANDAAG}.mp4")
+    if mp4: posts[-1]["video"] = RAW + mp4; posts[-1]["titel"] = f"{thema}: aanbiedingen van {datum}"
 # Avondbericht: per supermarkt de grootste klapper (een tweede moment op de dag met andere inhoud).
 avond = beste([o for o in nu if o.get("c") in ETEN - {"Huishouden"} and o not in top], 5)
 if avond:
