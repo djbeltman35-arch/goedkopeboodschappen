@@ -938,3 +938,9 @@ html body .hero .rustpromise{margin-bottom:10px}
 .hero .bocar .bi{font-size:18px}
 .hero .bocar b{font-size:14px}
 .hero .bokop{margin-bottom:6px}
+/* Zoekveld valt meer op (nov 2026) */
+html body .hero .search{background:#fff;border:3px solid #0e7c4a;border-radius:16px;padding:6px;gap:6px;box-shadow:0 4px 0 #08502f,0 10px 24px rgba(8,80,47,.22)}
+html body .hero .search input:not(#_a){border:0!important;box-shadow:none!important;outline:0;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230e7c4a' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E") no-repeat 12px 50%/24px;padding-left:46px!important;font-size:19px;font-weight:600;color:#10261a}
+html body .hero .search input::placeholder{color:#3d5a48;font-weight:600;opacity:1}
+html body .hero .search:focus-within{border-color:#ffd43b;box-shadow:0 4px 0 #08502f,0 0 0 4px rgba(255,212,59,.45)}
+html body .hero .search .btn:not(#_a):not(#_b):not(#_c){height:46px!important;border-radius:12px}
