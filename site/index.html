@@ -212,7 +212,7 @@
   </div>
 </header>
 
-<main>
+<main class="met-app">
   <section class="wrap hero">
     <h1>Boodschappen vergelijken</h1>
     <p class="rustpromise">Elke dag nieuwe prijzen</p>
@@ -1462,6 +1462,8 @@ var tm;function pauze(){c.classList.add("stil");clearTimeout(tm);tm=setTimeout(f
 ["pointerdown","touchstart","wheel","focusin"].forEach(function(e){c.addEventListener(e,pauze,{passive:true})});
 function start(){setTimeout(function(){t.style.animationDuration=Math.round(t.scrollWidth/2/30)+"s";c.classList.add("loopt")},2500)}
 if(document.readyState==="complete")start();else addEventListener("load",start)})();
+/* Vervangt de dure CSS-selector body:has(#results nav.terug.app) */
+(function(){var r=document.getElementById("results");if(!r||!window.MutationObserver)return;var f=function(){document.body.classList.toggle("terug-open",!!r.querySelector("nav.terug.app"))};new MutationObserver(f).observe(r,{childList:true,subtree:true});f()})();
 </script>
 </body>
 </html>

@@ -239,7 +239,7 @@ td .lbl,.row .lbl{display:inline-block}
 #results nav.terug.app .tknop{padding:6px 12px;font-size:14px}
 /* Terugbalk staat vast bovenaan zolang je in een categorie, de aanbiedingen of zoekresultaten bent */
 #results nav.terug.app{position:fixed;top:0;left:0;right:0;z-index:50;margin:0;padding:8px max(16px,calc((100vw - 760px)/2));background:var(--page)}
-body:has(#results nav.terug.app){padding-top:52px}
+body.terug-open{padding-top:52px}
 /* Dieetfilter */
 .chips.dieet{margin:6px 0 4px;flex-wrap:wrap}
 .chips.dieet .chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--on-green)}
@@ -422,7 +422,7 @@ html body .chips.dieet{gap:5px;margin:4px 0}
 html body .terug{gap:6px;margin-bottom:6px}
 html body .terug .tknop{padding:5px 11px;font-size:14px;border-width:1.5px}
 html body #results nav.terug.app{padding-top:6px;padding-bottom:6px}
-body:has(#results nav.terug.app){padding-top:44px}
+body.terug-open{padding-top:44px}
 html body .mfbalk .mfilters .btn{padding:5px 10px;font-size:13.5px}
 html body .mfbalk{padding:6px 0}
 html body .wmblok{margin:10px 0 12px}
@@ -733,7 +733,7 @@ html body .snellinks{margin-top:10px}
 html body .snellinks .subblok,html body .quick.tegels .catklap{margin-bottom:10px}
 /* Telefoon: eerst de maaltijden, dan "Mijn lijst" (op de computer staat de lijst gewoon rechts) */
 @media (max-width:920px){
-  html body main:has(>.wrap.app){display:flex;flex-direction:column}
+  html body main.met-app{display:flex;flex-direction:column}
   html body main>.wrap.app{display:contents}
   html body main>.wrap.app>.res{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:6px}
   html body main>.wrap.app>.list{margin:12px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));order:1}
@@ -743,8 +743,8 @@ html body .quick.tegels .cats .chip .ic{display:none!important}
 html body .maal .maalkop{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 html body .maal .maalkop h2{margin-bottom:10px}
 html body .maal .maalkop a{flex:none;font-weight:700;font-size:15px;color:var(--green-dark);text-decoration:none;white-space:nowrap}
-@media (max-width:920px){html body main:has(>.wrap.app)>*{width:100%;max-width:100%;box-sizing:border-box;margin-left:0;margin-right:0}html body main:has(>.wrap.app)>.wrap.app>.res,html body main:has(>.wrap.app)>.wrap.app>.list{box-sizing:border-box;min-width:0}html body main:has(>.wrap.app)>.wrap.app>.list{width:auto;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}}
-@media (max-width:920px){html body main:has(>.wrap.app)>*,html body main:has(>.wrap.app)>.wrap.app>*{min-width:0}}
+@media (max-width:920px){html body main.met-app>*{width:100%;max-width:100%;box-sizing:border-box;margin-left:0;margin-right:0}html body main.met-app>.wrap.app>.res,html body main.met-app>.wrap.app>.list{box-sizing:border-box;min-width:0}html body main.met-app>.wrap.app>.list{width:auto;margin-left:max(16px,env(safe-area-inset-left,0px));margin-right:max(16px,env(safe-area-inset-right,0px))}}
+@media (max-width:920px){html body main.met-app>*,html body main.met-app>.wrap.app>*{min-width:0}}
 /* Startpagina: de vier uitklapblokken compact en dicht op elkaar */
 html body .snellinks{margin-top:6px!important;gap:6px!important}
 html body .quick.tegels .catklap{margin:10px 0 0!important}
@@ -905,7 +905,7 @@ html body .nav.rustig.drie a.bespaar::before{content:"";position:absolute;inset:
 html body .nav.rustig.drie a.bespaar.knipper::before{animation:bespaarKnipper 1.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){html body .nav.rustig.drie a.bespaar.knipper::before{animation:none}}
 @media(max-width:400px){html body .nav.rustig.drie a{font-size:13px!important}html body .nav.rustig.drie a.nbpil{padding:6px 10px!important}}
-@media(max-width:640px){html body .bar:has(.nav.rustig.drie) .brand{display:none!important}html body .nav.rustig.drie{margin-left:0!important}html body .nav.rustig.drie a{font-size:clamp(12.5px,3.7vw,15px)!important;white-space:nowrap}html body .nav.rustig.drie a.nbpil{padding:7px 11px!important}}
+@media(max-width:640px){html body .bar .brand{display:none!important}html body .nav.rustig.drie{margin-left:0!important}html body .nav.rustig.drie a{font-size:clamp(12.5px,3.7vw,15px)!important;white-space:nowrap}html body .nav.rustig.drie a.nbpil{padding:7px 11px!important}}
 
 html body .nav.rustig.drie a.nbpil{padding-top:4px!important;padding-bottom:4px!important;min-height:29px!important}
 
@@ -950,3 +950,5 @@ html body .hero .search .btn:not(#_a):not(#_b):not(#_c){height:46px!important;bo
 .hero .bocar.loopt .botrack{animation:boloop 60s linear infinite}
 .hero .bocar.stil .botrack,.hero .bocar:hover .botrack{animation-play-state:paused}
 @keyframes boloop{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 5px))}}
+/* Snelheid: delen onder de vouw pas opbouwen als ze in beeld komen (nov 2026) */
+html body main>section.wrap.maal,html body main>section.wrap.seo{content-visibility:auto;contain-intrinsic-size:auto 600px}
