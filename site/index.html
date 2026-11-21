@@ -440,17 +440,20 @@ function matches0(q,prefix=true,pool=S.prods,basis=false){klaar();
   // Een zoekwoord past als heel woord, als eind van een samengesteld woord (scharreleieren, roomboter) of, voor het laatste woord, als begin.
   // Een bijvoeglijk naamwoord vóór het laatste zoekwoord telt met of zonder -e (glutenvrij/glutenvrije spaghetti, gekookte/gekookt).
   const bijv=(x,w)=>w.length>=5&&(x===w+"e"||(w.endsWith("e")&&x===w.slice(0,-1)));
-  const fit=(x,w,last,adj=!last)=>x===w||(w.length>=5&&x.endsWith(w))||(adj&&bijv(x,w))||(prefix&&last&&x.startsWith(w));
+  // Meervoud op -elen telt ook als -els (appelen = appels, handappels). Zelfde regel als in vergelijk.py.
+  const fit=(x,w,last,adj=!last)=>x===w||(samenOk(w)&&x.endsWith(w))||(adj&&bijv(x,w))||(prefix&&last&&x.startsWith(w))||(!!elsAlt(w)&&x.endsWith(elsAlt(w)));
   let m=pool.filter(p=>on(p[0])&&merkOk(p)&&!S.betwist.has(p.lk)&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
   if(prefix&&t[t.length-1].length>=6){const sterk=m.filter(p=>t.every((w,i)=>p.hay.some(x=>fit(x,w,false,i<t.length-1))));if(new Set(sterk.map(p=>p[0])).size>=3)m=sterk}
-  const clean=m.filter(p=>!p.hay.some(x=>vreemd(x,t)));
+  const tv=t.concat(t.map(elsAlt).filter(Boolean)),clean=m.filter(p=>!p.hay.some(x=>vreemd(x,tv)));
   return verfijn(clean.length?clean:m,t);
 }
 // Per zoekterm woorden die laten zien dat het iets anders is (tomaten ≠ tomatenketchup); zelfde lijst als de vergelijkingspagina's.
 const VERFIJN={{VERFIJN}};
 const verfijn=(m,t)=>{const niet=(VERFIJN[t.join(" ")]||[]).filter(n=>!t.some(w=>w.includes(n)));return niet.length?m.filter(p=>!p.hay.some(x=>niet.some(n=>x.includes(n)))):m};
 // Woord dat laat zien dat het om een ander product of een variant gaat.
-const vreemd=(x,t)=>!t.includes(x)&&(EXCL.has(x)||!t.some(w=>w.length>=5&&x.endsWith(w))&&(ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e))));
+// Woorden van 4 letters die als eind van een samengesteld woord hetzelfde soort product blijven (tomatensoep is soep).
+const SAMEN4=new Set(["soep"]),samenOk=w=>w.length>=5||SAMEN4.has(w),elsAlt=w=>w.length>=6&&w.endsWith("elen")?w.slice(0,-2)+"s":null;
+const vreemd=(x,t)=>!t.includes(x)&&(EXCL.has(x)||!t.some(w=>samenOk(w)&&x.endsWith(w))&&(ENDS.some(e=>x.endsWith(e)&&x!==e.replace(/s$/,""))||STARTS.some(e=>x.startsWith(e))));
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
 const rank=p=>p.bad?1e6+eff(p):vglUnit(p)??(eff(p)*1000);
 // Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.

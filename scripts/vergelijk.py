@@ -106,10 +106,14 @@ for _i, _p in enumerate(prods):
     for _x in set(_p[7]): WOORDINDEX.setdefault(_x, []).append(_i)
 _VOCAB = list(WOORDINDEX)
 _VREEMD = {}
+# Woorden van 4 letters die als eind van een samengesteld woord hetzelfde soort product blijven; meervoud -elen telt ook als -els. Zelfde als in de app.
+SAMEN4 = {"soep"}
+def samen_ok(w): return len(w) >= 5 or w in SAMEN4
+def els_alt(w): return w[:-2] + "s" if len(w) >= 6 and w.endswith("elen") else None
 def _vreemd_woord(x, t):
     k = (x, t)
     if k not in _VREEMD:
-        _VREEMD[k] = x not in t and (x in EXCL or not any(len(w) >= 5 and x.endswith(w) for w in t) and (any(x.endswith(e) and x != e.rstrip("s") for e in ENDS) or any(x.startswith(e) for e in STARTS)))
+        _VREEMD[k] = x not in t and (x in EXCL or not any(samen_ok(w) and x.endswith(w) for w in t) and (any(x.endswith(e) and x != e.rstrip("s") for e in ENDS) or any(x.startswith(e) for e in STARTS)))
     return _VREEMD[k]
 VERFIJN = {k: v for k, v in json.load(open(os.path.join(ROOT, "scripts", "verfijn.json"))).items() if not k.startswith("_")}
 def _verfijn(m, t):
@@ -191,11 +195,15 @@ def matches(term, basis=False):
     for w in t:
         # Een woord past als heel woord of als eind van een samengesteld woord (scharreleieren, roomboter).
         ids = set()
-        for x in ([w] if len(w) < 5 else [x for x in _VOCAB if x.endswith(w)]):
+        for x in ([w] if not samen_ok(w) else [x for x in _VOCAB if x.endswith(w)]):
             ids.update(WOORDINDEX.get(x, ()))
+        if els_alt(w):
+            for x in _VOCAB:
+                if x.endswith(els_alt(w)): ids.update(WOORDINDEX[x])
         sets.append(ids)
     m = [prods[i] for i in sorted(set.intersection(*sets))]
-    clean = [p for p in m if not any(_vreemd_woord(x, t) for x in p[7])]
+    tv = t + tuple(a for a in map(els_alt, t) if a)
+    clean = [p for p in m if not any(_vreemd_woord(x, tv) for x in p[7])]
     return _verfijn(clean or m, t)
 SLECHT = {}  # per zoekterm: producten waarvan de prijs per eenheid niet te vergelijken is (andere eenheid of foute maat)
 GERED = {}   # per zoekterm: producten die de mediaan over alle eenheden samen afkeurde, maar in de gewone eenheid gewoon kloppen
