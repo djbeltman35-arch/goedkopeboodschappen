@@ -32,70 +32,32 @@ function __ibCss(css) {
 })();
 
 /* Installeer-als-app balk. Werkt op Android/Chrome/Edge (knop) en iPhone/iPad Safari (uitleg). */
+/* Installeren als app: geen balk meer (werd vaak weggeklikt), maar een rustige link in de footer. */
 (function () {
   var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   if (standalone) return;
-  if (document.querySelector('#installeer')) return; /* site heeft al een eigen installeerbalk */
-  var KEY = 'installbalk-weg';
-  var T = {
-    nl: ['Installeer als app', 'Gratis, sneller en direct op je beginscherm.', 'Installeren', 'Zet deze app op je beginscherm', 'Tik op %d <b class="i">Deel</b> en kies <b class="i">Zet op beginscherm</b>.', 'Sluiten'],
-    en: ['Install as an app', 'Free, faster and right on your home screen.', 'Install', 'Add this app to your home screen', 'Tap %d <b class="i">Share</b> and choose <b class="i">Add to Home Screen</b>.', 'Close'],
-    de: ['Als App installieren', 'Kostenlos, schneller und direkt auf dem Startbildschirm.', 'Installieren', 'App zum Home-Bildschirm hinzufügen', 'Tippe auf %d <b class="i">Teilen</b> und wähle <b class="i">Zum Home-Bildschirm</b>.', 'Schließen'],
-    fr: ['Installer comme application', 'Gratuit, plus rapide et directement sur votre écran d’accueil.', 'Installer', 'Ajoutez cette app à l’écran d’accueil', 'Touchez %d <b class="i">Partager</b> puis <b class="i">Sur l’écran d’accueil</b>.', 'Fermer'],
-    es: ['Instalar como app', 'Gratis, más rápida y en tu pantalla de inicio.', 'Instalar', 'Añade esta app a tu pantalla de inicio', 'Toca %d <b class="i">Compartir</b> y elige <b class="i">Añadir a pantalla de inicio</b>.', 'Cerrar'],
-    it: ['Installa come app', 'Gratis, più veloce e direttamente nella schermata Home.', 'Installa', 'Aggiungi questa app alla schermata Home', 'Tocca %d <b class="i">Condividi</b> e scegli <b class="i">Aggiungi alla schermata Home</b>.', 'Chiudi'],
-    pl: ['Zainstaluj jako aplikację', 'Za darmo, szybciej i prosto z ekranu głównego.', 'Zainstaluj', 'Dodaj tę aplikację do ekranu głównego', 'Stuknij %d <b class="i">Udostępnij</b> i wybierz <b class="i">Do ekranu początkowego</b>.', 'Zamknij']
-  };
-  var L = T[((document.documentElement.lang || 'nl').slice(0, 2)).toLowerCase()] || T.en;
-  try { var t = +localStorage.getItem(KEY); if (t && Date.now() - t < 7 * 864e5) return; } catch (e) {}
-
   var ua = navigator.userAgent || '';
   var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var iosSafari = ios && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
-  var uitgesteld = null, balk = null;
-
-  var css = '#ia-balk{position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;max-width:520px;margin:0 auto;background:#fff;color:#1b2a22;' +
-    'border:2px solid #0e7c4a;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:12px 44px 12px 12px;display:flex;gap:12px;align-items:center;' +
-    'font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
-    '#ia-balk img{width:44px;height:44px;border-radius:10px;flex:none}#ia-balk b{display:block;font-size:16px}#ia-balk .t{flex:1;min-width:0}' +
-    '#ia-balk button.k{flex:none;background:#0e7c4a;color:#fff;border:0;border-radius:999px;padding:10px 16px;font:700 15px system-ui,sans-serif;cursor:pointer}' +
-    '#ia-balk button.x{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;background:none;font-size:22px;line-height:1;color:#5b6b62;cursor:pointer}' +
-    '#ia-balk b.i{display:inline}#ia-balk .d{display:inline-block;vertical-align:-3px;width:18px;height:18px}' +
-    '.met-navknoppen #ia-balk,html[data-geen-navknoppen] #ia-balk{bottom:76px}@media (prefers-color-scheme:dark){#ia-balk{background:#16211b;color:#e8f1ec}#ia-balk button.x{color:#a9b8b0}}';
-
-  function icoon() {
-    var l = document.querySelector('link[rel="apple-touch-icon"]') || document.querySelector('link[rel~="icon"]');
-    return l ? l.href : '';
+  var uitgesteld = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); uitgesteld = e; });
+  var gc = function (p, t) { try { window.goatcounter && goatcounter.count && goatcounter.count({ path: p, title: t, event: true }); } catch (e) {} };
+  function start() {
+    var nav = document.querySelector('footer nav[aria-label="Over"]') || document.querySelector('footer nav');
+    if (!nav || nav.querySelector('.ia-link')) return;
+    var a = document.createElement('a'); a.href = '#'; a.className = 'ia-link'; a.textContent = '📲 Zet op je beginscherm';
+    var uitleg = document.createElement('p'); uitleg.className = 'small ia-uitleg'; uitleg.hidden = true;
+    uitleg.innerHTML = ios
+      ? 'Tik onderin Safari op <b>Deel</b> (vierkantje met pijltje omhoog) en kies <b>Zet op beginscherm</b>.'
+      : 'Open het menu van je browser (<b>⋮</b> rechtsboven) en kies <b>App installeren</b> of <b>Toevoegen aan startscherm</b>.';
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (uitgesteld) {
+        uitgesteld.prompt();
+        uitgesteld.userChoice.then(function (k) { gc('installeer/' + (k && k.outcome), 'Installeren via footer'); uitgesteld = null; }, function () {});
+      } else { uitleg.hidden = !uitleg.hidden; gc('installeer/uitleg', 'Installeer-uitleg footer'); }
+    });
+    window.addEventListener('appinstalled', function () { a.remove(); uitleg.remove(); });
+    nav.appendChild(a); nav.parentNode.insertBefore(uitleg, nav.nextSibling);
   }
-  function sluit(onthoud) {
-    if (balk) { balk.remove(); balk = null; }
-    if (onthoud) try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
-  }
-  function toon(tekst, knop) {
-    if (balk) return;
-    __ibCss(css);
-    balk = document.createElement('div'); balk.id = 'ia-balk'; balk.setAttribute('role', 'dialog'); balk.setAttribute('aria-label', L[0]);
-    var src = icoon();
-    balk.innerHTML = (src ? '<img alt="" src="' + src + '">' : '') + '<div class="t">' + tekst + '</div>' +
-      (knop ? '<button class="k" type="button">' + L[2] + '</button>' : '') + '<button class="x" type="button" aria-label="' + L[5] + '">&times;</button>';
-    document.body.appendChild(balk);
-    balk.querySelector('.x').onclick = function () { sluit(true); };
-    if (knop) balk.querySelector('.k').onclick = function () {
-      if (!uitgesteld) return;
-      uitgesteld.prompt();
-      uitgesteld.userChoice.then(function (k) { uitgesteld = null; sluit(k && k.outcome === 'dismissed'); }, function () { sluit(false); });
-    };
-  }
-
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault(); uitgesteld = e;
-    toon('<b>' + L[0] + '</b>' + L[1], true);
-  });
-  window.addEventListener('appinstalled', function () { sluit(true); });
-
-  if (iosSafari) {
-    var deel = '<svg class="d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
-    var start = function () { setTimeout(function () { toon('<b>' + L[3] + '</b>' + L[4].replace('%d', deel), false); }, 1500); };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();

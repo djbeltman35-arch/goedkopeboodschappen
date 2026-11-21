@@ -225,7 +225,6 @@
       <button type="submit" class="btn">Zoek</button>
     </form>
     <ol class="stapjes" aria-label="Zo werkt het"><li><b>1</b>Zoek product</li><li><b>2</b>Op je lijst</li><li><b>3</b>Kies winkel</li></ol>
-    <div class="installeer" id="installeer" hidden></div>
     <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies uit 12 winkels</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
@@ -1150,10 +1149,8 @@ async function winkelsInBuurt(){
 }
 /* "Zet op je beginscherm": vanaf het tweede bezoek, weg te klikken, niet als de app al geïnstalleerd is. */
 let installVraag=null;
-addEventListener("beforeinstallprompt",e=>{e.preventDefault();installVraag=e;toonInstall()});
-addEventListener("appinstalled",()=>{store.set("install-weg",1);$("installeer").hidden=true;gc("installeer/gedaan","App geïnstalleerd")});
-/* Ook tonen als de rest nog laadt (app.js komt na het load-event binnen, dus niet op "load" wachten). */
-setTimeout(()=>{try{toonInstall()}catch(e){}},600);
+
+addEventListener("appinstalled",()=>{store.set("install-weg",1);gc("installeer/gedaan","App geïnstalleerd")});
 function toonInstall(){
   const el=$("installeer"); if(!el) return;
   const al=matchMedia("(display-mode: standalone)").matches||navigator.standalone, weg=store.get("install-weg"), bezoek=+store.get("bezoeken")||0;
