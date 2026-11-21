@@ -204,6 +204,7 @@
 <script data-goatcounter="https://goedkopeboodschappen.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
+<script>/* Zoeklink (?q=): de terugbalk alvast ruimte geven, anders springt de pagina als de resultaten verschijnen. */if(/[?&]q=./.test(location.search))document.body.classList.add("terug-open")</script>
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a>
@@ -1342,6 +1343,8 @@ async function laadRest(){
   else{let j=null; try{j=await (await fetch("/producten-rest.json")).json()}catch(e){return}
     if(!j?.products) return; voegToe(j.products); for(const p of j.products) if(S.stores[p[0]])S.stores[p[0]].count++}
   pickCache.clear(); S.restGeladen=true;
+  // Eerst de nieuwe producten in kleine stukjes voorbereiden, anders blokkeert de pagina een seconde.
+  await klaarInStukjes();for(const x of S.list){await rust();pick(x.term)}
   // Alleen opnieuw tekenen wat er nu staat (zoeken, je lijst); zonder te verspringen.
   renderList();renderWhere();if(!S.view&&S.lastQ)search();
 }
@@ -1372,7 +1375,7 @@ const startData=()=>{if(startData.d)return;startData.d=true;const r=$("results")
 {const nu_=()=>{try{return (store.get("lijst-v3")||[]).length||store.get("lijst-erbij")?.length||store.get("samen-id")||location.search||location.hash}catch(e){return true}};
  if(nu_()) startData(); else {for(const ev of ["pointerdown","touchstart","keydown"]) addEventListener(ev,startData,{once:true,passive:true,capture:true});$("q").addEventListener("focus",startData,{once:true});}}
 winkelsP.then(w=>{if(w?.aanbN&&!S.offers.length){S.aanbN=w.aanbN;try{quick()}catch(e){}}});
-startP.then(()=>Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()])).then(([d,aldi,offers])=>{
+startP.then(()=>Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()])).then(async([d,aldi,offers])=>{
   S.stores=d.stores; S.prods=d.products; if(d.ids) for(const id of d.ids) S.kern.add(id);
   // Aldi staat altijd achteraan in de winkellijst.
   const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
@@ -1427,6 +1430,8 @@ startP.then(()=>Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]))
   // De gedeelde link uit de adresbalk halen, anders komen verwijderde artikelen terug bij opnieuw laden.
   if(shared){sp.delete("lijst");history.replaceState(null,"",location.pathname+(sp.toString()?"?"+sp:"")+location.hash)}
   S.snap=store.get("lijst-vorige");
+  // Zoeklink of een lijst: de zoekwoorden eerst in kleine stukjes voorbereiden, zodat de pagina niet ruim een seconde vastloopt.
+  if(sp.get("q")||S.list.length){const r=$("results");if(sp.get("q")&&r&&!r.firstElementChild?.matches?.(".loading"))r.innerHTML='<p class="loading">Prijzen laden…</p>';await klaarInStukjes();for(const x of S.list){await rust();pick(x.term)}}
   storesUi(); quick();
   if(sp.get("q"))$("q").value=sp.get("q");S.demo=false;
   if(sp.get("q")) gc("zoek/"+norm(sp.get("q")),"Zoekt: "+sp.get("q"));
@@ -1468,7 +1473,7 @@ var tm;function pauze(){c.classList.add("stil");clearTimeout(tm);tm=setTimeout(f
 function start(){setTimeout(function(){t.style.animationDuration=Math.round(t.scrollWidth/2/30)+"s";c.classList.add("loopt")},2500)}
 if(document.readyState==="complete")start();else addEventListener("load",start)})();
 /* Vervangt de dure CSS-selector body:has(#results nav.terug.app) */
-(function(){var r=document.getElementById("results");if(!r||!window.MutationObserver)return;var f=function(){document.body.classList.toggle("terug-open",!!r.querySelector("nav.terug.app"))};new MutationObserver(f).observe(r,{childList:true,subtree:true});f()})();
+(function(){var r=document.getElementById("results");if(!r||!window.MutationObserver)return;var wacht=/[?&]q=./.test(location.search),f=function(){var on=!!r.querySelector("nav.terug.app");if(on)wacht=false;else if(wacht&&(!r.firstElementChild||r.querySelector(".loading")))return;document.body.classList.toggle("terug-open",on)};new MutationObserver(f).observe(r,{childList:true,subtree:true});f()})();
 </script>
 </body>
 </html>
