@@ -1151,8 +1151,8 @@ async function winkelsInBuurt(){
 let installVraag=null;
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();installVraag=e;toonInstall()});
 addEventListener("appinstalled",()=>{store.set("install-weg",1);$("installeer").hidden=true;gc("installeer/gedaan","App geïnstalleerd")});
-/* Ook tonen als de rest van de pagina nog laadt (anders zag een nieuwe bezoeker de balk soms niet). */
-addEventListener("load",()=>setTimeout(()=>{try{toonInstall()}catch(e){}},600));
+/* Ook tonen als de rest nog laadt (app.js komt na het load-event binnen, dus niet op "load" wachten). */
+setTimeout(()=>{try{toonInstall()}catch(e){}},600);
 function toonInstall(){
   const el=$("installeer"); if(!el) return;
   const al=matchMedia("(display-mode: standalone)").matches||navigator.standalone, weg=store.get("install-weg"), bezoek=+store.get("bezoeken")||0;
