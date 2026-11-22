@@ -36,6 +36,10 @@ for si,s in enumerate(d):
         # Speelgoed-miniaturen (LidlMini) en prijzen van een paar cent zijn geen echte boodschappen.
         if p['p']<0.05 or 'lidlmini' in p['n'].lower().replace(' ',''): continue
         v,u=parse(p.get('s',''),p['n'])
+        # Jumbo verkoopt losse groente en fruit per stuk zonder maat (artikelnummer eindigt op "STK", bv. paprika, komkommer, prei):
+        # dan geldt de prijs per stuk, net als "Per stuk" bij de andere winkels.
+        if v is None and s['n']=='jumbo' and not (p.get('s') or '').strip() and str(p.get('l','')).endswith('STK'):
+            v,u=1,'st'; p['s']='Per stuk'
         # Staat er in de naam een andere hoeveelheid dan in de maat ("Kipfilet 1000 g" met maat "150 g"), dan klopt een van beide niet:
         # dan geen prijs per kilo/liter, zodat het product niet onterecht als goedkoopste bovenaan komt.
         vn,un=parse(p['n']); vs,us=parse(p.get('s',''))

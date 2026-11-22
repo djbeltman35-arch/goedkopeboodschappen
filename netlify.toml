@@ -138,6 +138,10 @@
   to = "/vergelijk/parmigiano/"
   status = 301
 [[redirects]]
+  from = "/vergelijk/tarwebrood/"
+  to = "/vergelijk/bruin-brood/"
+  status = 301
+[[redirects]]
   from = "/vergelijk/wortels/"
   to = "/vergelijk/winterpeen/"
   status = 301

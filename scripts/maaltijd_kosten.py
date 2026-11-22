@@ -5,6 +5,10 @@ import math
 from maaltijden import I, MAALTIJDEN, SOORTEN, NOTITIE, NIET_ALGEMEEN, BEREIK, GLUTEN, LET_OP, GLUTEN_WOORDEN, LET_OP_WOORDEN
 
 def _toegestaan(p, termwoorden, niet):
+    # Uitsluitwoorden met een spatie ("vers sap", "bacon bits") gelden voor de hele naam.
+    naam, tz = " ".join(p[7]), " ".join(termwoorden)
+    for f in niet:
+        if " " in f and f in naam and f not in tz: return False
     for x in p[7]:
         for f in NIET_ALGEMEEN + niet:
             if f in x and not any(f in t for t in termwoorden): return False
@@ -17,11 +21,14 @@ def eenheidsprijs(p):
     if re.search(r"(per|^1)\s*stuks?\b", (p[4] or "").lower()): return eff(p), "st"
     return None, None
 
+# Vers fruit en groente koop je per kilo of per stuk; iets met een prijs per liter is dan sap of limonade.
+GEEN_LITER = {"sinaasappel", "citroen", "mango", "gember", "knoflook", "rode peper", "paprika", "groene paprika", "appel", "limoen"}
+
 def ingredient_prijzen(sleutel, q):
     """Per winkel: (kassaprijs, product, aantal verpakkingen, kosten van wat je gebruikt).
     Kassaprijs = hele verpakkingen die je moet kopen om genoeg te hebben; per winkel de goedkoopste verpakking die volstaat."""
     termen, _, stuk, niet = I[sleutel]
-    niet = [norm(n)[0] if " " not in n else n for n in niet]
+    niet = [norm(n)[0] if " " not in n else " ".join(norm(n)) for n in niet]
     best = {}
     for term in termen:
         tw = norm(term)
@@ -29,6 +36,7 @@ def ingredient_prijzen(sleutel, q):
         def ok(p):
             v, u = eenheidsprijs(p)
             if v is None or not _toegestaan(p, tw, niet): return False
+            if u == "l" and sleutel in GEEN_LITER: return False
             return lo <= v <= hi if u in ("kg", "l") else (not stuk or lo <= v / stuk <= hi)
         kand = [p for p in matches(term) if ok(p)]
         if not kand: continue
