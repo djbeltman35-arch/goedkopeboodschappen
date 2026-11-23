@@ -207,7 +207,7 @@ Q = {"boerenkool-met-rookworst": ["boerenkool stamppot", "boerenkool met worst",
 GEDAAN = set(json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "maaltijd_fotos.json"))))
 # Al eerder bekeken zonder geschikte foto: niet opnieuw zoeken (scheelt tijd)
 GEDAAN |= {"bloemkoolrijstbowl-kip-pindasaus", "bruinebonensoep", "courgette-bonensoep-geitenkaas", "indonesische-roerbak-snijbonen", "jachtschotel-bloemkoolpuree", "kabeljauw-wortelpuree", "kalkoenfilet-groene-groenten", "kip-piri-piri-rijst", "kipshoarma-rijst", "krieltjessalade-gerookte-forel", "lamsgehaktballetjes-tomatensaus", "maaltijdsalade-kip-krieltjes", "macaroni-ham-kaas", "mexicaans-eenpansgerecht-rijst", "noedelsoep-kip-groente", "orzo-spinazie-kip", "ovenschotel-aardappel-portobello", "paksoi-kip-rijst", "pasta-boordevol-groente", "preischotel-aardappel", "quinoasalade-tonijn-avocado", "quinoasalade-venkel-wortel", "roerbak-kip-krieltjes", "shepherds-pie-linzen", "traybake-kip-zwarte-bonen", "vegan-aardappelsalade", "vegan-boerenkoolstamppot", "vegan-gehaktbal-aardappel-sperziebonen", "vis-ovenschotel-spinazie", "vis-tapenade-puree-sperziebonen", "visfilet-courgette-tomaat", "volkorenspaghetti-courgette-champignons", "witlof-ovenschotel-gehakt", "wraps-guacamole-kidneybonen", "zuurkoolstamppot-ananas-zalm"}
-UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://boodschappenvergelijk.nl; goedkopeboodschappen@proton.me)"}
+UA = {"User-Agent": "GoedkopeBoodschappen/1.0 (https://boodschappenvergelijk.nl; info@boodschappenvergelijk.nl)"}
 OK = re.compile(r"^(CC0|Public domain|PD|CC BY(-SA)? [0-9.]+|CC BY(-SA)?)", re.I)
 def api(params):
     u = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode({**params, "format": "json"})

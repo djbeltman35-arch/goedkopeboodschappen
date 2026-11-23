@@ -888,7 +888,7 @@ over = f'''<div class="panel"><h2 style="margin-top:0">Eerlijk vergelijken, zond
 <h2>Waar komen de prijzen vandaan?</h2><p>Elke dag halen we automatisch de prijzen en aanbiedingen op van de webshops van {AANTAL} supermarkten: {", ".join(NAMEN[s] for s in ACTIEF if s in NAMEN)}. De gewone prijzen komen deels uit de open dataset van <a href="https://www.checkjebon.nl/" rel="noopener">Checkjebon</a> (MIT-licentie). Vomar, SPAR, Jan Linders en Nettorama zetten hun acties niet als losse prijzen online; daarvan tonen we alleen de gewone prijzen waar die beschikbaar zijn. Coop is inmiddels PLUS geworden.</p>
 <p>Supermarkten kunnen in de winkel een andere prijs hanteren dan online. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe vergelijken we?</h2><p>Per product zoeken we bij elke supermarkt het voordeligste vergelijkbare product en vergelijken we de prijs per kilo, liter of stuk. Varianten als lactosevrij of biologisch tellen alleen mee als je ernaar zoekt. Lopende aanbiedingen rekenen we mee.</p>
-<h2>Contact</h2><p>Een fout gezien of een idee? Mail naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'''
+<h2>Contact</h2><p>Een fout gezien of een idee? Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>'''
 schrijf("/over/", page("/over/", "Over Goedkope Boodschappen: gratis, onafhankelijk, zonder reclame", "Goedkope Boodschappen is een gratis hobbyproject zonder reclame of commissie. Lees waar de prijzen vandaan komen en hoe we vergelijken.",
     crumbs(("Over deze site", None))[0] + "<h1>Over deze site</h1><p class=\"lead\">Gratis, onafhankelijk en zonder reclame. Gemaakt om je geld te besparen, niet om aan je te verdienen.</p>", over))
 # ---------- Zo vergelijken wij: open over de werkwijze, zodat iedereen ziet dat er geen winkel voorgaat ----------
@@ -910,7 +910,7 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <p>Persoonlijke aanbiedingen (zoals een persoonlijke bonus op je klantenkaart) en zegeltjes kunnen we niet zien. Die tellen dus niet mee.</p>
 <h2>Welke supermarkt is het goedkoopst?</h2><p>Daarvoor gebruiken we een vast boodschappenmandje van {len(PAKTERMEN)} gewone producten, van melk en brood tot wasmiddel. Per winkel tellen we het voordeligste vergelijkbare product op, voor dezelfde hoeveelheid. We nemen alleen producten mee die bij álle vergeleken winkels te koop zijn. Zo wordt geen winkel goedkoper omdat hij iets niet verkoopt. Een winkel waar online te veel ontbreekt, laten we in deze ranglijst weg.</p>
 <h2>Hoe vaak in de aanbieding?</h2><p>Bij een actie staat hoe vaak hetzelfde product bij dezelfde supermarkt de weken ervoor in de aanbieding was, en over hoeveel weken we dat weten. Eén actie telt één keer, ook als hij over twee kalenderweken loopt. "Vaak in de aanbieding" betekent: in minstens de helft van die weken. Dan hoef je niet te hamsteren. We houden dit bij sinds oktober 2026.</p><h2>Complete maaltijden</h2><p>Bij maaltijden rekenen we met <b>hele verpakkingen</b>, zoals aan de kassa: heb je 300 gram nodig en zit het per 500 gram, dan betaal je 500 gram. Olie, zout en kruiden uit de voorraadkast tellen niet mee. Is een optioneel ingrediënt niet bij elke supermarkt te koop, dan telt het bij geen enkele winkel mee, zodat je overal hetzelfde krijgt voor de prijs. De recepten komen van bekende receptensites; bij elk gerecht staat de bron.</p>
-<h2>Fout gezien?</h2><p>Bij elk product staat een knop <b>Klopt niet?</b>. Daarmee meld je met één tik een verkeerde prijs of een product dat niet klopt. Ik kijk elke melding na. Je kunt ook mailen naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>
+<h2>Fout gezien?</h2><p>Bij elk product staat een knop <b>Klopt niet?</b>. Daarmee meld je met één tik een verkeerde prijs of een product dat niet klopt. Ik kijk elke melding na. Je kunt ook mailen naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>
 <p><a href="/over/">Over deze site</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a> · <a href="/privacy/">Privacy</a></p>''').replace(f"{_nprod:,}", f"{_nprod:,}".replace(",", "."))
 _zfaq = [("Waarom staan Nettorama, Picnic en Crisp er niet bij?", "Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we de aanbiedingen en de gewone prijzen van de boodschappen die Lidl zelf online zet; Lidl publiceert niet van elk product een prijs."), ("Krijgt Goedkope Boodschappen geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis."),
          ("Kan een supermarkt hoger in de lijst komen?", "Nee. De volgorde komt alleen uit de prijs per kilo, liter of stuk. Voor elke winkel gelden dezelfde regels."),
@@ -925,7 +925,7 @@ privacy = '''<h2>Je boodschappenlijst</h2><p>Je lijst en je gekozen supermarkten
 <h2>"Klopt niet?"</h2><p>Meld je dat een product of prijs niet klopt, dan bewaren we alleen het product, de winkel, wat er niet klopt en je toelichting. Om te zorgen dat één persoon niet steeds hetzelfde kan melden, maken we van je internetadres een onomkeerbare code die na hooguit een maand verloopt; je internetadres zelf bewaren we niet. Je kunt hooguit 5 meldingen per dag doen; wie die grens op 3 dagen in een maand haalt, kan de rest van die maand niets melden. Melden drie verschillende mensen hetzelfde product, dan laten we het tijdelijk weg tot we het hebben gecontroleerd. We gebruiken de meldingen alleen om fouten te verbeteren.</p>
 <h2>Bezoekersstatistieken</h2><p>We tellen bezoeken met <a href="https://www.goatcounter.com/" rel="noopener">GoatCounter</a>. Dat gebruikt geen cookies en slaat geen persoonsgegevens op. We zien bijvoorbeeld hoeveel mensen de site bezoeken, welke pagina's populair zijn en naar welke producten wordt gezocht, maar nooit wie jij bent. Daarom hoef je ook geen cookiemelding weg te klikken.</p>
 <h2>Cookies</h2><p>Deze site plaatst geen cookies. Klik je door naar een supermarkt, dan gelden daar de regels van die supermarkt.</p>
-<h2>Vragen</h2><p>Mail naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'''
+<h2>Vragen</h2><p>Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>'''
 schrijf("/privacy/", page("/privacy/", "Privacy: geen cookies, geen tracking | Goedkope Boodschappen", "Je boodschappenlijst blijft in je eigen browser. Geen cookies, geen persoonsgegevens, geen cookiemelding.",
     crumbs(("Privacy", None))[0] + "<h1>Privacy</h1><p class=\"lead\">Kort gezegd: geen cookies, zo min mogelijk gegevens, en je lijst blijft op je eigen apparaat. Alleen als je zelf je e-mailadres achterlaat, bewaren we dat.</p>", privacy))
 made += [("/over/", "0.4"), ("/privacy/", "0.3")]
@@ -933,7 +933,7 @@ made += [("/over/", "0.4"), ("/privacy/", "0.3")]
 voorw = f'''<div class="panel"><h2 style="margin-top:0">Auteursrecht</h2>
 <p>Alle inhoud van deze website (teksten, afbeeldingen, ontwerp, gegevens en broncode) is beschermd door het auteursrecht en/of het databankenrecht. Niets mag zonder voorafgaande schriftelijke toestemming worden verveelvoudigd, openbaar gemaakt of hergebruikt, ook niet geautomatiseerd (scrapen). Citeren mag met bronvermelding en een link naar deze website.</p>
 <p>© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden.</p></div>
-<h2>Toestemming vragen</h2><p>Wil je iets van deze site gebruiken of overnemen? Vraag het eerst via <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>. Je krijgt zo snel mogelijk antwoord.</p>
+<h2>Toestemming vragen</h2><p>Wil je iets van deze site gebruiken of overnemen? Vraag het eerst via <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>. Je krijgt zo snel mogelijk antwoord.</p>
 <h2>Wat valt hieronder</h2><p>De prijzen zelf komen van de webshops van de supermarkten. Wat van deze site is: de selectie en opbouw van die gegevens (de vergelijkingen, het boodschappenmandje, de prijsoverzichten en de prijsgeschiedenis), de teksten, de maaltijden, het ontwerp en de code.</p>
 <p>Foto's van Wikimedia Commons zijn van hun makers. Ze vallen onder de licentie die bij de foto staat.</p>
 <h2>Geen garantie</h2><p>We doen ons best om de prijzen kloppend te houden, maar fouten kunnen voorkomen. De prijs aan de kassa en de voorwaarden van de supermarkt zijn altijd leidend. Aan de informatie op deze site kun je geen rechten ontlenen.</p>
@@ -984,7 +984,7 @@ media = f"""<h2>Radio Oost: Bij Oost in de middag</h2>
 <li>Gratis, zonder account, zonder reclame en zonder geld van supermarkten.</li>
 <li>Gemaakt door Erik Beltman uit Rijssen, naast zijn gewone baan.</li>
 </ul>
-<p>Vragen of een interview? Mail naar <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p></div>"""
+<p>Vragen of een interview? Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p></div>"""
 schrijf("/in-de-media/", page("/in-de-media/", "In de media: Radio Oost en Hart van Nederland | Goedkope Boodschappen", "Goedkope Boodschappen was te zien bij Hart van Nederland en te horen op Radio Oost. Bekijk de uitzending, luister het fragment en lees het artikel.",
     crumbs(("In de media", None))[0] + "<h1>In de media</h1><p class=\"lead\">Bekend van Hart van Nederland en RTV Oost.</p>", media,
     extra_css=".mediaclip{margin:16px 0 20px}.mediaclip video{display:block;width:100%;max-width:360px;height:auto;border-radius:18px;background:#000}.mediaclip figcaption{font-size:14px;color:var(--muted);margin-top:8px}"))
@@ -1037,7 +1037,7 @@ seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h
        + faq_html(faq) + "</section>")
 ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
-      {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "goedkopeboodschappen@proton.me",
+      {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "info@boodschappenvergelijk.nl",
        "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"]},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
@@ -1950,7 +1950,7 @@ made.append(("/dieet/", "0.7"))
 ch, cld = crumbs(("Tips en contact", None))
 _tip_faq = [("Wat gebeurt er met mijn tip?", "Ik lees elke tip zelf. Goede tips verwerk ik op de site: een ontbrekend product, een prijs die niet klopt of een lekker goedkoop recept. Zo wordt de site voor iedereen beter."),
             ("Moet ik mijn naam of e-mailadres invullen?", "Nee, dat mag leeg blijven. Wil je antwoord? Vul dan je e-mailadres in; ik gebruik het alleen om je terug te mailen."),
-            ("Kan ik ook mailen?", "Ja: goedkopeboodschappen@proton.me."),
+            ("Kan ik ook mailen?", "Ja: info@boodschappenvergelijk.nl."),
             ("Waarom wordt mijn bericht geweigerd?", "Berichten met vloeken, scheldwoorden of seksueel getinte woorden komen niet door. Pas je bericht aan en probeer het opnieuw.")]
 _tip_form = """<form class="tipform" id="tipform" novalidate>
 <label>Waar gaat het over?<select name="soort"><option value="tip">💡 Bespaartip of goedkoper product</option><option value="product">🛒 Product of winkel mist</option><option value="fout">⚠️ Fout gezien (prijs, product, link)</option><option value="idee">✨ Idee voor de site</option><option value="vraag">❓ Vraag</option><option value="anders">Iets anders</option></select></label>
@@ -1987,7 +1987,7 @@ schrijf("/tips/", page("/tips/", "Tips en contact: help boodschappen goedkoper t
     "Heb je een bespaartip, mis je een product of winkel, of zie je een fout? Laat het weten via het tipsformulier van Goedkope Boodschappen. Gratis en zonder account.",
     ch + "<h1>💡 Heb jij een tip? Ik hoor het graag!</h1><p class=\"lead\">Ik maak deze site om iedereen te helpen besparen op boodschappen, gratis en zonder er iets aan te verdienen. Jouw tip helpt mij én alle andere bezoekers.</p>", _tip_body,
     [cld, faq_ld(_tip_faq), {"@context": "https://schema.org", "@type": "ContactPage", "name": "Tips en contact", "url": f"{BASE}/tips/",
-     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "goedkopeboodschappen@proton.me"}}]))
+     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
 made.append(("/tips/", "0.6"))
 
 # ---------- Contact: formulier met onderwerpen; elk bericht gaat meteen naar de mailbox van Erik ----------
@@ -2001,16 +2001,16 @@ _c_form = (_tip_form.replace('id="tipform"', 'id="contactform"').replace('getEle
            .replace('Dank je wel! Ik lees elke tip zelf en doe er echt iets mee.', 'Dank je wel! Je bericht is verstuurd. Heb je je e-mailadres ingevuld, dan krijg je antwoord.')
            .replace('const tekst = f.bericht.value.trim();', 'const tekst = f.bericht.value.trim();\n  if (!f.soort.value) return zeg("Kies eerst een onderwerp.", false);')
            .replace('path: "tip/verstuurd", title: "Tip verstuurd"', 'path: "contact/verstuurd", title: "Contactbericht verstuurd"')
-           .replace('Geen cookies, geen nieuwsbrief, geen reclame.', 'Geen cookies, geen nieuwsbrief, geen reclame. Mailen kan ook: goedkopeboodschappen@proton.me.'))
+           .replace('Geen cookies, geen nieuwsbrief, geen reclame.', 'Geen cookies, geen nieuwsbrief, geen reclame. Mailen kan ook: info@boodschappenvergelijk.nl.'))
 assert '<option value="pers">' in _c_form and 'contactform' in _c_form
 ch, cld = crumbs(("Contact", None))
 _c_faq = [("Hoe snel krijg ik antwoord?", "Ik lees elk bericht zelf, meestal dezelfde dag. Vul je e-mailadres in als je antwoord wilt."),
-          ("Kan ik ook gewoon mailen?", "Ja: goedkopeboodschappen@proton.me."),
+          ("Kan ik ook gewoon mailen?", "Ja: info@boodschappenvergelijk.nl."),
           ("Ik ben journalist. Bij wie moet ik zijn?", "Kies het onderwerp Pers en media, of kijk op de pagina In de media.")]
 schrijf("/contact/", page("/contact/", "Contact | Goedkope Boodschappen", "Neem contact op met Goedkope Boodschappen: een vraag, een fout in een prijs, pers, samenwerking of iets anders. Je bericht komt direct bij Erik.",
     ch + '<h1>Contact</h1><p class="lead">Kies een onderwerp en stuur je bericht. Het komt direct bij mij binnen.</p>', _c_form + faq_html(_c_faq),
     [cld, faq_ld(_c_faq), {"@context": "https://schema.org", "@type": "ContactPage", "name": "Contact", "url": f"{BASE}/contact/",
-     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "goedkopeboodschappen@proton.me"}}]))
+     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
 made.append(("/contact/", "0.5"))
 
 # ---------- Voor budgetcoaches en schuldhulpverlening ----------
@@ -2022,7 +2022,7 @@ ch, cld = crumbs(("Voor hulpverleners", None))
 _hv_faq = [("Is het echt gratis?", "Ja. Er is geen reclame, geen abonnement en geen betaalde plek voor supermarkten."),
            ("Moet mijn klant een account maken?", "Nee. Er is geen account, geen e-mailadres en geen cookies nodig. De boodschappenlijst blijft alleen op de eigen telefoon of computer."),
            ("Kloppen de prijzen?", "De prijzen komen elke dag van de webshops van de supermarkten, inclusief aanbiedingen. In de winkel kan een prijs soms anders zijn; de kassa is leidend."),
-           ("Mag ik naar de site verwijzen of hem in een folder zetten?", "Graag! Gebruik de tekst of de printversie op deze pagina. Een vraag of idee? Mail naar goedkopeboodschappen@proton.me."),
+           ("Mag ik naar de site verwijzen of hem in een folder zetten?", "Graag! Gebruik de tekst of de printversie op deze pagina. Een vraag of idee? Mail naar info@boodschappenvergelijk.nl."),
            ("Werkt het ook voor mensen die niet handig zijn met internet?", "Ja. Zoek een product, tik op + en je ziet welke winkel het goedkoopst is. De lijst kun je printen of via WhatsApp delen, zodat iemand anders kan meekijken.")]
 _hv_deel = "Bespaar op je boodschappen. Op boodschappenvergelijk.nl zie je gratis bij welke supermarkt je boodschappen het goedkoopst zijn. Met weekmenu's en boodschappenlijst. Geen reclame, geen account."
 _hv_body = ('<div class="hvkaart"><h2>Wat heeft je klant eraan?</h2><ul>'
@@ -2070,7 +2070,7 @@ _al_body = ('<div class="letop"><b>Let op:</b> we kijken naar de productnaam, ni
     + '<ul class="alkaart">' + "".join(f'<li><p class="alkop">{ic} <b>{esc(t)}</b></p><p class="sub">{esc(u)}</p><p class="allinks">' + " · ".join(f'<a href="{h}">{esc(n)}</a>' for h, n in ls) + '</p></li>' for ic, t, u, ls in _al) + '</ul>'
     + '<h2>Feestdagen zonder allergenen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas</a>: glutenvrije en vegan pepernoten en chocoladeletters</li><li><a href="/kerst/">🎄 Kerst</a>: allergievrije varianten van het kerstdiner</li><li><a href="/feestdagen/">Alle feestdagen</a></li></ul>'
     + '<p class="note">In de app tik je bij een categorie op <b>⚙️ Filter</b> om alleen glutenvrij, lactosevrij of vegan te zien.</p>'
-    + '<h2>Voor diëtisten en allergie-organisaties</h2><p>Verwijs gerust naar deze pagina. De site is gratis, zonder reclame en zonder account. Vragen of tips: <a href="mailto:goedkopeboodschappen@proton.me">goedkopeboodschappen@proton.me</a>.</p>'
+    + '<h2>Voor diëtisten en allergie-organisaties</h2><p>Verwijs gerust naar deze pagina. De site is gratis, zonder reclame en zonder account. Vragen of tips: <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>'
     + faq_html(_al_faq))
 schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij, zuivelvrij en eivrij",
     f"Voedselallergie of intolerantie? Vergelijk glutenvrije, lactosevrije, zuivelvrije (koemelkallergie) en eivrije producten bij {AANTAL} supermarkten en zie waar ze het goedkoopst zijn.",

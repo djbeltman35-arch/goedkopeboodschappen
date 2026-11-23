@@ -32,7 +32,7 @@ def haal(q=Q, servers=None, timeout=240):
     fout = None
     for s in (servers or SERVERS * 2):
         try:
-            req = urllib.request.Request(s, data=data, headers={"User-Agent": "boodschappenvergelijk.nl (stadspagina's; goedkopeboodschappen@proton.me)"})
+            req = urllib.request.Request(s, data=data, headers={"User-Agent": "boodschappenvergelijk.nl (stadspagina's; info@boodschappenvergelijk.nl)"})
             return json.load(urllib.request.urlopen(req, timeout=timeout))
         except Exception as e:
             fout = e; print("overpass:", s, e); time.sleep(20 if servers is None else 3)

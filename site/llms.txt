@@ -22,7 +22,7 @@ Prijzen komen uit de webshops van de supermarkten (via de open dataset van Check
 
 - [Over de site](https://boodschappenvergelijk.nl/over/): gemaakt door Erik, zonder verdienmodel.
 - [Privacy](https://boodschappenvergelijk.nl/privacy/)
-- Contact: goedkopeboodschappen@proton.me
+- Contact: info@boodschappenvergelijk.nl
 
 ## Gebruik
 - Auteursrecht en gebruiksvoorwaarden: https://boodschappenvergelijk.nl/gebruiksvoorwaarden/ (citeren mag met bronvermelding en een link; overnemen alleen met schriftelijke toestemming)
