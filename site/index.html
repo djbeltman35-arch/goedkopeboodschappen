@@ -253,7 +253,7 @@
         <label class="sr" for="bulkt">Je boodschappen, één per regel</label>
         <textarea id="bulkt" rows="5" placeholder="Eén product per regel, bijvoorbeeld:&#10;halfvolle melk&#10;2 pindakaas&#10;eieren, kipfilet, bananen"></textarea>
         <label class="btn-line fotoknop">📷 Foto van kassabon of lijstje<input type="file" id="fotoin" accept="image/*" hidden></label>
-        <p class="hint" id="fotomsg">De tekst wordt op je eigen telefoon herkend; de foto gaat nergens naartoe.</p>
+        <p class="hint" id="fotomsg">Ook handgeschreven lijstjes. De foto wordt alleen gebruikt om de tekst te lezen en niet bewaard.</p>
         <button type="button" class="btn" id="bulkgo">Zet alles op mijn lijst</button><p class="hint" id="bulkmsg"></p></details>
       <div id="forlist"></div>
       <div class="notify" id="notify" hidden></div>
@@ -1065,15 +1065,37 @@ function bonRegels(tekst){
   return uit.slice(0,60);
 }
 let tesseractLaden=null;
+// Foto verkleinen (max. 1568 px, JPEG) voordat hij naar de server gaat: sneller en goedkoper, en ruim scherp genoeg voor handschrift.
+async function fotoKlein(file){
+  const img=await createImageBitmap(file,{imageOrientation:"from-image"}).catch(()=>createImageBitmap(file));
+  const f=Math.min(1,1568/Math.max(img.width,img.height)),c=document.createElement("canvas");
+  c.width=Math.round(img.width*f);c.height=Math.round(img.height*f);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL("image/jpeg",0.85);
+}
+// Eerst de AI-lezer op de server (leest ook handschrift); lukt dat niet, dan Tesseract op het toestel (alleen gedrukte tekst).
+async function fotoAI(file){
+  try{
+    const r=await fetch("/api/foto-lijst",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({beeld:await fotoKlein(file)})});
+    const d=await r.json().catch(()=>({}));
+    return Array.isArray(d.regels)?d.regels:null;
+  }catch(e){return null}
+}
+function fotoInvullen(r,msg,bron){
+  const t=$("bulkt");t.value=(t.value.trim()?t.value.trim()+"\n":"")+r.join("\n");t.focus();
+  msg.textContent=`${r.length} regels gevonden. Kijk ze even na (haal weg wat niet klopt) en tik dan op "Zet alles op mijn lijst".`;gc(`foto/ok/${bron}/${r.length}`,"Foto gelezen");
+}
 async function fotoLezen(file){
-  const msg=$("fotomsg");msg.textContent="Tekst herkennen… dit kan de eerste keer een halve minuut duren.";gc("foto/start","Foto lijst");
+  const msg=$("fotomsg");msg.textContent="Tekst herkennen…";gc("foto/start","Foto lijst");
+  const ai=await fotoAI(file);
+  if(ai&&ai.length){fotoInvullen(ai,msg,"ai");return}
+  if(ai){msg.textContent="Er is geen boodschappenlijst gevonden. Probeer een scherpere foto, recht van boven en met genoeg licht.";return}
+  msg.textContent="Tekst herkennen… dit kan de eerste keer een halve minuut duren.";
   try{
     if(!window.Tesseract){tesseractLaden=tesseractLaden||new Promise((ok,nee)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";sc.onload=ok;sc.onerror=nee;document.head.appendChild(sc)});await tesseractLaden}
     const w=await Tesseract.createWorker("nld");const {data}=await w.recognize(file);await w.terminate();
     const r=bonRegels(data.text||"");
     if(!r.length){msg.textContent="Er is geen tekst gevonden. Probeer een scherpere foto, recht van boven en met genoeg licht.";return}
-    const t=$("bulkt");t.value=(t.value.trim()?t.value.trim()+"\n":"")+r.join("\n");t.focus();
-    msg.textContent=`${r.length} regels gevonden. Kijk ze even na (haal weg wat niet klopt) en tik dan op "Zet alles op mijn lijst".`;gc("foto/ok/"+r.length,"Foto gelezen");
+    fotoInvullen(r,msg,"tesseract");
   }catch(e){msg.textContent="Tekst herkennen lukte niet op dit toestel. Typ je lijst dan hierboven in."}
 }
 async function shareList(){
