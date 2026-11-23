@@ -3,6 +3,7 @@
 // lukt ze niet (geen sleutel, limiet, storing), dan valt de app terug op Tesseract op het toestel.
 // De foto wordt alleen doorgestuurd om de tekst te lezen en nergens bewaard of gelogd.
 // Tegen misbruik en kosten: hooguit 10 foto's per dag per bezoeker (onomkeerbare code van het IP-adres) en 400 per dag in totaal.
+// Tellers per dag (foto-teller): <dag>-totaal, <dag>-<bezoeker>, <dag>-geweigerd, <dag>-storing, <dag>-zondersleutel; te zien in /api/meldingen-export.
 // Nodig in Netlify: ANTHROPIC_API_KEY. Optioneel: FOTO_MODEL (standaard claude-haiku-4-5).
 import { getStore } from '@netlify/blobs';
 import crypto from 'node:crypto';
@@ -26,7 +27,7 @@ Antwoord alleen met de regels, zonder uitleg, nummering of opsommingstekens. Sta
 export default async (req, context) => {
   if (req.method !== 'POST') return json({ fout: 'niet toegestaan' }, 405);
   const sleutel = Netlify.env.get('ANTHROPIC_API_KEY');
-  if (!sleutel) return json({ fout: 'niet beschikbaar', terug: true }, 503);
+  if (!sleutel) { await getStore('foto-teller').set(`${new Date().toISOString().slice(0, 10)}-zondersleutel`, '1').catch(() => {}); return json({ fout: 'niet beschikbaar', terug: true }, 503); }
   let b; try { b = await req.json(); } catch { return json({ fout: 'ongeldig verzoek' }, 400); }
   const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(String(b?.beeld || ''));
   if (!m) return json({ fout: 'Geen geldige foto.' }, 400);
@@ -38,7 +39,8 @@ export default async (req, context) => {
   const teller = getStore('foto-teller');
   const nWie = +(await teller.get(`${dag}-${wie}`).catch(() => 0)) || 0;
   const nDag = +(await teller.get(`${dag}-totaal`).catch(() => 0)) || 0;
-  if (nWie >= PER_BEZOEKER || nDag >= PER_DAG) return json({ fout: 'limiet', terug: true }, 429);
+  const tel = async k => teller.set(`${dag}-${k}`, String((+(await teller.get(`${dag}-${k}`).catch(() => 0)) || 0) + 1)).catch(() => {});
+  if (nWie >= PER_BEZOEKER || nDag >= PER_DAG) { await tel('geweigerd'); return json({ fout: 'limiet', terug: true }, 429); }
   await Promise.all([teller.set(`${dag}-${wie}`, String(nWie + 1)), teller.set(`${dag}-totaal`, String(nDag + 1))]).catch(() => {});
 
   try {
@@ -55,7 +57,7 @@ export default async (req, context) => {
       }),
       signal: AbortSignal.timeout(22000),
     });
-    if (!r.ok) { console.error('foto-lijst: AI gaf', r.status); return json({ fout: 'storing', terug: true }, 502); }
+    if (!r.ok) { console.error('foto-lijst: AI gaf', r.status); await tel('storing'); return json({ fout: 'storing', terug: true }, 502); }
     const d = await r.json();
     const tekst = (d.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
     if (/^GEEN\b/i.test(tekst)) return json({ regels: [] });
@@ -64,7 +66,7 @@ export default async (req, context) => {
       .filter(t => t.length >= 2 && t.length <= 60))].slice(0, 60);
     return json({ regels });
   } catch (e) {
-    console.error('foto-lijst mislukt', e?.name);
+    console.error('foto-lijst mislukt', e?.name); await tel('storing');
     return json({ fout: 'storing', terug: true }, 502);
   }
 };
