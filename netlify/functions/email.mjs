@@ -26,7 +26,7 @@ export async function stuurBevestiging(site, a, herinnering = false) {
   const v = await verbind({ user, pass });
   try {
     await v.stuur(bericht({
-      van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', antwoordAan: 'goedkopeboodschappen@proton.me', aan: a.email,
+      van: process.env.MAIL_FROM || user, vanNaam: 'Boodschappenvergelijk.nl', antwoordAan: 'info@boodschappenvergelijk.nl', aan: a.email,
       onderwerp: (herinnering ? 'Herinnering: ' : '') + (a.nieuws && !a.termen.length ? 'Bevestig je aanmelding voor de nieuwsbrief' : 'Bevestig je e-mailmeldingen'), afmelden: uit,
       tekst: `Hallo!\n\n${herinnering ? 'Je hebt je gisteren aangemeld, maar nog niet bevestigd. ' : ''}Bevestig dat je ${wat} wilt ontvangen:\n${link}\n\nHeb je dit niet aangevraagd? Dan kun je deze mail negeren. Zonder bevestiging sturen we niets en wissen we je adres na 7 dagen.\n\nGoedkope Boodschappen is gratis, zonder reclame.\nhttps://boodschappenvergelijk.nl`,
       html: opmaak({
