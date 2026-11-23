@@ -9,7 +9,7 @@ import { verbind, bericht, opmaak, esc } from '../mail.mjs';
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const kort = (v, n) => String(v ?? '').replace(/[\u0000-\u0008\u000b-\u001f]/g, ' ').trim().slice(0, n);
 const SOORTEN = { tip: 'Tip', idee: 'Idee voor de site', fout: 'Fout gezien', product: 'Product of winkel mist', vraag: 'Vraag', pers: 'Pers en media', samenwerking: 'Samenwerking', privacy: 'Privacy', anders: 'Overig' };
-const NAAR = 'goedkopeboodschappen@proton.me';
+const NAAR = 'info@boodschappenvergelijk.nl';
 const hash = s => crypto.createHash('sha256').update(s).digest('hex').slice(0, 24);
 
 export default async (req, context) => {

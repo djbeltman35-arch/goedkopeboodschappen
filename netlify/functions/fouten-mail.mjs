@@ -4,7 +4,7 @@
 import { getStore } from '@netlify/blobs';
 import { verbind, bericht, opmaak, esc } from '../mail.mjs';
 
-const NAAR = 'goedkopeboodschappen@proton.me';
+const NAAR = 'info@boodschappenvergelijk.nl';
 const REDEN = { product: 'Verkeerd product', prijs: 'Prijs klopt niet', anders: 'Iets anders' };
 
 export default async () => {
