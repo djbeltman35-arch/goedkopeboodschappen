@@ -195,7 +195,7 @@ def matches(term, basis=False):
     for w in t:
         # Een woord past als heel woord of als eind van een samengesteld woord (scharreleieren, roomboter).
         ids = set()
-        for x in ([w] if not samen_ok(w) else [x for x in _VOCAB if x.endswith(w)]):
+        for x in ([w, w + "."] if not samen_ok(w) else [x for x in _VOCAB if x.endswith(w)] + [w + "."]):
             ids.update(WOORDINDEX.get(x, ()))
         if els_alt(w):
             for x in _VOCAB:

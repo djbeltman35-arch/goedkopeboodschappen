@@ -443,7 +443,7 @@ function matches0(q,prefix=true,pool=S.prods,basis=false){klaar();
   // Een bijvoeglijk naamwoord vóór het laatste zoekwoord telt met of zonder -e (glutenvrij/glutenvrije spaghetti, gekookte/gekookt).
   const bijv=(x,w)=>w.length>=5&&(x===w+"e"||(w.endsWith("e")&&x===w.slice(0,-1)));
   // Meervoud op -elen telt ook als -els (appelen = appels, handappels). Zelfde regel als in vergelijk.py.
-  const fit=(x,w,last,adj=!last)=>x===w||(samenOk(w)&&x.endsWith(w))||(adj&&bijv(x,w))||(prefix&&last&&x.startsWith(w))||(!!elsAlt(w)&&x.endsWith(elsAlt(w)));
+  const fit=(x,w,last,adj=!last)=>x===w||x===w+"."||(samenOk(w)&&x.endsWith(w))||(adj&&bijv(x,w))||(prefix&&last&&x.startsWith(w))||(!!elsAlt(w)&&x.endsWith(elsAlt(w)));
   let m=pool.filter(p=>on(p[0])&&merkOk(p)&&!S.betwist.has(p.lk)&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
   if(prefix&&t[t.length-1].length>=6){const sterk=m.filter(p=>t.every((w,i)=>p.hay.some(x=>fit(x,w,false,i<t.length-1))));if(new Set(sterk.map(p=>p[0])).size>=3)m=sterk}
   const tv=t.concat(t.map(elsAlt).filter(Boolean)),clean=m.filter(p=>!p.hay.some(x=>vreemd(x,tv)));
@@ -531,7 +531,8 @@ const SYNONIEM={"wc papier":"toiletpapier","wcpapier":"toiletpapier","wc rol":"t
   "pils":"Pils krat 24 flesjes","bier":"Pils krat 24 flesjes","biertje":"Pils krat 24 flesjes","wijntje":"rode wijn","koffiecup":"koffiecups","koffiepad":"koffiepads","senseo":"koffiepads","nespresso":"koffiecups",
   "luier":"luiers","pamper":"luiers","pampers":"luiers","tandpasta's":"tandpasta","shampo":"shampoo","wasverzachter":"wasverzachter","wasmiddel":"wasmiddel vloeibaar","vaatwasser tabletten":"vaatwastabletten",
   "afwastabletten":"vaatwastabletten","pindasaus":"satesaus","satésaus":"satesaus","mayo":"mayonaise","ketsjup":"ketchup","sambal oelek":"sambal","choco":"chocoladepasta","nutella":"hazelnootpasta",
-  "kattenbak":"kattenbakvulling","hondenbrok":"hondenbrokken","kattenbrok":"kattenbrokken"};
+  "kattenbak":"kattenbakvulling","hondenbrok":"hondenbrokken","kattenbrok":"kattenbrokken",
+  "sojamelk":"sojadrink","havermelk":"haverdrink","cristal clear":"crystal clear","ranja":"vruchtensiroop","raak ranja":"raak vruchtensiroop"};
 let VOCAB=null;
 function woordenlijst(){klaar();if(VOCAB&&VOCAB.n===S.prods.length)return VOCAB;const m=new Map();for(const p of S.prods)for(const w of p.hay)if(w.length>=3&&!/\d/.test(w))m.set(w,(m.get(w)||0)+1);VOCAB={m,n:S.prods.length};return VOCAB}
 function bewerkAfstand(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;let v=Array.from({length:b.length+1},(_,i)=>i);
@@ -546,8 +547,14 @@ function verbeter(q){
     // tikfout: meest voorkomende woord op 1 (of bij lange woorden 2) letters afstand
     const max=w.length>=8?2:1;let best=null,bc=0,bd=9;
     for(const [x,c] of V){if(Math.abs(x.length-w.length)>max)continue;const d=bewerkAfstand(w,x,max);if(d<=max&&(d<bd||(d===bd&&c>bc))){best=x;bc=c;bd=d}}
-    if(best){veranderd=true;return best} return w});
-  return veranderd?uit.join(" "):"";
+    if(best){veranderd=true;return best}
+    // aan elkaar geschreven (hertogjan): splitsen in twee bekende woorden
+    let sp=null,sc=0;for(let i=3;i<=w.length-3;i++){const a=w.slice(0,i),b=w.slice(i),c=Math.min(V.get(a)||0,V.get(b)||0);if(c>=3&&c>sc){sp=a+" "+b;sc=c}}
+    if(sp){veranderd=true;return sp} return w});
+  if(veranderd)return uit.join(" ");
+  // los geschreven samenstelling (koffie pads, half volle melk): twee woorden aan elkaar als dat een bekend woord is
+  for(let i=0;i<ws.length-1;i++){const j=ws[i]+ws[i+1];if((V.get(j)||0)>=3)return ws.slice(0,i).concat(j,ws.slice(i+2)).join(" ")}
+  return "";
 }
 // Prijsalarm: mail als een soort onder een gekozen prijs per kilo, liter of stuk komt (via de e-mailmeldingen).
 const EHN={kg:"kilo",l:"liter",st:"stuk"};
