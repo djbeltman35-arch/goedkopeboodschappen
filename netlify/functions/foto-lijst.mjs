@@ -4,7 +4,7 @@
 // De foto wordt alleen doorgestuurd om de tekst te lezen en nergens bewaard of gelogd.
 // Tegen misbruik en kosten: hooguit 10 foto's per dag per bezoeker (onomkeerbare code van het IP-adres) en 400 per dag in totaal.
 // Tellers per dag (foto-teller): <dag>-totaal, <dag>-<bezoeker>, <dag>-geweigerd, <dag>-storing, <dag>-zondersleutel; te zien in /api/meldingen-export.
-// Nodig in Netlify: ANTHROPIC_API_KEY. Optioneel: FOTO_MODEL (standaard claude-haiku-4-5).
+// Nodig in Netlify: ANTHROPIC_API_KEY. Optioneel: FOTO_MODEL (standaard claude-haiku-5-5).
 import { getStore } from '@netlify/blobs';
 import crypto from 'node:crypto';
 
@@ -46,10 +46,10 @@ export default async (req, context) => {
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'x-api-key': sleutel, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+      headers: { 'x-api-key': sleutel, 'anthropic-version': '2026-10-21', 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: Netlify.env.get('FOTO_MODEL') || 'claude-haiku-4-5',
-        max_tokens: 800,
+        model: Netlify.env.get('FOTO_MODEL') || 'claude-haiku-5-5',
+        max_tokens: 2000,                       // ruimte voor het denkwerk van het model plus de lijst
         messages: [{ role: 'user', content: [
           { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } },
           { type: 'text', text: OPDRACHT },
