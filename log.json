@@ -110,5 +110,19 @@
   "slot": "19:00",
   "onderwerp": "/gids/action-slimme-stekker-koppelen/",
   "tekst": "Slimme stekker van de Action automatisch laten schakelen 🔌"
+ },
+ {
+  "datum": "2026-11-23",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Nieuwe week, nieuwe aanbiedingen 💰"
+ },
+ {
+  "datum": "2026-11-23",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
  }
 ]
