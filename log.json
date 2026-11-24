@@ -124,5 +124,40 @@
   "slot": "19:30 avond",
   "onderwerp": "vandaag.json avond",
   "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "bespaarvriend",
+  "slot": "12:30",
+  "onderwerp": "/zorgverzekering-overstappen/",
+  "tekst": "Zorgverzekering overstappen? Dat kan nog tot 31 december 🩺"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "bespaarvriend",
+  "slot": "19:00",
+  "onderwerp": "/eigen-risico-2027/",
+  "tekst": "Eigen risico 2027: € 400 💊"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "bespaarvriend",
+  "slot": "10:00",
+  "onderwerp": "bestaande post aangevuld: Salderen stopt +TikTok",
+  "tekst": "(aanvulling, geen nieuwe video)"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "stroomwekker",
+  "slot": "12:30",
+  "onderwerp": "/gids/stroomprijs-per-kwartier/",
+  "tekst": "Waarom 96 stroomprijzen per dag? ⏱️"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "stroomwekker",
+  "slot": "19:00",
+  "onderwerp": "/bespaarcheck/",
+  "tekst": "Is een dynamisch energiecontract goedkoper voor jou? 🧮"
  }
 ]
