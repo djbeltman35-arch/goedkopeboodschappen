@@ -550,6 +550,15 @@ await Promise.all(Object.entries(WINKELS).filter(([id]) => !alleen.length || all
     console.error(id, 'MISLUKT:', e.message);
   }
 }));
+// PLUS geeft tijdens de actieweek zelf vaak bijna niets terug (alleen de acties van volgende week); zo vielen op 18-11
+// alle acties van 18 t/m 24-11 weg. Daarom houden we PLUS-acties van eerdere keren die nog lopen, tenzij ze er nu al in staan.
+if (status.plus?.ok && aanbod.plus) {
+  const vd0 = vandaag(), sleutel = o => [o.n, o.sz, o.t].join('|');
+  const al = new Set(aanbod.plus.map(sleutel));
+  const oud = vorigAanbod.filter(o => o.s === 'plus' && o.t && o.t >= vd0 && !al.has(sleutel(o)));
+  aanbod.plus.push(...oud.map(o => ({ ...o, v: o.v && o.v > vd0 ? o.v : null })));
+  if (oud.length) console.log('plus:', oud.length, 'lopende acties van eerder gehouden');
+}
 // Winkels die deze keer niet zijn opgehaald (WINKELS=...), houden hun vorige acties.
 const overgeslagen = new Set(vorigAanbod.map(o => o.s).filter(id => !(id in aanbod)));
 for (const o of vorigAanbod) if (overgeslagen.has(o.s)) (aanbod[o.s] ||= []).push(o);
