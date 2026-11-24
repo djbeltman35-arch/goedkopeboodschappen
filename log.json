@@ -166,5 +166,19 @@
   "slot": "12:00 tip",
   "onderwerp": "/goedkoopste-supermarkt/ (goedkoopste supermarkt)",
   "tekst": "Welke supermarkt is het goedkoopst? 🛒"
+ },
+ {
+  "datum": "2026-11-24",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Goedkoop koken vandaag 💰"
+ },
+ {
+  "datum": "2026-11-24",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
  }
 ]
