@@ -376,9 +376,9 @@ function pakInfo(naam,eenh,soort){
 }
 const alcVrij=n=>/\b0[.,]0\b|alcoholvrij|alkoholfrei|alcohol ?free|\bmalt\b/.test(String(n).toLowerCase());
 function variant(v,pool){
-  const seen=new Set(), uit=[];
-  for(const z of v.zoek) for(const p of matches(z,false,pool,true)){
-    if(seen.has(p)) continue; seen.add(p);
+  const seen=new Set(), uit=[]; uit.paar=new Set();
+  for(const z of v.zoek){const mz=matches(z,false,pool,true); for(const p of mz){
+    if(seen.has(p)) continue; seen.add(p); if(mz.paar?.has(p)) uit.paar.add(p);
     if(p.hay.some(x=>v.niet.some(n=>x===n||(n.length>=4&&x.includes(n))))) continue;
     if(v.wel&&!p.hay.some(x=>v.wel.some(n=>x===n||(n.length>=4&&x.includes(n))))) continue;
     if(v.alc==="vrij"&&!alcVrij(p[1])) continue; if(v.alc==="met"&&alcVrij(p[1])) continue;
@@ -390,7 +390,7 @@ function variant(v,pool){
       if(DRANK.has(v.soort)) p.lit=ml*n/1000;
     }
     uit.push(p);
-  }
+  }}
   return uit;
 }
 /* Merken: huismerk ("h"), A-merk ("a") of geen merk (""). Een A-merk is een merknaam die bij minstens 3 supermarkten vooraan
@@ -411,7 +411,7 @@ function merkVan(naam,winkel){const n=String(naam).toLowerCase(),f=(n.match(/^[a
 const merkOk=p=>S.merk==="alle"||!p.merk||(S.merk==="zonder"?p.merk!=="h":p.merk!=="a");
 // Filter "Alleen glutenvrij" (glutenvrij in de productnaam) en "Alleen caloriearm" (de soort is laag in calorieën).
 const dieetOk=(naam,kt,t)=>(!S.dieet.gv||GV_RE.test(naam||""))&&(!S.dieet.lv||LV_RE.test(naam||""))&&(!S.dieet.vg||isVegan(naam))&&(!S.dieet.hl||HALAL_RE.test(naam||""))&&(!S.dieet.arm||kcalArm(kt))&&(!S.dieet.eiw||eiwitrijk(t,kt));
-function matches(q,...rest){const r=matches0(q,...rest);return S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl?r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q))):r}
+function matches(q,...rest){const r=matches0(q,...rest);if(!(S.dieet.gv||S.dieet.arm||S.dieet.lv||S.dieet.eiw||S.dieet.vg||S.dieet.hl))return r;const f=r.filter(p=>dieetOk(p[1],KCAL[String(q).toLowerCase()],String(q)));f.paar=r.paar;return f}
 const dieetAan=()=>["gv","lv","vg","hl","arm","eiw"].filter(k=>S.dieet[k]).length;
 // Alleen filters tonen die bij deze producten iets uitmaken (bij bier of wasmiddel dus geen "eiwitrijk").
 const DIEET_K=["gv","lv","vg","hl","arm","eiw"], DIEET_TXT={gv:"glutenvrij",lv:"lactosevrij",vg:"vegan",hl:"halal",arm:"caloriearm",eiw:"eiwitrijk"};
@@ -444,10 +444,16 @@ function matches0(q,prefix=true,pool=S.prods,basis=false){klaar();
   const bijv=(x,w)=>w.length>=5&&(x===w+"e"||(w.endsWith("e")&&x===w.slice(0,-1)));
   // Meervoud op -elen telt ook als -els (appelen = appels, handappels). Zelfde regel als in vergelijk.py.
   const fit=(x,w,last,adj=!last)=>x===w||x===w+"."||(samenOk(w)&&x.endsWith(w))||(adj&&bijv(x,w))||(prefix&&last&&x.startsWith(w))||(!!elsAlt(w)&&x.endsWith(elsAlt(w)));
-  let m=pool.filter(p=>on(p[0])&&merkOk(p)&&!S.betwist.has(p.lk)&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))));
-  if(prefix&&t[t.length-1].length>=6){const sterk=m.filter(p=>t.every((w,i)=>p.hay.some(x=>fit(x,w,false,i<t.length-1))));if(new Set(sterk.map(p=>p[0])).size>=3)m=sterk}
-  const tv=t.concat(t.map(elsAlt).filter(Boolean)),clean=m.filter(p=>!p.hay.some(x=>vreemd(x,tv)));
-  return verfijn(clean.length?clean:m,t);
+  // Twee zoekwoorden die in de productnaam aan elkaar staan tellen ook (vanille vla = vanillevla, kip filet = kipfilet). Zelfde regel als in vergelijk.py.
+  const paren=t.slice(0,-1).map((w,i)=>w+t[i+1]),inPaar=(p,i,pre)=>[i-1,i].some(j=>j>=0&&j<paren.length&&p.hay.some(x=>x===paren[j]||(pre&&j===paren.length-1&&x.startsWith(paren[j]))));
+  let m=pool.filter(p=>on(p[0])&&merkOk(p)&&!S.betwist.has(p.lk)&&t.every((w,i)=>p.hay.some(x=>fit(x,w,i===t.length-1))||inPaar(p,i,prefix)));
+  // Bij meer zoekwoorden telt ook het laatste woord met of zonder -e (roomboter biologisch = biologische roomboter).
+  if(prefix&&t[t.length-1].length>=6){const sterk=m.filter(p=>t.every((w,i)=>p.hay.some(x=>fit(x,w,false,t.length>1))||inPaar(p,i,false)));if(new Set(sterk.map(p=>p[0])).size>=3)m=sterk}
+  const tv=t.concat(t.map(elsAlt).filter(Boolean),paren,t.filter(w=>w.length>=5).map(w=>w.endsWith("e")?w.slice(0,-1):w+"e")),clean=m.filter(p=>!p.hay.some(x=>vreemd(x,tv)));
+  const r=verfijn(clean.length?clean:m,t);
+  // Alleen via aan elkaar geschreven woorden gevonden: telt als het aantal losse woorden (vanillevla = vanille vla) en bepaalt niet de kortste naam, zodat andere winkels niet wegvallen.
+  if(paren.length)r.paar=new Set(r.filter(p=>t.some((w,i)=>!p.hay.some(x=>fit(x,w,i===t.length-1)))));
+  return r;
 }
 // Per zoekterm woorden die laten zien dat het iets anders is (tomaten ≠ tomatenketchup); zelfde lijst als de vergelijkingspagina's.
 const VERFIJN={{VERFIJN}};
@@ -459,22 +465,23 @@ const vreemd=(x,t)=>!t.includes(x)&&(EXCL.has(x)||!t.some(w=>samenOk(w)&&x.endsW
 const words=p=>p.w??(p.w=p.hay.filter(x=>!/^[\d,.%+]+[a-z]*$/.test(x)&&!UNITW.has(x)).length);
 const rank=p=>p.bad?1e6+eff(p):vglUnit(p)??(eff(p)*1000);
 // Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
-function markBad(arr){for(const p of arr)p.bad=false;const u=arr.map(vglUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=vglUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
+function markBad(arr,ref=arr){for(const p of arr)p.bad=false;const u=ref.map(vglUnit).filter(v=>v!=null).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];for(const p of arr){const v=vglUnit(p);p.bad=v!=null&&(v>med*3||v<med/3)}}
 // Afgekeurd door de mediaan over alle eenheden samen, maar zelfde eenheid als bij de meeste winkels, korte naam en een prijs
 // die past bij de rest in die eenheid: dan telt het gewoon mee (avocado per stuk tussen avocado's per kilo). Gelijk aan redden() in vergelijk.py.
-function redden(cand,gmin){const eh=p=>p.lit?"l":p[6],n={},z=new Set();for(const p of cand){if(vglUnit(p)==null)continue;const k=p[0]+"|"+eh(p);if(z.has(k))continue;z.add(k);n[eh(p)]=(n[eh(p)]||0)+1}
+function redden(cand,gmin,wq=words,ref=cand){const eh=p=>p.lit?"l":p[6],n={},z=new Set();for(const p of cand){if(vglUnit(p)==null)continue;const k=p[0]+"|"+eh(p);if(z.has(k))continue;z.add(k);n[eh(p)]=(n[eh(p)]||0)+1}
   const ks=Object.keys(n);if(!ks.length)return;const w=e=>n[e]*10+({kg:2,l:1}[e]||0),dom=ks.sort((a,b)=>w(b)-w(a))[0];
-  const u=cand.filter(p=>vglUnit(p)!=null&&eh(p)===dom).map(vglUnit).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];
-  for(const p of cand)if(p.bad&&eh(p)===dom&&words(p)<=gmin+1){const v=vglUnit(p);if(v>=med/3&&v<=med*3)p.bad=false}}
+  const u=ref.filter(p=>vglUnit(p)!=null&&eh(p)===dom).map(vglUnit).sort((a,b)=>a-b);if(u.length<3)return;const med=u[Math.floor(u.length/2)];
+  for(const p of cand)if(p.bad&&eh(p)===dom&&wq(p)<=gmin+1){const v=vglUnit(p);if(v>=med/3&&v<=med*3)p.bad=false}}
 // Per supermarkt het best passende goedkoopste product: alleen producten die ongeveer even kort benoemd zijn als de beste treffer.
 function perStore(m){
   if(!m.length) return new Map();
-  markBad(m);
-  const gmin=Math.min(...m.map(words)), by=new Map();
-  for(const p of m){ if(words(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
-  redden([...by.values()].flat(),gmin);
+  const wq=p=>words(p)+(m.paar?.has(p)?1:0);
+  const los=m.paar?.size?m.filter(p=>!m.paar.has(p)):m, gmin=Math.min(...(los.length?los:m).map(wq)), by=new Map();
+  markBad(m,los.length?los:m);
+  for(const p of m){ if(wq(p)>gmin+2) continue; (by.get(p[0])||by.set(p[0],[]).get(p[0])).push(p)}
+  {const c=[...by.values()].flat(),cl=c.filter(p=>!m.paar?.has(p));redden(c,gmin,wq,cl.length?cl:c)}
   const res=new Map();
-  for(const [si,arr] of by){const mn=Math.min(...arr.map(words));res.set(si,arr.filter(p=>words(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
+  for(const [si,arr] of by){const mn=Math.min(...arr.map(wq));res.set(si,arr.filter(p=>wq(p)<=mn+1).sort((a,b)=>rank(a)-rank(b))[0])}
   // Prijs per stuk is niet te vergelijken met prijs per kilo of liter: tellen de meeste winkels per kilo/liter, dan gaat een stukprijs (of onbekende inhoud) niet voor.
   {const v=[...res.values()].filter(p=>!p.bad),gw=p=>vglUnit(p)!=null&&(p.lit||p[6]==="kg"||p[6]==="l"),nG=v.filter(gw).length;
    if(nG>=3&&nG>v.length-nG)for(const p of v)if(!gw(p))p.bad=true}
@@ -590,13 +597,14 @@ function search(fromUser){
   let bedoeld="";
   if(!m.length){const alt=verbeter(q); if(alt){const m2=matches(alt,false).length?matches(alt,false):matches(alt); if(m2.length){m=m2;bedoeld=alt;if(fromUser)gc("verbeterd/"+norm(q)+"/"+norm(alt),"Zoekt (verbeterd): "+q+" → "+alt)}}}
   if(!m.length){if(fromUser&&S.restGeladen)gc("geen/"+norm(q),"Niets gevonden: "+q);$("results").innerHTML=`<div class="empty">Niets gevonden voor “${esc(q)}”. Probeer een korter woord, bijvoorbeeld alleen “melk”.${!S.restGeladen?" (De laatste producten worden nog geladen; probeer het zo nog eens.)":""}</div>`;return}
+  const paarM=m.paar;
   if(S.pakQ!==norm(q)){S.pak="";S.pakQ=norm(q)}
   if(S.soortQ!==norm(q)){S.soort="";S.soortQ=norm(q)}
   const sk=soortIndeling(m,q);if(S.soort&&sk.some(x=>x[0]===S.soort))m=m.filter(p=>soortVan(p,q)===S.soort);else S.soort="";
   const soortHtml=sk.length?`<label class="pakkeus"><span>🏷️ Soort</span><select data-soort><option value="">Alle soorten</option>${sk.map(([k,n,w])=>`<option value="${esc(k)}"${S.soort===k?" selected":""}>${esc(k[0].toUpperCase()+k.slice(1))} (${w} winkels)</option>`).join("")}</select></label>`:"";
   const pk=pakIndeling(m);if(S.pak&&pk.some(x=>x[0]===S.pak))m=m.filter(p=>pakVan(p)===S.pak);else S.pak="";
   const pakHtml=pk.length>1?`<label class="pakkeus"><span>📦 Inhoud</span><select data-pak><option value="">Alle verpakkingen</option>${pk.map(([k,n])=>`<option value="${esc(k)}"${S.pak===k?" selected":""}>${esc(k)} (${n})</option>`).join("")}</select></label>`:"";
-  const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
+  m.paar=paarM;const best=[...perStore(m).values()].sort((a,b)=>rank(a)-rank(b));
   const keus=kiesPrecies(q);
   const rest=m.filter(p=>!best.includes(p)).sort((a,b)=>rank(a)-rank(b)).slice(0,60);
   const top=best[0], last=best[best.length-1];
@@ -715,10 +723,10 @@ function duoKol(p,lbl,t){const o=offerOf(p),u=p.lit?eff(p)/p.lit:effUnit(p),e=p.
   return `<div class="dk"><span class="dl">${lbl}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}<a class="dn" href="${esc(link(p))}" target="_blank" rel="noopener" data-out="${esc(sid(p[0]))}">${esc(p[1])} <span class="sz">${esc(p[4]||"")}</span></a>${labels(p[1],KCAL[(t||"").toLowerCase()],t)}<div class="dp">${tag(eff(p),o?"deal":"")}${S.list.some(x=>x.link===link(p))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${p.i}" data-term="${esc(t)}" aria-label="${esc(p[1])} op mijn lijst">+</button>`}</div><span class="unit">${u!=null?esc(unitTxt(u,e)):""}</span></div>`}
 function duoRij(t){if(S.merk!=="alle")return "";
   // Alleen echte vergelijkbare producten: dezelfde strenge selectie als de gewone rij (geen appelstroop bij peren of Fanta bij sinaasappels).
-  let m=matches(t,false);if(!m.length)return "";markBad(m);m=m.filter(p=>!p.bad);if(!m.length)return "";
-  const gmin=Math.min(...m.map(words));m=m.filter(p=>words(p)<=gmin+2);
+  let m=matches(t,false);if(!m.length)return "";const pr=m.paar,wq=p=>words(p)+(pr?.has(p)?1:0),los0=pr?.size?m.filter(p=>!pr.has(p)):m;markBad(m,los0.length?los0:m);m=m.filter(p=>!p.bad);if(!m.length)return "";
+  const los=pr?.size?m.filter(p=>!pr.has(p)):m,gmin=Math.min(...(los.length?los:m).map(wq));m=m.filter(p=>wq(p)<=gmin+2);
   const per={},grp={};for(const p of m){if(p.merk!=="a"&&p.merk!=="h")continue;const k=p[0]+"|"+p.merk;(grp[k]||(grp[k]=[])).push(p)}
-  for(const k in grp){const arr=grp[k],mn=Math.min(...arr.map(words)),best=arr.filter(p=>words(p)<=mn+1).sort((x,y)=>rank(x)-rank(y))[0],[w,mk]=k.split("|");per[w]=per[w]||{};per[w][mk]=best}
+  for(const k in grp){const arr=grp[k],mn=Math.min(...arr.map(wq)),best=arr.filter(p=>wq(p)<=mn+1).sort((x,y)=>rank(x)-rank(y))[0],[w,mk]=k.split("|");per[w]=per[w]||{};per[w][mk]=best}
   const paren=Object.keys(per).filter(w=>per[w].a&&per[w].h);if(!paren.length)return "";
   const keus=(S.duoW||{})[t];let w=paren.includes(keus)?keus:paren.find(x=>isMijn(x));
   if(!w)w=paren.sort((x,y)=>rank(per[x].h)-rank(per[y].h))[0];

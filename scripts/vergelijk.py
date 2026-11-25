@@ -167,12 +167,17 @@ def is_alcoholvrij(naam):
 LITERS = {}  # liters per verpakking, voor varianten: dan vergelijken we altijd per liter
 VARIANT = json.load(open(os.path.join(ROOT, "scripts", "varianten.json")))
 VARNORM = {" ".join(norm(k)): v for k, v in VARIANT.items()}
+class Treffers(list):
+    paar = frozenset()
 def _variant(v):
-    seen, uit = set(), []
+    seen, uit = set(), Treffers()
+    uit.paar = set()
     for z in v["zoek"]:
-        for p in matches(z, basis=True):
+        mz = matches(z, basis=True)
+        for p in mz:
             if id(p) in seen: continue
             seen.add(id(p)); w = p[7]
+            if id(p) in mz.paar: uit.paar.add(id(p))
             if any(x == n or (len(n) >= 4 and n in x) for x in w for n in v["niet"]): continue
             if v.get("wel") and not any(x == n or (len(n) >= 4 and n in x) for x in w for n in v["wel"]): continue
             if v.get("alc") == "vrij" and not is_alcoholvrij(p[1]): continue
@@ -189,7 +194,7 @@ def _variant(v):
     return uit
 def matches(term, basis=False):
     t = tuple(norm(term))
-    if not t: return []
+    if not t: return Treffers()
     if not basis and " ".join(t) in VARNORM: return _variant(VARNORM[" ".join(t)])
     sets = []
     for w in t:
@@ -201,20 +206,35 @@ def matches(term, basis=False):
             for x in _VOCAB:
                 if x.endswith(els_alt(w)): ids.update(WOORDINDEX[x])
         sets.append(ids)
+    # Twee zoekwoorden die in de productnaam aan elkaar staan tellen ook (vanille vla = vanillevla). Zelfde regel als in site/index.html.
+    paren = tuple(t[i] + t[i + 1] for i in range(len(t) - 1))
+    los = [set(x) for x in sets]
+    for i, pr in enumerate(paren):
+        ids = set(WOORDINDEX.get(pr, ()))
+        sets[i] |= ids; sets[i + 1] |= ids
     m = [prods[i] for i in sorted(set.intersection(*sets))]
-    tv = t + tuple(a for a in map(els_alt, t) if a)
+    # Een zoekwoord met of zonder -e is geen ander product (biologisch/biologische, houdbaar/houdbare).
+    tv = t + tuple(a for a in map(els_alt, t) if a) + paren + tuple(w[:-1] if w.endswith("e") else w + "e" for w in t if len(w) >= 5)
     clean = [p for p in m if not any(_vreemd_woord(x, tv) for x in p[7])]
-    return _verfijn(clean or m, t)
+    r = Treffers(_verfijn(clean or m, t))
+    # Alleen via aan elkaar geschreven woorden gevonden: telt als het aantal losse woorden (vanillevla = vanille vla). Zelfde regel als in de app.
+    if paren: r.paar = {id(prods[i]) for i in set.intersection(*sets) - set.intersection(*los)}
+    return r
 SLECHT = {}  # per zoekterm: producten waarvan de prijs per eenheid niet te vergelijken is (andere eenheid of foute maat)
 GERED = {}   # per zoekterm: producten die de mediaan over alle eenheden samen afkeurde, maar in de gewone eenheid gewoon kloppen
 def per_store(m, t=None):
     if not m: return {}
-    bad = mark_bad(m)
-    gmin = min(words(p) for p in m); by = {}
+    paar = getattr(m, "paar", ())
+    def words(p, _w=globals()["words"]): return _w(p) + (1 if id(p) in paar else 0)
+    los = [p for p in m if id(p) not in paar] or m
+    # Producten die alleen via aan elkaar geschreven woorden passen bepalen niet de gewone prijs per kilo/liter.
+    bad = mark_bad(m, los)
+    gmin = min(words(p) for p in los); by = {}
     for p in m:
         if words(p) > gmin + 2: continue
         by.setdefault(p[0], []).append(p)
-    ok = redden([p for arr in by.values() for p in arr], gmin, bad)
+    cand = [p for arr in by.values() for p in arr]
+    ok = redden(cand, gmin, bad, words, [p for p in cand if id(p) not in paar] or cand)
     slecht = bad - ok
     if t is not None: SLECHT[t], GERED[t] = slecht, ok
     def key(p):
@@ -232,14 +252,14 @@ def per_store(m, t=None):
     if n_g >= 3 and n_g > len(v) - n_g:
         slecht.update(id(p) for p in v if not gw(p))
     return dict(sorted(res.items(), key=lambda kv: key(kv[1])))
-def redden(cand, gmin, bad):
+def redden(cand, gmin, bad, words=words, ref=None):
     """Afgekeurd door de mediaan over alle eenheden samen, maar het product heeft dezelfde eenheid als de meeste winkels,
     een korte naam (echt het gezochte product) en een prijs die past bij de rest in die eenheid: dan telt het gewoon mee."""
     n = {}
     for si, e in {(p[0], vgl_eh(p)) for p in cand if vgl_unit(p) is not None}: n[e] = n.get(e, 0) + 1
     if not n: return set()
     dom = max(n, key=lambda e: (n[e], {"kg": 2, "l": 1}.get(e, 0)))
-    u = sorted(vgl_unit(p) for p in cand if vgl_unit(p) is not None and vgl_eh(p) == dom)
+    u = sorted(vgl_unit(p) for p in (cand if ref is None else ref) if vgl_unit(p) is not None and vgl_eh(p) == dom)
     if len(u) < 3: return set()
     med = u[len(u) // 2]
     return {id(p) for p in cand if id(p) in bad and vgl_eh(p) == dom and words(p) <= gmin + 1 and med / 3 <= vgl_unit(p) <= med * 3}
@@ -270,9 +290,9 @@ def vgl_unit(p):
     l = LITERS.get(id(p))
     return eff(p) / l if l else eff_unit(p)
 def vgl_eh(p): return "l" if id(p) in LITERS else p[6]
-def mark_bad(arr):
+def mark_bad(arr, ref=None):
     # Een prijs per kilo of liter die ver van de rest afwijkt, komt bijna altijd door een verkeerde maat in de data.
-    u = sorted(v for v in (vgl_unit(p) for p in arr) if v is not None)
+    u = sorted(v for v in (vgl_unit(p) for p in (arr if ref is None else ref)) if v is not None)
     if len(u) < 3: return set()
     med = u[len(u) // 2]
     bad = {id(p) for p in arr if vgl_unit(p) is not None and (vgl_unit(p) > med * 3 or vgl_unit(p) < med / 3)}
