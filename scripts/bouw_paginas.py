@@ -18,7 +18,7 @@ def header(actief="", hier=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav rustig drie" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/contact/">Contact</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -300,7 +300,18 @@ for t, rows in PICKED.items():
     eh = eenheid(e0)
     vanaf = f"{eur(u0)} per {eh}" if u0 is not None and eh else eur(eff(p0))
     besp = round((1 - u0 / uN) * 100) if u0 and uN and uN > u0 else 0
-    title = f"{name} prijs: vanaf {vanaf} bij {win} ({MAAND})"
+    # Titel noemt de winkels waar mensen op zoeken ("erwtensoep lidl prijs"), niet alleen de goedkoopste.
+    _kort = {"ah": "AH", "dirk": "Dirk", "dekamarkt": "DekaMarkt"}
+    _wk = []
+    for _si, _ in rows:
+        _id = stores[_si]["id"]; _n = _kort.get(_id, NAMEN.get(_id, stores[_si]["name"]))
+        if _n not in _wk: _wk.append(_n)
+    _voork = ["Lidl", "Aldi", "AH", "Jumbo", "Dirk", "PLUS", "Vomar", "Hoogvliet"]
+    _wk.sort(key=lambda x: _voork.index(x) if x in _voork else 99)
+    _p = eur(u0) + "/" + {"liter": "l", "kilo": "kg"}.get(eh, eh) if u0 is not None and eh else eur(eff(p0))
+    if len(_wk) >= 4: title = f"{name} prijs {', '.join(_wk[:3])} en {len(_wk) - 3} meer: vanaf {_p}"
+    elif len(_wk) >= 2: title = f"{name} prijs bij {', '.join(_wk[:-1])} en {_wk[-1]}: vanaf {_p}"
+    else: title = f"{name} prijs: {_p} bij {win} ({MAAND})"
     desc = (f"{name} kost {vanaf} bij {win}" + (f" en {per(uN, eN)} bij {loser}" if uN and u0 and uN > u0 * 1.02 else "") +
             (f". Vergelijk {len(rows)} supermarkten" if len(rows) > 1 else f". Nu alleen te koop bij {win}") + (", inclusief de aanbiedingen van deze week" if any(offer_of(p) for _, p in rows) else "") + f". Prijzen van {DATUM}." + (f" Ongeveer {kcal_txt(t)}." if kcal_txt(t) else ""))
     c = CATOF.get(t)
@@ -327,7 +338,9 @@ for t, rows in PICKED.items():
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt en product</th><th style="text-align:right">Prijs</th></tr></thead><tbody>{trs}</tbody></table></div>'
             f'<p class="note">Prijzen van {DATUM}, gesorteerd op prijs per {esc(eh or "stuk")}. Per supermarkt het voordeligste vergelijkbare product. De prijs aan de kassa is leidend.</p>'
             + (f'<p class="kcal">🔥 Calorieën: ongeveer <b>{esc(kt)}</b> (gemiddelde richtwaarde, per merk iets anders).</p>' if kt else "") +
-            f'<a class="cta" rel="nofollow" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and vergelijkbaar(t, p)), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
+            f'<a class="cta" rel="nofollow" href="/?q={quote(t)}">Zet {esc(t)} op je boodschappenlijst</a>'
+            + ('' if "Lidl" in _wk else f'<p class="note">🧾 Geen Lidl-prijs? Lidl zet die niet online. <a href="/lidl-bon/">Help mee met een foto van je Lidl-bon</a>.</p>')
+            + f'{actie_html}{prijsverloop(t, min((eff_unit(p) for _, p in goed if eff_unit(p) is not None and vergelijkbaar(t, p)), default=None))}{faq_html(faq)}{maalhtml}{relhtml}')
     # Eén product (de soort) met een AggregateOffer: zo kan Google de prijsrange "van € x tot € y bij n winkels" tonen.
     _pr = [eff(p) for _, p in rows]
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "Product", "name": cap(name), "description": desc,
@@ -566,7 +579,7 @@ def offers_page(cur, lst):
     if cur:
         nm = NAMEN[cur]; naam_actie = "Bonus" if cur == "ah" else "aanbiedingen"
         _wk = datetime.date.fromisoformat(VANDAAG).isocalendar()[1]
-        title = (f"AH Bonus folder week {_wk}: {len(nu_)} aanbiedingen vergeleken" if cur == "ah" else f"{nm} folder week {_wk}: {len(nu_)} aanbiedingen vergeleken")
+        title = (f"AH Bonus deze week (week {_wk}): {len(nu_)} aanbiedingen vergeleken" if cur == "ah" else f"{nm} aanbiedingen deze week: folder week {_wk} ({len(nu_)} acties)")
         if eind and len(title) <= 50: title += f" t/m {kortdag(eind)}"
         desc = (f"Alle {len(nu_)} {naam_actie} van {nm}" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Per actie zie je of het elders goedkoper is"
                 + (f": {n_top} zijn de laagste prijs per kilo van alle supermarkten." if n_top else ".") + f" Prijzen van {DATUM}.")
@@ -966,6 +979,31 @@ steun = f"""<div class="panel"><h2 style="margin-top:0">Gratis, en dat blijft zo
 schrijf("/steun/", page("/steun/", "Steun Goedkope Boodschappen | Gratis en onafhankelijk", "Goedkope Boodschappen is gratis, zonder reclame en zonder geld van supermarkten. Lees wat de site kost en hoe je kunt helpen met een kleine bijdrage of door te delen.",
     crumbs(("Steun de site", None))[0] + "<h1>Steun Goedkope Boodschappen</h1><p class=\"lead\">De site is gratis en blijft gratis. Maar hij kost wel geld om te draaien.</p>", steun))
 made += [("/steun/", "0.3")]
+
+# ---------- Lidl-bon: bezoekers sturen een foto van hun Lidl-kassabon in, zodat er actuele Lidl-prijzen komen ----------
+LIDLBON = """<div class="panel"><h2 style="margin-top:0">Help mee: scan je Lidl-bon</h2>
+<p>Lidl zet de prijzen van de meeste boodschappen niet online. Daarom ontbreekt Lidl nog vaak in de vergelijking. Met een foto van je Lidl-kassabon komen die prijzen er wel op, voor iedereen.</p>
+<ol class="kstap"><li>Leg de bon plat neer, met genoeg licht.</li><li>Maak een foto van de hele bon, met de datum erop.</li><li>Tik op de knop hieronder en kies de foto.</li></ol>
+<p><label class="cta" for="lbfoto" style="cursor:pointer">📷 Foto van mijn Lidl-bon kiezen</label><input id="lbfoto" type="file" accept="image/*" capture="environment" hidden></p>
+<p class="note" id="lbmsg" role="status">Alleen bonnen van Lidl van de laatste 30 dagen.</p><div id="lbuit"></div></div>
+<h2>Wat gebeurt er met mijn bon?</h2>
+<ul class="steunlijst"><li><b>De foto wordt niet bewaard.</b> Hij wordt alleen gelezen om de producten en prijzen eruit te halen.</li>
+<li><b>We bewaren alleen</b> de datum van de bon en per product de naam en de prijs. Geen winkeladres, geen betaalgegevens, niets wat naar jou terugleidt.</li>
+<li><b>Binnen een dag</b> staan de prijzen op de site, met de datum van de bon erbij. Na 60 dagen gaan ze er weer af, zodat er geen oude prijzen blijven staan.</li></ul>
+<script>
+(()=>{const $=id=>document.getElementById(id),eur=v=>"€ "+v.toFixed(2).replace(".",",");
+async function klein(f){const i=await createImageBitmap(f,{imageOrientation:"from-image"}).catch(()=>createImageBitmap(f));const k=Math.min(1,2000/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext("2d").drawImage(i,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.85)}
+$("lbfoto").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;const m=$("lbmsg");m.textContent="Bon lezen… dit duurt ongeveer 10 seconden.";$("lbuit").innerHTML="";
+try{const r=await fetch("/api/lidl-bon",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({beeld:await klein(f)})}),d=await r.json().catch(()=>({}));
+if(!r.ok){m.textContent=d.fout||"Dat lukte niet. Probeer het nog eens.";return}
+m.innerHTML=`<b>Dank je wel!</b> ${d.aantal} Lidl-prijzen van ${d.datum.split("-").reverse().join("-")} toegevoegd. Ze staan binnen een dag op de site. Nog een bon? Tik nog een keer op de knop.`;
+$("lbuit").innerHTML='<div class="tblwrap"><table class="ptable"><tbody>'+d.regels.map(x=>`<tr><td>${x.naam.replace(/[<>&]/g,"")}</td><td class="p">${eur(x.prijs)}</td></tr>`).join("")+"</tbody></table></div>";
+try{window.goatcounter&&goatcounter.count({path:"lidl-bon/ok/"+d.aantal,title:"Lidl-bon",event:true})}catch(x){}}
+catch(x){m.textContent="Dat lukte niet. Controleer je internet en probeer het nog eens."}e.target.value=""})})();
+</script>"""
+schrijf("/lidl-bon/", page("/lidl-bon/", "Help mee: scan je Lidl-bon | Goedkope Boodschappen", "Lidl zet de meeste prijzen niet online. Met een foto van je Lidl-kassabon komen ze wel in de vergelijking, voor iedereen. De foto wordt niet bewaard.",
+    crumbs(("Lidl-bon scannen", None))[0] + "<h1>Help mee: scan je Lidl-bon</h1><p class=\"lead\">Zo komen de echte Lidl-prijzen in de vergelijking. Het kost je een halve minuut.</p>", LIDLBON))
+made += [("/lidl-bon/", "0.4")]
 
 # ---------- in de media ----------
 HVN_URL = "https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/videos/goedkoop-boodschappen-doen-erik-bouwt-vergelijker"

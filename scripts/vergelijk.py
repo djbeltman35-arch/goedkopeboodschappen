@@ -54,7 +54,7 @@ for p in prods: stores[p[0]]["count"] += 1
 ACTIEF = [s["id"] for s in stores if s["count"]]
 AANTAL = len(ACTIEF)
 
-SEARCHL = {"lidl": lambda n: "https://www.lidl.nl/q/search?q=" + quote_plus(n), "dekamarkt": lambda n: "https://www.dekamarkt.nl/zoeken?zoekterm=" + quote_plus(n)}
+SEARCHL = {"lidl": lambda n: "https://www.lidl.nl/q/search?q=" + quote_plus(re.sub(r"\s*\(Lidl-kassabon[^)]*\)", "", n)), "dekamarkt": lambda n: "https://www.dekamarkt.nl/zoeken?zoekterm=" + quote_plus(n)}
 def plink(p):
     s = stores[p[0]]
     if str(p[2]).startswith("http"): return p[2]

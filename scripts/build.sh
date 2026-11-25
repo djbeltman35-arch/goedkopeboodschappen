@@ -6,6 +6,9 @@ cd "$(dirname "$0")/.."
 OUT=${1:-public}
 rm -rf "$OUT"; mkdir -p "$OUT/data"
 
+# 0. Lidl-prijzen van kassabonnen die bezoekers hebben ingestuurd (netlify/functions/lidl-bon.mjs). Lukt het niet, dan zonder.
+curl -fsSL --max-time 30 -o data/lidl-bonnen.json https://boodschappenvergelijk.nl/api/lidl-bon || echo "Lidl-bonnen niet opgehaald"
+
 # 1. Gewone prijzen: de nieuwste open dataset van Checkjebon. Lukt downloaden niet, dan de vorige versie uit site/.
 if curl -fsSL --max-time 120 -o /tmp/supermarkets.json https://raw.githubusercontent.com/supermarkt/checkjebon/main/data/supermarkets.json \
    && python3 scripts/eigen_prijzen.py /tmp/supermarkets.json \

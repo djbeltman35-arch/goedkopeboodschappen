@@ -952,3 +952,4 @@ html body .hero .search .btn:not(#_a):not(#_b):not(#_c){height:46px!important;bo
 @keyframes boloop{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 5px))}}
 /* Snelheid: delen onder de vouw pas opbouwen als ze in beeld komen (nov 2026) */
 html body main>section.wrap.maal,html body main>section.wrap.seo{content-visibility:auto;contain-intrinsic-size:auto 600px}
+.deelbesp{display:block;margin:6px 0 2px}

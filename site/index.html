@@ -318,7 +318,7 @@ function gc(path,title){gcq.push({path:path.slice(0,200),title:title||path,event
 function flush(){if(!window.goatcounter||!goatcounter.count){if(!flush.t)flush.t=setTimeout(()=>{flush.t=0;flush()},1500);return}while(gcq.length)try{goatcounter.count(gcq.shift())}catch(e){}}
 
 /* Links: Lidl- en DekaMarkt-links uit de dataset werken niet; daar zoeken we het product op. */
-const SEARCHL={lidl:n=>"https://www.lidl.nl/q/search?q="+encodeURIComponent(n),dekamarkt:n=>"https://www.dekamarkt.nl/zoeken?zoekterm="+encodeURIComponent(n)};
+const SEARCHL={lidl:n=>"https://www.lidl.nl/q/search?q="+encodeURIComponent(n.replace(/\s*\(Lidl-kassabon[^)]*\)/,"")),dekamarkt:n=>"https://www.dekamarkt.nl/zoeken?zoekterm="+encodeURIComponent(n)};
 const OLDL=/boodschaapje\.nl\/product\/|dekamarkt\.nl\/boodschappen\/x\/x\/x\/|google\.com\/search\?q=site%3Adekamarkt/;
 const link=p=>/^https?:/.test(p[2])?p[2]:(SEARCHL[sid(p[0])]?SEARCHL[sid(p[0])](p[1]):S.stores[p[0]].base+p[2]);
 
@@ -876,7 +876,7 @@ function renderWhere(){
   const k=winkelsAan().length,tot=new Set(S.stores.filter(s=>s.count).map(s=>s.id)).size;
   let html=`<p class="hint wherekop">${k===tot?"":`Jouw ${k} supermarkten · `}<button type="button" class="kies" data-kies>Mijn supermarkten kiezen</button></p>`+top.map((r,i)=>`<button type="button" class="store${i===0?" best":""}" data-si="${r.si}" aria-pressed="${r.si===sel}"><span class="n">${esc(sname(r.si))}</span>${tag(r.sum,"big")}<span class="s">${n-r.miss} van ${n} artikelen${r.miss?` · <span class="miss">${r.miss} niet te koop</span>`:""}</span></button>`).join("");
   if(full.length>1){const w=full.at(-1).sum-full[0].sum,pc=Math.round(w/full.at(-1).sum*100);
-    if(w>=.5) html+=`<div class="bespaard"><span class="bb">💰 ${eur(w)}</span><span>bespaar je bij <b>${esc(sname(full[0].si))}</b> ten opzichte van ${esc(sname(full.at(-1).si))}${pc>=3?` (${pc}% goedkoper)`:""}.</span></div>`;
+    if(w>=.5) html+=`<div class="bespaard"><span class="bb">💰 ${eur(w)}</span><span>bespaar je bij <b>${esc(sname(full[0].si))}</b> ten opzichte van ${esc(sname(full.at(-1).si))}${pc>=3?` (${pc}% goedkoper)`:""}.</span></div>`+(w>=1?`<button type="button" class="kies deelbesp" data-deelbesp="${Math.round(w)}">📲 Deel: ik bespaar ${eur(w)} op mijn boodschappen</button>`:"");
     else html+=`<p class="saving">Bij ${esc(sname(full[0].si))} betaal je <b>${eur(w)} minder</b> dan bij ${esc(sname(full.at(-1).si))}.</p>`}
   // Waarom staat deze winkel bovenaan? Zuiver uitgerekend: per artikel welke winkel het goedkoopst is.
   if(rows.length>1&&n>=2){const w0=rows[0];let wint=0,teller=0;
@@ -1238,6 +1238,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest("[data-naarlijst]")){e.preventDefault();const l=$("lijst");if(l)l.scrollIntoView({block:"start"});return}
   if(e.target.closest("[data-volgendeweek]")){e.preventDefault();S.view="deals";S.ofsoon=true;S.ofn=60;renderAll();const r=$("results");if(r)r.scrollIntoView({block:"start"});return}
   {const dw=e.target.closest("[data-duow]");if(dw){S.duoW=S.duoW||{};S.duoW[dw.dataset.duot]=dw.dataset.duow;const y=scrollY;renderView();const d=$(OPEN.size?[...OPEN].pop():"x");scrollTo(0,y);return}}
+  const db=e.target.closest("[data-deelbesp]"); if(db){const t=`Ik bespaar € ${db.dataset.deelbesp} op mijn boodschappen door supermarkten te vergelijken. Check jij het ook? Gratis, zonder account.`,u=SITE+"/?utm_source=deel&utm_medium=besparing";gc("deel/besparing","Besparing gedeeld");if(navigator.share)navigator.share({text:t,url:u}).catch(()=>{});else window.open("https://wa.me/?text="+encodeURIComponent(t+" "+u),"_blank");return}
   if(e.target.closest("[data-deelaanb]")){const u=SITE+"/aanbiedingen/"+(S.ofs&&S.ofs!=="alle"?S.ofs+"/"+(S.ofsoon?"volgende-week/":""):""),t=(S.ofs&&S.ofs!=="alle"?(STORENAMES[S.ofs]||S.ofs)+" ":"")+"aanbiedingen "+(S.ofsoon?"volgende week":"van deze week");if(navigator.share)navigator.share({title:t,text:t,url:u}).catch(()=>{});else window.open("https://wa.me/?text="+encodeURIComponent(t+" "+u),"_blank");return}
   if(e.target.closest("[data-vastewinkel]")){e.preventDefault();const d=$("mystores");if(d){d.open=true;d.scrollIntoView({block:"start"});setTimeout(()=>{const sel=$("mijnsel");if(sel)sel.focus()},300)}return}
   if(e.target.closest("[data-toonalarm]")){e.preventDefault();const d=$("prijsalarm");if(d){d.hidden=!d.hidden;if(!d.hidden){d.scrollIntoView({block:"center"});const inp=d.querySelector("input");if(inp)inp.focus()}}return}

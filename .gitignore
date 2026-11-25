@@ -4,3 +4,4 @@ scripts/fonts/
 node_modules/
 .netlify/
 __pycache__/
+data/lidl-bonnen.json

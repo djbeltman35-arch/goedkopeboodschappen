@@ -54,4 +54,17 @@ for s in d:
         print(f"{s['n']:10} open bestand, prijzen veranderd tot {s['dt']}")
 for n, (a, dag) in eigen.items():
     if n not in gezien: d.append({"n": n, "c": a.get("c", n), "u": a["u"], "d": a["d"], "dt": dag})
+# Lidl-prijzen van kassabonnen van bezoekers: alleen voor producten waar Lidl online geen prijs voor toont.
+try:
+    bonnen = json.load(open(os.path.join(DATA, "lidl-bonnen.json"))).get("producten", [])
+    lidl = next((s for s in d if s["n"] == "lidl"), None)
+    if lidl is not None and bonnen:
+        namen = {x["n"].strip().lower() for x in lidl.get("d", [])}
+        pre = lidl.get("u") or "https://www.lidl.nl"
+        extra = [{"n": f'{b["n"]} (Lidl-kassabon {b["datum"][8:10]}-{b["datum"][5:7]})', "l": ("" if lidl.get("u") else pre) + "/q/search?q=" + re.sub(r"\s+", "+", b["n"].lower()), "p": b["p"], "s": b.get("s") or ""}
+                 for b in bonnen if b["n"].strip().lower() not in namen and (vandaag - datetime.date.fromisoformat(b["datum"])).days <= 60]
+        lidl["d"] = lidl.get("d", []) + extra
+        print(f"lidl       {len(extra)} prijzen van kassabonnen van bezoekers")
+except FileNotFoundError: pass
+except Exception as e: print("lidl-bonnen overgeslagen:", e)
 json.dump(d, open(pad, "w"), ensure_ascii=False)
