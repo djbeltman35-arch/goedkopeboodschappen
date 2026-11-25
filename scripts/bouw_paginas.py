@@ -18,7 +18,7 @@ def header(actief="", hier=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav rustig drie" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -677,6 +677,7 @@ JOUW = ('<div class="panel" id="jouw" style="margin-top:16px;background:var(--gr
         'if(u&&u.n===n&&u.top&&u.top.length){const t=u.top[0];el.innerHTML="<b>Jouw eigen lijst ("+n+(n===1?" artikel":" artikelen")+")</b> is het goedkoopst bij <b>"+(N[t.s]||t.s)+"</b>: <span class=\'tag\'><span class=\'e\'>€</span>"+t.sum.toFixed(2).replace(".",",")+"</span>"+(u.top[1]?". Daarna "+(N[u.top[1].s]||u.top[1].s)+" ("+e(u.top[1].sum)+")":"")+". <a href=\'/#lijst\'>Bekijk je lijst</a>"}'
         'else el.innerHTML="<b>Jouw eigen lijst</b> heeft "+n+(n===1?" artikel":" artikelen")+". <a href=\'/#lijst\'>Bekijk waar die het goedkoopst is</a>"})()</script>')
 def nm(si): return NAMEN.get(stores[si]["id"], stores[si]["name"])
+PAAR_SI = []
 if PAK:
     w, l = PAK[0], PAK[-1]
     verschil = l["tot"] - w["tot"]
@@ -703,15 +704,26 @@ if PAK:
                     f'Bij {_wins.get(w["si"], 0)} van de {len(PAKTERMEN)} producten is {esc(nm(w["si"]))} zelf de goedkoopste winkel. '
                     'Geen enkele supermarkt betaalt voor een plek. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
                     '<p style="margin:8px 0 0">Elke week lichten we één supermarkt uit, op vaste volgorde: <a href="/supermarkt-van-de-week/">supermarkt van de week</a>.</p></div>')
-    paren = [(a, b) for a, b in itertools.combinations([r["si"] for r in PAK[:8]], 2)]
+    # Onderlinge vergelijkingen voor alle supermarkten waarvan (bijna) het hele mandje online staat.
+    PAAR_SI = [r["si"] for r in PAK if r["mist"] <= 2]
+    _buiten = [NAMEN.get(x, x) for x in ACTIEF if x not in {stores[r_['si']]['id'] for r_ in PAK}]
+    _noot_pak = f'<p class="note">Bijgewerkt op {DATUM}, elke dag opnieuw berekend.' + (f' Niet in de ranglijst omdat te weinig van deze boodschappen online staan: {esc(", ".join(_buiten))}.' if _buiten else '') + '</p>'
+    paren = [(a, b) for a, b in itertools.combinations(PAAR_SI, 2)]
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th style="text-align:right">Totaal</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{trs}</tbody></table></div>'
-            f'<p class="note">Bijgewerkt op {DATUM}. Supermarkten met te weinig producten online (zoals Vomar en Poiesz) staan alleen in de lijst als we genoeg van deze boodschappen vinden.</p>'
+            + _noot_pak
             + _waarom_html +
             f'<h2>Wat zit er in het vaste boodschappenmandje?</h2><p class="note">Dit mandje is voor iedereen hetzelfde en staat los van je eigen lijst.</p><ul class="links">{mand}</ul><h2>Zo is het opgebouwd</h2>{detail}'
             + '<h2>Twee supermarkten vergelijken</h2><ul class="links">' + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(a))} of {esc(nm(b))}?</a></li>' for a, b in paren) + "</ul>"
             + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>')
     if os.path.exists(os.path.join(ROOT, "data", "supermarkten-steden.json")): body += '<p><b>Per stad:</b> <a href="/goedkoopste-supermarkt-in/">bekijk de goedkoopste supermarkt in jouw stad</a>, van Rijssen en Enschede tot Amsterdam.</p>'
-    schrijf("/goedkoopste-supermarkt/", page("/goedkoopste-supermarkt/", title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/", og_title=f"De goedkoopste supermarkt van {MAAND}"))
+    _rl = {"@context": "https://schema.org", "@type": "ItemList", "name": f"Goedkoopste supermarkt van {MAAND}", "description": desc, "numberOfItems": len(PAK),
+           "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": nm(r["si"]), "url": f"{BASE}/supermarkt/{stores[r['si']]['id']}/"} for i, r in enumerate(PAK)]}
+    _ds = {"@context": "https://schema.org", "@type": "Dataset", "name": f"Ranglijst goedkoopste supermarkt Nederland ({MAAND})",
+           "description": f"Dagelijkse berekening van een vast mandje van {len(PAKTERMEN)} basisboodschappen bij {len(PAK)} Nederlandse supermarkten, met de actuele prijzen uit de webwinkels.",
+           "url": f"{BASE}/goedkoopste-supermarkt/", "dateModified": VANDAAG, "temporalCoverage": VANDAAG, "spatialCoverage": "Nederland", "inLanguage": "nl-NL",
+           "creator": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"}, "isAccessibleForFree": True,
+           "license": f"{BASE}/gebruiksvoorwaarden/", "variableMeasured": "Totaalprijs van het vaste boodschappenmandje in euro"}
+    schrijf("/goedkoopste-supermarkt/", page("/goedkoopste-supermarkt/", title, desc, head, body, [cld, _rl, _ds, faq_ld(faq)], actief="/goedkoopste-supermarkt/", og_title=f"De goedkoopste supermarkt van {MAAND}"))
     made.append(("/goedkoopste-supermarkt/", "0.9"))
     # Onderlinge vergelijkingen: "AH of Jumbo, wie is goedkoper?"
     for a, b in paren:
@@ -758,7 +770,7 @@ for si, s in enumerate(stores):
         body += f'<h2>{"AH Bonus" if sid == "ah" else "Aanbiedingen"} van deze week</h2><ul class="offers">{"".join(offer_card(o) for o in acties[:12])}</ul><a class="cta" href="/aanbiedingen/{sid}/">Alle {len(acties)} aanbiedingen van {esc(nm_)}</a>'
     if wint:
         body += f"<h2>Hier is {esc(nm_)} het goedkoopst</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in wint[:60]) + "</ul>"
-    body += f"<h2>{esc(nm_)} vergelijken met</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(b if a == si else a))}</a></li>' for a, b in itertools.combinations([r_["si"] for r_ in PAK[:8]], 2) if si in (a, b)) + "</ul>" if r and rang <= 8 else ""
+    body += f"<h2>{esc(nm_)} vergelijken met</h2><ul class=\"links\">" + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(b if a == si else a))}</a></li>' for a, b in itertools.combinations(PAAR_SI, 2) if si in (a, b)) + "</ul>" if r and si in PAAR_SI else ""
     hier = [m_ for m_ in MAAL if m_["rang"] and m_["rang"][0][0] == si]
     top3 = [m_ for m_ in MAAL if any(x[0] == si for x in m_["rang"][:3]) and m_ not in hier]
     if hier or top3:
@@ -1073,10 +1085,12 @@ seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h
        + (f'<a class="seowinnaar" href="/goedkoopste-supermarkt/"><span>🏆 Goedkoopst in {MAAND.split()[0]}</span><b>{esc(nm(PAK[0]["si"]))}</b><small>daarna {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))} →</small></a>' if len(PAK) > 2 else "")
        + '</div>'
        + faq_html(faq) + "</section>")
-ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
+ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappenvergelijker", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
       {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "info@boodschappenvergelijk.nl",
-       "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"]},
+       "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"],
+       "subjectOf": [{"@type": "VideoObject", "name": "Goedkoop boodschappen doen? Erik bouwt vergelijker", "url": HVN_URL, "publisher": {"@type": "Organization", "name": "Hart van Nederland"}, "uploadDate": "2026-11-16"},
+                     {"@type": "NewsArticle", "headline": "Rijssenaar Erik Beltman rekent af met dure boodschappen in vergelijkingswebsite", "url": OOST_URL, "publisher": {"@type": "Organization", "name": "RTV Oost"}, "datePublished": "2026-11-16"}]},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
 # Prijslijst in twee delen, zodat de app snel start: eerst alle producten die bij een categorie horen (ongeveer de helft),
@@ -1127,7 +1141,7 @@ AMERK = sorted(f for f, ws in _win.items() if not f[0].isdigit() and len(f) > 1 
 app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
 app = (app.replace("{{JAAR}}", str(datetime.date.today().year)).replace("{{EIWIT}}", json.dumps(EIWIT, ensure_ascii=False)).replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
           .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--SNELLINKS-->", "").replace("<!--MAALTIJDEN-->", MAAL_HOME)
-          .replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
+          .replace("{{AANDER}}", str(AANTAL - 6)).replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 # Snelheid: de grote vaste tabellen in een apart bestand dat de browser bewaart (scheelt bij elk bezoek ~60 kB),
 # en de prijsbestanden al laten binnenhalen terwijl de pagina nog laadt.
 _data_regels = []
@@ -1202,13 +1216,16 @@ else:
     print("LET OP: app-script niet apart gezet")
 # Startpagina: stijlblad direct in de HTML (geen apart verzoek dat het eerste beeld ophoudt; PageSpeed: renderblokkering).
 _css = open(os.path.join(ROOT, "site", "stijl.css"), encoding="utf-8").read()
+_css = re.sub(r"/\*.*?\*/", "", _css, flags=re.S); _css = re.sub(r"\s+", " ", _css); _css = re.sub(r"\s*([{};,>])\s*", r"\1", _css).replace(";}", "}").strip()
+# Snelheid: onderdelen onder de vouw (maaltijden, uitleg, voettekst) pas opmaken als ze in beeld komen.
+_css += ".wrap.maal,.wrap.seo,.foot{content-visibility:auto;contain-intrinsic-size:auto 900px}"
 app, _n = re.subn(r'<link rel="stylesheet" href="/stijl\.css\?v=[^"]*">', lambda m: "<style>" + _css + "</style>", app, count=1)
 if not _n: print("LET OP: stijl.css niet in de startpagina gezet")
 # Maaltijdkaarten staan op de telefoon in een veegrij van ca. 80% breed: kleinere foto volstaat.
 app = app.replace('sizes="(min-width: 760px) 270px, 94vw"', 'sizes="(min-width: 760px) 270px, (max-width: 700px) calc(80vw - 26px), 94vw"')
 # Alleen het kleine winkelbestand vooraf; de grote prijsbestanden zouden de pagina zelf vertragen.
 _pre = '<link rel="preload" href="/winkels.json" as="fetch" crossorigin>'
-app = app.replace("</head>", _pre + "</head>", 1)
+if _pre not in app: app = app.replace("</head>", _pre + "</head>", 1)
 open(os.path.join(OUT, "index.html"), "w").write(app)
 made.insert(0, ("/", "1.0"))
 
@@ -1713,6 +1730,19 @@ try:
         for d, v in _mand: per_m.setdefault(d[:7], []).append(v)
         mnd = [(m, statistics.mean(v)) for m, v in sorted(per_m.items())]
         basis = mnd[0][1]; laatst = mnd[-1][1]; verschil = (laatst / basis - 1) * 100
+        MN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
+        _sinds = MN[int(mnd[0][0][5:]) - 1]
+        # Sprongen van meer dan 2,5% op één dag komen door uitbreiding van de prijsbronnen (meer producten per winkel), niet door de markt:
+        # de verandering rekenen we dan pas vanaf de laatste sprong, en met minder dan 14 dagen daarna noemen we geen percentage.
+        _br = [i for i in range(1, len(_mand)) if abs(_mand[i][1] / _mand[i - 1][1] - 1) > .025]
+        _seg = _mand[_br[-1]:] if _br else _mand
+        if _br:
+            basis = _seg[0][1]; laatst = _seg[-1][1]; _sinds = kortdag(_seg[0][0])
+            verschil = (laatst / basis - 1) * 100 if len(_seg) >= 14 else None
+        _breuk_txt = ('<p class="note"><b>Let op:</b> op ' + ", ".join(kortdag(_mand[i][0]) for i in _br)
+                      + ' zijn we meer producten per supermarkt gaan vergelijken (eigen prijzen uit de webwinkels). Daardoor vinden we vaker een goedkopere variant. '
+                      'De sprong in de lijn op die dag komt door die uitbreiding, niet doordat boodschappen goedkoper werden. Daarom rekenen we de verandering pas vanaf de laatste uitbreiding.</p>') if _br else ""
+        _vtxt = f", {pct_nl(verschil)} ten opzichte van {_sinds}" if verschil is not None else ""
         # stijgers en dalers per product: eerste 14 meetdagen tegen de laatste 14
         bew = []
         for t, st_ in _tm.items():
@@ -1726,24 +1756,25 @@ try:
         pts = " ".join(f"{20 + i * (W - 40) / (len(_mand) - 1):.1f},{H - 20 - (v - lo_) / (hi_ - lo_) * (H - 40):.1f}" for i, (_, v) in enumerate(_mand))
         svg = (f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Prijs van het boodschappenmandje per dag" style="max-width:640px;display:block"><polyline fill="none" stroke="#0e7c4a" stroke-width="3" points="{pts}"/>'
                f'<text x="20" y="14" font-size="13" fill="currentColor">{eur(hi_ / 1.02)}</text><text x="20" y="{H - 4}" font-size="13" fill="currentColor">{kortdag(_mand[0][0])}</text><text x="{W - 20}" y="{H - 4}" font-size="13" text-anchor="end" fill="currentColor">{kortdag(_mand[-1][0])}</text></svg>')
-        MN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
-        mrows = "".join(f'<tr><td>{MN[int(m[5:]) - 1]} {m[:4]}</td><td class="p">{eur(v)}</td><td class="p">{pct_nl((v / basis - 1) * 100)}</td></tr>' for m, v in mnd)
+        mrows = "".join(f'<tr><td>{MN[int(m[5:]) - 1]} {m[:4]}</td><td class="p">{eur(v)}</td><td class="p">{"" if _br else pct_nl((v / basis - 1) * 100)}</td></tr>' for m, v in mnd)
         lijstje = lambda xs: "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a>: <b>{pct_nl(c * 100, 0)}</b></li>' for t, c in xs)
-        richting = "duurder" if verschil > 0.5 else "goedkoper" if verschil < -0.5 else "ongeveer even duur"
+        richting = ("duurder" if verschil > 0.5 else "goedkoper" if verschil < -0.5 else "ongeveer even duur") if verschil is not None else ""
         ch, cld = crumbs(("Besparen", "/besparen/"), ("Prijsindex", None))
-        faq = [("Worden boodschappen duurder?", f"Ons vaste mandje van {len(_bt)} basisboodschappen kostte in {MN[int(mnd[0][0][5:]) - 1]} gemiddeld {eur(basis)} en in {MN[int(mnd[-1][0][5:]) - 1]} {eur(laatst)}: {pct_nl(verschil)}. Boodschappen zijn in die periode dus {richting} geworden."),
+        faq = [("Worden boodschappen duurder?", (f"Ons vaste mandje van {len(_bt)} basisboodschappen kost nu gemiddeld {eur(laatst)}{_vtxt}. Boodschappen zijn in die periode dus {richting} geworden." if verschil is not None else f"Ons vaste mandje van {len(_bt)} basisboodschappen kost nu gemiddeld {eur(laatst)}. Omdat we kort geleden meer producten zijn gaan vergelijken, is de periode daarna nog te kort voor een betrouwbare trend.")),
                ("Hoe meten jullie dit?", "Elke dag slaan we per product de prijs per kilo, liter of stuk op bij alle supermarkten. Voor de index nemen we per product de middelste prijs van alle supermarkten en rekenen we een vast mandje uit. Aanbiedingen tellen niet mee, zodat je de gewone prijzen ziet."),
                ("Wat zegt het CBS?", f"Het CBS meet de inflatie voor alle uitgaven, ook voedsel. Onze index is kleiner (alleen basisboodschappen), maar we werken hem meerdere keren per week bij; deze stand is van {DATUM}.")]
-        head = ch + f'<h1>Worden boodschappen duurder? Prijsindex {MAAND}</h1><p class="lead">Een vast mandje van {len(_bt)} basisboodschappen kost nu gemiddeld <b>{eur(laatst)}</b>, {pct_nl(verschil)} ten opzichte van {MN[int(mnd[0][0][5:]) - 1]}. Elke dag gemeten bij alle supermarkten.</p>'
+        head = ch + f'<h1>Worden boodschappen duurder? Prijsindex {MAAND}</h1><p class="lead">Een vast mandje van {len(_bt)} basisboodschappen kost nu gemiddeld <b>{eur(laatst)}</b>{_vtxt}. Elke dag gemeten bij alle supermarkten.</p>'
         body = (f'<h2>Het mandje per dag</h2>{svg}<div class="tblwrap"><table class="ptable"><thead><tr><th>Maand</th><th style="text-align:right">Gemiddeld</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{mrows}</tbody></table></div>'
-                f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>'
-                f'<p class="note">Vergelijking van de eerste 14 meetdagen ({kortdag(_dg[0])} en verder) met de laatste 14. Middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.</p>'
+                + _breuk_txt + ("" if _br else f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>') + 
+                ("" if _br else f'<p class="note">Vergelijking van de eerste 14 meetdagen ({kortdag(_dg[0])} en verder) met de laatste 14. Middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.</p>')
                 + faq_html(faq) + '<p><a href="/besparen/">Zo bespaar je toch →</a></p>')
-        schrijf("/prijsindex/", page("/prijsindex/", f"Worden boodschappen duurder? Prijsindex {MAAND}: {pct_nl(verschil)}", f"Onze dagelijkse prijsindex van {len(_bt)} basisboodschappen bij alle supermarkten: nu {eur(laatst)}, {pct_nl(verschil)} sinds {MN[int(mnd[0][0][5:]) - 1]}. Met de grootste stijgers en dalers.", head, body, [cld, faq_ld(faq)]))
+        schrijf("/prijsindex/", page("/prijsindex/", f"Worden boodschappen duurder? Prijsindex {MAAND}" + (f": {pct_nl(verschil)}" if verschil is not None else ""), f"Onze dagelijkse prijsindex van {len(_bt)} basisboodschappen bij alle supermarkten: nu {eur(laatst)}{_vtxt}." + ("" if _br else " Met de grootste stijgers en dalers."), head, body, [cld, {"@context": "https://schema.org", "@type": "Dataset", "name": "Prijsindex boodschappen Nederland", "description": f"Dagelijkse prijs van een vast mandje van {len(_bt)} basisboodschappen: per product de middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.", "url": BASE + "/prijsindex/", "temporalCoverage": f"{_mand[0][0]}/{_mand[-1][0]}", "dateModified": VANDAAG, "spatialCoverage": "Nederland", "inLanguage": "nl-NL", "isAccessibleForFree": True, "license": BASE + "/gebruiksvoorwaarden/", "creator": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"}}, faq_ld(faq)]))
         made.append(("/prijsindex/", "0.8"))
-        print("/prijsindex/:", f"{pct_nl(verschil)}", len(_mand), "dagen")
+        print("/prijsindex/:", pct_nl(verschil) if verschil is not None else "geen trend (bronuitbreiding)", len(_mand), "dagen")
 except Exception as e:
     print("prijsindex overgeslagen:", e)
+
+_ARCH = []  # maandarchief: pas zinvol zodra er maanden met alleen verse eigen prijzen zijn
 
 # ---------- Prijsrapport van de maand: wat werd de afgelopen 30 dagen duurder en goedkoper? ----------
 try:
@@ -1751,6 +1782,23 @@ try:
     if len(_dg) >= 40:
         _nu_d = datetime.date.fromisoformat(_dg[-1])
         _i0 = max(i for i, d in enumerate(_dg) if datetime.date.fromisoformat(d) <= _nu_d - datetime.timedelta(days=30))
+        # Valt er een bronuitbreiding (sprong in de prijsindex) binnen de 30 dagen, dan zijn de verschillen niet betrouwbaar.
+        _rbreuk = None
+        try:
+            if _br and _mand[_br[-1]][0] > _dg[_i0]: _rbreuk = _mand[_br[-1]][0]
+        except NameError: pass
+        if _rbreuk:
+            _volg = datetime.date.fromisoformat(_rbreuk) + datetime.timedelta(days=30)
+            ch, cld = crumbs(("Prijsindex", "/prijsindex/"), ("Prijsrapport", None))
+            schrijf("/prijsrapport/", page("/prijsrapport/", "Prijsrapport boodschappen: wat werd duurder en goedkoper?",
+                    f"Maandelijks prijsrapport van boodschappenvergelijk.nl: wat werd de afgelopen 30 dagen duurder en goedkoper bij {AANTAL} supermarkten.",
+                    ch + "<h1>Prijsrapport: wat werd duurder?</h1>",
+                    f'<p>Op {kortdatum(_rbreuk)} zijn we veel meer producten per supermarkt gaan vergelijken, met eigen prijzen uit de webwinkels. Prijzen van vóór en na die dag zijn daardoor niet eerlijk naast elkaar te leggen. '
+                    f'Het volgende rapport met betrouwbare cijfers over 30 dagen staat hier vanaf {kortdatum(_volg.isoformat())}.</p>'
+                    '<ul class="links"><li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt van vandaag</a></li><li><a href="/prijsindex/">Prijsindex</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>', [cld]))
+            made.append(("/prijsrapport/", "0.5"))
+            print("/prijsrapport/: bronuitbreiding op", _rbreuk, "- volgend rapport vanaf", _volg)
+            raise StopIteration
         def _venster(r, i, n=5):
             v = [x for x in r[max(0, i - n + 1):i + 1] if x]
             return statistics.median(v) if len(v) >= 3 else None
@@ -1789,6 +1837,7 @@ try:
             body = (f'<h2>Duurder geworden</h2>{tab(stijg)}' if stijg else "") + (f'<h2>Goedkoper geworden</h2>{tab(daal)}' if daal else "") + wtab + (
                 f'<p class="note">Per product de middelste prijs per kilo, liter of stuk van alle supermarkten (het voordeligste vergelijkbare product per winkel), gemiddeld over een paar meetdagen om toevallige uitschieters weg te halen. '
                 f'Aanbiedingen tellen mee. Bijgewerkt op {DATUM}. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
+                + ('<h2>Eerdere maanden</h2><ul class="links">' + "".join(f'<li><a href="/prijsrapport/{m}/">Prijsmonitor {esc(n)}</a>: {pct_nl(g)}, goedkoopst bij {esc(w)}</li>' for m, n, g, w in reversed(_ARCH)) + '</ul>' if _ARCH else '') + 
                 '<h2>Meer</h2><ul class="links"><li><a href="/prijsindex/">Prijsindex: worden boodschappen duurder?</a></li><li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a></li><li><a href="/besparen/">Besparen op boodschappen</a></li></ul>'
                 '<p class="note">Je mag dit rapport vrij overnemen met een bronvermelding en link naar boodschappenvergelijk.nl.</p>')
             faq = [("Werden boodschappen de afgelopen maand duurder?", f"Van {len(bew)} vergeleken producten werden er {n_op} duurder en {n_af} goedkoper; de middelste verandering is {pct_nl(gem)}."),
@@ -1800,6 +1849,8 @@ try:
                     ch + f"<h1>Prijsrapport {esc(mnd_naam)}: wat werd duurder?</h1><p class=\"lead\">{lead}</p>", body + faq_html(faq), [cld, faq_ld(faq)], og_title=f"Prijsrapport {mnd_naam}"))
             made.append(("/prijsrapport/", "0.7"))
             print("/prijsrapport/:", len(bew), "producten,", n_op, "duurder,", n_af, "goedkoper")
+except StopIteration:
+    pass
 except Exception as e:
     print("prijsrapport overgeslagen:", e)
 
@@ -2116,6 +2167,15 @@ schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij,
     _al_body, [cld, faq_ld(_al_faq)]))
 made.append(("/allergie/", "0.8"))
 exec(open(os.path.join(ROOT, "scripts", "kennisbank.py")).read())
+
+# ---------- llms.txt voor AI-zoekmachines: altijd actuele aantallen en de goedkoopste ----------
+try:
+    _ll = open(os.path.join(ROOT, "site", "llms.txt"), encoding="utf-8").read()
+    _ll = (_ll.replace("{{AANTAL}}", str(AANTAL)).replace("{{WINKELS}}", ", ".join(NAMEN.get(x, x) for x in ACTIEF)).replace("{{DATUM}}", DATUM)
+              .replace("{{GOEDKOOPST}}", f"{nm(PAK[0]['si'])} ({eur(PAK[0]['tot'])} voor {len(PAKTERMEN)} vaste boodschappen, {DATUM})" if PAK else "zie de ranglijst"))
+    open(os.path.join(OUT, "llms.txt"), "w", encoding="utf-8").write(_ll)
+except Exception as e:
+    print("llms.txt niet bijgewerkt:", e)
 
 # ---------- 404, sitemap, robots ----------
 schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",

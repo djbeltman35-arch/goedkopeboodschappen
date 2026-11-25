@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="e0d5a73bd035a1c" content="277030417ea9ada19f69ae08c41fb74b">
-<title>Boodschappen en aanbiedingen vergelijken bij 11 supermarkten</title>
-<meta name="description" content="Vergelijk elke dag de prijzen en aanbiedingen van AH, Jumbo, Lidl, Aldi, PLUS, Dirk en 5 andere supermarkten. Zie waar je boodschappen het goedkoopst zijn. Gratis.">
+<title>Boodschappen en aanbiedingen vergelijken bij {{AANTAL}} supermarkten</title>
+<meta name="description" content="Gratis boodschappenvergelijker: vergelijk elke dag de prijzen en aanbiedingen van AH, Jumbo, Lidl, Aldi, PLUS, Dirk en {{AANDER}} andere supermarkten. Zonder reclame.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="msvalidate.01" content="D815850F902F1E4C0DE39B76F69135AF">
 <link rel="canonical" href="https://boodschappenvergelijk.nl/">
@@ -14,12 +14,11 @@
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen">
 <meta property="og:url" content="https://boodschappenvergelijk.nl/">
 <meta property="og:title" content="Waar zijn je boodschappen het goedkoopst?">
-<meta property="og:description" content="Vergelijk 12 supermarkten in één keer. Gratis, zonder reclame en elke dag bijgewerkt.">
+<meta property="og:description" content="Vergelijk {{AANTAL}} supermarkten in één keer. Gratis, zonder reclame en elke dag bijgewerkt.">
 <meta property="og:image" content="https://boodschappenvergelijk.nl/icons/og.png"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 
 <link rel="stylesheet" href="/stijl.css?v={{VERSIE}}"><script src="/fout.js?v={{VERSIE}}" defer></script>
-<link rel="preload" href="/winkels.json" as="fetch" crossorigin>
 <script type="application/ld+json">{{LDJSON}}</script>
 <style>
 /* Alleen voor de app op de startpagina */
@@ -225,7 +224,7 @@
       <button type="submit" class="btn">Zoek</button>
     </form>
     <ol class="stapjes" aria-label="Zo werkt het"><li><b>1</b>Zoek product</li><li><b>2</b>Op je lijst</li><li><b>3</b>Kies winkel</li></ol>
-    <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies uit 12 winkels</span></span></summary>
+    <details class="mystores" id="mystores"><summary><span class="ic" aria-hidden="true">🏪</span><span><span id="mysum">Mijn supermarkten</span><span class="sub" id="mysub">Kies uit {{AANTAL}} winkels</span></span></summary>
       <div class="in"><div class="mijnkies"><label for="mijnsel"><b>⭐ Mijn vaste winkel</b></label><select id="mijnsel" data-mijn></select><p class="hint" style="margin:4px 0 0">Ga je meestal naar dezelfde supermarkt? Dan zie je bij elk product wat het dáár kost en hoeveel je elders bespaart.</p></div><p class="hint">Vink uit waar je nooit komt. Dan vergelijken we alleen de winkels die jij gebruikt, bij zoeken, je lijst en de aanbiedingen.</p><div class="sgrid" id="sgrid"></div>
       <div class="buurt"><button type="button" class="btn-line" data-buurt>📍 Zoek winkels bij mij in de buurt</button><label><span class="sr">Afstand</span><select id="buurtkm"><option value="2">binnen 2 km</option><option value="5" selected>binnen 5 km</option><option value="10">binnen 10 km</option><option value="20">binnen 20 km</option></select></label>
       <p class="hint" id="buurtmsg" style="margin:6px 0 0">Je locatie gaat alleen naar OpenStreetMap om winkels op te zoeken. Wij bewaren hem niet.</p><div id="buurtlijst"></div></div>
@@ -273,7 +272,7 @@
 <footer class="foot">
   <div class="wrap">
     <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
-    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor hulpverleners</a><a href="/feestdagen/">Feestdagen</a><a href="/tips/">Tips en ideeën</a><a href="/steun/">Steun de site</a><a href="/contact/">Contact</a></nav>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor hulpverleners</a><a href="/feestdagen/">Feestdagen</a><a href="/tips/">Tips en ideeën</a><a href="/steun/">Steun de site</a><a href="/contact/">Contact</a></nav>
     <p class="small auteursrecht">© {{JAAR}} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><span class="versie"> · Versie {{VERSIE}}</span></p>
   </div>
 </footer>

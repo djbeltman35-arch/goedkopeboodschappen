@@ -1,26 +1,38 @@
 # Goedkope Boodschappen (boodschappenvergelijk.nl)
 
-> Gratis Nederlandse boodschappenvergelijker zonder reclame of verdienmodel. Vergelijkt elke dag de prijzen en aanbiedingen van Albert Heijn, Jumbo, Lidl, Aldi, PLUS, Dirk, Hoogvliet, DekaMarkt, SPAR, Vomar en Poiesz, per product en per kilo, liter of stuk. Je zet producten op een boodschappenlijst en ziet bij welke supermarkt het totaal het laagst is.
+> Gratis Nederlandse boodschappenvergelijker zonder reclame. Vergelijkt elke dag de prijzen en aanbiedingen van {{AANTAL}} supermarkten ({{WINKELS}}), per product en per kilo, liter of stuk. Je zet producten op een boodschappenlijst en ziet bij welke supermarkt het totaal het laagst is.
 
-Prijzen komen uit de webshops van de supermarkten (via de open dataset van Checkjebon) en de actiefolders; ze worden elke dag bijgewerkt. De prijs aan de kassa is leidend. De site heeft geen advertenties, affiliatelinks of betaalde plaatsingen en gebruikt geen tracking-cookies.
+Laatst bijgewerkt: {{DATUM}}. Goedkoopste supermarkt voor een vast mandje basisboodschappen op dit moment: {{GOEDKOOPST}}.
+
+Prijzen komen elke dag uit de webwinkels van de supermarkten (eigen metingen, aangevuld met de open dataset van Checkjebon) en uit de actiefolders. De prijs aan de kassa is leidend. De site heeft geen advertenties, affiliatelinks of betaalde plaatsingen en gebruikt geen tracking-cookies; supermarkten kunnen geen plek in de vergelijking kopen. De kosten worden betaald door de maker en vrijwillige bijdragen.
 
 ## Belangrijkste pagina's
 
 - [Startpagina en boodschappenlijst](https://boodschappenvergelijk.nl/): zoek een product, zet het op je lijst en zie per supermarkt wat je totaal kost. Zoeken kan ook via `https://boodschappenvergelijk.nl/?q=<product>`.
+- [Goedkoopste supermarkt](https://boodschappenvergelijk.nl/goedkoopste-supermarkt/): ranglijst, elke dag opnieuw berekend met een vast mandje basisboodschappen.
+- [Prijsrapport](https://boodschappenvergelijk.nl/prijsrapport/): wat werd de afgelopen 30 dagen duurder en goedkoper. Cijfers mogen worden overgenomen met bronvermelding en link.
+- [Prijsindex](https://boodschappenvergelijk.nl/prijsindex/): worden boodschappen duurder? Dagelijkse prijs van een vast mandje basisboodschappen.
 - [Alle producten vergelijken](https://boodschappenvergelijk.nl/vergelijk/): per product (bijv. /vergelijk/halfvolle-melk/) de goedkoopste supermarkt, prijs per eenheid en prijsverloop.
-- [Categorieën](https://boodschappenvergelijk.nl/categorie/): hoofdgroepen en subcategorieën, ook per verpakking (blikjes, kratten, flessen) en vers/diepvries/pot.
-- [Aanbiedingen van deze week](https://boodschappenvergelijk.nl/aanbiedingen/): alle acties per supermarkt.
-- [Goedkoopste supermarkt](https://boodschappenvergelijk.nl/goedkoopste-supermarkt/): vast boodschappenpakket doorgerekend bij elke supermarkt.
-- [Goedkoopste supermarkt per stad](https://boodschappenvergelijk.nl/goedkoopste-supermarkt-in/): per plaats (ruim 350 plaatsen, zoals /goedkoopste-supermarkt-in/enschede/) welke supermarkten er zitten en welke het goedkoopst is.
-- [Supermarkt van de week](https://boodschappenvergelijk.nl/supermarkt-van-de-week/): elke week een andere supermarkt uitgelicht, op vaste volgorde: mandjesprijs, beste aanbiedingen en acties die toch niet voordelig zijn.
-- [Kerstboodschappen](https://boodschappenvergelijk.nl/kerst/): kerstmandje (vast kerstdiner voor 4 personen) meerdere keren per week doorgerekend bij alle supermarkten, plus gourmet, wild, bubbels en kerstaanbiedingen.
-- [Complete maaltijden](https://boodschappenvergelijk.nl/maaltijden/): recepten met de kassaprijs voor 4 personen per supermarkt, calorieën en glutenvrij/caloriearm; met link naar het originele recept.
+- [Twee supermarkten vergelijken](https://boodschappenvergelijk.nl/vergelijk-supermarkten/dirk-of-ah/): bijvoorbeeld Dirk of Albert Heijn, met het verschil in procenten.
+- [Goedkoopste supermarkt per stad](https://boodschappenvergelijk.nl/goedkoopste-supermarkt-in/): per plaats (zoals /goedkoopste-supermarkt-in/enschede/) welke supermarkten er zitten en welke het goedkoopst is.
+- [Aanbiedingen van deze week](https://boodschappenvergelijk.nl/aanbiedingen/): alle acties per supermarkt, met een oordeel of de actie echt voordelig is.
+- [Supermarkt van de week](https://boodschappenvergelijk.nl/supermarkt-van-de-week/): elke week een andere supermarkt uitgelicht.
+- [Categorieën](https://boodschappenvergelijk.nl/categorie/): hoofdgroepen en subcategorieën.
+- [Complete maaltijden](https://boodschappenvergelijk.nl/maaltijden/): recepten met de prijs voor 4 personen per supermarkt.
+- [Besparen op boodschappen](https://boodschappenvergelijk.nl/besparen/): tips onderbouwd met de prijzen van vandaag.
 - [Dieet en allergie](https://boodschappenvergelijk.nl/dieet/): goedkoopste producten voor glutenvrij, lactosevrij, vegan en caloriearm.
 - [Zo vergelijken wij](https://boodschappenvergelijk.nl/zo-vergelijken-wij/): uitleg over bronnen, prijs per eenheid en hoe de goedkoopste wordt gekozen.
 
+## In de media
+
+- Hart van Nederland (SBS6), 16 november 2026: "Goedkoop boodschappen doen? Erik bouwt handige vergelijker" (https://www.hartvannederland.nl/advies-en-tips/kopen-besparen/artikelen/supermarktprijzen-vergelijken-gratis-website)
+- RTV Oost, 16 november 2026: "Rijssenaar Erik Beltman rekent af met dure boodschappen in vergelijkingswebsite" (https://www.oost.nl/nieuws/3720144/rijssenaar-erik-beltman-rekent-af-met-dure-boodschappen-in-vergelijkingswebsite)
+- Radio Oost, Bij Oost in de middag, 16 november 2026.
+- Overzicht: https://boodschappenvergelijk.nl/in-de-media/
+
 ## Over
 
-- [Over de site](https://boodschappenvergelijk.nl/over/): gemaakt door Erik, zonder verdienmodel.
+- [Over de site](https://boodschappenvergelijk.nl/over/): gemaakt door Erik Beltman uit Rijssen, als hobbyproject om mensen te helpen besparen.
 - [Privacy](https://boodschappenvergelijk.nl/privacy/)
 - Contact: info@boodschappenvergelijk.nl
 
