@@ -215,5 +215,19 @@
   "slot": "19:30 avond",
   "onderwerp": "vandaag.json avond",
   "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
+ },
+ {
+  "datum": "2026-11-27",
+  "merk": "stroomwekker",
+  "slot": "12:30",
+  "onderwerp": "/gids/wasmachine-slim-aansturen/",
+  "tekst": "Wasmachine, droger en vaatwasser slim aansturen 🧺"
+ },
+ {
+  "datum": "2026-11-27",
+  "merk": "stroomwekker",
+  "slot": "19:00",
+  "onderwerp": "/gids/negatieve-stroomprijs/",
+  "tekst": "Negatieve stroomprijs: wat betekent dat? ☀️"
  }
 ]
