@@ -201,5 +201,19 @@
   "slot": "10:00 tip",
   "onderwerp": "/goedkoopste-supermarkt-in/ (supermarkt per stad)",
   "tekst": "Welke supermarkt is het goedkoopst in jouw stad? 📍"
+ },
+ {
+  "datum": "2026-11-25",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Voordelig ontbijt en lunch 💰"
+ },
+ {
+  "datum": "2026-11-25",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
  }
 ]
