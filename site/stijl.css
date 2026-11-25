@@ -953,3 +953,11 @@ html body .hero .search .btn:not(#_a):not(#_b):not(#_c){height:46px!important;bo
 /* Snelheid: delen onder de vouw pas opbouwen als ze in beeld komen (nov 2026) */
 html body main>section.wrap.maal,html body main>section.wrap.seo{content-visibility:auto;contain-intrinsic-size:auto 600px}
 .deelbesp{display:block;margin:6px 0 2px}
+/* Bespaar ook op: rustig, op één regel (label links, bewegende strook rechts) */
+.hero .bespaarook{display:flex;align-items:center;gap:8px;margin:0 0 10px}
+.hero .bespaarook .bokop{flex:none;font-size:13px;font-weight:400;color:var(--muted)}
+.hero .bocar{flex:1;min-width:0;overflow:hidden;padding:0!important}
+.hero .bocar .botrack{gap:6px}
+.hero .bocar a{padding:3px 10px!important;gap:4px!important;box-shadow:none!important;border-width:1px!important;background:transparent!important;color:var(--muted)!important}
+.hero .bocar b{font-size:13px!important;font-weight:400!important}
+.hero .bocar .bi{font-size:14px!important}
