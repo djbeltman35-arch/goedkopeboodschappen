@@ -169,6 +169,7 @@ VARIANT = json.load(open(os.path.join(ROOT, "scripts", "varianten.json")))
 VARNORM = {" ".join(norm(k)): v for k, v in VARIANT.items()}
 class Treffers(list):
     paar = frozenset()
+    ref = None  # ook de producten met het zoekwoord na "in": tellen mee voor de gewone prijs per kilo/liter, maar worden niet gekozen
 def _variant(v):
     seen, uit = set(), Treffers()
     uit.paar = set()
@@ -192,6 +193,11 @@ def _variant(v):
                 if v.get("soort") in _DRANK: LITERS[id(p)] = ml * n / 1000
             uit.append(p)
     return uit
+def _erin(h, t, paren):
+    # Zoekwoord staat pas na "in" (tonijn in zonnebloemolie, bonen in tomatensaus): dan is het de saus of olie waar iets anders in zit. Zelfde regel als erin() in site/index.html.
+    hit = lambda x: x in paren or any(x == w or (samen_ok(w) and x.endswith(w)) for w in t)
+    i = next((k for k, x in enumerate(h) if hit(x)), -1)
+    return i >= 2 and h[i - 1] == "in"
 def matches(term, basis=False):
     t = tuple(norm(term))
     if not t: return Treffers()
@@ -215,8 +221,10 @@ def matches(term, basis=False):
     m = [prods[i] for i in sorted(set.intersection(*sets))]
     # Een zoekwoord met of zonder -e is geen ander product (biologisch/biologische, houdbaar/houdbare).
     tv = t + tuple(a for a in map(els_alt, t) if a) + paren + tuple(w[:-1] if w.endswith("e") else w + "e" for w in t if len(w) >= 5)
-    clean = [p for p in m if not any(_vreemd_woord(x, tv) for x in p[7])]
+    clean0 = [p for p in m if not any(_vreemd_woord(x, tv) for x in p[7])]
+    clean = [p for p in clean0 if not _erin(p[7], t, paren)]
     r = Treffers(_verfijn(clean or m, t))
+    if clean and len(clean) < len(clean0): r.ref = _verfijn(clean0, t)
     # Alleen via aan elkaar geschreven woorden gevonden: telt als het aantal losse woorden (vanillevla = vanille vla). Zelfde regel als in de app.
     if paren: r.paar = {id(prods[i]) for i in set.intersection(*sets) - set.intersection(*los)}
     return r
@@ -226,14 +234,15 @@ def per_store(m, t=None):
     if not m: return {}
     paar = getattr(m, "paar", ())
     def words(p, _w=globals()["words"]): return _w(p) + (1 if id(p) in paar else 0)
-    los = [p for p in m if id(p) not in paar] or m
+    full = getattr(m, "ref", None) or m
+    los = [p for p in full if id(p) not in paar] or full
     # Producten die alleen via aan elkaar geschreven woorden passen bepalen niet de gewone prijs per kilo/liter.
-    bad = mark_bad(m, los)
+    bad = mark_bad(full, los)
     gmin = min(words(p) for p in los); by = {}
     for p in m:
         if words(p) > gmin + 2: continue
         by.setdefault(p[0], []).append(p)
-    cand = [p for arr in by.values() for p in arr]
+    cand = [p for p in full if words(p) <= gmin + 2]
     ok = redden(cand, gmin, bad, words, [p for p in cand if id(p) not in paar] or cand)
     slecht = bad - ok
     if t is not None: SLECHT[t], GERED[t] = slecht, ok
