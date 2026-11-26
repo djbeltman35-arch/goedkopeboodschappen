@@ -248,7 +248,7 @@
       <ul class="items" id="items"></ul>
       <div class="lbar" id="lbar" hidden></div>
       <div class="where" id="where"></div>
-      <details class="bulk" id="bulk"><summary>Hele boodschappenlijst in één keer invoeren of fotograferen</summary>
+      <details class="bulk" id="bulk"><summary>📷 Kassabon scannen of hele lijst in één keer invoeren</summary>
         <label class="sr" for="bulkt">Je boodschappen, één per regel</label>
         <textarea id="bulkt" rows="5" placeholder="Eén product per regel, bijvoorbeeld:&#10;halfvolle melk&#10;2 pindakaas&#10;eieren, kipfilet, bananen"></textarea>
         <label class="btn-line fotoknop">📷 Foto van kassabon of lijstje<input type="file" id="fotoin" accept="image/*" hidden></label>
@@ -272,7 +272,7 @@
 <footer class="foot">
   <div class="wrap">
     <p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
-    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor hulpverleners</a><a href="/feestdagen/">Feestdagen</a><a href="/tips/">Tips en ideeën</a><a href="/steun/">Steun de site</a><a href="/contact/">Contact</a></nav>
+    <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/merkproducten/">Merkproducten</a><a href="/kassabon-scannen/">Kassabon scannen</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor hulpverleners</a><a href="/feestdagen/">Feestdagen</a><a href="/tips/">Tips en ideeën</a><a href="/steun/">Steun de site</a><a href="/contact/">Contact</a></nav>
     <p class="small auteursrecht">© {{JAAR}} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><span class="versie"> · Versie {{VERSIE}}</span></p>
   </div>
 </footer>
@@ -1347,6 +1347,7 @@ $("bulkgo").addEventListener("click",bulkAdd);
 $("share").addEventListener("click",shareList);
 $("samenknop").addEventListener("click",samenStart);
 $("fotoin").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)fotoLezen(f);e.target.value=""});
+if(/[?&]scan=1/.test(location.search)){const b=$("bulk");b.open=true;setTimeout(()=>b.scrollIntoView({block:"center"}),300)}
 $("print").addEventListener("click",printList);
 
 // De rest van de prijslijst (producten buiten de categorieën) op de achtergrond erbij laden.

@@ -51,7 +51,6 @@
   for = "/data/*"
   [headers.values]
     Cache-Control = "public, max-age=600"
-    Access-Control-Allow-Origin = "*"
 
 [[headers]]
   for = "/stijl.css"

@@ -275,20 +275,22 @@ if MAAL:
     body = body.replace(f"<p>{esc(faq[0][1])}</p>", f'<p id="ofaq1">{esc(faq[0][1])}</p>').replace(f"<p>{esc(faq[1][1])}</p>", f'<p id="ofaq2">{esc(faq[1][1])}</p>')
     schrijf("/maaltijden/", page("/maaltijden/", title, desc, head, body, [cld, il, faq_ld(faq)], actief="/maaltijden/", extra_css=MCSS, og_title="Complete maaltijden: waar kook je het goedkoopst?"))
     made.append(("/maaltijden/", "0.9"))
-    # Blok voor de startpagina: de 6 goedkoopste, verdeeld over de soorten.
-    keuze = []
-    for key, _, _ in SOORTEN:
-        ms = sorted([m for m in MAAL if m["soort"] == key and not m["naam"].lower().startswith("dahl met rode linzen")], key=lambda m: m["rang"][0][1]["tot"])
-        keuze += ms[:2]
+    # Blok voor de startpagina: elke week (maandag) zes andere bekende maaltijden, allemaal met een echte foto.
+    # Per soort (vlees, vis, vega, ...) één of twee, zodat de rij gevarieerd blijft; de goedkoopste staat vooraan.
+    import random as _rw
+    _jaar, _week, _ = datetime.date.fromisoformat(VANDAAG).isocalendar()
+    _rng = _rw.Random(_jaar * 100 + _week)
+    _pool = {}
+    for m in MAAL:
+        if m["slug"] in FOTO and m["rang"] and not m["naam"].lower().startswith("dahl met rode linzen") and not re.search(r"vegan|quinoa|poké|bulgur|tofu|halloumi|niçoise", m["naam"].lower()):  # bekende, veelgegeten gerechten
+            _pool.setdefault(m["soort"], []).append(m)
+    for v in _pool.values(): v.sort(key=lambda m: m["slug"]); _rng.shuffle(v)
+    keuze, _r = [], 0
+    while len(keuze) < 6 and any(len(v) > _r for v in _pool.values()):
+        for key in sorted(_pool, key=lambda k: _rng.random()):
+            if len(_pool[key]) > _r and len(keuze) < 6: keuze.append(_pool[key][_r])
+        _r += 1
     keuze = sorted(keuze, key=lambda m: m["rang"][0][1]["tot"])
-    # Erwtensoep met rookworst vooraan (sterkste foto, typisch Hollands); dan de goedkoopste andere.
-    _ews = next((m for m in MAAL if m["naam"].lower().startswith("erwtensoep met rookworst") and m["rang"]), None)
-    if _ews: keuze = [_ews] + [m for m in keuze if m is not _ews]
-    keuze = keuze[:3]
-    # Drie veel gegeten maaltijden met een mooie foto erachter.
-    for _n in ("spaghetti bolognese", "boerenkoolstamppot met rookworst", "nasi goreng met ei"):
-        _m = next((m for m in MAAL if m["naam"].lower() == _n and m["rang"]), None)
-        if _m and _m not in keuze: keuze.append(_m)
     MAAL_HOME = (f'<section class="wrap maal" aria-labelledby="mh"><div class="maalkop"><h2 id="mh">🍽️ Goedkoop avondeten</h2><a href="/maaltijden/">Alle {len(MAAL)} →</a></div><ul class="mgrid">'
                  + "".join(kaart(m) for m in keuze).replace('loading="lazy" decoding="async"', 'loading="eager" fetchpriority="high" decoding="async"', 1) + '</ul></section>' + MKJS)
 else:

@@ -18,7 +18,7 @@ def header(actief="", hier=""):
     return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav rustig drie" aria-label="Menu">{links}</nav></div></header>'
 FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
-<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
+<nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/merkproducten/">Merkproducten</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/kassabon-scannen/">Kassabon scannen</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
 <p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
@@ -1013,6 +1013,24 @@ $("lbuit").innerHTML='<div class="tblwrap"><table class="ptable"><tbody>'+d.rege
 try{window.goatcounter&&goatcounter.count({path:"lidl-bon/ok/"+d.aantal,title:"Lidl-bon",event:true})}catch(x){}}
 catch(x){m.textContent="Dat lukte niet. Controleer je internet en probeer het nog eens."}e.target.value=""})})();
 </script>"""
+# ---------- Kassabon scannen: uitleg + knop die de functie op de startpagina opent ----------
+_kfaq = [("Kan ik mijn kassabon scannen om te zien waar het goedkoper is?", f"Ja. Maak een foto van je kassabon of boodschappenlijstje; de site leest de producten en zet ze op je lijst. Daarna zie je per supermarkt wat je boodschappen kosten, bij {AANTAL} supermarkten."),
+         ("Werkt het ook met een handgeschreven lijstje?", "Ja, ook handgeschreven lijstjes worden gelezen. Kijk de lijst na het scannen even na: afkortingen op een kassabon worden niet altijd goed herkend."),
+         ("Wordt mijn foto bewaard?", "Nee. De foto wordt alleen gebruikt om de tekst te lezen en daarna niet bewaard. Je hebt geen account nodig."),
+         ("Kost het iets?", "Nee, scannen en vergelijken is gratis en zonder reclame.")]
+ch, cld = crumbs(("Kassabon scannen", None))
+schrijf("/kassabon-scannen/", page("/kassabon-scannen/", "Kassabon scannen en vergelijken: waar ben je goedkoper uit?",
+    f"Scan je kassabon of boodschappenlijstje en zie direct bij welke van de {AANTAL} supermarkten je boodschappen het goedkoopst zijn. Gratis, zonder account.",
+    ch + f'<h1>Kassabon scannen en vergelijken</h1><p class="lead">Maak een foto van je kassabon of lijstje. Wij zetten de producten op je boodschappenlijst en laten zien wat dezelfde boodschappen kosten bij {AANTAL} supermarkten.</p>'
+    '<p><a class="cta" href="/?scan=1">📷 Scan je kassabon</a></p>',
+    '<h2>Zo werkt het</h2><ol><li>Tik op <b>Scan je kassabon</b> en maak een foto (of kies er een uit je fotoalbum).</li><li>De producten verschijnen in een lijstje. Klopt er iets niet, pas het dan aan.</li>'
+    '<li>Tik op <b>Zet alles op mijn lijst</b>. Je ziet meteen per supermarkt wat je totaal kost en waar je het meest bespaart.</li></ol>'
+    '<p class="note">Werkt met kassabonnen van alle supermarkten en met handgeschreven lijstjes. Lidl-klant? Met <a href="/lidl-bon/">je Lidl-bon</a> help je ook anderen, want Lidl zet de meeste prijzen niet online.</p>'
+    + faq_html(_kfaq), [cld, {"@context": "https://schema.org", "@type": "HowTo", "name": "Kassabon scannen en prijzen vergelijken",
+        "step": [{"@type": "HowToStep", "position": 1, "text": "Maak een foto van je kassabon of boodschappenlijstje."}, {"@type": "HowToStep", "position": 2, "text": "Controleer de herkende producten."},
+                 {"@type": "HowToStep", "position": 3, "text": "Zet alles op je lijst en zie per supermarkt wat je boodschappen kosten."}]}, faq_ld(_kfaq)]))
+made.append(("/kassabon-scannen/", "0.6"))
+
 schrijf("/lidl-bon/", page("/lidl-bon/", "Help mee: scan je Lidl-bon | Goedkope Boodschappen", "Lidl zet de meeste prijzen niet online. Met een foto van je Lidl-kassabon komen ze wel in de vergelijking, voor iedereen. De foto wordt niet bewaard.",
     crumbs(("Lidl-bon scannen", None))[0] + "<h1>Help mee: scan je Lidl-bon</h1><p class=\"lead\">Zo komen de echte Lidl-prijzen in de vergelijking. Het kost je een halve minuut.</p>", LIDLBON))
 made += [("/lidl-bon/", "0.4")]
@@ -1795,7 +1813,7 @@ try:
                     ch + "<h1>Prijsrapport: wat werd duurder?</h1>",
                     f'<p>Op {kortdatum(_rbreuk)} zijn we veel meer producten per supermarkt gaan vergelijken, met eigen prijzen uit de webwinkels. Prijzen van vóór en na die dag zijn daardoor niet eerlijk naast elkaar te leggen. '
                     f'Het volgende rapport met betrouwbare cijfers over 30 dagen staat hier vanaf {kortdatum(_volg.isoformat())}.</p>'
-                    '<ul class="links"><li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt van vandaag</a></li><li><a href="/prijsindex/">Prijsindex</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>', [cld]))
+                    '<ul class="links"><li><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt van vandaag</a></li><li><a href="/prijsindex/">Prijsindex</a><a href="/merkproducten/">Merkproducten</a></li><li><a href="/aanbiedingen/">Aanbiedingen van deze week</a></li></ul>', [cld]))
             made.append(("/prijsrapport/", "0.5"))
             print("/prijsrapport/: bronuitbreiding op", _rbreuk, "- volgend rapport vanaf", _volg)
             raise StopIteration
@@ -2168,6 +2186,102 @@ schrijf("/allergie/", page("/allergie/", "Boodschappen bij allergie: glutenvrij,
 made.append(("/allergie/", "0.8"))
 exec(open(os.path.join(ROOT, "scripts", "kennisbank.py")).read())
 
+# ---------- Merkproducten: hetzelfde product (merk, naam, inhoud) naast elkaar bij alle supermarkten ----------
+# Alleen producten die bij minstens 3 supermarkten met actuele prijzen te koop zijn. Huismerken vallen af (die verschillen per winkel).
+MERK_N = 0
+import collections
+try:
+    _HUIS = re.compile(r"^(ah|albert heijn|jumbo|plus|dirk|1 de beste|hoogvliet|deka|dekamarkt|spar|poiesz|vomar|lidl|aldi|ekoplaza|perfekt|everyday|excellent|basic|delicieux|smaakt)\b")
+    _EENH = {"g": ("g", 1), "gr": ("g", 1), "gram": ("g", 1), "kg": ("g", 1000), "kilo": ("g", 1000), "ml": ("ml", 1), "cl": ("ml", 10), "l": ("ml", 1000), "liter": ("ml", 1000), "lt": ("ml", 1000),
+             "st": ("st", 1), "stuk": ("st", 1), "stuks": ("st", 1), "stk": ("st", 1)}
+    _STOPW = {"de", "het", "een", "en", "met", "van", "in", "voor", "pak", "fles", "blik", "zak", "doos", "pot", "stuks", "stuk", "x"}
+    def _maat(u):
+        u = (u or "").lower().replace(",", ".")
+        m = re.match(r"^\s*(?:(\d+)\s*x\s*)?(\d+(?:\.\d+)?)\s*([a-z]+)", u)
+        if not m: return "st1" if re.search(r"per stuk|^stuk", u) else None
+        e = _EENH.get(m.group(3))
+        return f"{e[0]}{round(int(m.group(1) or 1) * float(m.group(2)) * e[1])}" if e else None
+    def _msleutel(n, u):
+        ms = _maat(u)
+        if not ms: return None
+        n = n.lower().replace("&", " ").replace("'", "")
+        n = re.sub(r"\d+(?:[.,]\d+)?\s*(?:x\s*\d+(?:[.,]\d+)?\s*)?(g|gr|gram|kg|ml|cl|l|liter|st|stuks)\b", " ", n)
+        t = [w for w in re.findall(r"[a-zà-ü0-9]+", n) if w not in _STOPW]
+        if len(t) < 2 or _HUIS.match(" ".join(t)): return None
+        return " ".join(sorted(set(t))) + "|" + ms
+    _vers = set()
+    for st_ in stores:
+        _dt = st_.get("dt")
+        try:
+            if st_["id"] == "aldi" or not _dt or (datetime.date.fromisoformat(VANDAAG) - datetime.date.fromisoformat(str(_dt)[:10])).days <= 21: _vers.add(st_["id"])
+        except Exception: _vers.add(st_["id"])
+    _mg = {}
+    for p_ in prods:
+        sid = stores[p_[0]]["id"]
+        if sid not in _vers or not p_[3]: continue
+        k = _msleutel(p_[1], p_[4])
+        if not k: continue
+        cur = _mg.setdefault(k, {}).get(sid)
+        if not cur or eff(p_) < eff(cur): _mg[k][sid] = p_
+    _mp = {k: v for k, v in _mg.items() if len(v) >= 3}
+    # Naam en slug: de meest voorkomende schrijfwijze, plus de inhoud
+    _gebruikt, _merklijst = set(), []
+    for k, v in sorted(_mp.items(), key=lambda kv: -len(kv[1])):
+        rij = sorted(v.values(), key=eff)
+        namen = collections.Counter(p_[1].strip() for p_ in rij)
+        naam = max(namen.items(), key=lambda kv: (kv[1], sum(c.isupper() for c in kv[0][:1])))[0]
+        inh = collections.Counter((p_[4] or "").strip() for p_ in rij).most_common(1)[0][0]
+        sl = slug(naam + " " + inh) if inh and slug(inh) not in slug(naam) else slug(naam)
+        if not sl or sl in _gebruikt: continue
+        _gebruikt.add(sl)
+        lo, hi = eff(rij[0]), eff(rij[-1])
+        winst = (hi - lo) / hi * 100 if hi else 0
+        _w = [nm(p_[0]) for p_ in rij if eff(p_) <= lo + .004]
+        wn = _w[0] if len(_w) == 1 else ", ".join(_w[:-1]) + " en " + _w[-1]
+        _merklijst.append((naam, inh, sl, wn, lo, len(rij)))
+        titel_ = f"{naam}{(' ' + inh) if inh and slug(inh) not in slug(naam) else ''}"
+        trs = "".join(f'<tr{" class=win" if i == 0 else ""}><td><span class="shop">{esc(nm(p_[0]))}</span> <a href="{esc(plink(p_))}" rel="nofollow noopener" target="_blank" data-out="{stores[p_[0]]["id"]}"><b>{esc(p_[1])}</b></a><span class="sub">{esc(p_[4] or "")}</span>{addbtn(p_, naam)}</td>'
+                      f'<td class="p">{tag(eff(p_))}{"<span class=sub>aanbieding</span>" if offer_of(p_) else ""}<span class="sub">{esc(_ut(p_))}</span></td></tr>' for i, p_ in enumerate(rij))
+        verschil = (f"Bij <b>{esc(wn)}</b> betaal je nu het minst: {eur(lo)}. Dat is {eur(hi - lo)} ({round(winst)}%) minder dan bij {esc(nm(rij[-1][0]))}." if hi - lo >= .01
+                    else f"Overal dezelfde prijs: {eur(lo)}.")
+        faq = [(f"Waar is {titel_} het goedkoopst?", f"Vandaag bij {wn}, voor {eur(lo)}. We vergeleken {len(rij)} supermarkten." + (f" Het verschil met de duurste ({nm(rij[-1][0])}) is {eur(hi - lo)}." if hi - lo >= .01 else "")),
+               (f"Hoe vaak worden deze prijzen bijgewerkt?", f"Elke dag. Deze pagina is bijgewerkt op {DATUM}; de prijs aan de kassa is leidend.")]
+        ch, cld = crumbs(("Merkproducten", "/merkproducten/"), (titel_, None))
+        path = f"/product/{sl}/"
+        prod_ld = {"@context": "https://schema.org", "@type": "Product", "name": titel_, "url": BASE + path,
+                   "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": round(lo, 2), "highPrice": round(hi, 2), "offerCount": len(rij),
+                              "offers": [{"@type": "Offer", "price": round(eff(p_), 2), "priceCurrency": "EUR", "seller": {"@type": "Organization", "name": nm(p_[0])}, "url": plink(p_), "availability": "https://schema.org/InStock"} for p_ in rij]}}
+        schrijf(path, page(path, f"{titel_}: prijs vergelijken bij {len(rij)} supermarkten", f"{titel_} is vandaag het goedkoopst bij {wn} ({eur(lo)}). Vergelijk de prijs bij {', '.join(nm(p_[0]) for p_ in rij[:6])}. Elke dag bijgewerkt.",
+                           ch + f"<h1>{esc(titel_)}</h1><p class=\"lead\">{verschil}</p>",
+                           f'<div class="tblwrap"><table class="ptable"><tbody>{trs}</tbody></table></div>'
+                           f'<p class="note">Prijzen van {DATUM}, uit de webwinkels van de supermarkten. Aanbiedingen tellen mee. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
+                           + faq_html(faq) + f'<p><a class="cta" rel="nofollow" href="/?q={quote(naam)}">Zet het op je boodschappenlijst</a></p>',
+                           [cld, prod_ld, faq_ld(faq)]))
+        made.append((path, "0.4"))
+    MERK_N = len(_merklijst)
+    # Overzicht per beginletter
+    _perl = {}
+    for it in _merklijst:
+        l_ = slug(it[0])[:1]; l_ = l_ if l_.isalpha() else "0-9"
+        _perl.setdefault(l_, []).append(it)
+    _letters = sorted(_perl)
+    _nav = '<p class="letters">' + " ".join(f'<a href="/merkproducten/{l_}/">{l_.upper()}</a>' for l_ in _letters) + "</p>"
+    for l_ in _letters:
+        its = sorted(_perl[l_], key=lambda x: x[0].lower())
+        ch, cld = crumbs(("Merkproducten", "/merkproducten/"), (l_.upper(), None))
+        schrijf(f"/merkproducten/{l_}/", page(f"/merkproducten/{l_}/", f"Merkproducten met de {l_.upper()}: prijzen vergelijken", f"{len(its)} merkproducten met de {l_.upper()}, met per product de goedkoopste supermarkt van vandaag.",
+                ch + f"<h1>Merkproducten met de {esc(l_.upper())}</h1>" + _nav,
+                '<ul class="links">' + "".join(f'<li><a href="/product/{x[2]}/">{esc(x[0])}</a> <span class="muted">{esc(x[1])} · goedkoopst bij {esc(x[3])} {eur(x[4])}</span></li>' for x in its) + "</ul>", [cld]))
+        made.append((f"/merkproducten/{l_}/", "0.3"))
+    ch, cld = crumbs(("Merkproducten", None))
+    schrijf("/merkproducten/", page("/merkproducten/", f"Merkproducten vergelijken: {MERK_N} producten bij {AANTAL} supermarkten", f"Hetzelfde merkproduct is lang niet overal even duur. Zie voor {MERK_N} merkproducten bij welke supermarkt ze vandaag het goedkoopst zijn.",
+            ch + f"<h1>Merkproducten vergelijken</h1><p class=\"lead\">Precies hetzelfde product, zelfde merk en inhoud, bij minstens drie supermarkten naast elkaar. {MERK_N} producten, elke dag bijgewerkt.</p>" + _nav,
+            "<h2>Het grootste prijsverschil vandaag</h2><ul class=\"links\">" + "".join(f'<li><a href="/product/{x[2]}/">{esc(x[0])}</a> <span class="muted">{esc(x[1])} · {x[5]} supermarkten · goedkoopst bij {esc(x[3])} {eur(x[4])}</span></li>' for x in sorted(_merklijst, key=lambda x: -x[5])[:60]) + "</ul>", [cld]))
+    made.append(("/merkproducten/", "0.6"))
+    print("merkproducten:", MERK_N, "pagina's")
+except Exception as e:
+    import traceback; traceback.print_exc(); print("merkproducten overgeslagen:", e)
+
 # ---------- llms.txt voor AI-zoekmachines: altijd actuele aantallen en de goedkoopste ----------
 try:
     _ll = open(os.path.join(ROOT, "site", "llms.txt"), encoding="utf-8").read()
@@ -2203,5 +2317,5 @@ print(sum(1 for v in _nieuw.values() if v[1] == VANDAAG), "van", len(_nieuw), "p
 open(os.path.join(OUT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n' +
     "".join(f"  <url><loc>{BASE}{p}</loc><lastmod>{_nieuw[p][1]}</lastmod>{_beeld(p)}</url>\n" for p, pr in made) + "</urlset>\n")
 _ai_train = ["GPTBot", "CCBot", "Google-Extended", "Applebot-Extended", "anthropic-ai", "ClaudeBot", "meta-externalagent", "Meta-ExternalAgent", "Bytespider", "Amazonbot", "cohere-ai", "cohere-training-data-crawler", "Diffbot", "ImagesiftBot", "Omgilibot", "PetalBot", "Timpibot", "AI2Bot", "img2dataset"]
-open(os.path.join(OUT, "robots.txt"), "w").write("# Inhoud beschermd door auteursrecht en databankenrecht: zie " + BASE + "/gebruiksvoorwaarden/\n# AI-zoekmachines (zoals ChatGPT-zoeken, Perplexity en Claude) mogen de site wel bezoeken, zodat mensen haar daar vinden.\n# Crawlers die inhoud verzamelen om AI-modellen mee te trainen niet.\n\n" + "".join(f"User-agent: {b}\n" for b in _ai_train) + "Disallow: /\n\nUser-agent: *\nAllow: /\n\nSitemap: " + BASE + "/sitemap.xml\n")
+open(os.path.join(OUT, "robots.txt"), "w").write("# Inhoud beschermd door auteursrecht en databankenrecht: zie " + BASE + "/gebruiksvoorwaarden/\n# AI-zoekmachines (zoals ChatGPT-zoeken, Perplexity en Claude) mogen de site wel bezoeken, zodat mensen haar daar vinden.\n# Crawlers die inhoud verzamelen om AI-modellen mee te trainen niet.\n\n" + "".join(f"User-agent: {b}\n" for b in _ai_train) + "Disallow: /\n\nUser-agent: *\nAllow: /\n# Ruwe prijsbestanden zijn voor de app zelf, niet om over te nemen (databankenrecht).\nDisallow: /producten.json\nDisallow: /producten-kern.json\nDisallow: /producten-rest.json\nDisallow: /winkels.json\nDisallow: /p/\nDisallow: /data/\nDisallow: /api/\n\nSitemap: " + BASE + "/sitemap.xml\n")
 print(len(made), "pagina's in de sitemap")

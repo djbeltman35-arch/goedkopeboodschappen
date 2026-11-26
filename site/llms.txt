@@ -12,6 +12,8 @@ Prijzen komen elke dag uit de webwinkels van de supermarkten (eigen metingen, aa
 - [Goedkoopste supermarkt](https://boodschappenvergelijk.nl/goedkoopste-supermarkt/): ranglijst, elke dag opnieuw berekend met een vast mandje basisboodschappen.
 - [Prijsrapport](https://boodschappenvergelijk.nl/prijsrapport/): wat werd de afgelopen 30 dagen duurder en goedkoper. Cijfers mogen worden overgenomen met bronvermelding en link.
 - [Prijsindex](https://boodschappenvergelijk.nl/prijsindex/): worden boodschappen duurder? Dagelijkse prijs van een vast mandje basisboodschappen.
+- [Kassabon scannen](https://boodschappenvergelijk.nl/kassabon-scannen/): maak een foto van je kassabon of (handgeschreven) lijstje; de producten komen op je lijst en je ziet per supermarkt wat ze kosten. Gratis, zonder account, de foto wordt niet bewaard.
+- [Merkproducten](https://boodschappenvergelijk.nl/merkproducten/): precies hetzelfde merkproduct (zelfde inhoud) naast elkaar bij minstens drie supermarkten, zoals /product/red-bull-energy-drink-250-ml/.
 - [Alle producten vergelijken](https://boodschappenvergelijk.nl/vergelijk/): per product (bijv. /vergelijk/halfvolle-melk/) de goedkoopste supermarkt, prijs per eenheid en prijsverloop.
 - [Twee supermarkten vergelijken](https://boodschappenvergelijk.nl/vergelijk-supermarkten/dirk-of-ah/): bijvoorbeeld Dirk of Albert Heijn, met het verschil in procenten.
 - [Goedkoopste supermarkt per stad](https://boodschappenvergelijk.nl/goedkoopste-supermarkt-in/): per plaats (zoals /goedkoopste-supermarkt-in/enschede/) welke supermarkten er zitten en welke het goedkoopst is.
