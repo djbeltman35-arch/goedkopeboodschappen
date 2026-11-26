@@ -590,7 +590,7 @@ def offers_page(cur, lst):
         title = f"Supermarkt aanbiedingen week {datetime.date.fromisoformat(VANDAAG).isocalendar()[1]}: {len(nu_)} acties bij {len(winkels_o)} winkels"
         desc = f"De aanbiedingen van {', '.join(NAMEN[s] for s in winkels_o[:-1])} en {NAMEN[winkels_o[-1]]} op één plek, de grootste korting eerst. Prijzen van {DATUM}." if winkels_o else "Supermarktaanbiedingen van deze week."
         h1 = "Alle supermarktaanbiedingen van deze week"
-        lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {len(winkels_o)} supermarkten. De grootste korting staat bovenaan."
+        lead = f"<span id=\"cnt\">{len(nu_)}</span> acties van {len(winkels_o)} supermarkten. Eerst de beste aanbiedingen, daarna alles met de grootste korting bovenaan."
     cnt = {}
     for o in nu_: cnt[o.get("c") or "Overig"] = cnt.get(o.get("c") or "Overig", 0) + 1
     # De aanbiedingen zijn ingedeeld in de hoofdgroepen (groepen.json), niet in de subcategorieën.
@@ -607,7 +607,26 @@ def offers_page(cur, lst):
     toon |= set(map(id, zeld[:30]))  # genoeg voor de knop "Lang niet in de aanbieding geweest"
     toon = [o for o in nu_ if id(o) in toon]
     ch, cld = crumbs(*([("Aanbiedingen", "/aanbiedingen/"), (NAMEN[cur], None)] if cur else [("Aanbiedingen", None)]))
-    body = (chips_o(cur) + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' +
+    # De beste aanbiedingen (alleen op de pagina met alle winkels): niet de hoogste korting, maar acties die per kilo/liter
+    # de laagste prijs van álle supermarkten zijn en niet bijna elke week terugkomen. Per product één, per winkel hooguit 3.
+    beste_html = ""
+    if not cur:
+        _b, _tm, _pw = [], set(), {}
+        for o in sorted(nu_, key=lambda o: -o["pct"]):
+            if o.get("ds") != "top" or (o.get("c") or "Overig") in ("Overig", "Huishouden", "Verzorging en baby", "Huisdieren") or o["pct"] > .8: continue
+            _merk = eerste_woord(o["n"])
+            if _merk in _tm: continue
+            if o.get("fh") and o["fh"][1] >= o["fh"][0] * .5: continue
+            k = o.get("tm") or o["n"].lower()
+            if k in _tm or _pw.get(o["s"], 0) >= 3: continue
+            _b.append(o); _tm.add(k); _pw[o["s"]] = _pw.get(o["s"], 0) + 1
+            if _merk not in HUISMERK_W: _tm.add(_merk)
+            if len(_b) == 6: break
+        if len(_b) >= 4:
+            beste_html = ('<section class="beste"><h2>De beste aanbiedingen van deze week</h2>'
+                          '<p class="note" style="margin-top:0">Niet de hoogste korting, maar acties die per kilo of liter de laagste prijs van alle supermarkten zijn, en niet bijna elke week terugkomen.</p>'
+                          f'<ul class="offers">{"".join(offer_card(o) for o in _b)}</ul></section><h2>Alle aanbiedingen</h2>')
+    body = (chips_o(cur) + beste_html + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' +
             (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">{"".join(offer_card(o) for o in straks[:120])}</ul>' if straks else "") +
             '<a class="cta" href="/?v=aanbiedingen">Zoek en filter in alle aanbiedingen</a>'
             '<p class="tiplink"><a href="/nieuwsbrief/">📬 Elke ochtend de beste aanbiedingen in je mail</a></p>'
@@ -1129,6 +1148,9 @@ faq = [("Welke supermarkt is het goedkoopst?", f"In {MAAND} is {nm(PAK[0]['si'])
        ("Waarom staan Nettorama, Picnic en Crisp er niet bij?", "Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we de aanbiedingen en de gewone prijzen van de boodschappen die Lidl zelf online zet; Lidl publiceert niet van elk product een prijs."),
        ("Hoe actueel zijn de prijzen?", "De prijzen en aanbiedingen worden elke dag automatisch opgehaald van de webshops van de supermarkten. De prijs aan de kassa is leidend."),
        ("Blijft mijn boodschappenlijst bewaard?", "Ja, je lijst wordt bewaard in je eigen browser. Kom je terug, dan zie je meteen welke producten goedkoper of duurder zijn geworden en wat er in de aanbieding is.")]
+# Een paar veelgezochte producten direct zichtbaar (één rustige rij), met één tik naar de vergelijking.
+_popchips_t = [t for t in ["halfvolle melk", "eieren", "kipfilet", "koffiebonen", "jonge kaas", "pindakaas", "wasmiddel", "toiletpapier"] if t in PICKED]
+POPCHIPS = ('<nav class="popchips" aria-label="Vaak gezocht"><span class="popk">Vaak gezocht:</span>' + "".join(f'<a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a>' for t in _popchips_t) + '</nav>') if _popchips_t else ""
 snel = ('<details class="subblok pop"><summary><h2 class="subnaam">Populair</h2></summary><div class="subin"><ul class="links">' + "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a></li>' for t in pop) + '<li><a href="/vergelijk/">Alle producten</a></li></ul></div></details>')
 seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h2 id="sh">Boodschappen vergelijken bij {AANTAL} supermarkten</h2>'
        + '<ul class="seowinkels">' + "".join(f'<li>{esc(NAMEN[s])}</li>' for s in sorted([s for s in ACTIEF if s in NAMEN], key=lambda s: NAMEN[s].lower())) + '</ul>'
@@ -1190,7 +1212,7 @@ for _p in prods:
 AMERK = sorted(f for f, ws in _win.items() if not f[0].isdigit() and len(f) > 1 and len(ws) >= 3 and _eerst[f] / _overal[f] >= .7)
 app = app.replace("{{AMERK}}", json.dumps(AMERK, ensure_ascii=False))
 app = (app.replace("{{JAAR}}", str(datetime.date.today().year)).replace("{{EIWIT}}", json.dumps(EIWIT, ensure_ascii=False)).replace("{{VERFIJN}}", json.dumps(VERFIJN, ensure_ascii=False)).replace("{{VARIANT}}", json.dumps(VARIANT, ensure_ascii=False)).replace("{{VERSIE}}", VERSIE).replace("{{AANTAL}}", str(AANTAL)).replace("{{CATS}}", json.dumps(cats_app, ensure_ascii=False)).replace("{{KCAL}}", json.dumps({t: kcal_txt(t) for t in PICKED if kcal_txt(t)}, ensure_ascii=False)).replace("{{GROEPEN}}", json.dumps([gg for gg in GROEPEN if any(c[3] == gg[0] for c in cats_app)], ensure_ascii=False))
-          .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--SNELLINKS-->", "").replace("<!--MAALTIJDEN-->", MAAL_HOME)
+          .replace("{{LDJSON}}", json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")).replace("<!--SEO-->", seo).replace("<!--SNELLINKS-->", "").replace("<!--POPCHIPS-->", POPCHIPS).replace("<!--MAALTIJDEN-->", MAAL_HOME)
           .replace("{{AANDER}}", str(AANTAL - 6)).replace("bij 11 supermarkten", f"bij {AANTAL} supermarkten").replace("Vergelijk 11 winkels", f"Vergelijk {AANTAL} winkels"))
 # Snelheid: de grote vaste tabellen in een apart bestand dat de browser bewaart (scheelt bij elk bezoek ~60 kB),
 # en de prijsbestanden al laten binnenhalen terwijl de pagina nog laadt.
