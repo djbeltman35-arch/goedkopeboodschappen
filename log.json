@@ -264,5 +264,19 @@
   "slot": "19:00",
   "onderwerp": "/widget/",
   "tekst": "De stroomprijs van nu op je eigen website? 🖥️"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Grootste kortingen van vandaag 💰"
+ },
+ {
+  "datum": "2026-11-26",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
  }
 ]
