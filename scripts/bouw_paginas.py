@@ -1237,6 +1237,43 @@ _css = open(os.path.join(ROOT, "site", "stijl.css"), encoding="utf-8").read()
 _css = re.sub(r"/\*.*?\*/", "", _css, flags=re.S); _css = re.sub(r"\s+", " ", _css); _css = re.sub(r"\s*([{};,>])\s*", r"\1", _css).replace(";}", "}").strip()
 # Snelheid: onderdelen onder de vouw (maaltijden, uitleg, voettekst) pas opmaken als ze in beeld komen.
 _css += ".wrap.maal,.wrap.seo,.foot{content-visibility:auto;contain-intrinsic-size:auto 900px}"
+# Snelheid: alleen de CSS-regels die op de startpagina (of in de app-scripts) voorkomen. Een regel blijft staan zolang
+# elke class en id in de selector ergens in de HTML of JavaScript van de startpagina staat; zo blijven ook klassen die
+# de app later toevoegt werken.
+def _css_snoei(css, bekend):
+    uit, i, n = [], 0, len(css)
+    def blok(j):  # index van de bijbehorende sluitaccolade
+        d = 0
+        for k in range(j, n):
+            if css[k] == "{": d += 1
+            elif css[k] == "}":
+                d -= 1
+                if d == 0: return k
+        return n - 1
+    while i < n:
+        j = css.find("{", i)
+        if j < 0: break
+        sel = css[i:j].strip(); k = blok(j); inh = css[j + 1:k]
+        if sel.startswith("@media") or sel.startswith("@supports"):
+            binnen = _css_snoei(inh, bekend)
+            if binnen: uit.append(sel + "{" + binnen + "}")
+        elif sel.startswith("@"):
+            uit.append(sel + "{" + inh + "}")
+        else:
+            houd = [x for x in sel.split(",") if all(t in bekend for t in re.findall(r"[.#]([A-Za-z_][\w-]*)", re.sub(r":not\([^)]*\)", "", x)))]
+            if houd: uit.append(",".join(houd) + "{" + inh + "}")
+        i = k + 1
+    return "".join(uit)
+try:
+    _tekst = app + "".join(open(os.path.join(OUT, f_), encoding="utf-8").read() for f_ in ("app.js", "appdata.js") if os.path.exists(os.path.join(OUT, f_)))
+    for f_ in ("installeer.js", "fout.js", "woordfilter.mjs"):
+        for d_ in (OUT, os.path.join(ROOT, "site"), os.path.join(ROOT, "scripts")):
+            if os.path.exists(os.path.join(d_, f_)): _tekst += open(os.path.join(d_, f_), encoding="utf-8").read(); break
+    _bekend = set(re.findall(r"[A-Za-z_][\w-]*", _tekst))
+    _voor = len(_css); _css = _css_snoei(_css, _bekend)
+    print(f"startpagina-CSS: {_voor} -> {len(_css)} tekens")
+except Exception as e:
+    print("CSS snoeien overgeslagen:", e)
 app, _n = re.subn(r'<link rel="stylesheet" href="/stijl\.css\?v=[^"]*">', lambda m: "<style>" + _css + "</style>", app, count=1)
 if not _n: print("LET OP: stijl.css niet in de startpagina gezet")
 # Maaltijdkaarten staan op de telefoon in een veegrij van ca. 80% breed: kleinere foto volstaat.

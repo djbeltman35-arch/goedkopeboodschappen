@@ -12,9 +12,9 @@ for f in glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
         s = f[:-4] + "-s.webp"
         if not (os.path.exists(s) and os.path.getmtime(s) >= os.path.getmtime(f)):
             im = Image.open(f).convert("RGB"); im = im.resize((320, round(320 * im.height / im.width)), Image.LANCZOS)
-            im.save(s, "WEBP", quality=74, method=6); n += 1
+            im.save(s, "WEBP", quality=62, method=6); n += 1
         m = f[:-4] + "-m.webp"  # 560 breed: kaarten in de veegrij op de telefoon (ca. 300 px breed x 1,75-2 dpr)
         if not (os.path.exists(m) and os.path.getmtime(m) >= os.path.getmtime(f)):
             im = Image.open(f).convert("RGB"); im = im.resize((560, round(560 * im.height / im.width)), Image.LANCZOS)
-            im.save(m, "WEBP", quality=74, method=6); n += 1
+            im.save(m, "WEBP", quality=62, method=6); n += 1
 print(n, "webp-bestanden gemaakt")
