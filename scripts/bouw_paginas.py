@@ -692,6 +692,19 @@ if PAK:
            ("Welke supermarkt is het duurst?", f"Van de vergeleken supermarkten is {nm(l['si'])} het duurst: dezelfde boodschappen kosten daar {eur(l['tot'])}, {eur(verschil)} meer dan bij {nm(w['si'])}."),
            ("Hoe wordt dit berekend?", "Voor elke supermarkt zoeken we per boodschap het voordeligste vergelijkbare product en rekenen we met de prijs per kilo, liter of stuk voor een vaste hoeveelheid. Zo vergelijken we precies dezelfde boodschappen. Aanbiedingen die nu lopen tellen mee."),
            ("Hoe vaak wordt dit bijgewerkt?", "Elke dag. De prijzen komen van de webshops van de supermarkten.")]
+    # Wat andere (bekende) onderzoeken zeggen, met bron en datum. Handmatig bijhouden als er een nieuwe peiling verschijnt.
+    _ANDERE_ONDERZOEKEN = ('<h2>Wat zeggen andere onderzoeken?</h2>'
+        '<p>Andere onderzoeken komen soms op een andere winnaar uit. Dat komt vooral door wat er gemeten wordt:</p><ul>'
+        '<li><b>Consumentenbond, prijspeiling budgetboodschappen</b> (peildatum 6 mei 2026, 131 producten bij 13 ketens, zonder aanbiedingen): '
+        'Dirk en Nettorama het goedkoopst, daarna Vomar en Hoogvliet. <a href="https://www.consumentenbond.nl/voedingstests/prijspeiling-supermarkten" rel="noopener">Bekijk de peiling</a></li>'
+        '<li><b>Consumentenbond, groente en fruit</b> (juni en juli 2026, 100 soorten): Nettorama en Dirk het goedkoopst. '
+        '<a href="https://www.consumentenbond.nl/voedingstests/prijspeiling-groente-en-fruit" rel="noopener">Bekijk de peiling</a></li>'
+        '<li><b>Allesupers, prijsmonitor september 2026</b>: bij huismerken Aldi het goedkoopst, met Dirk vlak erachter; bij A-merken DekaMarkt.</li></ul>'
+        f'<p><b>Waarom wij soms iets anders zien:</b> wij rekenen elke dag opnieuw, tellen de aanbiedingen van deze week mee en gebruiken de prijzen uit de webwinkels. '
+        f'Nettorama staat niet in onze vergelijking, omdat die keten zijn prijzen niet online zet. Peilingen in de winkel gebeuren één keer per jaar of per maand en zonder aanbiedingen. '
+        f'Allemaal laten ze hetzelfde zien: de discounters en Dirk zijn bijna altijd goedkoper dan Albert Heijn en Jumbo, maar per product wisselt het. '
+        f'<a href="/">Vergelijk daarom je eigen boodschappenlijst</a>.</p>')
+    faq.append(("Waarom zegt de Consumentenbond iets anders?", "De Consumentenbond peilt een paar keer per jaar budgetproducten in de winkel, zonder aanbiedingen, en neemt ook Nettorama mee. Wij rekenen elke dag met de webwinkelprijzen inclusief de aanbiedingen van deze week. Daardoor kan de nummer één verschillen, maar de grote lijn is gelijk: Dirk en de discounters zijn meestal goedkoper dan Albert Heijn en Jumbo."))
     ch, cld = crumbs(("Goedkoopste supermarkt", None))
     head = ch + f"<h1>De goedkoopste supermarkt van {MAAND}</h1><p class=\"lead\">Een vast mandje van {len(PAKTERMEN)} producten kost bij <b>{esc(nm(w['si']))}</b> het minst: {eur(w['tot'])}. Bij {esc(nm(l['si']))} betaal je {eur(verschil)} meer.</p>" + JOUW
     # Waarom bovenaan: per product welke winkel het goedkoopst is (zuiver uitgerekend, niemand betaalt voor een plek).
@@ -713,6 +726,7 @@ if PAK:
             + _noot_pak
             + _waarom_html +
             f'<h2>Wat zit er in het vaste boodschappenmandje?</h2><p class="note">Dit mandje is voor iedereen hetzelfde en staat los van je eigen lijst.</p><ul class="links">{mand}</ul><h2>Zo is het opgebouwd</h2>{detail}'
+            + _ANDERE_ONDERZOEKEN
             + '<h2>Twee supermarkten vergelijken</h2><ul class="links">' + "".join(f'<li><a href="/vergelijk-supermarkten/{stores[a]["id"]}-of-{stores[b]["id"]}/">{esc(nm(a))} of {esc(nm(b))}?</a></li>' for a, b in paren) + "</ul>"
             + faq_html(faq) + '<a class="cta" href="/">Bereken het voor je eigen lijst</a>')
     if os.path.exists(os.path.join(ROOT, "data", "supermarkten-steden.json")): body += '<p><b>Per stad:</b> <a href="/goedkoopste-supermarkt-in/">bekijk de goedkoopste supermarkt in jouw stad</a>, van Rijssen en Enschede tot Amsterdam.</p>'
