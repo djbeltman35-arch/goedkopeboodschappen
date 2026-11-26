@@ -130,7 +130,7 @@ def maak_reel(png_pad, naam):
     for i, r in enumerate(["Waar zijn je boodschappen", "het goedkoopst?"]):
         dr.text(((W2 - dr.textlength(r, font=fk)) / 2, 80 + i * 78), r, font=fk, fill=WIT)
     fo = lettertype("tekst", 46)
-    for i, r in enumerate(["Vergelijk 12 supermarkten gratis", "Link in bio"]):
+    for i, r in enumerate(["Vergelijk supermarkten gratis", "Link in bio"]):
         dr.text(((W2 - dr.textlength(r, font=fo)) / 2, 1700 + i * 70), r, font=fo, fill=GEEL if i else WIT)
     achtergrond = os.path.join(OUT, "_reel_achter.png"); achter.save(achtergrond)
     uit = os.path.join(OUT, naam)

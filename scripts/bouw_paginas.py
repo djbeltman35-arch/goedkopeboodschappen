@@ -718,9 +718,14 @@ if PAK:
                     'Geen enkele supermarkt betaalt voor een plek. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>'
                     '<p style="margin:8px 0 0">Elke week lichten we één supermarkt uit, op vaste volgorde: <a href="/supermarkt-van-de-week/">supermarkt van de week</a>.</p></div>')
     # Onderlinge vergelijkingen voor alle supermarkten waarvan (bijna) het hele mandje online staat.
-    PAAR_SI = [r["si"] for r in PAK if r["mist"] <= 2]
-    _buiten = [NAMEN.get(x, x) for x in ACTIEF if x not in {stores[r_['si']]['id'] for r_ in PAK}]
-    _noot_pak = f'<p class="note">Bijgewerkt op {DATUM}, elke dag opnieuw berekend.' + (f' Niet in de ranglijst omdat te weinig van deze boodschappen online staan: {esc(", ".join(_buiten))}.' if _buiten else '') + '</p>'
+    # Vaste volgorde voor de adressen (/vergelijk-supermarkten/ah-of-jumbo/): niet de prijsvolgorde, anders verandert het adres
+    # zodra de goedkoopste wisselt en geeft het oude adres in Google een foutpagina. Wie goedkoper is, staat in de pagina zelf.
+    _PAAR_VOLGORDE = ["ah", "jumbo", "lidl", "aldi", "plus", "dirk", "hoogvliet", "dekamarkt", "vomar", "spar", "poiesz"]
+    PAAR_SI = sorted([r["si"] for r in PAK if r["mist"] <= 2], key=lambda si: (_PAAR_VOLGORDE.index(stores[si]["id"]) if stores[si]["id"] in _PAAR_VOLGORDE else 99, stores[si]["id"]))
+    _buiten = [NAMEN.get(x, x) for x in ACTIEF if x not in {stores[r_['si']]['id'] for r_ in PAK} and x not in BIO_WINKELS]
+    _bio = [NAMEN.get(x, x) for x in ACTIEF if x in BIO_WINKELS]
+    _noot_pak = (f'<p class="note">Bijgewerkt op {DATUM}, elke dag opnieuw berekend.' + (f' Niet in de ranglijst omdat te weinig van deze boodschappen online staan: {esc(", ".join(_buiten))}.' if _buiten else '')
+                 + (f' {esc(" en ".join(_bio))} staat er bewust niet in: die verkoopt alleen biologische producten, en dat is geen eerlijke vergelijking met gewone supermarkten.' if _bio else '') + '</p>')
     paren = [(a, b) for a, b in itertools.combinations(PAAR_SI, 2)]
     body = (f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th style="text-align:right">Totaal</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{trs}</tbody></table></div>'
             + _noot_pak
@@ -762,6 +767,19 @@ if PAK:
                 f'{faq_html(faq)}<p><a href="/supermarkt/{stores[a]["id"]}/">Alles over {esc(nm(a))}</a> · <a href="/supermarkt/{stores[b]["id"]}/">Alles over {esc(nm(b))}</a> · <a href="/goedkoopste-supermarkt/">Alle supermarkten</a></p><a class="cta" href="/">Vergelijk je eigen lijst</a>')
         schrijf(path, page(path, title, desc, head, body, [cld, faq_ld(faq)], actief="/goedkoopste-supermarkt/"))
         made.append((path, "0.6"))
+    # Oude of omgekeerde adressen (bijv. /plus-of-ah/ of een paar met een winkel die nu niet meer meedoet) doorsturen.
+    # Zonder "!" (niet geforceerd): bestaat de pagina, dan wint die gewoon.
+    _ids = [s_["id"] for s_ in stores] + [x for x in _PAAR_VOLGORDE if x not in {s_["id"] for s_ in stores}] + ["aldi", "ekoplaza"]
+    _ids = list(dict.fromkeys(_ids))
+    _bestaand = {(stores[a]["id"], stores[b]["id"]) for a, b in paren}
+    _regels = []
+    for x in _ids:
+        for y in _ids:
+            if x == y or (x, y) in _bestaand: continue
+            doel = f"/vergelijk-supermarkten/{y}-of-{x}/" if (y, x) in _bestaand else "/goedkoopste-supermarkt/"
+            _regels.append(f"/vergelijk-supermarkten/{x}-of-{y}/ {doel} {301 if (y, x) in _bestaand else 302}")
+            _regels.append(f"/vergelijk-supermarkten/{x}-of-{y} {doel} {301 if (y, x) in _bestaand else 302}")
+    with open(os.path.join(OUT, "_redirects"), "a") as _f: _f.write("\n".join(_regels) + "\n")
 
 # ---------- supermarktpagina's ----------
 SVW = sorted([si for si, s in enumerate(stores) if s["count"] and any(o["s"] == s["id"] for o in NU_GELDIG)], key=lambda si: nm(si))
@@ -774,7 +792,7 @@ for si, s in enumerate(stores):
     acties = sorted([o for o in NU_GELDIG if o["s"] == sid], key=lambda o: -o["pct"])
     r = next((r for r in PAK if r["si"] == si), None)
     rang = PAKRANG.get(si)
-    kern = (f"{nm_} staat op plek {rang} van de {len(PAK)} supermarkten: dezelfde boodschappen kosten er {eur(r['tot'])}" + (f", {eur(r['tot'] - PAK[0]['tot'])} meer dan bij {nm(PAK[0]['si'])}." if rang > 1 else ", de laagste prijs van allemaal.")) if r else f"Van {nm_} staan te weinig producten online voor een eerlijke vergelijking van het hele mandje."
+    kern = (f"{nm_} staat op plek {rang} van de {len(PAK)} supermarkten: dezelfde boodschappen kosten er {eur(r['tot'])}" + (f", {eur(r['tot'] - PAK[0]['tot'])} meer dan bij {nm(PAK[0]['si'])}." if rang > 1 else ", de laagste prijs van allemaal.")) if r else (f"{nm_} verkoopt alleen biologische producten. Daarom staat {nm_} niet in de ranglijst met gewone supermarkten; per product kun je de prijzen wel vergelijken." if sid in BIO_WINKELS else f"Van {nm_} staan te weinig producten online voor een eerlijke vergelijking van het hele mandje.")
     title = f"Is {nm_} goedkoop? Prijzen en aanbiedingen vergeleken ({MAAND})"
     desc = f"{kern} Bekijk welke producten bij {nm_} het goedkoopst zijn" + (f" en alle {len(acties)} aanbiedingen van deze week." if acties else ".")
     ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), (nm_, None))

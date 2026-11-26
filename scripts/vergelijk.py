@@ -405,7 +405,9 @@ PAKKET = [("halfvolle melk", 2, "l"), ("yoghurt", 1, "l"), ("eieren", 10, "st"),
 # Andere eenheden waarin winkels hetzelfde verkopen (komkommer per stuk of per kilo, appels per kilo of per stuk).
 OMREKEN = {"komkommer": {"kg": .4}, "appels": {"st": 6}, "uien": {"st": 8}, "bananen": {"st": 6}, "roomboter": {"st": 1},
            "thee": {"kg": .04}, "volkoren brood": {"st": 1}, "tomaten": {"st": 5}, "paprika": {"st": 3}, "eieren": {}}
-def pakket_kosten(PAKKET=PAKKET, OMREKEN=OMREKEN, minimum=15):
+# Biologische supermarkten verkopen alleen biologisch: niet eerlijk naast gewone supermarkten te zetten in de mandjes.
+BIO_WINKELS = {"ekoplaza"}
+def pakket_kosten(PAKKET=PAKKET, OMREKEN=OMREKEN, minimum=15, uitsluiten=BIO_WINKELS):
     tabel = {}
     for term, q, u in PAKKET:
         rows = per_store(matches(term), term)
@@ -415,7 +417,7 @@ def pakket_kosten(PAKKET=PAKKET, OMREKEN=OMREKEN, minimum=15):
             elif p[6] in OMREKEN.get(term, {}): tabel.setdefault(term, {})[si] = (eff_unit(p) * OMREKEN[term][p[6]], p)
     # Eerlijk vergelijken: alleen boodschappen die bij álle meegenomen winkels te vinden zijn.
     # Winkels die te veel missen vallen af, tot er minstens 18 gemeenschappelijke boodschappen over zijn.
-    winkels = [si for si, s in enumerate(stores) if s["count"] and sum(1 for t in tabel if si in tabel[t]) >= 0.75 * len(PAKKET)]
+    winkels = [si for si, s in enumerate(stores) if s["count"] and s["id"] not in uitsluiten and sum(1 for t in tabel if si in tabel[t]) >= 0.75 * len(PAKKET)]
     while True:
         termen = [t for t, _, _ in PAKKET if t in tabel and all(si in tabel[t] for si in winkels)]
         if len(termen) >= minimum or len(winkels) <= 3: break
