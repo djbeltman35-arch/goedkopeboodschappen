@@ -19,7 +19,7 @@ export default async () => {
   const c = await verbind({ user, pass });
   try {
     await c.stuur(bericht({
-      van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', aan: NAAR, onderwerp: `Tipsformulier: ${kop}`,
+      van: process.env.MAIL_FROM || user, vanNaam: 'Boodschappenvergelijk', aan: NAAR, onderwerp: `Tipsformulier: ${kop}`,
       tekst: `${kop} via het tipsformulier.\n\n` + t.map(([, v], i) => `${i + 1}. ${regel(v)}`).join('\n\n'),
       html: opmaak({ titel: `Tipsformulier: ${kop}`,
         inhoud: '<ol style="margin:0;padding-left:20px;font-size:15px;line-height:1.5">' + t.map(([, v]) => `<li style="margin:0 0 14px"><b>${esc(SOORT[v.soort] || 'Tip')}</b>${v.naam ? ' van ' + esc(v.naam) : ''}${v.email ? ` &lt;<a href="mailto:${esc(v.email)}">${esc(v.email)}</a>&gt;` : ''}<br><span style="white-space:pre-wrap">${esc(v.bericht)}</span>${v.pagina ? `<br><small style="color:#666">Vanaf ${esc(v.pagina)}</small>` : ''}</li>`).join('') + '</ol>',

@@ -80,7 +80,7 @@ def kaart(titel, sub, regels, voet, bestand):
     img = Image.new("RGB", (W, H), PAGINA); d = ImageDraw.Draw(img)
     d.rectangle([0, 0, W, 210], fill=GROEN)
     logo(img, 60, 50, 110)
-    d.text((196, 58), "Goedkope Boodschappen", font=lettertype("tekst", 44), fill=WIT)
+    d.text((196, 58), "Boodschappenvergelijk", font=lettertype("tekst", 44), fill=WIT)
     d.text((196, 116), sub, font=lettertype("tekst-r", 32), fill="#d8eee2")
     y = 250
     for r in afbreken(titel, lettertype("tekst", 62), W - 120, d, 2):

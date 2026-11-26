@@ -36,7 +36,7 @@ export default async (req, context) => {
     const c = await verbind({ user, pass });
     try {
       await c.stuur(bericht({
-        van: process.env.MAIL_FROM || user, vanNaam: 'Goedkope Boodschappen', aan: NAAR, antwoordAan: tip.email || undefined,
+        van: process.env.MAIL_FROM || user, vanNaam: 'Boodschappenvergelijk', aan: NAAR, antwoordAan: tip.email || undefined,
         onderwerp: `Contact: ${s} van ${wie}`,
         tekst: `${s} van ${wie}${tip.email ? ' <' + tip.email + '>' : ''}\n\n${tip.bericht}${tip.pagina ? '\n\nVanaf: ' + tip.pagina : ''}`,
         html: opmaak({ titel: `${s}`, inhoud: `<p style="margin:0 0 10px"><b>Van:</b> ${esc(tip.naam || 'geen naam')}${tip.email ? ` &lt;<a href="mailto:${esc(tip.email)}">${esc(tip.email)}</a>&gt;` : ''}</p><p style="white-space:pre-wrap;margin:0">${esc(tip.bericht)}</p>${tip.pagina ? `<p style="color:#666;font-size:13px">Vanaf ${esc(tip.pagina)}</p>` : ''}`,

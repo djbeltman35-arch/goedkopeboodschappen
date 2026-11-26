@@ -1,4 +1,4 @@
-"""Gedeeld rekenwerk voor de paginabouwer en de prijsgeschiedenis. Was: bouwt alle pagina's van Goedkope Boodschappen in één map (standaard public/).
+"""Gedeeld rekenwerk voor de paginabouwer en de prijsgeschiedenis. Was: bouwt alle pagina's van Boodschappenvergelijk in één map (standaard public/).
 
 Gebruik: python3 scripts/bouw_paginas.py <uitmap>
 Leest: <uitmap>/producten.json (Checkjebon + eigen data), data/aldi.json, data/aanbiedingen.json, data/status.json,

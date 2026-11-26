@@ -1,4 +1,4 @@
-// Goedkope Boodschappen. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
+// Boodschappenvergelijk. Bij elke update (ook de dagelijkse prijzen) zet de build hier een nieuwe versie neer,
 // zodat de browser deze service worker vernieuwt, de oude cache weggooit en bezoekers de nieuwste versie krijgen.
 const C = 'gb-v100-__BOUW__';
 self.addEventListener('install', () => self.skipWaiting());
@@ -36,8 +36,8 @@ self.addEventListener('fetch', e => {
 
 // Meldingen bij aanbiedingen voor je lijst
 self.addEventListener('push', e => {
-  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (_) { d = { titel: 'Goedkope Boodschappen', tekst: e.data && e.data.text() }; }
-  e.waitUntil(self.registration.showNotification(d.titel || 'Goedkope Boodschappen', {
+  let d = {}; try { d = e.data ? e.data.json() : {}; } catch (_) { d = { titel: 'Boodschappenvergelijk', tekst: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(d.titel || 'Boodschappenvergelijk', {
     body: d.tekst || 'Er is iets van je lijst in de aanbieding.', icon: '/icons/icon-192.png', badge: '/icons/icon-192.png',
     tag: 'aanbiedingen', renotify: true, data: { url: d.url || '/' },
   }));

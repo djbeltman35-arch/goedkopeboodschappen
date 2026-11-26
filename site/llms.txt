@@ -1,4 +1,4 @@
-# Goedkope Boodschappen (boodschappenvergelijk.nl)
+# Boodschappenvergelijk (boodschappenvergelijk.nl)
 
 > Gratis Nederlandse boodschappenvergelijker zonder reclame. Vergelijkt elke dag de prijzen en aanbiedingen van {{AANTAL}} supermarkten ({{WINKELS}}), per product en per kilo, liter of stuk. Je zet producten op een boodschappenlijst en ziet bij welke supermarkt het totaal het laagst is.
 

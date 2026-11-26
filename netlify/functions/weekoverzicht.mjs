@@ -53,7 +53,7 @@ export default async (req, context) => {
           o.per.map(x => `<li>${esc(x.t)}: <b>${esc(NAMEN[x.w] || x.w)}</b> ${eur(x.p)}</li>`).join('') + '</ul>' +
           `<p style="margin:12px 0 0;font-size:13px;color:#5d6a61">Per artikel het voordeligste product bij elke winkel, één van elk. In de app zie je de precieze producten en aanbiedingen.</p>`,
         knop: 'Bekijk mijn lijst', knopUrl: `${site}/?bron=weekoverzicht#lijst`,
-        voet: `Je krijgt dit omdat je het weekoverzicht aan hebt gezet. Uitzetten kan in de app; <a href="${esc(uit)}" style="color:#5d6a61">helemaal afmelden</a>. Goedkope Boodschappen is gratis en zonder reclame.`,
+        voet: `Je krijgt dit omdat je het weekoverzicht aan hebt gezet. Uitzetten kan in de app; <a href="${esc(uit)}" style="color:#5d6a61">helemaal afmelden</a>. Boodschappenvergelijk is gratis en zonder reclame.`,
       });
       if (!c) c = await verbind({ user, pass });
       try {

@@ -1,4 +1,4 @@
-"""Bouwt alle pagina's van Goedkope Boodschappen in één map (standaard public/).
+"""Bouwt alle pagina's van Boodschappenvergelijk in één map (standaard public/).
 
 Gebruik: python3 scripts/bouw_paginas.py <uitmap>
 Het rekenwerk (data laden, producten zoeken, basispakket) staat in scripts/vergelijk.py.
@@ -15,11 +15,11 @@ NAV = [("/nieuwsbrief/", "📬 Nieuwsbrief", "nbpil"), ("/aanbiedingen/", "Aanbi
 def header(actief="", hier=""):
     # De link naar de pagina waar je al bent laten we weg: die staat er toch al.
     links = "".join(f'<a href="{h}"{' class="' + c + '"' if c else ""}{" aria-current=page" if h == actief else ""}{' target="_blank" rel="noopener"' if h.startswith("http") else ""}>{t}</a>' for h, t, c in NAV if h != hier)
-    return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Goedkope Boodschappen, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Goedkope Boodschappen</span></a><nav class="nav rustig drie" aria-label="Menu">{links}</nav></div></header>'
-FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Goedkope Boodschappen is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
+    return f'<header class="top"><div class="wrap bar"><a class="brand" href="/" aria-label="Boodschappenvergelijk, naar de startpagina"><img src="/icons/icon.svg" alt="" width="34" height="34"><span>Boodschappenvergelijk</span></a><nav class="nav rustig drie" aria-label="Menu">{links}</nav></div></header>'
+FOOTER = f'''<footer class="foot"><div class="wrap"><p class="free">Boodschappenvergelijk is gratis en onafhankelijk. Geen reclame, geen betaalde plekken en geen commissie.</p>
 <nav aria-label="Supermarkten"><a href="/supermarkt/ah/">Albert Heijn</a><a href="/supermarkt/jumbo/">Jumbo</a><a href="/supermarkt/lidl/">Lidl</a><a href="/supermarkt/aldi/">Aldi</a><a href="/supermarkt/plus/">PLUS</a><a href="/supermarkt/dirk/">Dirk</a><a href="/supermarkt/hoogvliet/">Hoogvliet</a><a href="/supermarkt/dekamarkt/">DekaMarkt</a><a href="/supermarkt/vomar/">Vomar</a><a href="/supermarkt/spar/">SPAR</a><a href="/supermarkt/poiesz/">Poiesz</a></nav>
 <nav aria-label="Over"><a href="/over/">Over deze site</a><a href="/zo-vergelijken-wij/">Zo vergelijken wij</a><a href="/privacy/">Privacy</a><a href="/gebruiksvoorwaarden/">Gebruiksvoorwaarden</a><a href="/aanbiedingen/">Aanbiedingen</a><a href="/nieuwsbrief/">📬 Nieuwsbrief</a><a href="/in-de-media/">In de media</a><a href="/goedkoopste-supermarkt-in/">Supermarkt per stad</a><a href="/maaltijden/">Complete maaltijden</a><a href="/besparen/">Besparen op boodschappen</a><a href="/dieet/">Dieet en leefstijl</a><a href="/allergie/">Allergie</a><a href="/kennisbank/">Kennisbank</a><a href="/voor-hulpverleners/">Voor budgetcoaches en hulpverleners</a><a href="/sinterklaas/">Sinterklaas</a><a href="/kerst/">Kerst</a><a href="/oud-en-nieuw/">Oud en nieuw</a><a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a><a href="/prijsindex/">Prijsindex</a><a href="/merkproducten/">Merkproducten</a><a href="/supermarkt-van-de-week/">Supermarkt van de week</a><a href="/vergelijk/">Alle producten</a><a href="/tips/">Tips en contact</a><a href="/steun/">Steun de site</a><a href="/kassabon-scannen/">Kassabon scannen</a><a href="/lidl-bon/">Lidl-bon scannen</a><a href="/contact/">Contact</a></nav>
-<p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
+<p class="small">Gemaakt door Erik. Prijzen van de webshops van de supermarkten, bijgewerkt op {DATUM}. De prijs aan de kassa is leidend.</p><p class="small auteursrecht">© {datetime.date.today().year} Boodschappenvergelijk – Erik Beltman. Alle rechten voorbehouden. <a href="/gebruiksvoorwaarden/">Auteursrecht en gebruiksvoorwaarden</a></p></div></footer>'''
 # Knoppen "+ Op mijn lijst" op losse pagina's: bewaren in de browser en op de startpagina aan de lijst toevoegen.
 LISTJS = '''<script>(function(){const o=()=>{const h=location.hash.slice(1);if(!h)return;const d=document.getElementById(decodeURIComponent(h));if(d&&d.tagName==="DETAILS"){d.open=true;d.scrollIntoView({block:"start"})}};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",o):o()})();document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.getAttribute("href").length<2)return;const d=document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1)));if(!d)return;e.preventDefault();if(d.tagName==="DETAILS")d.open=true;const g=()=>d.scrollIntoView({block:"start"});g();requestAnimationFrame(()=>{g();setTimeout(g,120);setTimeout(g,350);setTimeout(g,700)});try{history.replaceState(null,"",a.getAttribute("href"))}catch(x){}})</script><script>document.addEventListener("click",e=>{const d=e.target.closest("[data-deel]");if(!d||!navigator.share)return;e.preventDefault();try{const o=JSON.parse(d.dataset.deel);navigator.share({title:o.t,text:o.t,url:o.u}).catch(()=>{})}catch(x){}try{window.goatcounter&&goatcounter.count({path:"delen"+location.pathname,title:"Gedeeld",event:true})}catch(x){}})</script><script>(()=>{let m=null;try{m=JSON.parse(localStorage.getItem("mijn-winkel")||"null")}catch(e){}if(!m)return;document.querySelectorAll('.ptable [data-out="'+m+'"]').forEach(a=>{const r=a.closest("tr");if(!r||r.classList.contains("mijn"))return;r.classList.add("mijn");const b=document.createElement("span");b.className="mijnlbl";b.textContent="⭐ Jouw winkel";a.after(b)})})()</script><script>(()=>{const t=document.querySelector(".pagehead nav.terug");if(!t||!("IntersectionObserver" in window))return;const c=t.cloneNode(true);c.classList.add("vast");c.hidden=true;document.body.appendChild(c);new IntersectionObserver(([e])=>{c.hidden=e.isIntersecting||e.boundingClientRect.top>0}).observe(t)})()</script><div class="dock" id="dock" hidden><span id="dockt"></span><a class="btn" href="/#lijst">Mijn lijst</a></div>
 <script>(()=>{const K="lijst-erbij",get=()=>{try{return JSON.parse(localStorage.getItem(K)||"[]")}catch(e){return []}},put=v=>{try{localStorage.setItem(K,JSON.stringify(v));return true}catch(e){return false}},
@@ -81,7 +81,7 @@ KB_LINKS = [("/vergelijk/", [("prijs-per-kilo", "Prijs per kilo: zo vergelijk je
 def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css="", og_title=None, og_img=None):
     # Google toont ongeveer 60 tekens titel en 155 tekens omschrijving: te lange titels zonder maand/jaar, omschrijvingen netjes inkorten.
     if len(title) > 65: title = re.sub(r"\s*\((januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) \d{4}\)$", "", title)
-    if len(title) > 65: title = re.sub(r"\s*\|\s*Goedkope Boodschappen$", "", title)
+    if len(title) > 65: title = re.sub(r"\s*\|\s*Boodschappenvergelijk$", "", title)
     if len(title) > 65: title = title.replace(" (alle merken)", "").replace(": vanaf ", ": ")
     if len(title) > 65: title = re.sub(r", goedkoopst bij [^,:]+$", "", title)
     if len(title) > 65: title = re.sub(r"(: € [\d,]+ per \w+) bij [^:]+$", r"\1", title)
@@ -99,7 +99,7 @@ def page(path, title, desc, head_html, body_html, ld=None, actief="", extra_css=
     ldtag = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
     return f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{BASE}{path}"><meta name="robots" content="index,follow,max-image-preview:large">
-<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Goedkope Boodschappen"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{esc(og_title or title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:image" content="{BASE}{og_img or "/icons/og.png"}"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0e7c4a">
+<meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="Boodschappenvergelijk"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{esc(og_title or title)}"><meta property="og:description" content="{esc(desc)}"><meta property="og:image" content="{BASE}{og_img or "/icons/og.png"}"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0e7c4a">
 {FAV}{FONT}<link rel="stylesheet" href="/stijl.css?v={quote(VERSIE)}"><script src="/fout.js?v={quote(VERSIE)}" defer></script>{f"<style>{extra_css}</style>" if extra_css else ""}{ldtag}{GC}</head><body>
 {header(actief, path)}<main><div class="wrap pagehead">{head_html}</div><div class="wrap content">{body_html}</div></main>{FOOTER}{LISTJS}</body></html>'''
 def schrijf(path, inhoud):
@@ -721,7 +721,7 @@ if PAK:
     _ds = {"@context": "https://schema.org", "@type": "Dataset", "name": f"Ranglijst goedkoopste supermarkt Nederland ({MAAND})",
            "description": f"Dagelijkse berekening van een vast mandje van {len(PAKTERMEN)} basisboodschappen bij {len(PAK)} Nederlandse supermarkten, met de actuele prijzen uit de webwinkels.",
            "url": f"{BASE}/goedkoopste-supermarkt/", "dateModified": VANDAAG, "temporalCoverage": VANDAAG, "spatialCoverage": "Nederland", "inLanguage": "nl-NL",
-           "creator": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"}, "isAccessibleForFree": True,
+           "creator": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/"}, "isAccessibleForFree": True,
            "license": f"{BASE}/gebruiksvoorwaarden/", "variableMeasured": "Totaalprijs van het vaste boodschappenmandje in euro"}
     schrijf("/goedkoopste-supermarkt/", page("/goedkoopste-supermarkt/", title, desc, head, body, [cld, _rl, _ds, faq_ld(faq)], actief="/goedkoopste-supermarkt/", og_title=f"De goedkoopste supermarkt van {MAAND}"))
     made.append(("/goedkoopste-supermarkt/", "0.9"))
@@ -819,11 +819,11 @@ if SVW:
              f'<p><a href="/supermarkt/{sid}/">Is {esc(nm_)} goedkoop?</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a> · <a href="/aanbiedingen/">Alle aanbiedingen</a></p>'
              f'<p class="note">Bijgewerkt op {DATUM}. De keuze volgt een vaste volgorde op alfabet; dat een supermarkt hier staat, zegt niets over of hij goedkoop is.</p>')
     faq = [("Wat is de supermarkt van de week?", f"Elke week bekijken we één supermarkt van dichtbij: de prijs van een vast boodschappenmandje, de beste aanbiedingen en de acties die toch niet voordelig zijn. Deze week is dat {nm_}."),
-           ("Hoe wordt de supermarkt van de week gekozen?", f"Op een vaste volgorde: alle {len(SVW)} supermarkten komen om de beurt aan bod. Geen supermarkt betaalt hiervoor, en Goedkope Boodschappen verdient er niets aan.")]
+           ("Hoe wordt de supermarkt van de week gekozen?", f"Op een vaste volgorde: alle {len(SVW)} supermarkten komen om de beurt aan bod. Geen supermarkt betaalt hiervoor, en Boodschappenvergelijk verdient er niets aan.")]
     body += faq_html(faq)
     ld = [cld, faq_ld(faq), {"@context": "https://schema.org", "@type": "Article", "headline": f"Supermarkt van de week {_wk}: {nm_}", "description": desc, "url": BASE + path,
           "datePublished": _ma.isoformat(), "dateModified": VANDAAG, "inLanguage": "nl-NL",
-          "author": {"@type": "Person", "name": "Erik"}, "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
+          "author": {"@type": "Person", "name": "Erik"}, "publisher": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/"},
           "about": {"@type": "GroceryStore", "name": nm_}, "mainEntityOfPage": BASE + path}]
     schrijf(path, page(path, title, desc, head, body, ld, actief="/goedkoopste-supermarkt/"))
     made.append((path, "0.8"))
@@ -890,7 +890,7 @@ if PAK and os.path.exists(STEDEN_PAD):
         body += faq_html(faq)
         ld_pagina = {"@context": "https://schema.org", "@type": "WebPage", "name": f"Goedkoopste supermarkt in {naam}", "url": BASE + path, "inLanguage": "nl-NL",
                      "dateModified": VANDAAG, "about": {"@type": "City", "name": naam, "containedInPlace": {"@type": "Country", "name": "Nederland"}},
-                     "author": {"@type": "Person", "name": "Erik Beltman"}, "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
+                     "author": {"@type": "Person", "name": "Erik Beltman"}, "publisher": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/"},
                      "mainEntity": {"@type": "ItemList", "name": f"Supermarkten in {naam} van goedkoop naar duur", "itemListOrder": "https://schema.org/ItemListOrderAscending",
                                     "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": nm(r["si"]), "url": f'{BASE}/supermarkt/{stores[r["si"]]["id"]}/'} for i, r in enumerate(rijen)]}}
         schrijf(path, page(path, title, desc, head, body, [cld, ld_pagina, faq_ld(faq)], actief="/goedkoopste-supermarkt/",
@@ -903,18 +903,18 @@ if PAK and os.path.exists(STEDEN_PAD):
         ch, cld = crumbs(("Goedkoopste supermarkt", "/goedkoopste-supermarkt/"), ("Per stad", None))
         head = ch + f'<h1>Goedkoopste supermarkt per stad</h1><p class="lead">Niet elke supermarkt zit in elke stad. Kies je stad en zie welke supermarkt daar het goedkoopst is, op een vast mandje van {len(PAKTERMEN)} boodschappen.</p>'
         body = _blok("Twente en Overijssel", tw) + _blok("Grote steden", gr) + _blok("Alle andere plaatsen", ov) + f'<p class="note">Winkels per stad uit OpenStreetMap (© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap-bijdragers</a>). Prijzen van {DATUM}.</p>'
-        schrijf("/goedkoopste-supermarkt-in/", page("/goedkoopste-supermarkt-in/", f"Goedkoopste supermarkt per stad ({_maand}) | Goedkope Boodschappen", f"Welke supermarkt is het goedkoopst in jouw stad? Ranglijsten voor {len(STADPAGINAS)} steden, van Rijssen en Enschede tot Amsterdam en Rotterdam.", head, body, [cld], actief="/goedkoopste-supermarkt/"))
+        schrijf("/goedkoopste-supermarkt-in/", page("/goedkoopste-supermarkt-in/", f"Goedkoopste supermarkt per stad ({_maand}) | Boodschappenvergelijk", f"Welke supermarkt is het goedkoopst in jouw stad? Ranglijsten voor {len(STADPAGINAS)} steden, van Rijssen en Enschede tot Amsterdam en Rotterdam.", head, body, [cld], actief="/goedkoopste-supermarkt/"))
         made.append(("/goedkoopste-supermarkt-in/", "0.7"))
     print("stadspagina's:", len(STADPAGINAS))
 
 # ---------- over en privacy ----------
-over = f'''<div class="panel"><h2 style="margin-top:0">Eerlijk vergelijken, zonder reclame</h2><p>Goedkope Boodschappen is een hobbyproject van Erik. Er staat geen reclame op, supermarkten kunnen geen plek kopen en er zitten geen affiliatelinks in: als je doorklikt naar een supermarkt, krijg ik daar niets voor. De volgorde is altijd gewoon: goedkoopste eerst. <a href="/zo-vergelijken-wij/">Lees precies hoe we vergelijken</a>.</p></div>
+over = f'''<div class="panel"><h2 style="margin-top:0">Eerlijk vergelijken, zonder reclame</h2><p>Boodschappenvergelijk is een hobbyproject van Erik. Er staat geen reclame op, supermarkten kunnen geen plek kopen en er zitten geen affiliatelinks in: als je doorklikt naar een supermarkt, krijg ik daar niets voor. De volgorde is altijd gewoon: goedkoopste eerst. <a href="/zo-vergelijken-wij/">Lees precies hoe we vergelijken</a>.</p></div>
 <h2>Waarom deze site?</h2><p>Boodschappen zijn duur en iedere supermarkt is ergens anders goedkoop. Met deze site zie je in een paar seconden waar jouw lijst het minst kost, zonder dat je zelf tien folders hoeft door te bladeren.</p>
 <h2>Waar komen de prijzen vandaan?</h2><p>Elke dag halen we automatisch de prijzen en aanbiedingen op van de webshops van {AANTAL} supermarkten: {", ".join(NAMEN[s] for s in ACTIEF if s in NAMEN)}. De gewone prijzen komen deels uit de open dataset van <a href="https://www.checkjebon.nl/" rel="noopener">Checkjebon</a> (MIT-licentie). Vomar, SPAR, Jan Linders en Nettorama zetten hun acties niet als losse prijzen online; daarvan tonen we alleen de gewone prijzen waar die beschikbaar zijn. Coop is inmiddels PLUS geworden.</p>
 <p>Supermarkten kunnen in de winkel een andere prijs hanteren dan online. De prijs aan de kassa is altijd leidend.</p>
 <h2>Hoe vergelijken we?</h2><p>Per product zoeken we bij elke supermarkt het voordeligste vergelijkbare product en vergelijken we de prijs per kilo, liter of stuk. Varianten als lactosevrij of biologisch tellen alleen mee als je ernaar zoekt. Lopende aanbiedingen rekenen we mee.</p>
 <h2>Contact</h2><p>Een fout gezien of een idee? Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>'''
-schrijf("/over/", page("/over/", "Over Goedkope Boodschappen: gratis, onafhankelijk, zonder reclame", "Goedkope Boodschappen is een gratis hobbyproject zonder reclame of commissie. Lees waar de prijzen vandaan komen en hoe we vergelijken.",
+schrijf("/over/", page("/over/", "Over Boodschappenvergelijk: gratis, onafhankelijk, zonder reclame", "Boodschappenvergelijk is een gratis hobbyproject zonder reclame of commissie. Lees waar de prijzen vandaan komen en hoe we vergelijken.",
     crumbs(("Over deze site", None))[0] + "<h1>Over deze site</h1><p class=\"lead\">Gratis, onafhankelijk en zonder reclame. Gemaakt om je geld te besparen, niet om aan je te verdienen.</p>", over))
 # ---------- Zo vergelijken wij: open over de werkwijze, zodat iedereen ziet dat er geen winkel voorgaat ----------
 _nprod = sum(1 for p in prods if stores[p[0]].get("count"))
@@ -937,10 +937,10 @@ zvw = (f'''<div class="panel"><h2 style="margin-top:0">Onze belofte</h2><ul clas
 <h2>Hoe vaak in de aanbieding?</h2><p>Bij een actie staat hoe vaak hetzelfde product bij dezelfde supermarkt de weken ervoor in de aanbieding was, en over hoeveel weken we dat weten. Eén actie telt één keer, ook als hij over twee kalenderweken loopt. "Vaak in de aanbieding" betekent: in minstens de helft van die weken. Dan hoef je niet te hamsteren. We houden dit bij sinds oktober 2026.</p><h2>Complete maaltijden</h2><p>Bij maaltijden rekenen we met <b>hele verpakkingen</b>, zoals aan de kassa: heb je 300 gram nodig en zit het per 500 gram, dan betaal je 500 gram. Olie, zout en kruiden uit de voorraadkast tellen niet mee. Is een optioneel ingrediënt niet bij elke supermarkt te koop, dan telt het bij geen enkele winkel mee, zodat je overal hetzelfde krijgt voor de prijs. De recepten komen van bekende receptensites; bij elk gerecht staat de bron.</p>
 <h2>Fout gezien?</h2><p>Bij elk product staat een knop <b>Klopt niet?</b>. Daarmee meld je met één tik een verkeerde prijs of een product dat niet klopt. Ik kijk elke melding na. Je kunt ook mailen naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>
 <p><a href="/over/">Over deze site</a> · <a href="/goedkoopste-supermarkt/">Goedkoopste supermarkt</a> · <a href="/privacy/">Privacy</a></p>''').replace(f"{_nprod:,}", f"{_nprod:,}".replace(",", "."))
-_zfaq = [("Waarom staan Nettorama, Picnic en Crisp er niet bij?", "Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we de aanbiedingen en de gewone prijzen van de boodschappen die Lidl zelf online zet; Lidl publiceert niet van elk product een prijs."), ("Krijgt Goedkope Boodschappen geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis."),
+_zfaq = [("Waarom staan Nettorama, Picnic en Crisp er niet bij?", "Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we de aanbiedingen en de gewone prijzen van de boodschappen die Lidl zelf online zet; Lidl publiceert niet van elk product een prijs."), ("Krijgt Boodschappenvergelijk geld van supermarkten?", "Nee. Er is geen reclame, er zijn geen betaalde plekken en geen affiliatelinks. De site is gratis."),
          ("Kan een supermarkt hoger in de lijst komen?", "Nee. De volgorde komt alleen uit de prijs per kilo, liter of stuk. Voor elke winkel gelden dezelfde regels."),
          ("Hoe vaak worden de prijzen bijgewerkt?", "Elke dag, automatisch. Aanbiedingen tellen alleen mee in de dagen dat ze geldig zijn.")]
-schrijf("/zo-vergelijken-wij/", page("/zo-vergelijken-wij/", "Zo vergelijken wij: onafhankelijk en zonder betaalde plekken", "Hoe Goedkope Boodschappen prijzen vergelijkt: elke dag nieuwe prijzen, prijs per kilo of liter, geen reclame, geen commissie en voor elke supermarkt dezelfde regels.",
+schrijf("/zo-vergelijken-wij/", page("/zo-vergelijken-wij/", "Zo vergelijken wij: onafhankelijk en zonder betaalde plekken", "Hoe Boodschappenvergelijk prijzen vergelijkt: elke dag nieuwe prijzen, prijs per kilo of liter, geen reclame, geen commissie en voor elke supermarkt dezelfde regels.",
     crumbs(("Over deze site", "/over/"), ("Zo vergelijken wij", None))[0] + "<h1>Zo vergelijken wij</h1><p class=\"lead\">Hoe we prijzen ophalen en vergelijken. En waarom geen supermarkt voorgaat.</p>", zvw + faq_html(_zfaq), [faq_ld(_zfaq)]))
 made.append(("/zo-vergelijken-wij/", "0.6"))
 privacy = '''<h2>Je boodschappenlijst</h2><p>Je lijst en je gekozen supermarkten worden alleen in je eigen browser bewaard. Ze worden niet naar ons verstuurd. Wis je je browsergegevens, dan is je lijst weg.</p>
@@ -951,19 +951,19 @@ privacy = '''<h2>Je boodschappenlijst</h2><p>Je lijst en je gekozen supermarkten
 <h2>Bezoekersstatistieken</h2><p>We tellen bezoeken met <a href="https://www.goatcounter.com/" rel="noopener">GoatCounter</a>. Dat gebruikt geen cookies en slaat geen persoonsgegevens op. We zien bijvoorbeeld hoeveel mensen de site bezoeken, welke pagina's populair zijn en naar welke producten wordt gezocht, maar nooit wie jij bent. Daarom hoef je ook geen cookiemelding weg te klikken.</p>
 <h2>Cookies</h2><p>Deze site plaatst geen cookies. Klik je door naar een supermarkt, dan gelden daar de regels van die supermarkt.</p>
 <h2>Vragen</h2><p>Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p>'''
-schrijf("/privacy/", page("/privacy/", "Privacy: geen cookies, geen tracking | Goedkope Boodschappen", "Je boodschappenlijst blijft in je eigen browser. Geen cookies, geen persoonsgegevens, geen cookiemelding.",
+schrijf("/privacy/", page("/privacy/", "Privacy: geen cookies, geen tracking | Boodschappenvergelijk", "Je boodschappenlijst blijft in je eigen browser. Geen cookies, geen persoonsgegevens, geen cookiemelding.",
     crumbs(("Privacy", None))[0] + "<h1>Privacy</h1><p class=\"lead\">Kort gezegd: geen cookies, zo min mogelijk gegevens, en je lijst blijft op je eigen apparaat. Alleen als je zelf je e-mailadres achterlaat, bewaren we dat.</p>", privacy))
 made += [("/over/", "0.4"), ("/privacy/", "0.3")]
 
 voorw = f'''<div class="panel"><h2 style="margin-top:0">Auteursrecht</h2>
 <p>Alle inhoud van deze website (teksten, afbeeldingen, ontwerp, gegevens en broncode) is beschermd door het auteursrecht en/of het databankenrecht. Niets mag zonder voorafgaande schriftelijke toestemming worden verveelvoudigd, openbaar gemaakt of hergebruikt, ook niet geautomatiseerd (scrapen). Citeren mag met bronvermelding en een link naar deze website.</p>
-<p>© {datetime.date.today().year} Goedkope Boodschappen – Erik Beltman. Alle rechten voorbehouden.</p></div>
+<p>© {datetime.date.today().year} Boodschappenvergelijk – Erik Beltman. Alle rechten voorbehouden.</p></div>
 <h2>Toestemming vragen</h2><p>Wil je iets van deze site gebruiken of overnemen? Vraag het eerst via <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>. Je krijgt zo snel mogelijk antwoord.</p>
 <h2>Wat valt hieronder</h2><p>De prijzen zelf komen van de webshops van de supermarkten. Wat van deze site is: de selectie en opbouw van die gegevens (de vergelijkingen, het boodschappenmandje, de prijsoverzichten en de prijsgeschiedenis), de teksten, de maaltijden, het ontwerp en de code.</p>
 <p>Foto's van Wikimedia Commons zijn van hun makers. Ze vallen onder de licentie die bij de foto staat.</p>
 <h2>Geen garantie</h2><p>We doen ons best om de prijzen kloppend te houden, maar fouten kunnen voorkomen. De prijs aan de kassa en de voorwaarden van de supermarkt zijn altijd leidend. Aan de informatie op deze site kun je geen rechten ontlenen.</p>
 <h2>Links</h2><p>Links naar deze site zijn welkom, ook zonder toestemming.</p>'''
-schrijf("/gebruiksvoorwaarden/", page("/gebruiksvoorwaarden/", "Auteursrecht en gebruiksvoorwaarden | Goedkope Boodschappen", "Alle inhoud van Goedkope Boodschappen is beschermd door het auteursrecht en het databankenrecht. Citeren mag met bronvermelding en een link.",
+schrijf("/gebruiksvoorwaarden/", page("/gebruiksvoorwaarden/", "Auteursrecht en gebruiksvoorwaarden | Boodschappenvergelijk", "Alle inhoud van Boodschappenvergelijk is beschermd door het auteursrecht en het databankenrecht. Citeren mag met bronvermelding en een link.",
     crumbs(("Gebruiksvoorwaarden", None))[0] + "<h1>Auteursrecht en gebruiksvoorwaarden</h1><p class=\"lead\">Overnemen of publiceren mag alleen met schriftelijke toestemming. Citeren mag met bronvermelding en een link.</p>", voorw))
 made += [("/gebruiksvoorwaarden/", "0.2")]
 
@@ -973,7 +973,7 @@ STEUN_URL = os.environ.get("STEUN_URL", "https://www.ing.nl/payreq/m/XUQ3SZ1Sclj
 _knop = (f'<p><a class="btn steunknop" href="{STEUN_URL}" rel="noopener" target="_blank">❤️ Doe een bijdrage</a></p><p class="small">Je betaalt veilig met iDEAL via een betaalverzoek van ING, met elke Nederlandse bank. Het bedrag kies je zelf; elk bedrag helpt, ook € 2.</p>'
          if STEUN_URL else '<p class="small">De knop om een bijdrage te doen komt hier binnenkort. Tot die tijd helpt delen het meest.</p>')
 steun = f"""<div class="panel"><h2 style="margin-top:0">Gratis, en dat blijft zo</h2>
-<p>Goedkope Boodschappen maak ik, Erik, in mijn eigen tijd. Iedereen kan de site gebruiken zonder account, zonder reclame en zonder dat er een supermarkt meebetaalt. Dat blijft zo, of je nu iets geeft of niet.</p>
+<p>Boodschappenvergelijk maak ik, Erik, in mijn eigen tijd. Iedereen kan de site gebruiken zonder account, zonder reclame en zonder dat er een supermarkt meebetaalt. Dat blijft zo, of je nu iets geeft of niet.</p>
 {_knop}</div>
 <h2>Wat kost de site?</h2>
 <ul class="steunlijst">
@@ -988,8 +988,8 @@ steun = f"""<div class="panel"><h2 style="margin-top:0">Gratis, en dat blijft zo
 <p>Bijdragen gaan naar de kosten van de site. Je krijgt er niets extra's voor en het verandert niets aan de vergelijking: wie geeft, ziet dezelfde prijzen als ieder ander.</p>
 <h2>Geen geld over? Ook goed</h2>
 <p>Dan help je net zo goed door de site te delen met familie, vrienden of in je buurtapp, of door <a href="/tips/">een tip te sturen</a> als je een fout ziet of iets mist.</p>"""
-schrijf("/steun/", page("/steun/", "Steun Goedkope Boodschappen | Gratis en onafhankelijk", "Goedkope Boodschappen is gratis, zonder reclame en zonder geld van supermarkten. Lees wat de site kost en hoe je kunt helpen met een kleine bijdrage of door te delen.",
-    crumbs(("Steun de site", None))[0] + "<h1>Steun Goedkope Boodschappen</h1><p class=\"lead\">De site is gratis en blijft gratis. Maar hij kost wel geld om te draaien.</p>", steun))
+schrijf("/steun/", page("/steun/", "Steun Boodschappenvergelijk | Gratis en onafhankelijk", "Boodschappenvergelijk is gratis, zonder reclame en zonder geld van supermarkten. Lees wat de site kost en hoe je kunt helpen met een kleine bijdrage of door te delen.",
+    crumbs(("Steun de site", None))[0] + "<h1>Steun Boodschappenvergelijk</h1><p class=\"lead\">De site is gratis en blijft gratis. Maar hij kost wel geld om te draaien.</p>", steun))
 made += [("/steun/", "0.3")]
 
 # ---------- Lidl-bon: bezoekers sturen een foto van hun Lidl-kassabon in, zodat er actuele Lidl-prijzen komen ----------
@@ -1031,7 +1031,7 @@ schrijf("/kassabon-scannen/", page("/kassabon-scannen/", "Kassabon scannen en ve
                  {"@type": "HowToStep", "position": 3, "text": "Zet alles op je lijst en zie per supermarkt wat je boodschappen kosten."}]}, faq_ld(_kfaq)]))
 made.append(("/kassabon-scannen/", "0.6"))
 
-schrijf("/lidl-bon/", page("/lidl-bon/", "Help mee: scan je Lidl-bon | Goedkope Boodschappen", "Lidl zet de meeste prijzen niet online. Met een foto van je Lidl-kassabon komen ze wel in de vergelijking, voor iedereen. De foto wordt niet bewaard.",
+schrijf("/lidl-bon/", page("/lidl-bon/", "Help mee: scan je Lidl-bon | Boodschappenvergelijk", "Lidl zet de meeste prijzen niet online. Met een foto van je Lidl-kassabon komen ze wel in de vergelijking, voor iedereen. De foto wordt niet bewaard.",
     crumbs(("Lidl-bon scannen", None))[0] + "<h1>Help mee: scan je Lidl-bon</h1><p class=\"lead\">Zo komen de echte Lidl-prijzen in de vergelijking. Het kost je een halve minuut.</p>", LIDLBON))
 made += [("/lidl-bon/", "0.4")]
 
@@ -1048,12 +1048,12 @@ media = f"""<h2>Radio Oost: Bij Oost in de middag</h2>
 <p><a class="btn" href="{HVN_URL}" target="_blank" rel="noopener">▶ Bekijk de uitzending</a></p>
 <h2>Voor journalisten</h2>
 <div class="panel"><ul>
-<li>Goedkope Boodschappen (boodschappenvergelijk.nl) vergelijkt elke dag de prijzen en aanbiedingen van {AANTAL} supermarkten.</li>
+<li>Boodschappenvergelijk (boodschappenvergelijk.nl) vergelijkt elke dag de prijzen en aanbiedingen van {AANTAL} supermarkten.</li>
 <li>Gratis, zonder account, zonder reclame en zonder geld van supermarkten.</li>
 <li>Gemaakt door Erik Beltman uit Rijssen, naast zijn gewone baan.</li>
 </ul>
 <p>Vragen of een interview? Mail naar <a href="mailto:info@boodschappenvergelijk.nl">info@boodschappenvergelijk.nl</a>.</p></div>"""
-schrijf("/in-de-media/", page("/in-de-media/", "In de media: Radio Oost en Hart van Nederland | Goedkope Boodschappen", "Goedkope Boodschappen was te zien bij Hart van Nederland en te horen op Radio Oost. Bekijk de uitzending, luister het fragment en lees het artikel.",
+schrijf("/in-de-media/", page("/in-de-media/", "In de media: Radio Oost en Hart van Nederland | Boodschappenvergelijk", "Boodschappenvergelijk was te zien bij Hart van Nederland en te horen op Radio Oost. Bekijk de uitzending, luister het fragment en lees het artikel.",
     crumbs(("In de media", None))[0] + "<h1>In de media</h1><p class=\"lead\">Bekend van Hart van Nederland en RTV Oost.</p>", media,
     extra_css=".mediaclip{margin:16px 0 20px}.mediaclip video{display:block;width:100%;max-width:360px;height:auto;border-radius:18px;background:#000}.mediaclip figcaption{font-size:14px;color:var(--muted);margin-top:8px}"))
 made += [("/in-de-media/", "0.4")]
@@ -1081,7 +1081,7 @@ if(j.status==="wacht")u.textContent="Bijna klaar! We hebben je een mail gestuurd
 else if(j.status==="bevestigd")u.textContent="Gelukt: je krijgt de nieuwsbrief vanaf nu.";
 else u.textContent=j.fout||"Dat lukte niet. Probeer het later nog eens.";}}catch(x){{u.textContent="Dat lukte niet. Controleer je internetverbinding."}}}});}})();
 </script>"""
-schrijf("/nieuwsbrief/", page("/nieuwsbrief/", "Nieuwsbrief: de beste aanbiedingen in je mail | Goedkope Boodschappen", "Elke ochtend of elke maandag de supermarktaanbiedingen met de grootste korting in je mail. Gratis, zonder reclame, afmelden met één klik.",
+schrijf("/nieuwsbrief/", page("/nieuwsbrief/", "Nieuwsbrief: de beste aanbiedingen in je mail | Boodschappenvergelijk", "Elke ochtend of elke maandag de supermarktaanbiedingen met de grootste korting in je mail. Gratis, zonder reclame, afmelden met één klik.",
     crumbs(("Nieuwsbrief", None))[0] + "<h1>Nieuwsbrief</h1><p class=\"lead\">Gratis de beste supermarktaanbiedingen in je mail, elke ochtend of elke maandag.</p>", nieuwsbrief))
 made += [("/nieuwsbrief/", "0.5")]
 
@@ -1093,7 +1093,7 @@ app = open(os.path.join(ROOT, "site", "index.html")).read()
 pop = ["halfvolle melk", "eieren", "jonge kaas", "pindakaas", "hagelslag", "volkoren brood", "koffiebonen", "bananen", "kipfilet", "gehakt", "spaghetti", "rijst", "coca cola", "chips", "toiletpapier", "wasmiddel", "roomboter", "aardappelen", "tomaten", "olijfolie"]
 pop = [t for t in pop if t in PICKED]
 faq = [("Welke supermarkt is het goedkoopst?", f"In {MAAND} is {nm(PAK[0]['si'])} het goedkoopst voor een vast boodschappenmandje van {len(PAKTERMEN)} producten ({eur(PAK[0]['tot'])}), gevolgd door {nm(PAK[1]['si'])} ({eur(PAK[1]['tot'])})." if len(PAK) > 1 else "Dat verschilt per product. Zoek je boodschappen op en zie het meteen."),
-       ("Is Goedkope Boodschappen gratis?", "Ja. Er is geen account nodig en er staat geen reclame op. Supermarkten betalen niet voor een plek."),
+       ("Is Boodschappenvergelijk gratis?", "Ja. Er is geen account nodig en er staat geen reclame op. Supermarkten betalen niet voor een plek."),
        ("Waarom staan Nettorama, Picnic en Crisp er niet bij?", "Nettorama heeft geen webwinkel, dus de prijzen staan nergens online. Picnic en Crisp tonen hun prijzen alleen in hun eigen app, na inloggen. Zonder openbare prijzen kunnen we niet eerlijk vergelijken. Van Lidl tonen we de aanbiedingen en de gewone prijzen van de boodschappen die Lidl zelf online zet; Lidl publiceert niet van elk product een prijs."),
        ("Hoe actueel zijn de prijzen?", "De prijzen en aanbiedingen worden elke dag automatisch opgehaald van de webshops van de supermarkten. De prijs aan de kassa is leidend."),
        ("Blijft mijn boodschappenlijst bewaard?", "Ja, je lijst wordt bewaard in je eigen browser. Kom je terug, dan zie je meteen welke producten goedkoper of duurder zijn geworden en wat er in de aanbieding is.")]
@@ -1103,9 +1103,9 @@ seo = (f'<section class="wrap seo" aria-labelledby="sh"><div class="seokaart"><h
        + (f'<a class="seowinnaar" href="/goedkoopste-supermarkt/"><span>🏆 Goedkoopst in {MAAND.split()[0]}</span><b>{esc(nm(PAK[0]["si"]))}</b><small>daarna {esc(nm(PAK[1]["si"]))} en {esc(nm(PAK[2]["si"]))} →</small></a>' if len(PAK) > 2 else "")
        + '</div>'
        + faq_html(faq) + "</section>")
-ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Goedkope Boodschappen", "alternateName": ["Boodschappenvergelijk.nl", "Boodschappenvergelijker", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
+ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Boodschappenvergelijk", "alternateName": ["Boodschappenvergelijk.nl", "Goedkope Boodschappen", "Boodschappenvergelijker", "Boodschappen vergelijken"], "url": BASE + "/", "inLanguage": "nl-NL",
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
-      {"@context": "https://schema.org", "@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "info@boodschappenvergelijk.nl",
+      {"@context": "https://schema.org", "@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "info@boodschappenvergelijk.nl",
        "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"],
        "subjectOf": [{"@type": "VideoObject", "name": "Goedkoop boodschappen doen? Erik bouwt vergelijker", "url": HVN_URL, "publisher": {"@type": "Organization", "name": "Hart van Nederland"}, "uploadDate": "2026-11-16"},
                      {"@type": "NewsArticle", "headline": "Rijssenaar Erik Beltman rekent af met dure boodschappen in vergelijkingswebsite", "url": OOST_URL, "publisher": {"@type": "Organization", "name": "RTV Oost"}, "datePublished": "2026-11-16"}]},
@@ -1823,7 +1823,7 @@ try:
                 + _breuk_txt + ("" if _br else f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>') + 
                 ("" if _br else f'<p class="note">Vergelijking van de eerste 14 meetdagen ({kortdag(_dg[0])} en verder) met de laatste 14. Middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.</p>')
                 + faq_html(faq) + '<p><a href="/besparen/">Zo bespaar je toch →</a></p>')
-        schrijf("/prijsindex/", page("/prijsindex/", f"Worden boodschappen duurder? Prijsindex {MAAND}" + (f": {pct_nl(verschil)}" if verschil is not None else ""), f"Onze dagelijkse prijsindex van {len(_bt)} basisboodschappen bij alle supermarkten: nu {eur(laatst)}{_vtxt}." + ("" if _br else " Met de grootste stijgers en dalers."), head, body, [cld, {"@context": "https://schema.org", "@type": "Dataset", "name": "Prijsindex boodschappen Nederland", "description": f"Dagelijkse prijs van een vast mandje van {len(_bt)} basisboodschappen: per product de middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.", "url": BASE + "/prijsindex/", "temporalCoverage": f"{_mand[0][0]}/{_mand[-1][0]}", "dateModified": VANDAAG, "spatialCoverage": "Nederland", "inLanguage": "nl-NL", "isAccessibleForFree": True, "license": BASE + "/gebruiksvoorwaarden/", "creator": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"}}, faq_ld(faq)]))
+        schrijf("/prijsindex/", page("/prijsindex/", f"Worden boodschappen duurder? Prijsindex {MAAND}" + (f": {pct_nl(verschil)}" if verschil is not None else ""), f"Onze dagelijkse prijsindex van {len(_bt)} basisboodschappen bij alle supermarkten: nu {eur(laatst)}{_vtxt}." + ("" if _br else " Met de grootste stijgers en dalers."), head, body, [cld, {"@context": "https://schema.org", "@type": "Dataset", "name": "Prijsindex boodschappen Nederland", "description": f"Dagelijkse prijs van een vast mandje van {len(_bt)} basisboodschappen: per product de middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.", "url": BASE + "/prijsindex/", "temporalCoverage": f"{_mand[0][0]}/{_mand[-1][0]}", "dateModified": VANDAAG, "spatialCoverage": "Nederland", "inLanguage": "nl-NL", "isAccessibleForFree": True, "license": BASE + "/gebruiksvoorwaarden/", "creator": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/"}}, faq_ld(faq)]))
         made.append(("/prijsindex/", "0.8"))
         print("/prijsindex/:", pct_nl(verschil) if verschil is not None else "geen trend (bronuitbreiding)", len(_mand), "dagen")
 except Exception as e:
@@ -2128,10 +2128,10 @@ f.addEventListener("submit", async e => {
 _tip_body = (_tip_form + '<h2>Waar kun je mee helpen?</h2><ul class="links"><li>Een product dat elders goedkoper is dan op de site</li><li>Een product, merk of supermarkt die je mist</li><li>Een prijs of product die niet klopt</li><li>Een lekker en goedkoop recept</li><li>Een idee om de site nog handiger te maken</li></ul>'
              + faq_html(_tip_faq))
 schrijf("/tips/", page("/tips/", "Tips en contact: help boodschappen goedkoper te maken",
-    "Heb je een bespaartip, mis je een product of winkel, of zie je een fout? Laat het weten via het tipsformulier van Goedkope Boodschappen. Gratis en zonder account.",
+    "Heb je een bespaartip, mis je een product of winkel, of zie je een fout? Laat het weten via het tipsformulier van Boodschappenvergelijk. Gratis en zonder account.",
     ch + "<h1>💡 Heb jij een tip? Ik hoor het graag!</h1><p class=\"lead\">Ik maak deze site om iedereen te helpen besparen op boodschappen, gratis en zonder er iets aan te verdienen. Jouw tip helpt mij én alle andere bezoekers.</p>", _tip_body,
     [cld, faq_ld(_tip_faq), {"@context": "https://schema.org", "@type": "ContactPage", "name": "Tips en contact", "url": f"{BASE}/tips/",
-     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
+     "mainEntity": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
 made.append(("/tips/", "0.6"))
 
 # ---------- Contact: formulier met onderwerpen; elk bericht gaat meteen naar de mailbox van Erik ----------
@@ -2151,10 +2151,10 @@ ch, cld = crumbs(("Contact", None))
 _c_faq = [("Hoe snel krijg ik antwoord?", "Ik lees elk bericht zelf, meestal dezelfde dag. Vul je e-mailadres in als je antwoord wilt."),
           ("Kan ik ook gewoon mailen?", "Ja: info@boodschappenvergelijk.nl."),
           ("Ik ben journalist. Bij wie moet ik zijn?", "Kies het onderwerp Pers en media, of kijk op de pagina In de media.")]
-schrijf("/contact/", page("/contact/", "Contact | Goedkope Boodschappen", "Neem contact op met Goedkope Boodschappen: een vraag, een fout in een prijs, pers, samenwerking of iets anders. Je bericht komt direct bij Erik.",
+schrijf("/contact/", page("/contact/", "Contact | Boodschappenvergelijk", "Neem contact op met Boodschappenvergelijk: een vraag, een fout in een prijs, pers, samenwerking of iets anders. Je bericht komt direct bij Erik.",
     ch + '<h1>Contact</h1><p class="lead">Kies een onderwerp en stuur je bericht. Het komt direct bij mij binnen.</p>', _c_form + faq_html(_c_faq),
     [cld, faq_ld(_c_faq), {"@context": "https://schema.org", "@type": "ContactPage", "name": "Contact", "url": f"{BASE}/contact/",
-     "mainEntity": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
+     "mainEntity": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE, "email": "info@boodschappenvergelijk.nl"}}]))
 made.append(("/contact/", "0.5"))
 
 # ---------- Voor budgetcoaches en schuldhulpverlening ----------
@@ -2329,7 +2329,7 @@ except Exception as e:
     print("llms.txt niet bijgewerkt:", e)
 
 # ---------- 404, sitemap, robots ----------
-schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Goedkope Boodschappen", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
+schrijf("/404.html", page("/404.html", "Pagina niet gevonden | Boodschappenvergelijk", "Deze pagina bestaat niet (meer).", "<h1>Deze pagina bestaat niet</h1><p class=\"lead\">Misschien is het product verplaatst. Zoek het gewoon opnieuw.</p>",
     '<form action="/" class="tools" style="max-width:520px"><label><span class="sr">Zoek een product</span><input type="search" name="q" placeholder="Bijvoorbeeld pindakaas"></label></form><a class="cta" href="/">Naar de startpagina</a>'))
 _beeld = lambda p: "".join(f"<image:image><image:loc>{u}</image:loc></image:image>" for u in MAAL_BEELDEN.get(p, []))
 # Eerlijke lastmod: alleen een nieuwe datum als de inhoud van de pagina echt veranderd is (prijzen, acties, tekst).

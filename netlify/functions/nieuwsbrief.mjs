@@ -51,7 +51,7 @@ export default async (req, context) => {
       const kop = a.nieuws === 'dag' ? 'De beste aanbiedingen van vandaag' : 'De beste aanbiedingen van deze week';
       const regel = o => `${o.n}${o.sz ? ` (${o.sz})` : ''}: ${NAMEN[o.s] || o.s} ${eur(o.p)}, was ${eur(o.was)} (-${Math.round((1 - o.p / o.was) * 100)}%)${o.lbl ? `, ${o.lbl}` : ''}`;
       const tekst = `${kop}\n\n` + lijst.map(o => '- ' + regel(o)).join('\n') +
-        `\n\nAlle aanbiedingen vergeleken: ${site}/aanbiedingen/?bron=nieuwsbrief\n\nGeen nieuwsbrief meer? Meld je af: ${uit}\n\nGoedkope Boodschappen is gratis en zonder reclame. De prijs aan de kassa is leidend.`;
+        `\n\nAlle aanbiedingen vergeleken: ${site}/aanbiedingen/?bron=nieuwsbrief\n\nGeen nieuwsbrief meer? Meld je af: ${uit}\n\nBoodschappenvergelijk is gratis en zonder reclame. De prijs aan de kassa is leidend.`;
       const html = opmaak({
         titel: kop,
         inhoud: `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px">` +
@@ -59,7 +59,7 @@ export default async (req, context) => {
             `<td align="right" style="padding:9px 0 9px 10px;border-bottom:1px solid #e1e7dc;white-space:nowrap"><b>${eur(o.p)}</b><br><span style="color:#5d6a61;font-size:13px;text-decoration:line-through">${eur(o.was)}</span> <span style="color:#c4381f;font-size:13px;font-weight:bold">-${Math.round((1 - o.p / o.was) * 100)}%</span></td></tr>`).join('') +
           `</table>`,
         knop: 'Alle aanbiedingen vergelijken', knopUrl: `${site}/aanbiedingen/?bron=nieuwsbrief`,
-        voet: `Je krijgt dit omdat je je hebt aangemeld voor de nieuwsbrief (${a.nieuws === 'dag' ? 'dagelijks' : 'wekelijks'}). <a href="${esc(uit)}" style="color:#5d6a61">Afmelden</a>. Goedkope Boodschappen is gratis en zonder reclame. De prijs aan de kassa is leidend.`,
+        voet: `Je krijgt dit omdat je je hebt aangemeld voor de nieuwsbrief (${a.nieuws === 'dag' ? 'dagelijks' : 'wekelijks'}). <a href="${esc(uit)}" style="color:#5d6a61">Afmelden</a>. Boodschappenvergelijk is gratis en zonder reclame. De prijs aan de kassa is leidend.`,
       });
       if (!c) c = await verbind({ user, pass });
       try {

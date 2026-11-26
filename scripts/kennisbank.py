@@ -120,7 +120,7 @@ for sl, titel, ic, intro, secties, faq, links in KB:
     andere = [k for k in KB if k[0] != sl][:4]
     body += faq_html(faq) + '<h2>Meer uitleg</h2><ul class="links">' + "".join(f'<li><a href="/kennisbank/{k[0]}/">{k[2]} {esc(k[1])}</a></li>' for k in andere) + '<li><a href="/kennisbank/">Alle artikelen</a></li></ul>'
     art = {"@context": "https://schema.org", "@type": "Article", "headline": titel, "description": intro, "inLanguage": "nl-NL",
-           "author": {"@type": "Person", "name": "Erik"}, "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE},
+           "author": {"@type": "Person", "name": "Erik"}, "publisher": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE},
            "dateModified": datetime.date.today().isoformat(), "mainEntityOfPage": f"{BASE}{path}"}
     desc = intro if len(intro) >= 110 else intro + " " + faq[0][1]
     desc = desc if len(desc) <= 158 else desc[:desc.rfind(" ", 0, 150)] + "…"

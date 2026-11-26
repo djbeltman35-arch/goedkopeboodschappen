@@ -233,7 +233,7 @@ for m in MAAL:
               "datePublished": "2026-10-19", "dateModified": VANDAAG,
               **({"suitableForDiet": [d for d, ok in (("https://schema.org/GlutenFreeDiet", m["glutenvrij"]), ("https://schema.org/LowCalorieDiet", m["kcal"] <= KCAL_ARM)) if ok]}
                  if (m["glutenvrij"] or m["kcal"] <= KCAL_ARM) else {}),
-              "publisher": {"@type": "Organization", "name": "Goedkope Boodschappen", "url": BASE + "/"},
+              "publisher": {"@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/"},
               "keywords": f"{kl}, goedkoop, prijs, {', '.join(wnaam(si) for si, _ in top3)}",
               "offers": {"@type": "AggregateOffer", "priceCurrency": "EUR", "lowPrice": f"{r1['tot']:.2f}", "highPrice": f"{rN['tot']:.2f}", "offerCount": len(m["rang"])}}
     recipe.pop("offers")  # Recipe ondersteunt geen offers; prijs staat in de tekst en de FAQ.

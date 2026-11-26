@@ -1,4 +1,4 @@
-# Goedkope Boodschappen
+# Boodschappenvergelijk
 
 Gratis boodschappenvergelijker zonder reclame: https://boodschappenvergelijk.nl/
 
