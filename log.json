@@ -229,5 +229,40 @@
   "slot": "19:00",
   "onderwerp": "/gids/negatieve-stroomprijs/",
   "tekst": "Negatieve stroomprijs: wat betekent dat? ☀️"
+ },
+ {
+  "datum": "2026-11-27",
+  "merk": "boodschappenvergelijk",
+  "slot": "10:00 tip",
+  "onderwerp": "/dieet/ (dieet en leefstijl)",
+  "tekst": "Glutenvrij, vegan of halal eten? 🥗"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "bespaarvriend",
+  "slot": "12:30",
+  "onderwerp": "/aanvullende-verzekering-2027/",
+  "tekst": "Aanvullende verzekering 2027: heb je het echt nodig? 🦷"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "bespaarvriend",
+  "slot": "19:00",
+  "onderwerp": "/wegenbelasting-2027/",
+  "tekst": "Wegenbelasting 2027: wat verandert er? 🚗"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "stroomwekker",
+  "slot": "12:30",
+  "onderwerp": "/over/",
+  "tekst": "Wie heeft tijd om elk kwartier naar de stroomprijs te kijken? ⏰"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "stroomwekker",
+  "slot": "19:00",
+  "onderwerp": "/widget/",
+  "tekst": "De stroomprijs van nu op je eigen website? 🖥️"
  }
 ]
