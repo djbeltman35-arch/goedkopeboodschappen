@@ -41,6 +41,9 @@ jobs:
             && python3 scripts/bronstatus.py /tmp/supermarkets.json \
             && python3 scripts/eigen_prijzen.py /tmp/supermarkets.json \
             && python3 scripts/historie.py bijwerken /tmp/supermarkets.json || echo "geschiedenis mislukt"
+      - name: Prijsverloop kerstmandje (alleen nov/dec)
+        run: |
+          [ -f /tmp/supermarkets.json ] && python3 scripts/kerstmandje.py bijwerken /tmp/supermarkets.json || echo "kerstmandje mislukt"
       - name: Actiegeschiedenis (hoe vaak in de aanbieding)
         run: python3 scripts/actiehistorie.py bijwerken || echo "actiegeschiedenis mislukt"
       - name: Dag van de week

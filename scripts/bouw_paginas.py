@@ -2037,6 +2037,20 @@ if len(KERST) >= 3:
            f'<p>Bij {esc(nm(_kw["si"]))} betaal je {eur(_kd["tot"] - _kw["tot"])} minder dan bij {esc(nm(_kd["si"]))}. Per persoon is dat vanaf {eur(_kw["tot"] / 4)}.</p>'
            f'<details class="panel"><summary>Wat zit er in het kerstmandje bij {esc(nm(_kw["si"]))}?</summary><ul>{_inh}</ul></details>'
            f'<p class="note">Bijgewerkt op {DATUM}. Supermarkten waar niet alle producten online te vinden zijn, tellen niet mee. <a href="/zo-vergelijken-wij/">Zo vergelijken wij</a></p>')
+    # Prijsverloop richting kerst (data/kerstmandje.json, elke ochtend gemeten door de prijzen-bot). Pas tonen na een week meten.
+    try: _kh = json.load(open(os.path.join(ROOT, "data", "kerstmandje.json")))["dagen"]
+    except Exception: _kh = {}
+    _kd_ = sorted(d for d in _kh if d[:4] == VANDAAG[:4])
+    if len(_kd_) >= 2 and (datetime.date.fromisoformat(_kd_[-1]) - datetime.date.fromisoformat(_kd_[0])).days >= 7:
+        _d0, _d1 = _kd_[0], _kd_[-1]
+        _vr = sorted([(w, _kh[_d0][w], _kh[_d1][w]) for w in _kh[_d1] if w in _kh[_d0]], key=lambda x: x[2])
+        if len(_vr) >= 3:
+            _gem0 = sum(a for _, a, _ in _vr) / len(_vr); _gem1 = sum(b for _, _, b in _vr) / len(_vr); _pc = (_gem1 / _gem0 - 1) * 100
+            _rv = "".join(f'<tr><td>{esc(NAMEN.get(w, w))}</td><td class="p">{eur(a)}</td><td class="p">{eur(b)}</td><td>{"+ " if b > a else "− " if b < a else ""}{eur(abs(b - a)) if b != a else "gelijk"}</td></tr>' for w, a, b in _vr)
+            _KM += (f'<h2>Wordt het kerstdiner duurder richting kerst?</h2>'
+                    f'<p>We meten het kerstmandje elke ochtend. Sinds {kortdag(_d0)} is het gemiddeld <b>{f"{abs(_pc):.1f}".replace(".", ",")}% {"duurder" if _pc > 0 else "goedkoper"}</b> geworden'
+                    + (" (vooral door aanbiedingen die beginnen of aflopen)." if abs(_pc) >= 1 else ", dus vrijwel gelijk.") + '</p>'
+                    f'<div class="tblwrap"><table class="ptable"><thead><tr><th>Supermarkt</th><th>{kortdag(_d0)}</th><th>{kortdag(_d1)}</th><th>Verschil</th></tr></thead><tbody>{_rv}</tbody></table></div>')
     _KM_LEAD = (f"Ons kerstmandje voor 4 personen ({len(KERSTTERMEN)} vaste kerstboodschappen) kost op {DATUM} <b>{eur(_kw['tot'])} bij {esc(nm(_kw['si']))}</b> en {eur(_kd['tot'])} bij {esc(nm(_kd['si']))}. "
                 "Daaronder alle kersthapjes, gourmet, wild en bubbels per supermarkt.")
     _KM_FAQ = ((f"Wat kost een kerstdiner voor 4 personen?", f"Ons kerstmandje met {len(KERSTTERMEN)} vaste boodschappen (soep, paté, pasteitjes met ragout, zalm, kipfilet, krieltjes, appelmoes, slagroom, cava en glühwein) kost op {DATUM} {eur(_kw['tot'])} bij {nm(_kw['si'])}, dat is {eur(_kw['tot'] / 4)} per persoon. Bij {nm(_kd['si'])} kost hetzelfde mandje {eur(_kd['tot'])}."),
