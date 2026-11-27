@@ -996,3 +996,6 @@ html body details.kies[open]>summary::after{content:" ▴"}
 html body .catkeus select{width:100%;margin:0 0 12px;padding:10px 12px;font:600 15px var(--text);border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
 html body .anderwinkel{margin:0 0 8px}
 html body .anderwinkel a{font-weight:700;color:var(--green-dark)}
+html body .geldigrij{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
+html body .geldigrij .geldig{font:600 14.5px var(--text);color:var(--ink)}
+html body .geldigrij .deel{margin:0;flex:none}

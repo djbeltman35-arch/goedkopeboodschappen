@@ -696,7 +696,13 @@ def offers_page(cur, lst):
         schrijf(vpath, page(vpath, vtitle, vdesc, vch + f"<h1>{esc(_vnaam)} volgende week</h1><p class=\"lead\">" + (f"Week {vwk}: {len(straks)} acties die vanaf {kortdag(vbeg)} beginnen, de grootste korting eerst." if straks else f"Week {vwk}: de nieuwe acties verschijnen hier zodra {esc(NAMEN[cur])} ze bekendmaakt.") + "</p>" + deel_html(f"{NAMEN[cur]} aanbiedingen volgende week", vpath), vbody, [vcld], actief="/aanbiedingen/"))
         made.append((vpath, "0.7"))
     body += '<h2>Aanbiedingen per product</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{n_} aanbieding</a></li>' for s_, n_ in AP_LINKS) + "</ul>" + '<h2>Populaire merken in de aanbieding</h2><ul class="links">' + "".join(f'<li><a href="/aanbieding/{s_}/">{esc(n_)} aanbieding</a></li>' for s_, n_ in AP_MERKEN) + "</ul>" + '<h2>Feestdagen</h2><ul class="links"><li><a href="/sinterklaas/">🎁 Sinterklaas: pepernoten en chocoladeletters</a></li><li><a href="/kerst/">🎄 Kerst: gourmet, wild en bubbels</a></li><li><a href="/oud-en-nieuw/">🎆 Oud en nieuw: oliebollen en champagne</a></li></ul>'
-    schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>" + deel_html(h1, path), body, ld, actief="/aanbiedingen/"))
+    # Links: van wanneer tot wanneer de acties gelden (afgeleid uit de meest voorkomende einddatum); rechts: delen.
+    if cur and eind:
+        _van = (datetime.date.fromisoformat(eind) - datetime.timedelta(days=6)).isoformat()
+        geldig = f"Geldig {kortdag(_van)} t/m {kortdag(eind)}"
+    else: geldig = "Aanbiedingen van deze week"
+    rij = f'<div class="geldigrij"><span class="geldig">📅 {esc(geldig)}</span>{deel_html(h1, path)}</div>'
+    schrijf(path, page(path, title, desc, ch + f"<h1>{esc(h1)}</h1><p class=\"lead\">{lead}</p>" + rij, body, ld, actief="/aanbiedingen/"))
     made.append((path, "0.8"))
 if OFFERS:
     offers_page(None, OFFERS)

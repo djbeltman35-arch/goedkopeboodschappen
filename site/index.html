@@ -765,7 +765,7 @@ function renderOffers(){klaarA();
     $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen</h2><p class="meta">Kies je supermarkt:</p><div class="chips raster">${ws.map(([s,n])=>`<button type="button" class="chip" data-ofwinkel="${s}">${esc(STORENAMES[s]||s)} <small>(${n})</small></button>`).join("")}<button type="button" class="chip" data-ofwinkel="alle">Alle winkels samen</button></div>`;
     return;
   }
-  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen${S.ofs!=="alle"?` bij ${esc(STORENAMES[S.ofs]||S.ofs)}`:""}</h2><p><button type="button" class="btn-line" data-ofwinkel="kies">‹ Andere supermarkt</button></p>${S.ofs==="alle"?`<p class="deel"><button type="button" class="btn-line deelknop" data-deelaanb>📤 Delen</button></p>${dieetChips()}`:""}
+  $("results").innerHTML=`${terugNav("Alle categorieën")}<h2>🔥 Aanbiedingen${S.ofs!=="alle"?` bij ${esc(STORENAMES[S.ofs]||S.ofs)}`:""}</h2><p><button type="button" class="btn-line" data-ofwinkel="kies">‹ Andere supermarkt</button></p><div class="geldigrij"><span class="geldig">📅 ${(()=>{if(S.ofs==="alle")return"Aanbiedingen van deze week";const t=new Map();for(const o of pool)if(o.s===S.ofs&&o.t)t.set(o.t,(t.get(o.t)||0)+1);const e=[...t].sort((a,b)=>b[1]-a[1])[0];if(!e)return"Aanbiedingen van deze week";const v=new Date(e[0]+"T12:00:00");v.setDate(v.getDate()-6);return`Geldig ${dagKort(v.toISOString().slice(0,10))} t/m ${dagKort(e[0])}`})()}</span><p class="deel"><button type="button" class="btn-line deelknop" data-deelaanb>📤 Delen</button></p></div>${S.ofs==="alle"?dieetChips():""}
   <div class="chips" role="group" aria-label="Wanneer"><button type="button" class="chip" data-soon="0" aria-pressed="${!S.ofsoon}">Deze week</button>${soonN?`<button type="button" class="chip" data-soon="1" aria-pressed="${S.ofsoon}">Binnenkort (${soonN})</button>`:""}</div>
   <div class="kiezers">${S.ofs!=="alle"?"":`<label><span class="sr">Supermarkt</span><select data-ofsel="s"><option value="alle">🏪 Alle winkels</option>${[...by].sort((a,b)=>(STORENAMES[a[0]]||a[0]).localeCompare(STORENAMES[b[0]]||b[0])).map(([s,n])=>`<option value="${s}"${S.ofs===s?" selected":""}>${esc(STORENAMES[s]||s)} (${n})</option>`).join("")}</select></label>`}
   <label><span class="sr">Categorie</span><select data-ofsel="c"><option value="alle">📂 Alle categorieën</option>${order.map(c=>`<option value="${esc(c)}"${S.ofc===c?" selected":""}>${esc((GROEPEN.find(x=>x[0]===c)||["","🛒"])[1])} ${esc(c)} (${cats.get(c)})</option>`).join("")}</select></label></div>
@@ -778,7 +778,7 @@ function renderOffers(){klaarA();
 }
 document.addEventListener("click",e=>{const x=e.target.closest&&e.target.closest("[data-ofwinkel]");if(!x)return;const w=x.dataset.ofwinkel;
   if(w==="kies"){S.ofs="alle";S.ofalle=false;S.ofq=""}else if(w==="alle"){S.ofs="alle";S.ofalle=true}else{S.ofs=w;S.ofalle=false;gc("aanbiedingen/"+w,"Aanbiedingen per winkel")}
-  S.ofc="alle";S.ofn=60;renderOffers();window.scrollTo(0,0)});
+  S.ofc="alle";S.ofn=60;renderOffers();$("results").scrollIntoView({block:"start"})});
 // Aanbiedingen in dezelfde indeling als de producten: per hoofdgroep, en binnen een groep per categorie (Bier, Wijn ...).
 document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-ofsel]");if(!x)return;if(x.dataset.ofsel==="s"){S.ofs=x.value;S.ofalle=x.value==="alle";gc("aanbiedingen/"+S.ofs,"Aanbiedingen per winkel")}else{S.ofc=x.value;gc("aanbiedingen/categorie/"+S.ofc,"Aanbiedingen per categorie")}S.ofn=60;renderOffers()});
 const OPEN=new Set();document.addEventListener("toggle",e=>{const d=e.target;if(d.classList&&d.classList.contains("subblok")&&d.id){d.open?OPEN.add(d.id):OPEN.delete(d.id)}},true);
@@ -1431,6 +1431,8 @@ startP.then(()=>Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]))
   // Aldi staat altijd achteraan in de winkellijst.
   const ai=S.stores.length; S.stores.push({id:"aldi",name:"Aldi",base:""});
   if(aldi?.products) for(const r of aldi.products) S.prods.push([ai,...r]);
+  // Nettorama heeft geen prijslijst, alleen folderaanbiedingen: toch als winkel kennen, anders vallen die acties weg.
+  if(!S.stores.some(s=>s.id==="nettorama")) S.stores.push({id:"nettorama",name:"Nettorama",base:""});
   S.sidx=new Map(S.stores.map((s,i)=>[s.id,i]));
   S.byLink=new Links();S.todoL=0;S.todo=0;
   S.prods.forEach((p,i)=>{p.i=i});
