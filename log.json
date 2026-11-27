@@ -313,5 +313,19 @@
   "slot": "19:00",
   "onderwerp": "/stroomprijs/ (prijsarchief)",
   "tekst": "Wat kostte stroom vorige week? 📊"
+ },
+ {
+  "datum": "2026-11-27",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Weekendboodschappen voor minder 💰"
+ },
+ {
+  "datum": "2026-11-27",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
  }
 ]
