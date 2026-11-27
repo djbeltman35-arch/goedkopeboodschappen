@@ -20,6 +20,8 @@ export default async (request: Request, context: Context) => {
 
 export const config: Config = {
   path: "/*",
+  // Beveiligd met een eigen sleutel; de dagelijkse meldingencontrole haalt dit op met curl.
+  excludedPath: ["/api/meldingen-export"],
   // De functie draait ALLEEN als de user-agent op deze lijst past. Gewone bezoekers kosten dus niets extra.
   header: {
     "user-agent":
