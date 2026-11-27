@@ -999,3 +999,7 @@ html body .anderwinkel a{font-weight:700;color:var(--green-dark)}
 html body .geldigrij{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
 html body .geldigrij .geldig{font:600 14.5px var(--text);color:var(--ink)}
 html body .geldigrij .deel{margin:0;flex:none}
+/* Bespaar ook op: een tikje meer opvallen (nov 2026) */
+.hero .bespaarook .bokop{color:var(--ink);font-weight:600}
+.hero .bocar a{background:var(--surface)!important;border-color:#b9dcc8!important;color:var(--ink)!important}
+.hero .bocar b{font-weight:600!important;color:var(--green-dark)}
