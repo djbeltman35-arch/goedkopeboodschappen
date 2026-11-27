@@ -278,5 +278,40 @@
   "slot": "19:30 avond",
   "onderwerp": "vandaag.json avond",
   "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "boodschappenvergelijk",
+  "slot": "10:00 tip",
+  "onderwerp": "/allergie/ (allergie)",
+  "tekst": "Boodschappen doen met een allergie? ⚠️"
+ },
+ {
+  "datum": "2026-11-29",
+  "merk": "bespaarvriend",
+  "slot": "12:30",
+  "onderwerp": "/kindgebonden-budget-2027/",
+  "tekst": "Kindgebonden budget 2027: minder bij een inkomen boven € 61.917 👨‍👩‍👧"
+ },
+ {
+  "datum": "2026-11-29",
+  "merk": "bespaarvriend",
+  "slot": "19:00",
+  "onderwerp": "/isde-subsidie-2027/",
+  "tekst": "ISDE-subsidie 2027: wat verandert er? 🏠"
+ },
+ {
+  "datum": "2026-11-29",
+  "merk": "stroomwekker",
+  "slot": "12:30",
+  "onderwerp": "/gasprijs-vandaag/",
+  "tekst": "Dynamisch gascontract: wanneer verandert de prijs? 🔥"
+ },
+ {
+  "datum": "2026-11-29",
+  "merk": "stroomwekker",
+  "slot": "19:00",
+  "onderwerp": "/stroomprijs/ (prijsarchief)",
+  "tekst": "Wat kostte stroom vorige week? 📊"
  }
 ]
