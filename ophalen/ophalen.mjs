@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { categorieVan, zonderAccent } from './categorie.mjs';
+import { nettorama } from './nettorama.mjs';
 
 const DATA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
@@ -532,7 +533,7 @@ const aanbod = {};
 let aldiAssortiment = null;
 
 // Alle winkels tegelijk; Aldi duurt het langst (honderden pagina's), de rest is in een paar minuten klaar.
-const WINKELS = { aldi, ah, jumbo, lidl, plus, dirk, dekamarkt, hoogvliet, poiesz };
+const WINKELS = { aldi, ah, jumbo, lidl, plus, dirk, dekamarkt, hoogvliet, poiesz, nettorama };
 const alleen = (process.env.WINKELS || '').split(',').filter(Boolean);
 await Promise.all(Object.entries(WINKELS).filter(([id]) => !alleen.length || alleen.includes(id)).map(async ([id, fn]) => {
   const t0 = Date.now();

@@ -289,7 +289,7 @@ const KCAL={{KCAL}};
 const PAGINAS=new Map(CATS.flatMap(c=>c[2]).map(t=>[t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9,.]+/g," ").trim(),t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")]));
 // Gedeelde links altijd met de eigen domeinnaam, ook als de app nog vanaf het oude netlify-adres draait.
 const SITE=/(^|\.)netlify\.app$/.test(location.hostname)?"https://boodschappenvergelijk.nl":location.origin;
-const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",ekoplaza:"Ekoplaza",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz"};
+const STORENAMES={ah:"Albert Heijn",jumbo:"Jumbo",lidl:"Lidl",aldi:"Aldi",plus:"PLUS",dirk:"Dirk",hoogvliet:"Hoogvliet",dekamarkt:"DekaMarkt",ekoplaza:"Ekoplaza",vomar:"Vomar",spar:"SPAR",poiesz:"Poiesz",nettorama:"Nettorama"};
 const DATA=["/data/","https://raw.githubusercontent.com/djbeltman35-arch/goedkopeboodschappen/main/data/"];
 // Woorden die laten zien dat het een ander soort product is (kaascroissant, kattenvoer, roomtoetje) of een variant die je niet zocht (lactosevrij, bio).
 const ENDS=["croissant","toetje","broodje","broodjes","flap","taart","koek","koeken","reep","repen","snack","snacks","mousse","tengels","wafels","chips","saus","drank","drink","tea","baguette","pizza","katreepjes","koekjes","salade","slaatje","hoef","loempia","servetten","carree","reiniger","muffin","muffins","kaas","mosterd"];
@@ -645,7 +645,7 @@ function quick(){
   const pop=window._pop||(window._pop=document.querySelector("#quick details.pop,.snellinks>details"));
   const n=S.offers.length?S.offers.filter(o=>nu(o)&&!S.off.has(o.s)).length:(S.aanbN||0);
   const fl=feestLijst(),fk=fl[0]&&fl[0][0]!=="/kerst/"?fl.slice(1).find(x=>x[0]==="/kerst/"):null,extra=[fl[0],fk||fl[1]].filter(Boolean).map(x=>`<a class="chip" href="${x[0]}"><span class="ic">${x[1]}</span>${esc(x[2])}</a>`).join("");
-  $("quick").innerHTML=`<div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties deze week`:"deze week"}</small></button>`+
+  $("quick").innerHTML=`<a class="nieuwbalk" href="/aanbiedingen/nettorama/"><span class="nb-ic">🆕</span><span><b>Nieuw: nu ook Nettorama-aanbiedingen</b><small>Elke week de acties uit de Nettorama-folder</small></span><span class="nb-pijl">›</span></a><div class="start"><button type="button" class="chip hot" data-view="deals" aria-pressed="${S.view==="deals"}"><span class="ic">🔥</span>Aanbiedingen<small>${n?`${n} acties deze week`:"deze week"}</small></button>`+
     `<a class="chip wm" href="/maaltijden/weekmenu/"><span class="ic">📅</span>Weekmenu<small>met boodschappenlijst</small></a></div>`+
     `<div class="klaprij"><details class="subblok catklap"${S.catOpen?" open":""}><summary><h2 class="subnaam">Categorieën</h2></summary><div class="subin"><div class="cats">`+extra+catVolgorde().map(i=>i<0?`<a class="chip" href="/dieet/"><span class="ic">🥗</span>Dieet en leefstijl</a>`:`<button type="button" class="chip" data-view="${i}" aria-pressed="${S.view===String(i)}"><span class="ic">${GROEPEN[i][1]}</span>${esc(GROEPEN[i][0])}</button>`).join("")+`</div></div></details></div>`;
   if(pop)$("quick").querySelector(".klaprij").append(pop);const d=$("quick").querySelector(".catklap");if(d)d.addEventListener("toggle",()=>{S.catOpen=d.open});

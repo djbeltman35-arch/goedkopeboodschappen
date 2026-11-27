@@ -967,3 +967,17 @@ html body main>section.wrap.maal,html body main>section.wrap.seo{content-visibil
 .popchips::-webkit-scrollbar{display:none}
 .popchips .popk{flex:none;font:600 14px var(--text);color:var(--muted)}
 .popchips a{flex:none;font:600 14px var(--text);color:var(--green);text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px;white-space:nowrap}
+
+/* Nieuw-balk boven de tegels (Nettorama-aanbiedingen) en lagere tegels Aanbiedingen/Weekmenu */
+#quick .nieuwbalk{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:10px 12px;border:2px solid var(--green);border-radius:12px;background:var(--green-soft);color:var(--green-dark);text-decoration:none;font-size:15px;line-height:1.25}
+#quick .nieuwbalk small{display:block;font-size:12.5px;font-weight:400;color:inherit;opacity:.85}
+#quick .nieuwbalk .nb-ic{font-size:22px}
+#quick .nieuwbalk .nb-pijl{margin-left:auto;font-size:24px;font-weight:700}
+html body #quick.quick.tegels .start .chip,html body #quick.quick.tegels .start .chip.hot,html body #quick.quick.tegels .start .chip.wm{flex-direction:row!important;justify-content:center!important;align-items:center!important;gap:6px!important;min-height:44px!important;height:auto!important;padding:4px 8px!important;font-size:14px!important;line-height:1.15!important}
+html body .quick.tegels .start .chip .ic,html body #quick .start .chip .ic{font-size:17px}
+html body #quick .start .chip small{font-size:11px!important;display:none!important}
+/* Stappen 1-2-3 zonder gele rondjes: gewoon het cijfer */
+html body .hero .stapjes b{width:auto!important;height:auto!important;border-radius:0!important;background:none!important;color:var(--green-dark)!important;font-size:13px!important}
+html body .hero .stapjes b::after{content:"."}
+/* Zoekvak: dunnere groene rand */
+html body .hero form#f.search{border-width:1.5px!important;box-shadow:0 6px 16px rgba(8,80,47,.15)!important}

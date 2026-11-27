@@ -54,6 +54,28 @@ for s in d:
         print(f"{s['n']:10} open bestand, prijzen veranderd tot {s['dt']}")
 for n, (a, dag) in eigen.items():
     if n not in gezien: d.append({"n": n, "c": a.get("c", n), "u": a["u"], "d": a["d"], "dt": dag})
+# Lidl: alleen de aanbiedingen van deze week (Erik, nov 2026). Lidl zet maar van een deel van de boodschappen een gewone
+# prijs online, en een deel daarvan is eigenlijk een actieprijs; dat gaf een scheef beeld. Elke Lidl-prijs heet daarom
+# "(aanbieding t/m ...)", zodat bezoekers zien dat het een actie is. Acties die pas later beginnen, tellen nog niet mee.
+try:
+    acties = [o for o in json.load(open(os.path.join(DATA, "aanbiedingen.json")))["offers"] if o.get("s") == "lidl" and o.get("p")]
+    def _dm(t): return f"{t[8:10]}-{t[5:7]}"
+    lidl_d = []
+    for o in acties:
+        if o.get("v") and o["v"] > vandaag.isoformat(): continue
+        if o.get("t") and o["t"] < vandaag.isoformat(): continue
+        # Artikelen uit de webshop (servies, tuinspullen; artikelnummer van 9+ cijfers) zijn geen boodschappen.
+        if re.search(r"/p\d{9,}/?$", o.get("u") or ""): continue
+        plus = " met Lidl Plus" if "lidl plus" in (o.get("lbl") or "").lower() else ""
+        label = f"aanbieding{plus}" + (f" t/m {_dm(o['t'])}" if o.get("t") else "")
+        u = o.get("u") or ""
+        lidl_d.append({"n": f"{o['n']} ({label})", "l": re.sub(r"^https://www\.lidl\.nl", "", u) or "/c/aanbiedingen/a10008785", "p": o["p"], "s": o.get("sz") or ""})
+    lidl = next((s for s in d if s["n"] == "lidl"), None)
+    if lidl is None:
+        lidl = {"n": "lidl", "c": "Lidl"}; d.append(lidl)
+    lidl.update({"u": "https://www.lidl.nl", "d": lidl_d, "dt": vandaag.isoformat()})
+    print(f"lidl       alleen aanbiedingen: {len(lidl_d)}")
+except Exception as e: print("lidl-aanbiedingen overgeslagen:", e)
 # Lidl-prijzen van kassabonnen van bezoekers: alleen voor producten waar Lidl online geen prijs voor toont.
 try:
     bonnen = json.load(open(os.path.join(DATA, "lidl-bonnen.json"))).get("producten", [])

@@ -25,7 +25,7 @@ def kortdag(t):
 DATUM = f"{NU.day} {MAANDEN[NU.month - 1]} {NU.year}"
 
 NAMEN = {"ah": "Albert Heijn", "jumbo": "Jumbo", "lidl": "Lidl", "aldi": "Aldi", "plus": "PLUS", "dirk": "Dirk",
-         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "vomar": "Vomar", "spar": "SPAR", "poiesz": "Poiesz", "ekoplaza": "Ekoplaza"}
+         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "vomar": "Vomar", "spar": "SPAR", "poiesz": "Poiesz", "ekoplaza": "Ekoplaza", "nettorama": "Nettorama"}
 KORT = {"ah": "AH"}
 esc = lambda s: html.escape(str(s if s is not None else ""), quote=True)
 eur = lambda v: ("€ %.2f" % v).replace(".", ",")

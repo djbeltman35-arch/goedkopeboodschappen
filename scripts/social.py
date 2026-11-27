@@ -19,7 +19,7 @@ VANDAAG = NU.date().isoformat()
 DAGEN = ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag"]
 MAANDEN = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"]
 NAMEN = {"ah": "Albert Heijn", "jumbo": "Jumbo", "lidl": "Lidl", "aldi": "Aldi", "plus": "PLUS", "dirk": "Dirk",
-         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "poiesz": "Poiesz"}
+         "hoogvliet": "Hoogvliet", "dekamarkt": "DekaMarkt", "poiesz": "Poiesz", "nettorama": "Nettorama"}
 GROEN, DONKER, GEEL, ROOD, PAGINA, WIT, GRIJS = "#0e7c4a", "#1e2a22", "#ffd43b", "#e0472f", "#f4f7f1", "#ffffff", "#5d6a61"
 eur = lambda v: ("€ %.2f" % v).replace(".", ",")
 
