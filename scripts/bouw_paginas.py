@@ -545,13 +545,13 @@ AANB_DELEN = max(1, -(-len(_ao) // 1500))
 for k in range(AANB_DELEN):
     json.dump({"offers": _ao[k * 1500:(k + 1) * 1500]}, open(os.path.join(OUT, "data", f"aanbiedingen-{k}.json"), "w"), ensure_ascii=False, separators=(",", ":"))
 print(_n, "van", len(_od.get("offers", [])), "aanbiedingen in een subcategorie ingedeeld")
-OFFJS = '''<script>document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&(v==="zeld"?li.dataset.z!=="1":li.dataset.c!==v);li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
+OFFJS = '''<script>document.addEventListener("change",e=>{const s=e.target.closest("[data-fcsel]");if(!s)return;const v=s.value;let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&(v==="zeld"?li.dataset.z!=="1":li.dataset.c!==v);li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});document.addEventListener("click",e=>{const b=e.target.closest("[data-fc]");if(!b)return;const v=b.dataset.fc;document.querySelectorAll("[data-fc]").forEach(x=>x.setAttribute("aria-pressed",x===b));let n=0;document.querySelectorAll("#grid>li").forEach(li=>{const h=!!v&&(v==="zeld"?li.dataset.z!=="1":li.dataset.c!==v);li.hidden=h;if(!h)n++});document.getElementById("cnt").textContent=n});</script>'''
 per_winkel = {}
 for o in OFFERS: per_winkel.setdefault(o["s"], []).append(o)
 per_winkel.setdefault("nettorama", [])  # pagina bestaat altijd (homepage linkt ernaar), ook in een week zonder uitgelezen folder
 winkels_o = sorted(per_winkel, key=lambda s: NAMEN[s])
 def chips_o(cur):
-    return '<nav class="chips" aria-label="Supermarkten">' + f'<a class="chip{" on" if not cur else ""}" href="/aanbiedingen/">Alle winkels</a>' + "".join(f'<a class="chip{" on" if cur == s else ""}" href="/aanbiedingen/{s}/">{esc(NAMEN[s])}</a>' for s in winkels_o) + "</nav>"
+    return '<nav class="chips raster" aria-label="Supermarkten">' + f'<a class="chip{" on" if not cur else ""}" href="/aanbiedingen/">Alle winkels</a>' + "".join(f'<a class="chip{" on" if cur == s else ""}" href="/aanbiedingen/{s}/">{esc(NAMEN[s])}</a>' for s in winkels_o) + "</nav>"
 AP_MERKEN = [("coca-cola", "Coca-Cola"), ("pepsi-max", "Pepsi Max"), ("red-bull", "Red Bull"), ("ben-jerrys", "Ben & Jerry's"), ("ijs", "IJs"), ("hertog-jan", "Hertog Jan"), ("heineken", "Heineken"),
              ("dolce-gusto", "Dolce Gusto"), ("koffiecups", "Koffiecups"), ("douwe-egberts", "Douwe Egberts"), ("mosselen", "Mosselen"), ("pizza", "Pizza"), ("pampers", "Pampers"), ("ariel", "Ariel"), ("lays", "Lay's")]
 AP_LINKS = [("krat-bier", "Krat bier"), ("pils", "Bier"), ("gehakt", "Gehakt"), ("kipfilet", "Kipfilet"), ("koffie", "Koffie"), ("wasmiddel", "Wasmiddel"), ("luiers", "Luiers"),
@@ -606,9 +606,9 @@ def offers_page(cur, lst):
     order = [g for g, _ in GROEPEN if g in cnt] + (["Overig"] if "Overig" in cnt else [])
     icon = dict(GROEPEN)
     zeld = [o for o in nu_ if o.get("fh") and o["fh"][1] == 0]
-    sel = ('<div class="chips" role="group" aria-label="Categorie"><button type="button" class="chip" data-fc="" aria-pressed="true">Alle categorieën</button>'
-           + (f'<button type="button" class="chip" data-fc="zeld" aria-pressed="false"><span class="ic">📅</span>Lang niet in de aanbieding geweest ({len(zeld)})</button>' if zeld else "")
-           + "".join(f'<button type="button" class="chip" data-fc="{esc(c)}" aria-pressed="false"><span class="ic">{icon.get(c, "🛒")}</span>{esc(c)} ({cnt[c]})</button>' for c in order) + "</div>") if len(order) > 1 else ""
+    sel = ('<label class="catkeus"><span class="sr">Categorie</span><select data-fcsel><option value="">Alle categorieën</option>'
+           + (f'<option value="zeld">📅 Lang niet in de aanbieding geweest ({len(zeld)})</option>' if zeld else "")
+           + "".join(f'<option value="{esc(c)}">{icon.get(c, "🛒")} {esc(c)} ({cnt[c]})</option>' for c in order) + "</select></label>") if len(order) > 1 else ""
     # De 180 grootste kortingen, plus per categorie de beste 20, zodat elke categorieknop genoeg laat zien (de rest staat in de app;
     # minder kaarten = lichtere pagina op telefoons).
     toon = set(map(id, nu_[:180]))
@@ -636,11 +636,14 @@ def offers_page(cur, lst):
                           '<p class="note" style="margin-top:0">Niet de hoogste korting, maar acties die per kilo of liter de laagste prijs van alle supermarkten zijn, en niet bijna elke week terugkomen.</p>'
                           f'<ul class="offers">{"".join(offer_card(o) for o in _b)}</ul></section><h2>Alle aanbiedingen</h2>')
     if cur == "nettorama":
-        beste_html = ('<div class="panel"><p style="margin-top:0"><b>De Nettorama folder, maar dan als lijst.</b> Nettorama heeft geen webwinkel en zet alleen een folder online. '
-                      'Wij lezen die folder elke week uit, zodat je alle aanbiedingen kunt doorzoeken, per categorie kunt filteren en de prijs per kilo of liter ziet. '
-                      'Elke actie heeft het label <b>Folderaanbieding</b>: het zijn aanbiedingen van deze week, geen vaste prijzen.</p>'
-                      '<p style="margin-bottom:0">De nieuwe folder komt op vrijdag vanaf 17.00 uur online en geldt van maandag tot en met zondag. Deze pagina werkt dan vanzelf bij.</p></div>') + beste_html
-    body = (chips_o(cur) + beste_html + sel + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' +
+        beste_html = ('<p class="note kort">Nettorama heeft alleen een folder; wij zetten de acties hier als lijst, met prijs per kilo. Nieuwe folder: vrijdag vanaf 17.00 uur.'
+                      + ('' if nu_ else ' <b>De acties van deze week worden nu uitgelezen en staan hier binnenkort.</b>') + '</p>') + beste_html
+    # Aanbiedingen direct in beeld: winkel- en categoriekeuze ingeklapt erboven, uitleg (Nettorama) eronder.
+    _uitleg = beste_html if cur == "nettorama" and nu_ else ""
+    if _uitleg: beste_html = ""
+    # Alle winkels: eerst de supermarkten (2 kolommen), één tik en je ziet direct hun aanbiedingen.
+    kies = (f'<p class="anderwinkel"><a href="/aanbiedingen/">‹ Andere supermarkt</a></p>' + sel) if cur else ('<h2>Kies je supermarkt</h2>' + chips_o(cur) + sel)
+    body = (kies + beste_html + f'<ul class="offers" id="grid">{"".join(offer_card(o) for o in toon)}</ul>' + _uitleg +
             (f'<h2>Binnenkort in de aanbieding</h2><ul class="offers">{"".join(offer_card(o) for o in straks[:120])}</ul>' if straks else "") +
             '<a class="cta" href="/?v=aanbiedingen">Zoek en filter in alle aanbiedingen</a>'
             '<p class="tiplink"><a href="/nieuwsbrief/">📬 Elke ochtend de beste aanbiedingen in je mail</a></p>'

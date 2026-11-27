@@ -981,3 +981,18 @@ html body .hero .stapjes b{width:auto!important;height:auto!important;border-rad
 html body .hero .stapjes b::after{content:"."}
 /* Zoekvak: dunnere groene rand */
 html body .hero form#f.search{border-width:1.5px!important;box-shadow:0 6px 16px rgba(8,80,47,.15)!important}
+/* Winkel- en categoriekeuze op de aanbiedingenpagina's: rustig, twee kolommen met gewone links */
+html body .chips.raster{display:grid!important;grid-template-columns:1fr 1fr;gap:0 14px;margin:4px 0 14px;padding:0;overflow:visible}
+html body .chips.raster>.chip{display:block!important;width:100%;text-align:left;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:9px 0!important;font:600 15px var(--text)!important;color:var(--green-dark)!important;white-space:normal;cursor:pointer}
+html body .chips.raster>.chip .ic{display:none}
+html body .chips.raster>.chip.on,html body .chips.raster>.chip[aria-pressed=true]{color:var(--ink)!important;font-weight:800!important}
+html body .chips.raster>.chip.on::before,html body .chips.raster>.chip[aria-pressed=true]::before{content:"✓ ";color:var(--green)}
+html body .note.kort{margin:2px 0 12px}
+html body details.kies{margin:0 0 10px;border-bottom:1px solid var(--line)}
+html body details.kies>summary{cursor:pointer;padding:8px 0;font:700 15px var(--text);color:var(--green-dark);list-style:none}
+html body details.kies>summary::-webkit-details-marker{display:none}
+html body details.kies>summary::after{content:" ▾"}
+html body details.kies[open]>summary::after{content:" ▴"}
+html body .catkeus select{width:100%;margin:0 0 12px;padding:10px 12px;font:600 15px var(--text);border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+html body .anderwinkel{margin:0 0 8px}
+html body .anderwinkel a{font-weight:700;color:var(--green-dark)}
