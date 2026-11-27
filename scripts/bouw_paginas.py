@@ -1161,7 +1161,7 @@ ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Boodschapp
        "potentialAction": {"@type": "SearchAction", "target": BASE + "/?q={search_term_string}", "query-input": "required name=search_term_string"}},
       {"@context": "https://schema.org", "@type": "Organization", "name": "Boodschappenvergelijk", "url": BASE + "/", "logo": BASE + "/icons/icon-512.png", "email": "info@boodschappenvergelijk.nl",
        "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"],
-       "subjectOf": [{"@type": "VideoObject", "name": "Goedkoop boodschappen doen? Erik bouwt vergelijker", "url": HVN_URL, "publisher": {"@type": "Organization", "name": "Hart van Nederland"}, "uploadDate": "2026-11-16"},
+       "subjectOf": [{"@type": "NewsArticle", "headline": "Goedkoop boodschappen doen? Erik bouwt vergelijker", "url": HVN_URL, "publisher": {"@type": "Organization", "name": "Hart van Nederland"}, "datePublished": "2026-11-16"},
                      {"@type": "NewsArticle", "headline": "Rijssenaar Erik Beltman rekent af met dure boodschappen in vergelijkingswebsite", "url": OOST_URL, "publisher": {"@type": "Organization", "name": "RTV Oost"}, "datePublished": "2026-11-16"}]},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
