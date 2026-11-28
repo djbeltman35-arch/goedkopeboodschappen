@@ -592,9 +592,32 @@ function soortVan(p,q){const w=new Set(norm(q).split(" "));const t=norm(p[1]).re
 function soortIndeling(m,q){const n=new Map();for(const p of m){const k=soortVan(p,q);if(!k)continue;const e=n.get(k)||{n:0,w:new Set()};e.n++;e.w.add(p[0]);n.set(k,e)}
   const r=[...n].filter(([k,e])=>e.w.size>=2).sort((a,b)=>b[1].w.size-a[1].w.size||b[1].n-a[1].n).slice(0,24);return r.length>=2?r.map(([k,e])=>[k,e.n,e.w.size]):[]}
 document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closest("[data-soort]");if(!x)return;S.soort=x.value;search()});
+// Zoeken op een hele soort (fruit, groente, vlees …): per soort het goedkoopste product, goedkoopste per kilo bovenaan.
+// Zo krijg je bij "fruit" bananen en appels, en geen Spa Fruit.
+const SOORTZOEK={"fruit":["Vers fruit"],"vers fruit":["Vers fruit"],"groente":["Verse groente"],"groenten":["Verse groente"],"verse groente":["Verse groente"],
+  "groente en fruit":["Verse groente","Vers fruit"],"aardappelen groente en fruit":["Aardappelen","Verse groente","Vers fruit"],"vlees":["Kip","Gehakt en burgers","Varken en rund","Worst"],"zuivel":["Melk","Yoghurt, kwark en vla","Room","Boter en margarine"]};
+function soortZoek(q){const n=norm(q);if(!n||CATS.some(c=>c[2].some(t=>norm(t)===n)))return null;
+  if(SOORTZOEK[n])return {kop:q,subs:CATS.filter(c=>SOORTZOEK[n].includes(c[0]))};
+  const g=GROEPEN.find(g=>norm(g[0])===n);if(g)return {kop:g[0],subs:CATS.filter(c=>c[3]===g[0])};
+  const c=CATS.find(c=>norm(c[0])===n);return c?{kop:c[0],subs:[c]}:null}
+// Bij vers fruit en verse groente geen drankjes, siroop of beleg (Spa Touch kiwi, vijgenspread).
+const NIETVERS=/siroop|spread|confiture|\bjam\b|sap\b|drink|limonade|schweppes|spa touch|smoothie|yoghurt|snoep|chips|thee\b|gedroogd|\bijs\b|danio|pirulo|optimel|kwark|toetje|dessert|\bvla\b/i;
+function soortLijst(z){
+  const gezien=new Set(),rows=[];
+  for(const c of z.subs){const vers=/^Vers/.test(c[0]);for(const t of c[2]){const v=[...pick(t).values()].filter(p=>!p.bad&&!(vers&&(p.lit||p[6]==="l"||NIETVERS.test(p[1])))).sort((a,b)=>rank(a)-rank(b));const b=v[0];if(!b||gezien.has(b.i))continue;gezien.add(b.i);rows.push({t,b,v})}}
+  if(!rows.length)return false;
+  const eu=b=>b.lit?eff(b)/b.lit:effUnit(b),eh=b=>b.lit?"l":b[6],gew=r=>eu(r.b)!=null&&(eh(r.b)==="kg"||eh(r.b)==="l");
+  const perKg=rows.filter(gew).sort((a,b)=>eu(a.b)-eu(b.b)),perSt=rows.filter(r=>!gew(r)).sort((a,b)=>(eu(a.b)??eff(a.b))-(eu(b.b)??eff(b.b)));
+  const blok=(kop,rs)=>rs.length?`${kop?`<h4 class="pakkop">${kop}</h4>`:""}<ul class="rows">${rijen(rs,true)}</ul>`:"";
+  $("results").innerHTML=`${terugNav("Alle categorieën")}${merkChips(merkRel("z"+norm(z.kop),rows.map(r=>r.t)))}<h2>${esc(z.kop[0].toUpperCase()+z.kop.slice(1))}: goedkoopste eerst</h2>
+  <p class="meta">Per soort het voordeligste product van alle supermarkten, van goedkoop naar duur. Tik op een soort voor alle prijzen per winkel.</p>
+  ${blok(perSt.length&&perKg.length?"Per kilo of liter":"",perKg)}${blok(perKg.length?"Per stuk of verpakking":"",perSt)}${nbBlok()}`;
+  return true;
+}
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick(); if(fromUser||q!=="halfvolle melk") S.demo=false;
   if(!q){$("results").innerHTML="";return}
+  {const z=soortZoek(q);if(z){if(fromUser)gc("zoek/"+norm(q),"Zoekt: "+q);if(soortLijst(z))return}}
   let m=matches(q,false); if(!m.length) m=matches(q);
   if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
   // Niets gevonden: synoniem, enkelvoud/meervoud of tikfout proberen ("pindakas" wordt pindakaas).
@@ -740,8 +763,8 @@ function duoRij(t){if(S.merk!=="alle")return "";
   const hb=m.find(p=>p.merk==="h"&&p[0]!==w&&eu(p)&&uh&&eh(p)===eh(h)&&eu(p)<uh*0.97);
   const let_=hb?`<p class="duolet">⚠️ Het huismerk is het goedkoopst bij <b>${esc(sname(hb[0]))}</b>: ${esc(unitTxt(eu(hb),eh(hb)))}. ${per[hb[0]]?`<button type="button" class="kies" data-duow="${esc(hb[0])}" data-duot="${esc(t)}">Toon ${esc(sname(hb[0]))}</button>`:`<button type="button" class="kies" data-add="${hb.i}" data-term="${esc(t)}">+ Zet op mijn lijst</button>`}</p>`:"";
   return `<li class="row duo"><div class="duokop"><a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a><span class="shop">${esc(sname(w))}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}</div><div class="duo2">${duoKol(a,"A-merk",t)}${duoKol(h,"Huismerk",t)}</div>${v?`<p class="duov">${v}</p>`:""}${let_}</li>`}
-function rijen(rows){
-  return `${rows.map(({t,b,v})=>{const d=duoRij(t);if(d)return d;const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
+function rijen(rows,geenDuo){
+  return `${rows.map(({t,b,v})=>{const d=geenDuo?"":duoRij(t);if(d)return d;const o=offerOf(b);return `<li class="row"><div><div class="who"><span class="shop">${esc(sname(b[0]))}</span>${o?`<span class="pill">${esc(o.lbl||"Aanbieding")}</span>`:""}${laag(b,t)}</div>
     <a class="nm" href="?q=${encodeURIComponent(t)}" data-try="${esc(t)}">${esc(t[0].toUpperCase()+t.slice(1))}</a> <span class="sz">${esc(b[1])} ${esc(b[4]||"")}</span>${KCAL[t]?`<span class="kc">${esc(KCAL[t])}</span>`:""}${labels(b[1],KCAL[t],t)}${winkels(v)}${mijnRij(b,v)}${foutKnop(b,t)}</div>
     <div class="pr">${tag(eff(b),o?"deal":"")}<span class="unit">${b.lit||effUnit(b)!=null?esc(b.lit?unitTxt(eff(b)/b.lit,"l"):unitTxt(effUnit(b),b[6])):'<span class="onb">inhoud onbekend</span>'}</span></div>
     ${S.list.some(x=>x.link===link(b))?'<button type="button" class="plus done" disabled aria-label="Staat op je lijst">✓</button>':`<button type="button" class="plus" data-add="${b.i}" data-term="${esc(t)}" aria-label="${esc(t)} op mijn lijst">+</button>`}</li>`}).join("")}`;
