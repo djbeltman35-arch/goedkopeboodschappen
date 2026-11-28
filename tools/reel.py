@@ -4,6 +4,9 @@
 Gebruik:
   python3 reel.py deals.json uit.mp4 [--deuntje audio/deuntje.m4a] [--merk boodschappen|bespaarvriend|stroomwekker]
 
+Tip-reel: {"haak": {"boven": "...", "groot": "Korte haak", "onder": "..."}, "items": [{"punt": "..."}, ...],
+            "slot": {"kop": "...", "site": "bespaarvriend.nl", "onder": "..."}}
+
 deals.json:
   {"haak": optioneel, "items": [{"winkel": "Dirk", "product": "...", "prijs": 3.99, "was": 12.35}, ...],
    "slot": {"getal": 7117, "regel": "aanbiedingen van 10 supermarkten", "site": "boodschappenvergelijk.nl"}}
@@ -79,11 +82,13 @@ def tekstlaag(t, f, fill, stroke=0, sfill=None, pad=20):
 class Reel:
     def __init__(s, data, merk):
         s.m = MERKEN[merk]; s.items = data["items"]; s.sl = data.get("slot") or {}; s.data = data
-        s.met_was = any(i.get("was") for i in s.items)
+        s.punten = all("punt" in i for i in s.items)
+        s.met_was = (not s.punten) and any(i.get("was") for i in s.items)
         for i in s.items:
+            if s.punten: i["pct"] = 0; continue
             i["pct"] = round((1 - i["prijs"] / i["was"]) * 100) if i.get("was") and i["was"] > i["prijs"] else 0
         if s.met_was: s.items.sort(key=lambda i: i["pct"])  # beste deal als laatste: spanning tot het eind
-        s.T_HAAK, s.T_ITEM, s.T_SLOT = 2.3, 2.3, 3.4
+        s.T_HAAK, s.T_ITEM, s.T_SLOT = 2.3, (3.4 if s.punten else 2.3), 3.4
         s.duur = s.T_HAAK + len(s.items) * s.T_ITEM + s.T_SLOT
         # achtergrond met diagonale strepen, groter dan het beeld zodat hij kan schuiven
         g = Image.new("RGB", (W, H + 240)); gd = ImageDraw.Draw(g)
@@ -103,6 +108,16 @@ class Reel:
     # ---------- haak ----------
     def haak(s, img, d, t):
         h = s.data.get("haak") or {}
+        if s.punten:
+            a = ease_back(seg(t, 0.0, 0.5)); c = ease_out(seg(t, 0.45, 0.9)); uit = ease_in(seg(t, s.T_HAAK - 0.25, s.T_HAAK)); al = 1 - uit
+            if h.get("boven"): pop_laag(img, tekstlaag(h["boven"], font(KOP, 110), s.m["kaart"]), W / 2, 620, a, alpha=al)
+            f, regels = wrap(d, h.get("groot", ""), KOP, 960, 210, 110, 3)
+            y0 = 900 - (len(regels) - 1) * f.size * 0.55
+            for j, r in enumerate(regels): pop_laag(img, tekstlaag(r, f, s.m["geel"], stroke=8, sfill=s.m["bg2"]), W / 2, y0 + j * f.size * 1.1, a * (1 + uit * 0.5), hoek=-3 * a, alpha=al)
+            if h.get("onder") and c > 0:
+                f2, r2 = wrap(d, h["onder"], TXT, 900, 60, 44, 2)
+                for j, r in enumerate(r2): pop_laag(img, tekstlaag(r, f2, (255, 255, 255)), W / 2, 1240 + j * f2.size * 1.25 + 30 * (1 - c), 1, alpha=c * al)
+            return
         if s.met_was:
             best = max(s.items, key=lambda i: i["pct"])
             boven, groot, onder = h.get("boven", "TOT"), h.get("groot", f"{best['pct']}%"), h.get("onder", "KORTING")
@@ -121,6 +136,20 @@ class Reel:
         if c > 0: pop_laag(img, tekstlaag(sub, font(TXT, 56), (255, 255, 255)), W / 2, 1330 + 30 * (1 - c), 1.0, alpha=c * al)
 
     # ---------- één deal ----------
+    def punt(s, img, d, t, i, it):
+        m = s.m; n = len(s.items)
+        inn = ease_back(seg(t, 0, 0.4)); uit = ease_in(seg(t, s.T_ITEM - 0.24, s.T_ITEM)); dx = -uit * W * 0.9
+        bw = 760; x0 = (W - bw) / 2
+        d.rounded_rectangle([x0, 300, x0 + bw, 314], 7, fill=(255, 255, 255, 60))
+        d.rounded_rectangle([x0, 300, x0 + bw * (i + seg(t, 0, s.T_ITEM)) / n, 314], 7, fill=m["geel"])
+        kaart = Image.new("RGBA", (920, 980), (0, 0, 0, 0)); kd = ImageDraw.Draw(kaart)
+        kd.rounded_rectangle([12, 22, 920, 980], 56, fill=(0, 0, 0, 70)); kd.rounded_rectangle([0, 0, 900, 960], 56, fill=m["kaart"])
+        kd.ellipse([60, 60, 220, 220], fill=m["geel"], outline=m["ink"], width=6); kd.text((140, 140), str(i + 1), font=font(KOP, 120), fill=m["ink"], anchor="mm")
+        fp, regels = wrap(kd, it["punt"], TXT, 780, 92, 50, 6)
+        y = 290
+        for r in regels: kd.text((60, y), r, font=fp, fill=m["ink"]); y += fp.size * 1.22
+        pop_laag(img, kaart, W / 2 + dx, 400 + 490, 0.85 + 0.15 * inn, alpha=clamp(inn * 1.5))
+
     def deal(s, img, d, t, i, it):
         m = s.m; n = len(s.items)
         inn = ease_out(seg(t, 0, 0.32)); uit = ease_in(seg(t, s.T_ITEM - 0.24, s.T_ITEM))
@@ -193,7 +222,7 @@ class Reel:
         if t < s.T_HAAK: s.haak(img, d, t)
         else:
             u = t - s.T_HAAK; i = int(u // s.T_ITEM)
-            if i < len(s.items): s.deal(img, d, u - i * s.T_ITEM, i, s.items[i])
+            if i < len(s.items): (s.punt if s.punten else s.deal)(img, d, u - i * s.T_ITEM, i, s.items[i])
             else: s.slot(img, d, u - len(s.items) * s.T_ITEM)
         return img.convert("RGB")
 
