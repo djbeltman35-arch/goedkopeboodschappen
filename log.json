@@ -334,5 +334,61 @@
   "slot": "18:00 extra (op verzoek Erik)",
   "onderwerp": "/aanbiedingen/nettorama/ (nu ook Nettorama)",
   "tekst": "Nieuw: nu ook Nettorama-aanbiedingen 🆕"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "boodschappenvergelijk",
+  "slot": "17:00 aanbiedingen",
+  "onderwerp": "vandaag.json aanbiedingen",
+  "tekst": "Zaterdag: dit is nu het goedkoopst 💰"
+ },
+ {
+  "datum": "2026-11-28",
+  "merk": "boodschappenvergelijk",
+  "slot": "19:30 avond",
+  "onderwerp": "vandaag.json avond",
+  "tekst": "Morgen boodschappen doen? Check eerst waar het goedkoopst is 👇"
+ },
+ {
+  "datum": "2026-11-29",
+  "merk": "boodschappenvergelijk",
+  "slot": "10:00 tip",
+  "onderwerp": "/sinterklaas/ (feestdagen)",
+  "tekst": "Pepernoten en chocoladeletters: waar zijn ze het goedkoopst? 🎁"
+ },
+ {
+  "datum": "2026-11-30",
+  "merk": "bespaarvriend",
+  "slot": "10:00",
+  "onderwerp": "bestaande post aangevuld: Noodfonds Energie +TikTok",
+  "tekst": "(aanvulling, geen nieuwe video)"
+ },
+ {
+  "datum": "2026-11-30",
+  "merk": "bespaarvriend",
+  "slot": "12:30",
+  "onderwerp": "/kinderopvangtoeslag-2027/",
+  "tekst": "Kinderopvangtoeslag 2027: meer ouders krijgen het maximum 👶"
+ },
+ {
+  "datum": "2026-11-30",
+  "merk": "bespaarvriend",
+  "slot": "19:00",
+  "onderwerp": "/huurverhoging-2027/",
+  "tekst": "Huurverhoging 2027: hoeveel mag je verhuurder vragen? 🏠"
+ },
+ {
+  "datum": "2026-11-30",
+  "merk": "stroomwekker",
+  "slot": "12:30",
+  "onderwerp": "/gids/",
+  "tekst": "Nieuw met een dynamisch energiecontract? 📚"
+ },
+ {
+  "datum": "2026-11-30",
+  "merk": "stroomwekker",
+  "slot": "19:00",
+  "onderwerp": "/hoe-werkt-het/ (welke stekkers)",
+  "tekst": "Welke slimme stekker werkt met Stroomwekker? 🔌"
  }
 ]
