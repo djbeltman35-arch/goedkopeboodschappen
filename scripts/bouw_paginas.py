@@ -1324,9 +1324,16 @@ _m = re.search(r'<script src="/appdata\.js\?v=[^"]*"></script>\s*<script>\n?(.*?
 if _m:
     open(os.path.join(OUT, "app.js"), "w").write(_m.group(1))
     _v = quote(VERSIE)
-    _lader = ('<script>(function(){var k=0;function go(){if(k++)return;["/appdata.js?v=' + _v + '","/app.js?v=' + _v + '"].forEach(function(s){'
-              'var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e)})}'
-              'requestAnimationFrame(function(){setTimeout(go,0)});setTimeout(go,800)})()</script>\n</body>')
+    # Snelheid (TBT): de app pas laden bij de eerste aanraking/toets/scroll, of als de browser na 3,5 s even niets te doen heeft.
+    # Wie al een lijst heeft of met een zoekopdracht binnenkomt, krijgt hem meteen. Een tik op een tegel vóór de app er is,
+    # wordt onthouden en daarna alsnog uitgevoerd; wat al in het zoekveld getypt is, wordt daarna alsnog gezocht.
+    _lader = ('<script>(function(){var k=0,t=null,klaar=0,aan=0;function go(v){if(v&&v.type&&v.type!=="scroll")aan=1;if(k++)return;["/appdata.js?v=' + _v + '","/app.js?v=' + _v + '"].forEach(function(s,i){'
+              'var e=document.createElement("script");e.src=s;e.async=false;if(i)e.onload=function(){klaar=1;if(aan||t)dispatchEvent(new Event("pointerdown"));var n=0;(function w(){var ok=0;try{ok=S.offers&&S.offers.length&&S.prods.length}catch(x){}'
+              'if(!ok&&n++<80)return setTimeout(w,100);var q=document.getElementById("q");if(q&&q.value)q.dispatchEvent(new Event("input",{bubbles:true}));if(t){var x=document.querySelector(\'button[data-view="\'+t+\'"]\');t=null;if(x)x.click()}})()};document.body.appendChild(e)})}'
+              'document.addEventListener("click",function(v){if(klaar)return;var b=v.target.closest&&v.target.closest("button[data-view]");if(b){t=b.getAttribute("data-view");v.preventDefault();v.stopPropagation();go(v)}},true);'
+              '["pointerdown","touchstart","keydown","focusin"].forEach(function(n){addEventListener(n,go,{once:true,passive:true,capture:true})});addEventListener("scroll",go,{once:true,passive:true});'
+              'try{var l=localStorage.getItem("lijst-v3"),m=localStorage.getItem("lijst-erbij");if((l&&l.length>4)||(m&&m.length>4)||location.search||location.hash)go()}catch(e){go()}'
+              'setTimeout(function(){window.requestIdleCallback?requestIdleCallback(go,{timeout:2000}):go()},3500)})()</script>\n</body>')
     app = app[:_m.start()] + _lader + app[_m.end():]
 else:
     print("LET OP: app-script niet apart gezet")
