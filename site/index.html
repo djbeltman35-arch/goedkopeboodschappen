@@ -493,7 +493,9 @@ function perStore(m){
   return res;
 }
 const pickCache=new Map();
-function pick(term){if(!pickCache.has(term)){const z=soortZoek(term);pickCache.set(term,z?soortPerWinkel(z):perStore(matches(term,false)))}const r=pickCache.get(term);for(const [p,b] of r.st||[])p.bad=b;return r}
+// Een kaal woord dat vooral één ding betekent: "melk" is halfvolle melk, geen chocolademelk.
+const STANDAARD={"melk":"halfvolle melk"};
+function pick(term){if(STANDAARD[norm(term)])term=STANDAARD[norm(term)];if(!pickCache.has(term)){const z=soortZoek(term);pickCache.set(term,z?soortPerWinkel(z):perStore(matches(term,false)))}const r=pickCache.get(term);for(const [p,b] of r.st||[])p.bad=b;return r}
 
 // "Laagste prijs sinds juni": de prijs per eenheid ligt nu onder alles wat we bij deze winkel sinds de eerste meting zagen.
 // Prijs tegenover de geschiedenis: "Laagste prijs sinds juni", anders "x% goedkoper dan normaal" of "Duurder dan normaal".
@@ -596,7 +598,7 @@ document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closes
 // Zo krijg je bij "fruit" bananen en appels, en geen Spa Fruit.
 const SOORTZOEK={"fruit":["Vers fruit"],"vers fruit":["Vers fruit"],"groente":["Verse groente"],"groenten":["Verse groente"],"verse groente":["Verse groente"],
   "groente en fruit":["Verse groente","Vers fruit"],"aardappelen groente en fruit":["Aardappelen","Verse groente","Vers fruit"],"vlees":["Kip","Gehakt en burgers","Varken en rund","Worst"],"zuivel":["Melk","Yoghurt, kwark en vla","Room","Boter en margarine"],
-  "frisdrank":["Cola","Cola zero en light","Overige frisdrank"],"fris":["Cola","Cola zero en light","Overige frisdrank"],"limonade":["Overige frisdrank"],"drinken":["Cola","Cola zero en light","Overige frisdrank","Water","Sap"]};
+  "frisdrank":["Cola","Cola zero en light","Overige frisdrank"],"fris":["Cola","Cola zero en light","Overige frisdrank"],"limonade":["Overige frisdrank"],"beleg":["Zoet beleg","Hartig beleg en salades","Vleeswaren"],"drinken":["Cola","Cola zero en light","Overige frisdrank","Water","Sap"]};
 function soortZoek(q){const n=norm(q);if(!n||CATS.some(c=>c[2].some(t=>norm(t)===n)))return null;
   if(SOORTZOEK[n])return {kop:q,subs:CATS.filter(c=>SOORTZOEK[n].includes(c[0]))};
   const g=GROEPEN.find(g=>norm(g[0])===n);if(g)return {kop:g[0],subs:CATS.filter(c=>c[3]===g[0])};
@@ -625,6 +627,7 @@ function soortLijst(z){
 function search(fromUser){
   const q=$("q").value.trim(); S.lastQ=q; S.view=null; quick(); if(fromUser||q!=="halfvolle melk") S.demo=false;
   if(!q){$("results").innerHTML="";return}
+  if(STANDAARD[norm(q)]){$("q").value=STANDAARD[norm(q)];return search(fromUser)}
   {const z=soortZoek(q);if(z){if(fromUser)gc("zoek/"+norm(q),"Zoekt: "+q);if(soortLijst(z))return}}
   let m=matches(q,false); if(!m.length) m=matches(q);
   if(fromUser) gc("zoek/"+norm(q),"Zoekt: "+q);
