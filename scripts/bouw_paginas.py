@@ -330,6 +330,19 @@ for t, rows in PICKED.items():
     kt = kcal_txt(t); kp = kcal_pak(t, p0)
     if kt: faq.append((f"Hoeveel calorieën zitten er in {t}?", f"{name} bevat gemiddeld ongeveer {kt}" + (f". Het goedkoopste product, {p0[1]} ({p0[4] or 'per stuk'}), is in totaal ongeveer {format(kp, ',').replace(',', '.')} kcal" if kp else "") + ". Dat is een richtwaarde; de precieze waarde staat op de verpakking."))
     if besp >= 5: faq.append((f"Hoeveel bespaar je op {t}?", f"Per {eh} is {win} {besp}% goedkoper dan {loser} ({per(u0, e0)} tegen {per(uN, eN)})."))
+    # Mensen zoeken vooral op "<product> lidl prijs" of "<product> jumbo": geef per veelgezochte winkel een eigen antwoord.
+    _per_winkel = {}
+    for _si, _p in rows:
+        _id = stores[_si]["id"]
+        if _id in ("lidl", "ah", "jumbo", "aldi") and _id not in _per_winkel and _si != si0: _per_winkel[_id] = (_si, _p)
+    for _id in ("lidl", "ah", "jumbo", "aldi"):
+        if _id not in _per_winkel: continue
+        _si, _p = _per_winkel[_id]; _wn = NAMEN.get(_id, stores[_si]["name"]); _o = offer_of(_p)
+        _u, _e = toon_unit(_p) if vergelijkbaar(t, _p) else (None, None)
+        _a = f"De voordeligste {t} bij {_wn} is nu {_p[1]}" + (f" ({_p[4]})" if _p[4] else "") + f" voor {eur(eff(_p))}" + (f", {per(_u, _e)}" if _u and _e else "")
+        if _o: _a += f", in de aanbieding" + (f" ({_o['lbl']})" if _o.get("lbl") else "") + f", normaal {eur(_p[3])}"
+        if _u and u0 and _e == e0 and _u > u0 * 1.02: _a += f". Bij {win} betaal je {per(u0, e0)}, dat is {round((1 - u0 / _u) * 100)}% minder"
+        faq.append((f"Wat kost {t} bij {_wn}?", _a + f". Prijs van {DATUM}."))
     rel = [x for x in (c[2] if c else []) if x != t and x in PICKED][:24]
     mm = MAAL_PER_TERM.get(t, [])[:6]
     maalhtml = (f'<h2>Complete maaltijden met {esc(t)}</h2><ul class="links">' + "".join(f'<li><a href="/maaltijden/{x["slug"]}/">{esc(x["naam"])}</a></li>' for x in mm) + '</ul>') if mm else ""
@@ -589,6 +602,9 @@ def offers_page(cur, lst):
         desc = (f"Alle {len(nu_)} {naam_actie} van {nm}" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Per actie zie je of het elders goedkoper is"
                 + (f": {n_top} zijn de laagste prijs per kilo van alle supermarkten." if n_top else ".") + f" Prijzen van {DATUM}.")
         h1 = f"{'AH Bonus folder' if cur == 'ah' else nm + ' folder en aanbiedingen'} deze week (week {_wk})"
+        if cur == "dirk":  # er wordt veel gezocht op "Dirk van den Broek aanbiedingen"
+            title = f"Dirk van den Broek aanbiedingen deze week: folder week {_wk} ({len(nu_)} acties)"
+            h1 = f"Dirk van den Broek folder en aanbiedingen deze week (week {_wk})"
         if cur == "nettorama":
             title = f"Nettorama folder deze week (week {_wk}): alle " + (f"{len(nu_)} " if nu_ else "") + "aanbiedingen"
             desc = (f"De Nettorama folder van week {_wk} als lijst: {len(nu_)} aanbiedingen" + (f", zoals {beste['n']} voor {eur(beste['p'])}" if beste else "") + ". Met prijs per kilo en vergeleken met andere supermarkten. Elke week vernieuwd.")
