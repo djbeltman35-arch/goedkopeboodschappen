@@ -20,7 +20,7 @@ Prijzen komen elke dag uit de webwinkels van de supermarkten (eigen metingen, aa
 - [Aanbiedingen van deze week](https://boodschappenvergelijk.nl/aanbiedingen/): alle acties per supermarkt, met een oordeel of de actie echt voordelig is.
 - [Supermarkt van de week](https://boodschappenvergelijk.nl/supermarkt-van-de-week/): elke week een andere supermarkt uitgelicht.
 - [Categorieën](https://boodschappenvergelijk.nl/categorie/): hoofdgroepen en subcategorieën.
-- [Complete maaltijden](https://boodschappenvergelijk.nl/maaltijden/): recepten met de prijs voor 4 personen per supermarkt.
+- [Complete maaltijden (maaltijdvergelijker)](https://boodschappenvergelijk.nl/maaltijden/): recepten met bereidingstijd en voedingswaarden en de prijs voor 4 personen per supermarkt.
 - [Besparen op boodschappen](https://boodschappenvergelijk.nl/besparen/): tips onderbouwd met de prijzen van vandaag.
 - [Dieet en allergie](https://boodschappenvergelijk.nl/dieet/): goedkoopste producten voor glutenvrij, lactosevrij, vegan en caloriearm.
 - [Zo vergelijken wij](https://boodschappenvergelijk.nl/zo-vergelijken-wij/): uitleg over bronnen, prijs per eenheid en hoe de goedkoopste wordt gekozen.

@@ -1186,6 +1186,11 @@ ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Boodschapp
        "founder": {"@type": "Person", "name": "Erik"}, "sameAs": ["https://www.instagram.com/goedkopeboodschappen.nl/", "https://www.facebook.com/profile.php?id=1302002309673064"],
        "subjectOf": [{"@type": "NewsArticle", "headline": "Goedkoop boodschappen doen? Erik bouwt vergelijker", "url": HVN_URL, "publisher": {"@type": "Organization", "name": "Hart van Nederland"}, "datePublished": "2026-11-16"},
                      {"@type": "NewsArticle", "headline": "Rijssenaar Erik Beltman rekent af met dure boodschappen in vergelijkingswebsite", "url": OOST_URL, "publisher": {"@type": "Organization", "name": "RTV Oost"}, "datePublished": "2026-11-16"}]},
+      {"@context": "https://schema.org", "@type": "WebApplication", "name": "Boodschappenvergelijk", "url": BASE + "/", "applicationCategory": "ShoppingApplication", "operatingSystem": "Alle (werkt in de browser, te installeren als app)",
+       "inLanguage": "nl-NL", "isAccessibleForFree": True, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+       "description": f"Vergelijk elke dag de prijzen en aanbiedingen van {AANTAL} Nederlandse supermarkten per product en per kilo, liter of stuk, en zie waar je boodschappenlijst het goedkoopst is.",
+       "featureList": ["Prijzen vergelijken per product en per kilo, liter of stuk", "Boodschappenlijst met het totaal per supermarkt", "Kassabon of boodschappenlijstje scannen", "Aanbiedingen van deze week per supermarkt", "Complete maaltijden vergelijken voor 4 personen", "Prijsalarm per e-mail", "Goedkoopste supermarkt per stad"],
+       "screenshot": BASE + "/icons/icon-512.png", "author": {"@type": "Person", "name": "Erik Beltman"}},
       faq_ld(faq)]
 cats_app = [[c[0], c[1], [t for t in c[2] if t in PICKED], c[3]] for c in CATS if any(t in PICKED for t in c[2])]
 # Prijslijst in twee delen, zodat de app snel start: eerst alle producten die bij een categorie horen (ongeveer de helft),
@@ -1889,6 +1894,21 @@ try:
         svg = (f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" aria-label="Prijs van het boodschappenmandje per dag" style="max-width:640px;display:block"><polyline fill="none" stroke="#0e7c4a" stroke-width="3" points="{pts}"/>'
                f'<text x="20" y="14" font-size="13" fill="currentColor">{eur(hi_ / 1.02)}</text><text x="20" y="{H - 4}" font-size="13" fill="currentColor">{kortdag(_mand[0][0])}</text><text x="{W - 20}" y="{H - 4}" font-size="13" text-anchor="end" fill="currentColor">{kortdag(_mand[-1][0])}</text></svg>')
         mrows = "".join(f'<tr><td>{MN[int(m[5:]) - 1]} {m[:4]}</td><td class="p">{eur(v)}</td><td class="p">{"" if _br else pct_nl((v / basis - 1) * 100)}</td></tr>' for m, v in mnd)
+        # Prijs per basisproduct per maand (middelste prijs per kilo, liter of stuk van alle supermarkten), voor wie de cijfers wil overnemen.
+        _eh = {t: u for t, q, u in PAKKET}; _mk = [m for m, _ in mnd][-4:]
+        def _pm(t, m):
+            v = [x for d, x in zip(_dg, _reeks[t]) if x and d[:7] == m]
+            return statistics.mean(v) if v else None
+        _ehn = {"kg": "kilo", "l": "liter", "st": "stuk"}
+        prows = ""
+        for t, _ in _bt:
+            vals = [_pm(t, m) for m in _mk]
+            ch_ = f'{pct_nl((vals[-1] / vals[0] - 1) * 100)}' if vals[0] and vals[-1] and len(_mk) > 1 and not _br else ""
+            prows += (f'<tr><td><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a> <small>per {_ehn.get(_eh.get(t), _eh.get(t) or "stuk")}</small></td>'
+                      + "".join(f'<td class="p">{eur(v) if v else "–"}</td>' for v in vals) + f'<td class="p">{ch_}</td></tr>')
+        ptabel = (f'<h2>Prijs per product per maand</h2><div class="tblwrap"><table class="ptable"><caption class="sr">Gemiddelde middelste prijs per kilo, liter of stuk van {len(_bt)} basisboodschappen</caption><thead><tr><th>Product</th>'
+                  + "".join(f'<th style="text-align:right">{MN[int(m[5:]) - 1][:3]} {m[2:4]}</th>' for m in _mk) + '<th style="text-align:right">Verschil</th></tr></thead><tbody>' + prows + '</tbody></table></div>'
+                  f'<p class="note">Per product de middelste gewone prijs (zonder aanbiedingen) van alle supermarkten, gemiddeld over de maand. Bron: boodschappenvergelijk.nl, overnemen mag met bronvermelding en link. Zie ook <a href="/zo-vergelijken-wij/">zo vergelijken wij</a>.</p>')
         lijstje = lambda xs: "".join(f'<li><a href="/vergelijk/{slug(t)}/">{esc(cap(t))}</a>: <b>{pct_nl(c * 100, 0)}</b></li>' for t, c in xs)
         richting = ("duurder" if verschil > 0.5 else "goedkoper" if verschil < -0.5 else "ongeveer even duur") if verschil is not None else ""
         ch, cld = crumbs(("Besparen", "/besparen/"), ("Prijsindex", None))
@@ -1896,7 +1916,7 @@ try:
                ("Hoe meten jullie dit?", "Elke dag slaan we per product de prijs per kilo, liter of stuk op bij alle supermarkten. Voor de index nemen we per product de middelste prijs van alle supermarkten en rekenen we een vast mandje uit. Aanbiedingen tellen niet mee, zodat je de gewone prijzen ziet."),
                ("Wat zegt het CBS?", f"Het CBS meet de inflatie voor alle uitgaven, ook voedsel. Onze index is kleiner (alleen basisboodschappen), maar we werken hem meerdere keren per week bij; deze stand is van {DATUM}.")]
         head = ch + f'<h1>Worden boodschappen duurder? Prijsindex {MAAND}</h1><p class="lead">Een vast mandje van {len(_bt)} basisboodschappen kost nu gemiddeld <b>{eur(laatst)}</b>{_vtxt}. Elke dag gemeten bij alle supermarkten.</p>'
-        body = (f'<h2>Het mandje per dag</h2>{svg}<div class="tblwrap"><table class="ptable"><thead><tr><th>Maand</th><th style="text-align:right">Gemiddeld</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{mrows}</tbody></table></div>'
+        body = (f'<h2>Het mandje per dag</h2>{svg}<div class="tblwrap"><table class="ptable"><thead><tr><th>Maand</th><th style="text-align:right">Gemiddeld</th><th style="text-align:right">Verschil</th></tr></thead><tbody>{mrows}</tbody></table></div>' + ptabel
                 + _breuk_txt + ("" if _br else f'<h2>Het meest duurder geworden</h2><ul class="links">{lijstje(stijg)}</ul><h2>Het meest goedkoper geworden</h2><ul class="links">{lijstje(daal)}</ul>') + 
                 ("" if _br else f'<p class="note">Vergelijking van de eerste 14 meetdagen ({kortdag(_dg[0])} en verder) met de laatste 14. Middelste prijs per kilo, liter of stuk van alle supermarkten, zonder aanbiedingen.</p>')
                 + faq_html(faq) + '<p><a href="/besparen/">Zo bespaar je toch →</a></p>')
@@ -2413,7 +2433,7 @@ except Exception as e:
 # ---------- llms.txt voor AI-zoekmachines: altijd actuele aantallen en de goedkoopste ----------
 try:
     _ll = open(os.path.join(ROOT, "site", "llms.txt"), encoding="utf-8").read()
-    _ll = (_ll.replace("{{AANTAL}}", str(AANTAL)).replace("{{WINKELS}}", ", ".join(NAMEN.get(x, x) for x in ACTIEF)).replace("{{DATUM}}", DATUM)
+    _ll = (_ll.replace("{{AANTAL}}", str(AANTAL)).replace("{{WINKELS}}", ", ".join([NAMEN.get(x, x) for x in ACTIEF] + [NAMEN.get(x, x) + " (alleen aanbiedingen)" for x in sorted({o_["s"] for o_ in NU_GELDIG if o_.get("s") in NAMEN} - set(ACTIEF))])).replace("{{DATUM}}", DATUM)
               .replace("{{GOEDKOOPST}}", f"{nm(PAK[0]['si'])} ({eur(PAK[0]['tot'])} voor {len(PAKTERMEN)} vaste boodschappen, {DATUM})" if PAK else "zie de ranglijst"))
     open(os.path.join(OUT, "llms.txt"), "w", encoding="utf-8").write(_ll)
 except Exception as e:
