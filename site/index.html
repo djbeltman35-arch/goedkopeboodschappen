@@ -493,7 +493,7 @@ function perStore(m){
   return res;
 }
 const pickCache=new Map();
-function pick(term){if(!pickCache.has(term))pickCache.set(term,perStore(matches(term,false)));const r=pickCache.get(term);for(const [p,b] of r.st||[])p.bad=b;return r}
+function pick(term){if(!pickCache.has(term)){const z=soortZoek(term);pickCache.set(term,z?soortPerWinkel(z):perStore(matches(term,false)))}const r=pickCache.get(term);for(const [p,b] of r.st||[])p.bad=b;return r}
 
 // "Laagste prijs sinds juni": de prijs per eenheid ligt nu onder alles wat we bij deze winkel sinds de eerste meting zagen.
 // Prijs tegenover de geschiedenis: "Laagste prijs sinds juni", anders "x% goedkoper dan normaal" of "Duurder dan normaal".
@@ -595,13 +595,21 @@ document.addEventListener("change",e=>{const x=e.target.closest&&e.target.closes
 // Zoeken op een hele soort (fruit, groente, vlees …): per soort het goedkoopste product, goedkoopste per kilo bovenaan.
 // Zo krijg je bij "fruit" bananen en appels, en geen Spa Fruit.
 const SOORTZOEK={"fruit":["Vers fruit"],"vers fruit":["Vers fruit"],"groente":["Verse groente"],"groenten":["Verse groente"],"verse groente":["Verse groente"],
-  "groente en fruit":["Verse groente","Vers fruit"],"aardappelen groente en fruit":["Aardappelen","Verse groente","Vers fruit"],"vlees":["Kip","Gehakt en burgers","Varken en rund","Worst"],"zuivel":["Melk","Yoghurt, kwark en vla","Room","Boter en margarine"]};
+  "groente en fruit":["Verse groente","Vers fruit"],"aardappelen groente en fruit":["Aardappelen","Verse groente","Vers fruit"],"vlees":["Kip","Gehakt en burgers","Varken en rund","Worst"],"zuivel":["Melk","Yoghurt, kwark en vla","Room","Boter en margarine"],
+  "frisdrank":["Cola","Cola zero en light","Overige frisdrank"],"fris":["Cola","Cola zero en light","Overige frisdrank"],"limonade":["Overige frisdrank"],"drinken":["Cola","Cola zero en light","Overige frisdrank","Water","Sap"]};
 function soortZoek(q){const n=norm(q);if(!n||CATS.some(c=>c[2].some(t=>norm(t)===n)))return null;
   if(SOORTZOEK[n])return {kop:q,subs:CATS.filter(c=>SOORTZOEK[n].includes(c[0]))};
   const g=GROEPEN.find(g=>norm(g[0])===n);if(g)return {kop:g[0],subs:CATS.filter(c=>c[3]===g[0])};
   const c=CATS.find(c=>norm(c[0])===n);return c?{kop:c[0],subs:[c]}:null}
 // Bij vers fruit en verse groente geen drankjes, siroop of beleg (Spa Touch kiwi, vijgenspread).
 const NIETVERS=/siroop|spread|confiture|\bjam\b|sap\b|drink|limonade|schweppes|spa touch|smoothie|yoghurt|snoep|chips|thee\b|gedroogd|\bijs\b|danio|pirulo|optimel|kwark|toetje|dessert|\bvla\b/i;
+// Een hele soort op je lijst ("fruit"): per winkel het goedkoopste verse product van die soort, liefst per kilo (bananen), anders per stuk.
+function soortPerWinkel(z){const res=new Map(),sc=new Map();
+  for(const c of z.subs){const vers=/^Vers/.test(c[0]);for(const t of c[2])for(const [si,p] of pick(t)){if(p.bad||(vers&&(p.lit||p[6]==="l"||NIETVERS.test(p[1]))))continue;
+    const u=p.lit?eff(p)/p.lit:effUnit(p),w=u!=null&&(p.lit||p[6]==="kg"||p[6]==="l")?u:1e4+(u??eff(p));if(!sc.has(si)||w<sc.get(si)){sc.set(si,w);res.set(si,p)}}}
+  const uit=new Map([...res].sort((a,b)=>sc.get(a[0])-sc.get(b[0])));uit.st=[...uit.values()].map(p=>[p,false]);return uit}
+// Beste product voor een lijstregel: bij een hele soort de volgorde van soortPerWinkel (per kilo eerst), anders de gewone volgorde.
+const besteVoor=t=>{const v=[...pick(t).values()].filter(p=>!p.bad);return soortZoek(t)?v[0]:v.sort((a,b)=>rank(a)-rank(b))[0]};
 function soortLijst(z){
   const gezien=new Set(),rows=[];
   for(const c of z.subs){const vers=/^Vers/.test(c[0]);for(const t of c[2]){const v=[...pick(t).values()].filter(p=>!p.bad&&!(vers&&(p.lit||p[6]==="l"||NIETVERS.test(p[1])))).sort((a,b)=>rank(a)-rank(b));const b=v[0];if(!b||gezien.has(b.i))continue;gezien.add(b.i);rows.push({t,b,v})}}
@@ -1366,7 +1374,7 @@ function bulkAdd(){
     const m=r.match(/^(\d{1,2})\s*(?:x|×|keer|stuks?|pakken|pak|flessen|fles|zakken|zak)?\s+(.+)$/i);
     const q=m?Math.max(1,+m[1]):1, t=(m?m[2]:r).replace(/^[-•*·]\s*/,"").trim(); if(!t) continue;
     const had=S.list.find(x=>norm(x.term)===norm(t)); if(had){had.q=(had.q||1)+(m?q:0)||had.q;ok++;continue}
-    let b=[...pick(t).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0];
+    let b=besteVoor(t);
     if(!b){const mm=matches(t);b=[...perStore(mm).values()].sort((a,b)=>rank(a)-rank(b))[0]}
     if(!b){const alt=verbeter(t);if(alt)b=[...pick(alt).values()].filter(p=>!p.bad).sort((a,b)=>rank(a)-rank(b))[0]}  // tikfout of kassabon-afkorting
     if(!b){mis.push(t);continue}
@@ -1488,13 +1496,15 @@ startP.then(()=>Promise.all([prijzenLaden(),laadJson("aldi.json"),aanbLaden()]))
   S.list=list.filter(x=>x&&x.link&&x.s).map(x=>({...x,si:S.sidx.get(x.s)??x.si}));
   S.maal=(store.get("maal-v1")||[]).filter(m=>m&&m.slug&&m.k>=0);
   for(const x of S.list) if(OLDL.test(x.link)&&SEARCHL[x.s]) x.link=SEARCHL[x.s](x.name);
+  // Oude lijstregels als "fruit" met Spa Fruit erop: vervangen door het goedkoopste echte fruit.
+  try{for(const x of S.list){if(!soortZoek(x.term)||!NIETVERS.test(x.name||"")&&!/\b\d+([.,]\d+)? ?(l|cl|ml)\b/i.test(x.name||""))continue;const b=besteVoor(x.term);if(b)Object.assign(x,{si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b)})}}catch(e){}
   const sp=new URLSearchParams(location.search);
   let added=0;
   const shared=sp.get("lijst");
   if(shared) for(const r of shared.split("~").map(s=>s.trim()).filter(Boolean).slice(0,60)){
     const qm=r.match(/^(\d{1,2}) (.+)$/), t=qm?qm[2]:r, q=qm?+qm[1]:1;
     if(S.list.some(x=>norm(x.term)===norm(t))) continue;
-    const b=[...pick(t).values()].sort((a,b)=>rank(a)-rank(b))[0]; if(b){S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b),...(q>1?{q}:{})});added++}
+    const b=besteVoor(t); if(b){S.list.push({term:t,si:b[0],s:sid(b[0]),name:b[1]+(sizeTxt(b)?" "+sizeTxt(b):""),link:link(b),price:eff(b),...(q>1?{q}:{})});added++}
   }
   // Samen één lijst: meedoen via een link (?samen=...) of de bewaarde code gebruiken.
   {const sid_=sp.get("samen");
